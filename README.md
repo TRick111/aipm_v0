@@ -220,6 +220,8 @@ required_rule_files:
 ### 0️⃣ 事前準備
 
 ```bash
+# ワークスペース作成
+./setup_workspace_simple.sh /path/to/workspace
 
 
 # プロジェクト作成ガイド

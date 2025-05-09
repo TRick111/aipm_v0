@@ -138,8 +138,6 @@ cd aipm_workspace
    ```json
    {
      "markdown.marp.themes": [
-       ".cursor/rules/basic/templates/marp-themes/professional.css",
-       ".cursor/rules/basic/templates/marp-themes/modern-business.css",
        ".cursor/rules/basic/templates/marp-themes/explaza.css"
      ]
    }

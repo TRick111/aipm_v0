@@ -123,6 +123,31 @@ cd aipm_workspace
 
 これにより、基本的なディレクトリ構造、Flow内の年月日フォルダ、必要なリポジトリのクローンが行われます。
 
+
+### Marpテーマの設定
+
+プレゼンテーション生成機能を使用するには、以下のステップでMarpテーマを設定します：
+
+1. `.vscode/settings.json` ファイルを作成または編集します
+   ```bash
+   mkdir -p .vscode
+   touch .vscode/settings.json
+   ```
+
+2. 以下の内容を settings.json に追加します：
+   ```json
+   {
+     "markdown.marp.themes": [
+       ".cursor/rules/basic/templates/marp-themes/professional.css",
+       ".cursor/rules/basic/templates/marp-themes/modern-business.css",
+       ".cursor/rules/basic/templates/marp-themes/explaza.css"
+     ]
+   }
+   ```
+
+これにより、「プレゼン資料生成」コマンドで作成されるMarpスライドにカスタムテーマが適用できるようになります。
+
+
 ### セットアップスクリプトの主な機能
 
 `setup_workspace_simple.sh` スクリプトを使用すると、以下の作業が自動的に行われます：
@@ -157,6 +182,7 @@ cd aipm_workspace
 - `basic/09_pmbok_development.mdc` - 開発フェーズ支援
 - `basic/90_rule_maintenance.mdc` - ルール自体のメンテナンス用
 - `basic/flow_to_stock_rules.mdc` - 自動同期ルール
+
 
 ## 5. フェーズ別の使い方
 

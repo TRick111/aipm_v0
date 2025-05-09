@@ -392,7 +392,7 @@ required_rule_files:
 |--------------|-------------------|--------|---------|
 | プロジェクト初期化<br>プロジェクト開始<br>プロジェクト立ち上げ | basic/01_pmbok_initiating.mdc | プログラムID、プロジェクトID、目的、開始日、終了日、ステークホルダー | (ディレクトリ構造) |
 | "XXX始めたい"<br>"XXX作りたい"<br>(プロジェクト名+開始したい) | basic/01_pmbok_initiating.mdc | プログラム名（プロダクトのカテゴリー） | (ディレクトリ構造) |
-| プロダクト定義<br>プロダクト目標定義<br>Product定義<br>プログラム定義 | kcom/01_kcom_initiating.mdc | プロダクト名、目標・ビジョン、関連するOKR、背景と目的 | draft_program_definition.md |
+| プロダクト定義<br>プロダクト目標定義<br>Product定義<br>プログラム定義 | pmbok/01_pmbok_initiating.mdc | プロダクト名、目標・ビジョン、関連するOKR、背景と目的 | draft_program_definition.md |
 | プロジェクト憲章<br>プロジェクトチャーター | basic/01_pmbok_initiating.mdc | プロジェクト名、目的、背景、成果物、予算、マイルストーン | draft_project_charter.md |
 | ステークホルダー分析<br>ステークホルダーマップ | basic/pmbok_initiating.mdc | 主要ステークホルダー、役割、期待、影響力、関与度 | draft_stakeholder_analysis.md |
 | リスク分析<br>リスク計画 | basic/pmbok_planning.mdc | リスク項目、影響度、発生確率、対応策、責任者 | draft_risk_plan.md |
@@ -690,7 +690,7 @@ User: はい
 AI: ルール追加が完了しました。
     以下のファイルが作成/更新されました：
     - .cursor/rules/pmbok/00_master_rules_kc.mdc
-    - .cursor/rules/pmbok/12_kcom_marketing.mdc
+    - .cursor/rules/pmbok/12_pmbok_marketing.mdc
     - .cursor/rules/pmbok/pmbok_paths_kc.mdc
 
     「マーケティング計画」と入力して新機能をテストできます。

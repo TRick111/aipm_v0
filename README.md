@@ -138,13 +138,30 @@ cd aipm_workspace
    ```json
    {
      "markdown.marp.themes": [
-       ".cursor/rules/basic/templates/marp-themes/explaza.css"
+       ".cursor/rules/basic/templates/marp-themes/explaza.css",
+       ".cursor/rules/basic/templates/marp-themes/modern-brown.css"
      ]
    }
    ```
 
 これにより、「プレゼン資料生成」コマンドで作成されるMarpスライドにカスタムテーマが適用できるようになります。
 
+### プレゼンテーションの背景画像
+
+「プレゼン資料生成」コマンドを実行すると、タイトルスライド（lead）用の背景画像が自動的にassetsディレクトリにコピーされます。背景画像は次の方法で利用できます：
+
+1. **自動適用**: テーマCSS内で設定された背景画像が lead クラスのスライドに自動的に適用されます
+   
+2. **Markdown内で指定**: 特定のスライドに異なる背景画像を適用したい場合
+   ```markdown
+   ![bg](assets/bg_explaza.png)
+   ```
+
+3. **カスタム背景画像**: 独自の背景画像をアップロードし、`assets/` ディレクトリに配置すれば、同様の方法で使用できます
+
+現在利用可能な背景画像:
+- `bg_explaza.png`: explazaテーマ用の青系背景
+- `bg_brown.png`: modern-brownテーマ用の茶系背景
 
 ### セットアップスクリプトの主な機能
 

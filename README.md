@@ -381,6 +381,115 @@ required_rule_files:
 「移管ドキュメント作成」  # 引き継ぎ資料作成
 ```
 
+
+## 5.5 全トリガーワード対応表
+
+以下に、システムで使用できるすべてのトリガーワードをフェーズ別にまとめています。各コマンドがどのルールファイル内で定義されているか、必要とする情報も示しています。
+
+### フェーズ1：立ち上げ（Initiating）
+
+| トリガーワード | 対応するルールファイル | 必要情報 | 出力ファイル |
+|--------------|-------------------|--------|---------|
+| プロジェクト初期化<br>プロジェクト開始<br>プロジェクト立ち上げ | basic/01_pmbok_initiating.mdc | プログラムID、プロジェクトID、目的、開始日、終了日、ステークホルダー | (ディレクトリ構造) |
+| "XXX始めたい"<br>"XXX作りたい"<br>(プロジェクト名+開始したい) | basic/01_pmbok_initiating.mdc | プログラム名（プロダクトのカテゴリー） | (ディレクトリ構造) |
+| プロダクト定義<br>プロダクト目標定義<br>Product定義<br>プログラム定義 | kcom/01_kcom_initiating.mdc | プロダクト名、目標・ビジョン、関連するOKR、背景と目的 | draft_program_definition.md |
+| プロジェクト憲章<br>プロジェクトチャーター | basic/01_pmbok_initiating.mdc | プロジェクト名、目的、背景、成果物、予算、マイルストーン | draft_project_charter.md |
+| ステークホルダー分析<br>ステークホルダーマップ | basic/pmbok_initiating.mdc | 主要ステークホルダー、役割、期待、影響力、関与度 | draft_stakeholder_analysis.md |
+| リスク分析<br>リスク計画 | basic/pmbok_planning.mdc | リスク項目、影響度、発生確率、対応策、責任者 | draft_risk_plan.md |
+| 作業開始<br>work start<br>今日の作業開始 | basic/00_master_rules.mdc | なし | daily_tasks.md |
+
+### フェーズ2：リサーチ（Research）
+
+| トリガーワード | 対応するルールファイル | 必要情報 | 出力ファイル |
+|--------------|-------------------|--------|---------|
+| リサーチ<br>Research | basic/00_master_rules.mdc<br>(メニュー表示) | なし | なし |
+| 顧客調査<br>Customer Research | basic/02_pmbok_research.mdc | プロジェクト名、ターゲットオーディエンス、調査トピック、業界背景 | draft_customer_research.md |
+| 競合調査<br>Competitor Research | basic/02_pmbok_research.mdc | プロジェクト名、自社製品/サービス概要、主な競合、調査フォーカス | draft_competitor_research.md |
+| デスクリサーチ<br>Desk Research | basic/02_pmbok_research.mdc | プロジェクト名、調査範囲、調査トピック、業界背景 | draft_desk_research.md |
+| 市場規模推定<br>TAM SAM SOM<br>フェルミ推定 | basic/02_pmbok_research.mdc | プロジェクト名、ビジネスモデル、ターゲット顧客、地域、推定アプローチ | draft_market_size_estimation.md |
+
+### フェーズ2：発見（Discovery）
+
+| トリガーワード | 対応するルールファイル | 必要情報 | 出力ファイル |
+|--------------|-------------------|--------|---------|
+| ディスカバリー<br>Discovery | basic/00_master_rules.mdc<br>(メニュー表示) | なし | なし |
+| 仮説マップ<br>Assumption Map | basic/02_pmbok_discovery.mdc | 主な仮説、検証方法、前提条件 | draft_assumption_map.md |
+| ペルソナ作成<br>Persona | basic/02_pmbok_discovery.mdc | ユーザー像、年齢・職業、目標、課題、行動パターン | draft_persona.md |
+| 課題定義<br>Problem Statement | basic/02_pmbok_discovery.mdc | 問題概要、影響、原因、解決の価値 | draft_problem_statement.md |
+| ユーザージャーニーマップ<br>User Journey Map<br>ジャーニーマップ | basic/02_pmbok_discovery.mdc | ユーザー、フェーズ、行動、感情、課題、機会 | draft_user_journey_map.md |
+| ソリューション定義<br>Solution Definition | basic/02_pmbok_discovery.mdc | 提案するソリューション、機能要件、成功基準 | draft_solution_definition.md |
+| 検証計画<br>Validation Plan | basic/02_pmbok_discovery.mdc | 検証仮説、方法、成功基準、スケジュール | draft_validation_plan.md |
+| UXリサーチ<br>ユーザー調査<br>UX調査 | basic/02_pmbok_discovery.mdc | 調査目的、質問、方法、参加者要件 | draft_ux_research_overview.md |
+| インタビュー設計<br>インタビュー質問<br>質問表作成 | basic/02_pmbok_discovery.mdc | 調査目的、質問リスト、進行手順 | draft_interview_guide.md |
+| リクルーティング<br>ユーザー募集<br>被験者募集 | basic/02_pmbok_discovery.mdc | 対象者プロフィール、募集方法、参加条件 | draft_recruiting_plan.md |
+| インタビュー分析<br>インタビュー結果<br>インタビュー記録 | basic/02_pmbok_discovery.mdc | 参加者ID、主な発見、引用、洞察 | draft_interview_analysis_{{participant_id}}.md |
+| リサーチサマリー<br>調査サマリー<br>全体分析 | basic/02_pmbok_discovery.mdc | 調査目的、方法、主要な発見、次のステップ | draft_research_summary.md |
+| 仮説バックログ<br>Hypothesis | basic/02_pmbok_discovery.mdc | 仮説一覧、優先度、検証方法、成功基準 | draft_hypothesis_backlog.md |
+| アイディア発散 | basic/08_pmbok_flow_assist.mdc | テーマ、アイデア、評価基準 | draft_flow_assist.md |
+| プレゼン資料生成 | basic/02_pmbok_presentation.mdc | タイトル、発表者、対象者、主要ポイント | draft_presentation.md |
+
+### フェーズ3：計画（Planning）
+
+| トリガーワード | 対応するルールファイル | 必要情報 | 出力ファイル |
+|--------------|-------------------|--------|---------|
+| プロジェクトスコープ記述書<br>Project Scope Statement | basic/03_pmbok_planning.mdc | プロジェクト範囲、成果物、除外事項、制約、前提条件 | draft_project_scope_statement.md |
+| プロダクト要求仕様書<br>PRD<br>Product Requirements Document | basic/03_pmbok_planning.mdc | 製品概要、ユーザー、要件、優先度、制約 | draft_product_requirements.md |
+| Design Doc<br>デザインドック<br>設計文書 | basic/03_pmbok_planning.mdc | システム概要、アーキテクチャ、コンポーネント、インターフェース | draft_design_doc.md |
+| WBS作成<br>作業分解構造 | basic/pmbok_planning.mdc | 主要フェーズ、サブタスク、所要時間、担当者 | draft_wbs.md |
+| プロダクトバックログ初期化<br>backlog初期化<br>バックログ初期化 | basic/pmbok_planning.mdc | プロダクト名、ストーリー一覧、優先度、見積もり | backlog.yaml, epics.yaml |
+| ユーザーストーリー生成<br>ストーリー生成<br>story生成 | basic/00_master_rules.mdc | backlog.yaml（既存のもの） | stories/ ディレクトリ内の複数ファイル |
+| ロードマップ作成<br>プロダクトロードマップ<br>リリース計画 | basic/pmbok_planning.mdc | リリース計画、マイルストーン、機能、日程 | draft_product_roadmap.md |
+
+### フェーズ4：実行（Executing）
+
+| トリガーワード | 対応するルールファイル | 必要情報 | 出力ファイル |
+|--------------|-------------------|--------|---------|
+| 開発フェーズ<br>Development<br>実装フェーズ | basic/00_master_rules.mdc<br>(メニュー表示) | なし | なし |
+| 開発環境初期化<br>Development初期化<br>実装環境セットアップ | basic/09_pmbok_development.mdc | プロジェクト名、技術スタック、開発環境要件 | draft_dev_setup.md |
+| 開発計画作成<br>Development計画<br>実装計画 | basic/09_pmbok_development.mdc | 機能一覧、技術スタック、スケジュール、担当者 | draft_dev_plan.md |
+| 実装順序計画<br>開発順序<br>ストーリー依存関係 | basic/09_pmbok_development.mdc | ストーリーリスト、依存関係、優先度 | draft_implementation_order.md |
+| ストーリー実装<br>実装開始<br>ユーザーストーリー実装 | basic/09_pmbok_development.mdc | ストーリーID、実装詳細、タスク分割 | draft_dev_story.md |
+| 記事執筆<br>ドキュメント作成<br>記事作成 | basic/09_pmbok_development.mdc | タイトル、概要、対象読者、構成 | draft_dev_article.md |
+| 成果物確認<br>実装確認<br>確定レビュー | basic/09_pmbok_development.mdc | レビュー対象、確認項目、フィードバック | draft_development_review.md |
+| スプリントゴール<br>Sprint Goal | basic/pmbok_executing.mdc | スプリント番号、期間、目標、成功基準、デモ項目 | draft_sprint_goal_{{sprint_number}}.md |
+| 議事録<br>ミーティングノート | basic/pmbok_executing.mdc | 会議名、日時、参加者、議題、決定事項、アクション | draft_meeting_minutes.md |
+
+
+### フェーズ5：監視・コントロール（Monitoring）
+
+| トリガーワード | 対応するルールファイル | 必要情報 | 出力ファイル |
+|--------------|-------------------|--------|---------|
+| 変更要求<br>チェンジリクエスト | basic/pmbok_monitoring.mdc | 変更内容、理由、影響範囲、優先度 | draft_change_request.md |
+| スプリントレビュー作成<br>Sprint Review | basic/pmbok_executing.mdc | スプリント番号、達成事項、デモ項目、課題、次のステップ | draft_sprint_review_{{sprint_id}}.md |
+| 今日のタスク<br>日次タスク作成<br>Daily tasks | basic/07_task_management.mdc | 当日の作業予定、完了タスク、メモ | daily_tasks.md |
+| 週次レビュー<br>Weekly review | basic/07_task_management.mdc | 週番号、主な成果、課題、次週の計画 | weekly_review.md |
+| Sync<br>WBSと同期<br>リスクログと同期 | basic/07_task_management.mdc | 対象アーティファクト、更新内容 | (既存のWBSやリスクログを更新) |
+
+### フェーズ6：終結（Closing）
+
+| トリガーワード | 対応するルールファイル | 必要情報 | 出力ファイル |
+|--------------|-------------------|--------|---------|
+| 教訓記録<br>レッスンラーニド<br>レッスンずらーんど | basic/pmbok_closing.mdc | 成功事例、改善点、学び、提案 | draft_lessons_learned.md |
+
+### ユーティリティ
+
+| トリガーワード | 対応するルールファイル | 必要情報 | 出力ファイル |
+|--------------|-------------------|--------|---------|
+| 確定反映して | flow_to_stock_rules.mdc | 対象ドラフトファイル | (Stock内の対応ファイル) |
+| フェーズ追加<br>Phase追加<br>新フェーズ作成 | basic/90_rule_maintenance.mdc | フェーズ名、トリガーワード、ルールの詳細 | 新規ルールファイル |
+
+### 各ドキュメント間の参照関係
+
+開発やドキュメント作成時に参考にできる主な参照関係は以下の通りです：
+
+* **ペルソナ作成**：市場調査レポート、ユーザーインタビュー結果、競合調査結果を参照すると効果的
+* **プロジェクト憲章**：プロダクト定義、ステークホルダー分析、リスク分析を基にすると整合性が高まる
+* **バックログ初期化**：プロダクト要求仕様書、WBS、ユーザージャーニーマップの内容を反映させると良い
+* **スプリントゴール**：プロダクトバックログ、ロードマップを参照して設定すると計画との整合性が確保できる
+* **週次レポート**：日次タスク、スプリントゴール、課題記録の情報を集約して作成すると効率的
+* **実装計画**：バックログ、デザインドック、技術仕様書を基に作成すると実装の指針が明確になる
+
+
 ## 6. ユースケース：カレープロジェクト
 
 以下は、実際のプロジェクト例として「カレー作り」プロジェクトの流れを示します。
@@ -537,6 +646,65 @@ AIは以下の詳細情報を含むペルソナを作成します：
 | 「フェーズ追加」 | 新しいフェーズルールの雛形を生成 |
 
 
+## 8. ルール追加と拡張プロセス
+
+システム自体を成長させるため、新しいルールの追加や既存ルールの拡張機能が組み込まれています。ルール追加自体もルール化することで、システムの継続的進化を促進します。
+
+### ルール拡張の基本的な流れ
+
+1. **「フェーズ追加」トリガー**: チャットで「フェーズ追加」や「新フェーズ作成」と入力すると、ルール拡張モードが起動します
+2. **情報収集**: システムが新規フェーズやルールに関する情報を質問します
+3. **自動ルール生成**: 情報を基に必要なルールファイル更新を行います
+
+### 自動更新される要素
+
+ルール追加機能は主に以下の3つの要素を自動的に更新します：
+
+1. **マスタールールへのトリガー追加**: `00_master_rules_kc.mdc` にトリガーキーワードと処理フローを追加
+2. **専用ルールファイルの作成/更新**: 新しいフェーズ専用のルール（例: `0X_pmbok_xxxxx.mdc`）を作成するか、既存のカテゴリに質問やテンプレートを追加
+3. **パス変数の追加**: `pmbok_paths.mdc` に必要なパス変数を追加（これにより実際のパスを変数で参照可能になる）
+
+### 使用例
+
+```
+User: フェーズ追加
+AI: 新しいフェーズやルールを追加します。以下の情報を教えてください：
+    1. 追加したいフェーズ/ルール名:
+    2. 主な機能や目的:
+    3. 必要なトリガーワード:
+    ...
+
+User: マーケティングフェーズを追加したい。
+     トリガーワードは「マーケティング計画」「広告戦略」など。
+     成果物としてはマーケティング計画書、広告戦略、分析レポートなど。
+
+AI: 以下の内容でルールを追加します：
+    1. マスタールールにトリガーワード追加
+    2. 12_pmbok_marketing.mdc ファイル作成
+    3. パス変数追加
+    
+    よろしいですか？
+
+User: はい
+
+AI: ルール追加が完了しました。
+    以下のファイルが作成/更新されました：
+    - .cursor/rules/pmbok/00_master_rules_kc.mdc
+    - .cursor/rules/pmbok/12_kcom_marketing.mdc
+    - .cursor/rules/pmbok/pmbok_paths_kc.mdc
+
+    「マーケティング計画」と入力して新機能をテストできます。
+```
+
+### カスタムルールのメリット
+
+- **再利用性**: 一度定義したルールはプロジェクト間で再利用可能
+- **一貫性**: テンプレートやワークフローの標準化により、チーム全体での一貫性を確保
+- **効率化**: 繰り返し作業が自動化され、本質的な思考に集中できる
+- **知識の形式化**: チームの知見やベストプラクティスをルールとして形式化し共有
+
+ルール追加自体もルール化することで、プロジェクト完了時や作業が一段落した時点で「次回からはこうしたい」という改善をすぐにシステムに反映できます。たとえ面倒に感じる場合でも、このプロセスが習慣化されることで、システムは継続的に進化していきます。
+
 
 ## 9. よくある質問 (FAQ)とベストプラクティス
 
@@ -658,9 +826,57 @@ A7. 最適な結果を得るためのヒント：
 3. 同時並行で「記事執筆」機能を使って技術ドキュメントを作成
 4. 開発完了後「成果物確認」でレビューし、Stockに確定
 
-このワークフローにより、プロジェクト管理と開発作業を一貫したプロセスで進めることができます。 
+このワークフローにより、プロジェクト管理と開発作業を一貫したプロセスで進めることができます。
 
-## 11. 作った人
+
+## 11. バックログ管理とYAMLビューア
+
+本システムでは、プロダクトバックログをYAML形式で管理する方法を採用しています。この方法には大きなメリットがありますが、YAMLの可読性については工夫が必要です。
+
+### YAMLでバックログを管理する利点
+
+- **AIエージェントとの親和性**: YAML形式はCursorエージェントが正確に解析・操作できるため、口語的な指示でもバックログを効率的に更新できます
+- **構造化された情報管理**: 階層構造を持つバックログを自然に表現でき、ストーリー間の関係性を明確に記述できます
+- **変更操作の簡便さ**: 「ストーリーAのステータスを完了に変更して」「担当者をBさんに変更して」といった指示をAIに伝えるだけで正確に更新されます
+- **他システムとの連携**: YAMLはプログラムで扱いやすく、JIRAやGitHubなど他のツールとの連携も容易です
+
+### YAML可読性向上のためのツール
+
+バックログYAMLをより見やすく表示するために、以下のツールを推奨します：
+
+1. **VSCode拡張機能「Yaml2Table Preview」**
+   - [Marketplace リンク](https://marketplace.visualstudio.com/items?itemName=adautomendes.yaml2table-preview)
+   - インストール方法: VSCodeのQuick Open (Ctrl+P)で`ext install adautomendes.yaml2table-preview`を実行
+   - 使用方法: YAMLファイルを開いた状態で`Ctrl+Shift+P`から「Yaml2Table: Open preview」を選択
+
+   ![yaml2table preview example](https://github.com/adautomendes/vscode-yaml-preview/raw/HEAD/resources/preview.png)
+
+2. **VSCodeの標準YAML拡張機能**
+   - YAMLの構文ハイライト、入れ子構造の折りたたみ、スキーマ検証などの基本機能を提供
+   - これだけでもかなり見やすくなります
+
+### バックログ操作テクニック
+
+YAMLファイルをAIエージェントで効率的に操作するテクニック：
+
+```
+User: バックログのストーリーUS-123のステータスを「完了」に変更して、担当者を田中さんにしてほしい
+
+AI: backlog.yamlを更新します:
+    - ストーリーUS-123のステータスを「完了」に変更
+    - 担当者を「田中」に変更
+    変更を行いますか？
+
+User: はい
+
+AI: backlog.yamlを更新しました。以下が変更内容です:
+    - US-123のstatus: "in-progress" → "done"
+    - US-123のassignee: "佐藤" → "田中"
+```
+
+このようにUI操作よりも自然言語での指示の方が、場合によってはスピーディーで正確なバックログ管理が可能になります。
+
+## 12. 作った人
 
 ### プロフィール
 
@@ -685,7 +901,7 @@ A7. 最適な結果を得るためのヒント：
 - コーポレートサイト：[https://explaza.jp/](https://explaza.jp/)
 - 採用ページ：[https://lifeat.explaza.jp/](https://lifeat.explaza.jp/) 
 
-## 12. 参考ブログ記事
+## 13. 参考ブログ記事
 
 
 ### 実際の活用事例
@@ -715,7 +931,7 @@ A7. 最適な結果を得るためのヒント：
 
 これらの記事では、Cursorを使ったAIエージェントによるタスク管理、プロジェクト管理、文書作成の自動化などについて詳しく解説しています。本システムを最大限に活用するためのヒントやテクニックを学ぶことができます。 
 
-## 13. 著作権・ライセンス・免責事項
+## 14. 著作権・ライセンス・免責事項
 
 ### 著作権
 

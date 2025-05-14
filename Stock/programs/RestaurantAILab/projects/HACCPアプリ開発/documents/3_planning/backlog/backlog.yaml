@@ -1,0 +1,179 @@
+epics:
+    - id: EMPLOYEE_FEATURES
+      title: 従業員向け機能
+      priority: 1
+      tasks:
+          - id: TEMP_RECORD
+            title: 温度記録入力（写真・手動）
+            description: 冷蔵庫・冷凍庫の温度を写真または手動で入力し、設備選択・複数設備連続入力も可能
+            subtasks:
+                - UIデザイン（温度入力・写真撮影画面）
+                - 写真撮影機能の実装
+                - 手動入力UIの実装
+                - 設備選択UIの実装
+                - 入力バリデーション実装
+                - 入力データ保存API実装
+                - 入力完了・エラー時のフィードバック実装
+          - id: INPUT_CONFIRM
+            title: 入力時の確認画面表示
+            description: 温度記録入力後、確認画面で内容を見直し、修正または確定できる
+            subtasks:
+                - 確認画面UIデザイン
+                - 入力内容の一時保存・編集機能実装
+                - 確定・修正ボタンの実装
+          - id: INPUT_HISTORY
+            title: 記録履歴の閲覧
+            description: 自分が入力した温度記録の履歴を日付・設備ごとに一覧で確認できる
+            subtasks:
+                - 履歴一覧画面UIデザイン
+                - 履歴データ取得API実装
+                - 履歴フィルタ・検索機能実装
+          - id: ALERT_VIEW
+            title: アラート確認・対応
+            description: 自分に関連する設備で発生したアラート（基準値外・未記録）を一覧で確認し、コメントや対応内容を入力できる
+            subtasks:
+                - アラート一覧画面UIデザイン
+                - アラートデータ取得API実装
+                - コメント・対応入力UI実装
+                - アラート既読・対応済みフラグ実装
+          - id: LOGIN
+            title: ログイン（合言葉認証）
+            description: 所属店舗の合言葉（パスワード）で従業員画面にログイン
+            subtasks:
+                - ログイン画面UIデザイン
+                - 合言葉認証API実装
+                - ログイン状態管理・セッション実装
+          - id: LOGOUT
+            title: ログアウト
+            description: 従業員画面から安全にログアウト
+            subtasks:
+                - ログアウト処理実装
+                - セッション破棄・リダイレクト実装
+
+    - id: OWNER_FEATURES
+      title: 店舗オーナー向け機能
+      priority: 2
+      tasks:
+          - id: EQUIP_MGMT
+            title: 設備管理（基準値設定含む）
+            description: 冷蔵庫・冷凍庫の登録・編集・削除、各設備ごとの温度基準値設定
+            subtasks:
+                - 設備一覧・編集画面UIデザイン
+                - 設備登録・編集・削除API実装
+                - 基準値設定UI・API実装
+          - id: ALERT_MGMT
+            title: アラート管理（表示・対応）
+            description: 店舗内で発生したアラート（基準値外・未記録）を一覧で確認し、対応内容やコメントを記録
+            subtasks:
+                - アラート一覧画面UIデザイン
+                - アラートデータ取得API実装
+                - コメント・対応入力UI実装
+                - アラート既読・対応済みフラグ実装
+          - id: CALENDAR_VIEW
+            title: カレンダーから日付指定で記録確認
+            description: カレンダーUIから特定の日付を選択し、その日の温度記録やアラート状況を確認
+            subtasks:
+                - カレンダーUIデザイン
+                - 日付指定データ取得API実装
+                - 記録・アラート表示UI実装
+          - id: RECORD_EDIT
+            title: 記録データの修正（監査ログ付き）
+            description: 過去の温度記録データを修正し、修正内容は監査ログとして記録
+            subtasks:
+                - 記録編集画面UIデザイン
+                - 編集API実装
+                - 監査ログ記録機能実装
+          - id: STORE_INFO_EDIT
+            title: 店舗情報編集
+            description: 店舗名、住所、連絡先などの店舗情報を編集
+            subtasks:
+                - 店舗情報編集画面UIデザイン
+                - 店舗情報取得・更新API実装
+          - id: EMPLOYEE_MGMT
+            title: 従業員管理
+            description: 従業員の登録・編集・削除
+            subtasks:
+                - 従業員一覧・編集画面UIデザイン
+                - 従業員登録・編集・削除API実装
+          - id: REPORT_VIEW
+            title: レポート閲覧
+            description: 過去の記録やアラート履歴のレポートを閲覧
+            subtasks:
+                - レポート画面UIデザイン
+                - レポートデータ取得API実装
+                - CSV/PDFエクスポート機能実装
+          - id: LOGIN
+            title: ログイン（ID/パスワード）
+            description: 店舗オーナー用のIDとパスワードで管理画面にログイン
+            subtasks:
+                - ログイン画面UIデザイン
+                - 認証API実装
+                - ログイン状態管理・セッション実装
+          - id: LOGOUT
+            title: ログアウト
+            description: 管理画面から安全にログアウト
+            subtasks:
+                - ログアウト処理実装
+                - セッション破棄・リダイレクト実装
+          - id: NOTIFY_SETTING
+            title: 設定変更（通知先LINEなど）
+            description: アラート通知先のLINEアカウントや通知方法などを設定・変更
+            subtasks:
+                - 通知先設定画面UIデザイン
+                - 通知先情報取得・更新API実装
+
+    - id: ADMIN_FEATURES
+      title: システム管理者向け機能
+      priority: 3
+      tasks:
+          - id: GROUP_MGMT
+            title: 店舗グループ管理
+            description: 複数の店舗グループを追加・編集・削除、グループごとに管理者や基本情報を設定
+            subtasks:
+                - グループ一覧・編集画面UIデザイン
+                - グループ登録・編集・削除API実装
+          - id: USER_MGMT
+            title: ユーザー管理
+            description: システム全体のユーザー追加・編集・削除・有効化/無効化
+            subtasks:
+                - ユーザー一覧・編集画面UIデザイン
+                - ユーザー登録・編集・削除API実装
+                - 有効化/無効化機能実装
+          - id: MASTER_MGMT
+            title: マスター管理
+            description: 店舗数上限や設備種別などのマスター情報を管理・編集
+            subtasks:
+                - マスター情報編集画面UIデザイン
+                - マスター情報取得・更新API実装
+          - id: MAINTENANCE
+            title: メンテナンス通知送信
+            description: 全店舗または特定店舗グループに対して、メンテナンスやお知らせ通知を送信
+            subtasks:
+                - 通知作成画面UIデザイン
+                - 通知送信API実装
+          - id: SYSTEM_SETTING
+            title: システム全体設定
+            description: システム全体の動作設定やセキュリティポリシーなどを管理
+            subtasks:
+                - システム設定画面UIデザイン
+                - システム設定取得・更新API実装
+          - id: ACCESS_LOG
+            title: アクセスログ閲覧
+            description: ユーザーの操作履歴やシステムへのアクセスログを検索・閲覧
+            subtasks:
+                - アクセスログ画面UIデザイン
+                - アクセスログ取得API実装
+          - id: LOGIN
+            title: ログイン（メール＋2段階認証）
+            description: システム管理者用のメールアドレスとパスワード、認証アプリによる2段階認証でログイン
+            subtasks:
+                - ログイン画面UIデザイン
+                - 認証API実装
+                - 2段階認証連携実装
+                - ログイン状態管理・セッション実装
+          - id: LOGOUT
+            title: ログアウト
+            description: 管理画面から安全にログアウト
+            subtasks:
+                - ログアウト処理実装
+                - セッション破棄・リダイレクト実装

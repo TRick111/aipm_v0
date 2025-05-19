@@ -1,9 +1,10 @@
-# 俺の考えた最強のAIPMシステム with Cursor Agent
-## PMBOK × Lean UX × Agile ― 総合PMフレームワーク支援Rulesセット 利用ガイド
+# 俺の考えた最強の AIPM システム with Cursor Agent
 
-このドキュメントは、PMBOK標準、Lean UX、およびアジャイル手法を融合したプロジェクト管理システムの使い方を説明するものです。
+## PMBOK × Lean UX × Agile ― 総合 PM フレームワーク支援 Rules セット 利用ガイド
 
-**対象読者**: プロジェクト責任者 / PO / スクラムマスター / UX デザイナー / PMO ― 「ドキュメントも実装もユーザー価値も、すべて1本のレールで回したい」人たち
+このドキュメントは、PMBOK 標準、Lean UX、およびアジャイル手法を融合したプロジェクト管理システムの使い方を説明するものです。
+
+**対象読者**: プロジェクト責任者 / PO / スクラムマスター / UX デザイナー / PMO ― 「ドキュメントも実装もユーザー価値も、すべて 1 本のレールで回したい」人たち
 
 ## 1. システム概要
 
@@ -11,17 +12,17 @@
 
 ### 主な特徴
 
-- **PMBOK × Lean UX × Agileハイブリッド**: 上流工程はPMBOK準拠の文書管理、中流にLean UXの発見と検証、実装フェーズはアジャイル手法を採用
-- **フォルダ構造の分離**: `Flow`（ドラフト）→ `Stock`（確定版）→ `Archived`（完了プロジェクト）
-- **自動文書生成**: 質問応答による文書ドラフト作成
-- **自動同期**: 「確定反映」コマンドによるFlowからStockへの文書移動
-- **LLM活用**: 各フェーズで適切な質問と文書テンプレートを提供
+-   **PMBOK × Lean UX × Agile ハイブリッド**: 上流工程は PMBOK 準拠の文書管理、中流に Lean UX の発見と検証、実装フェーズはアジャイル手法を採用
+-   **フォルダ構造の分離**: `Flow`（ドラフト）→ `Stock`（確定版）→ `Archived`（完了プロジェクト）
+-   **自動文書生成**: 質問応答による文書ドラフト作成
+-   **自動同期**: 「確定反映」コマンドによる Flow から Stock への文書移動
+-   **LLM 活用**: 各フェーズで適切な質問と文書テンプレートを提供
 
 ### 成し遂げたいこと
 
-1. **"正しい課題"にフォーカス**: Lean UX & デザイン思考のDiscovery → 仮説検証をPMBOKの立ち上げに取り込み、作る前に迷子にならない
-2. **学習しながら作る**: Dual-Track/Continuous DiscoveryをアジャイルDevelopmentと並走させ、ユーザーの声が常にバックログへ直結
-3. **ドキュメントを無駄にしない**: "Flow → Stock → Archived"の3層によって、必要最小限の文書だけが公式資産として残る
+1. **"正しい課題"にフォーカス**: Lean UX & デザイン思考の Discovery → 仮説検証を PMBOK の立ち上げに取り込み、作る前に迷子にならない
+2. **学習しながら作る**: Dual-Track/Continuous Discovery をアジャイル Development と並走させ、ユーザーの声が常にバックログへ直結
+3. **ドキュメントを無駄にしない**: "Flow → Stock → Archived"の 3 層によって、必要最小限の文書だけが公式資産として残る
 4. **拡張し続けられる**: ルール自体を対話で増やせる（90_rule_maintenance.mdc）。プロセス改善がコード管理できる
 
 ## 2. システム全体像
@@ -46,28 +47,28 @@
 
 #### 三つ巴モデル
 
-| 方法論 | 役割 |
-|--------|------|
-| **PMBOK** | フェーズ & 知識エリアで **What** を管理 |
-| **Lean UX/Design Thinking** | ユーザー中心の **Why** を確認 |
-| **Agile / Scrum** | イテレーションで **How** を適応 |
+| 方法論                      | 役割                                    |
+| --------------------------- | --------------------------------------- |
+| **PMBOK**                   | フェーズ & 知識エリアで **What** を管理 |
+| **Lean UX/Design Thinking** | ユーザー中心の **Why** を確認           |
+| **Agile / Scrum**           | イテレーションで **How** を適応         |
 
-このシステムはPMBOKの骨格にLean UXのDiscoveryとアジャイルDeliveryをレイヤー合成しているため、上流で迷わず・開発中に学び・下流で残せるワークフローが1つにまとまります。
+このシステムは PMBOK の骨格に Lean UX の Discovery とアジャイル Delivery をレイヤー合成しているため、上流で迷わず・開発中に学び・下流で残せるワークフローが 1 つにまとまります。
 
 #### Flow / Stock / Archived
 
-| 階層 | 役割 | 
-|------|------|
-| **Flow** | 下書き・ラフアイデア・日次アウトプット | 
-| **Stock** | 承認済みドキュメント・正式成果物 | 
-| **Archived** | 完了プロジェクトの凍結コピー | 
+| 階層         | 役割                                   |
+| ------------ | -------------------------------------- |
+| **Flow**     | 下書き・ラフアイデア・日次アウトプット |
+| **Stock**    | 承認済みドキュメント・正式成果物       |
+| **Archived** | 完了プロジェクトの凍結コピー           |
 
-#### 4ステップ・サイクル
+#### 4 ステップ・サイクル
 
-1. **Ask** - LLMが質問で情報収集
+1. **Ask** - LLM が質問で情報収集
 2. **Draft** - テンプレへ自動整形（Flow）
 3. **Review** - 人が編集 → 「確定反映して」
-4. **Sync** - Shell / ルールでStockへ自動移動
+4. **Sync** - Shell / ルールで Stock へ自動移動
 
 ## 3. 基本的なフォルダ構造
 
@@ -111,109 +112,112 @@
 
 ### クイックスタート
 
-Cursorの新規ウィンドウから簡単にセットアップできます：
+Cursor の新規ウィンドウから簡単にセットアップできます：
 
-1. Cursorを起動し、「New Window」を選択
-2. 「Clone repo」を選び、このリポジトリのURLを入力
-3. フォルダ指定のUIが表示されたら、右下の「Select as repository destination」ボタンをタップ
-4. リポジトリがクローンされたら、README.mdファイルを開く
-5. Chatパネルを開き「初期設定お願いします」と入力
+1. Cursor を起動し、「New Window」を選択
+2. 「Clone repo」を選び、このリポジトリの URL を入力
+3. フォルダ指定の UI が表示されたら、右下の「Select as repository destination」ボタンをタップ
+4. リポジトリがクローンされたら、README.md ファイルを開く
+5. Chat パネルを開き「初期設定お願いします」と入力
 
-これだけで、READMEの内容を読み取り、必要な初期設定が自動的に実行されます。フォルダ構造の作成、ルールファイルの設定、必要なリポジトリのクローンなどが自動で行われます。
+これだけで、README の内容を読み取り、必要な初期設定が自動的に実行されます。フォルダ構造の作成、ルールファイルの設定、必要なリポジトリのクローンなどが自動で行われます。
 
 ### 手動セットアップ
 
-
 ### 初期設定
-
-
-
-
-
 
 ### プレゼンテーションの背景画像
 
-「プレゼン資料生成」コマンドを実行すると、タイトルスライド（lead）用の背景画像が自動的にassetsディレクトリにコピーされます。背景画像は次の方法で利用できます：
+「プレゼン資料生成」コマンドを実行すると、タイトルスライド（lead）用の背景画像が自動的に assets ディレクトリにコピーされます。背景画像は次の方法で利用できます：
 
-1. **自動適用**: テーマCSS内で設定された背景画像が lead クラスのスライドに自動的に適用されます
-   
-2. **Markdown内で指定**: 特定のスライドに異なる背景画像を適用したい場合
-   ```markdown
-   ![bg](assets/bg_explaza.png)
-   ```
+1. **自動適用**: テーマ CSS 内で設定された背景画像が lead クラスのスライドに自動的に適用されます
+2. **Markdown 内で指定**: 特定のスライドに異なる背景画像を適用したい場合
+
+    ```markdown
+    ![bg](assets/bg_explaza.png)
+    ```
 
 3. **カスタム背景画像**: 独自の背景画像をアップロードし、`assets/` ディレクトリに配置すれば、同様の方法で使用できます
 
 現在利用可能な背景画像:
-- `bg_explaza.png`: explazaテーマ用の青系背景
-- `bg_brown.png`: modern-brownテーマ用の茶系背景
+
+-   `bg_explaza.png`: explaza テーマ用の青系背景
+-   `bg_brown.png`: modern-brown テーマ用の茶系背景
 
 ### セットアップスクリプトの主な機能
 
 `setup_workspace_simple.sh` スクリプトを使用すると、以下の作業が自動的に行われます：
 
 1. **基本ディレクトリ構造の作成**
-   - Flow, Stock, Archived などの基本フォルダ
-   - ルールファイル用の .cursor/rules フォルダ
-   - プログラム用フォルダ Stock/programs
 
-2. **Flow内の年月日フォルダ作成**
-   - 現在の日付で Flow/YYYYMM/YYYY-MM-DD 形式のフォルダ作成
+    - Flow, Stock, Archived などの基本フォルダ
+    - ルールファイル用の .cursor/rules フォルダ
+    - プログラム用フォルダ Stock/programs
+
+2. **Flow 内の年月日フォルダ作成**
+
+    - 現在の日付で Flow/YYYYMM/YYYY-MM-DD 形式のフォルダ作成
 
 3. **各種リポジトリのクローン**
-   - ルールリポジトリ（.cursor/rules/basic など）
-   - スクリプトリポジトリ（scripts ディレクトリ）
-   - プログラムリポジトリ（Stock/programs 配下）
+    - ルールリポジトリ（.cursor/rules/basic など）
+    - スクリプトリポジトリ（scripts ディレクトリ）
+    - プログラムリポジトリ（Stock/programs 配下）
 
-### User Rules 
+### User Rules
 
-Cursorの設定からユーザールールを設定してください（推奨）
+Cursor の設定からユーザールールを設定してください（推奨）
 
-1. Cursorの右上にある歯車アイコン（⚙️）をクリック
+1. Cursor の右上にある歯車アイコン（⚙️）をクリック
 2. 「Settings」から「Rules」を選択
 3. 以下の内容をコピーして貼り付け
 
-```markdown 
-
+```markdown
 #========================================================
+
 # 0. ベースポリシー
+
 #========================================================
 ! Always respond in 日本語
-- 成果物はできるだけファイルとして出力（細かく分割）
-- MCP やファイル閲覧など可能な作業は自律実行
-- タスク依頼時は不足情報を確認し、自ら計画→ゴールまで進行
-- 立てた計画はタスクリストとして提示
-- 日付に関する処理をやるときは、必ずdate関数で正確な情報を確認
+
+-   成果物はできるだけファイルとして出力（細かく分割）
+-   MCP やファイル閲覧など可能な作業は自律実行
+-   タスク依頼時は不足情報を確認し、自ら計画 → ゴールまで進行
+-   立てた計画はタスクリストとして提示
+-   日付に関する処理をやるときは、必ず date 関数で正確な情報を確認
 
 #========================================================
+
 # 1. 必須ルールファイル参照（pre‑load）
-#========================================================
-# ※ pmbok_paths.mdc を最優先で読み込み、以降すべて
-#    {{dirs.*}} / {{patterns.*}} 変数でパスを参照する
-required_rule_files:
-  - /Users/<YOUR_USER>/{{PROJECT_ROOT}}/.cursor/rules/pmbok_paths.mdc
-  - /Users/<YOUR_USER>/{{PROJECT_ROOT}}/.cursor/rules/00_master_rules.mdc
-```
 
+#========================================================
+
+# ※ pmbok_paths.mdc を最優先で読み込み、以降すべて
+
+# {{dirs.*}} / {{patterns.*}} 変数でパスを参照する
+
+required_rule_files:
+
+-   /Users/<YOUR_USER>/{{PROJECT_ROOT}}/.cursor/rules/pmbok_paths.mdc
+-   /Users/<YOUR_USER>/{{PROJECT_ROOT}}/.cursor/rules/00_master_rules.mdc
+```
 
 ### 必要なルールファイル
 
 `.cursor/rules/`ディレクトリに以下のファイルを配置されます：
 
-- `basic/pmbok_paths.mdc` - パス変数定義
-- `basic/00_master_rules.mdc` - マスタールール
-- `basic/01_pmbok_initiating.mdc` - 立ち上げフェーズのテンプレート
-- `basic/02_pmbok_discovery.mdc` - 発見フェーズのテンプレート
-- `basic/02_pmbok_research.mdc` - 調査フェーズのテンプレート
-- `basic/03_pmbok_planning.mdc` - 計画フェーズのテンプレート
-- `basic/04_pmbok_executing.mdc` - 実行フェーズのテンプレート
-- `basic/05_pmbok_monitoring.mdc` - 監視・コントロールフェーズのテンプレート
-- `basic/06_pmbok_closing.mdc` - 終結フェーズのテンプレート
-- `basic/08_pmbok_flow_assist.mdc` - フロー支援機能
-- `basic/09_pmbok_development.mdc` - 開発フェーズ支援
-- `basic/90_rule_maintenance.mdc` - ルール自体のメンテナンス用
-- `basic/flow_to_stock_rules.mdc` - 自動同期ルール
-
+-   `basic/pmbok_paths.mdc` - パス変数定義
+-   `basic/00_master_rules.mdc` - マスタールール
+-   `basic/01_pmbok_initiating.mdc` - 立ち上げフェーズのテンプレート
+-   `basic/02_pmbok_discovery.mdc` - 発見フェーズのテンプレート
+-   `basic/02_pmbok_research.mdc` - 調査フェーズのテンプレート
+-   `basic/03_pmbok_planning.mdc` - 計画フェーズのテンプレート
+-   `basic/04_pmbok_executing.mdc` - 実行フェーズのテンプレート
+-   `basic/05_pmbok_monitoring.mdc` - 監視・コントロールフェーズのテンプレート
+-   `basic/06_pmbok_closing.mdc` - 終結フェーズのテンプレート
+-   `basic/08_pmbok_flow_assist.mdc` - フロー支援機能
+-   `basic/09_pmbok_development.mdc` - 開発フェーズ支援
+-   `basic/90_rule_maintenance.mdc` - ルール自体のメンテナンス用
+-   `basic/flow_to_stock_rules.mdc` - 自動同期ルール
 
 ## 5. フェーズ別の使い方
 
@@ -229,10 +233,11 @@ required_rule_files:
 ```
 
 上記の対話により、以下の処理が行われます：
-- プログラムディレクトリ作成（Stock/programs/夕食作り）
-- プロジェクトディレクトリ作成（Stock/programs/夕食作り/projects/カレー）
-- ドキュメントフォルダ作成（documents/1_initiating など）
-- Flowフォルダ作成（Flow/YYYYMM/YYYY-MM-DD/夕食作り_カレー）
+
+-   プログラムディレクトリ作成（Stock/programs/夕食作り）
+-   プロジェクトディレクトリ作成（Stock/programs/夕食作り/projects/カレー）
+-   ドキュメントフォルダ作成（documents/1_initiating など）
+-   Flow フォルダ作成（Flow/YYYYMM/YYYY-MM-DD/夕食作り\_カレー）
 
 ### 1️⃣ 立ち上げ（Initiating）
 
@@ -335,7 +340,7 @@ required_rule_files:
 「ロードマップ作成」  # リリース計画作成
 ```
 
-### 4️⃣ 実行（Executing）とDevelopment
+### 4️⃣ 実行（Executing）と Development
 
 ```
 # 開発フェーズの開始
@@ -381,120 +386,118 @@ required_rule_files:
 「移管ドキュメント作成」  # 引き継ぎ資料作成
 ```
 
-
 ## 5.5 全トリガーワード対応表
 
 以下に、システムで使用できるすべてのトリガーワードをフェーズ別にまとめています。各コマンドがどのルールファイル内で定義されているか、必要とする情報も示しています。
 
-### フェーズ1：立ち上げ（Initiating）
+### フェーズ 1：立ち上げ（Initiating）
 
-| トリガーワード | 対応するルールファイル | 必要情報 | 出力ファイル |
-|--------------|-------------------|--------|---------|
-| プロジェクト初期化<br>プロジェクト開始<br>プロジェクト立ち上げ | basic/01_pmbok_initiating.mdc | プログラムID、プロジェクトID、目的、開始日、終了日、ステークホルダー | (ディレクトリ構造) |
-| "XXX始めたい"<br>"XXX作りたい"<br>(プロジェクト名+開始したい) | basic/01_pmbok_initiating.mdc | プログラム名（プロダクトのカテゴリー） | (ディレクトリ構造) |
-| プロダクト定義<br>プロダクト目標定義<br>Product定義<br>プログラム定義 | pmbok/01_pmbok_initiating.mdc | プロダクト名、目標・ビジョン、関連するOKR、背景と目的 | draft_program_definition.md |
-| プロジェクト憲章<br>プロジェクトチャーター | basic/01_pmbok_initiating.mdc | プロジェクト名、目的、背景、成果物、予算、マイルストーン | draft_project_charter.md |
-| ステークホルダー分析<br>ステークホルダーマップ | basic/pmbok_initiating.mdc | 主要ステークホルダー、役割、期待、影響力、関与度 | draft_stakeholder_analysis.md |
-| リスク分析<br>リスク計画 | basic/pmbok_planning.mdc | リスク項目、影響度、発生確率、対応策、責任者 | draft_risk_plan.md |
-| 作業開始<br>work start<br>今日の作業開始 | basic/00_master_rules.mdc | なし | daily_tasks.md |
+| トリガーワード                                                         | 対応するルールファイル        | 必要情報                                                               | 出力ファイル                  |
+| ---------------------------------------------------------------------- | ----------------------------- | ---------------------------------------------------------------------- | ----------------------------- |
+| プロジェクト初期化<br>プロジェクト開始<br>プロジェクト立ち上げ         | basic/01_pmbok_initiating.mdc | プログラム ID、プロジェクト ID、目的、開始日、終了日、ステークホルダー | (ディレクトリ構造)            |
+| "XXX 始めたい"<br>"XXX 作りたい"<br>(プロジェクト名+開始したい)        | basic/01_pmbok_initiating.mdc | プログラム名（プロダクトのカテゴリー）                                 | (ディレクトリ構造)            |
+| プロダクト定義<br>プロダクト目標定義<br>Product 定義<br>プログラム定義 | pmbok/01_pmbok_initiating.mdc | プロダクト名、目標・ビジョン、関連する OKR、背景と目的                 | draft_program_definition.md   |
+| プロジェクト憲章<br>プロジェクトチャーター                             | basic/01_pmbok_initiating.mdc | プロジェクト名、目的、背景、成果物、予算、マイルストーン               | draft_project_charter.md      |
+| ステークホルダー分析<br>ステークホルダーマップ                         | basic/pmbok_initiating.mdc    | 主要ステークホルダー、役割、期待、影響力、関与度                       | draft_stakeholder_analysis.md |
+| リスク分析<br>リスク計画                                               | basic/pmbok_planning.mdc      | リスク項目、影響度、発生確率、対応策、責任者                           | draft_risk_plan.md            |
+| 作業開始<br>work start<br>今日の作業開始                               | basic/00_master_rules.mdc     | なし                                                                   | daily_tasks.md                |
 
-### フェーズ2：リサーチ（Research）
+### フェーズ 2：リサーチ（Research）
 
-| トリガーワード | 対応するルールファイル | 必要情報 | 出力ファイル |
-|--------------|-------------------|--------|---------|
-| リサーチ<br>Research | basic/00_master_rules.mdc<br>(メニュー表示) | なし | なし |
-| 顧客調査<br>Customer Research | basic/02_pmbok_research.mdc | プロジェクト名、ターゲットオーディエンス、調査トピック、業界背景 | draft_customer_research.md |
-| 競合調査<br>Competitor Research | basic/02_pmbok_research.mdc | プロジェクト名、自社製品/サービス概要、主な競合、調査フォーカス | draft_competitor_research.md |
-| デスクリサーチ<br>Desk Research | basic/02_pmbok_research.mdc | プロジェクト名、調査範囲、調査トピック、業界背景 | draft_desk_research.md |
-| 市場規模推定<br>TAM SAM SOM<br>フェルミ推定 | basic/02_pmbok_research.mdc | プロジェクト名、ビジネスモデル、ターゲット顧客、地域、推定アプローチ | draft_market_size_estimation.md |
+| トリガーワード                              | 対応するルールファイル                      | 必要情報                                                             | 出力ファイル                    |
+| ------------------------------------------- | ------------------------------------------- | -------------------------------------------------------------------- | ------------------------------- |
+| リサーチ<br>Research                        | basic/00_master_rules.mdc<br>(メニュー表示) | なし                                                                 | なし                            |
+| 顧客調査<br>Customer Research               | basic/02_pmbok_research.mdc                 | プロジェクト名、ターゲットオーディエンス、調査トピック、業界背景     | draft_customer_research.md      |
+| 競合調査<br>Competitor Research             | basic/02_pmbok_research.mdc                 | プロジェクト名、自社製品/サービス概要、主な競合、調査フォーカス      | draft_competitor_research.md    |
+| デスクリサーチ<br>Desk Research             | basic/02_pmbok_research.mdc                 | プロジェクト名、調査範囲、調査トピック、業界背景                     | draft_desk_research.md          |
+| 市場規模推定<br>TAM SAM SOM<br>フェルミ推定 | basic/02_pmbok_research.mdc                 | プロジェクト名、ビジネスモデル、ターゲット顧客、地域、推定アプローチ | draft_market_size_estimation.md |
 
-### フェーズ2：発見（Discovery）
+### フェーズ 2：発見（Discovery）
 
-| トリガーワード | 対応するルールファイル | 必要情報 | 出力ファイル |
-|--------------|-------------------|--------|---------|
-| ディスカバリー<br>Discovery | basic/00_master_rules.mdc<br>(メニュー表示) | なし | なし |
-| 仮説マップ<br>Assumption Map | basic/02_pmbok_discovery.mdc | 主な仮説、検証方法、前提条件 | draft_assumption_map.md |
-| ペルソナ作成<br>Persona | basic/02_pmbok_discovery.mdc | ユーザー像、年齢・職業、目標、課題、行動パターン | draft_persona.md |
-| 課題定義<br>Problem Statement | basic/02_pmbok_discovery.mdc | 問題概要、影響、原因、解決の価値 | draft_problem_statement.md |
-| ユーザージャーニーマップ<br>User Journey Map<br>ジャーニーマップ | basic/02_pmbok_discovery.mdc | ユーザー、フェーズ、行動、感情、課題、機会 | draft_user_journey_map.md |
-| ソリューション定義<br>Solution Definition | basic/02_pmbok_discovery.mdc | 提案するソリューション、機能要件、成功基準 | draft_solution_definition.md |
-| 検証計画<br>Validation Plan | basic/02_pmbok_discovery.mdc | 検証仮説、方法、成功基準、スケジュール | draft_validation_plan.md |
-| UXリサーチ<br>ユーザー調査<br>UX調査 | basic/02_pmbok_discovery.mdc | 調査目的、質問、方法、参加者要件 | draft_ux_research_overview.md |
-| インタビュー設計<br>インタビュー質問<br>質問表作成 | basic/02_pmbok_discovery.mdc | 調査目的、質問リスト、進行手順 | draft_interview_guide.md |
-| リクルーティング<br>ユーザー募集<br>被験者募集 | basic/02_pmbok_discovery.mdc | 対象者プロフィール、募集方法、参加条件 | draft_recruiting_plan.md |
-| インタビュー分析<br>インタビュー結果<br>インタビュー記録 | basic/02_pmbok_discovery.mdc | 参加者ID、主な発見、引用、洞察 | draft_interview_analysis_{{participant_id}}.md |
-| リサーチサマリー<br>調査サマリー<br>全体分析 | basic/02_pmbok_discovery.mdc | 調査目的、方法、主要な発見、次のステップ | draft_research_summary.md |
-| 仮説バックログ<br>Hypothesis | basic/02_pmbok_discovery.mdc | 仮説一覧、優先度、検証方法、成功基準 | draft_hypothesis_backlog.md |
-| アイディア発散 | basic/08_pmbok_flow_assist.mdc | テーマ、アイデア、評価基準 | draft_flow_assist.md |
-| プレゼン資料生成 | basic/02_pmbok_presentation.mdc | タイトル、発表者、対象者、主要ポイント | draft_presentation.md |
+| トリガーワード                                                   | 対応するルールファイル                      | 必要情報                                         | 出力ファイル                                   |
+| ---------------------------------------------------------------- | ------------------------------------------- | ------------------------------------------------ | ---------------------------------------------- |
+| ディスカバリー<br>Discovery                                      | basic/00_master_rules.mdc<br>(メニュー表示) | なし                                             | なし                                           |
+| 仮説マップ<br>Assumption Map                                     | basic/02_pmbok_discovery.mdc                | 主な仮説、検証方法、前提条件                     | draft_assumption_map.md                        |
+| ペルソナ作成<br>Persona                                          | basic/02_pmbok_discovery.mdc                | ユーザー像、年齢・職業、目標、課題、行動パターン | draft_persona.md                               |
+| 課題定義<br>Problem Statement                                    | basic/02_pmbok_discovery.mdc                | 問題概要、影響、原因、解決の価値                 | draft_problem_statement.md                     |
+| ユーザージャーニーマップ<br>User Journey Map<br>ジャーニーマップ | basic/02_pmbok_discovery.mdc                | ユーザー、フェーズ、行動、感情、課題、機会       | draft_user_journey_map.md                      |
+| ソリューション定義<br>Solution Definition                        | basic/02_pmbok_discovery.mdc                | 提案するソリューション、機能要件、成功基準       | draft_solution_definition.md                   |
+| 検証計画<br>Validation Plan                                      | basic/02_pmbok_discovery.mdc                | 検証仮説、方法、成功基準、スケジュール           | draft_validation_plan.md                       |
+| UX リサーチ<br>ユーザー調査<br>UX 調査                           | basic/02_pmbok_discovery.mdc                | 調査目的、質問、方法、参加者要件                 | draft_ux_research_overview.md                  |
+| インタビュー設計<br>インタビュー質問<br>質問表作成               | basic/02_pmbok_discovery.mdc                | 調査目的、質問リスト、進行手順                   | draft_interview_guide.md                       |
+| リクルーティング<br>ユーザー募集<br>被験者募集                   | basic/02_pmbok_discovery.mdc                | 対象者プロフィール、募集方法、参加条件           | draft_recruiting_plan.md                       |
+| インタビュー分析<br>インタビュー結果<br>インタビュー記録         | basic/02_pmbok_discovery.mdc                | 参加者 ID、主な発見、引用、洞察                  | draft*interview_analysis*{{participant_id}}.md |
+| リサーチサマリー<br>調査サマリー<br>全体分析                     | basic/02_pmbok_discovery.mdc                | 調査目的、方法、主要な発見、次のステップ         | draft_research_summary.md                      |
+| 仮説バックログ<br>Hypothesis                                     | basic/02_pmbok_discovery.mdc                | 仮説一覧、優先度、検証方法、成功基準             | draft_hypothesis_backlog.md                    |
+| アイディア発散                                                   | basic/08_pmbok_flow_assist.mdc              | テーマ、アイデア、評価基準                       | draft_flow_assist.md                           |
+| プレゼン資料生成                                                 | basic/02_pmbok_presentation.mdc             | タイトル、発表者、対象者、主要ポイント           | draft_presentation.md                          |
 
-### フェーズ3：計画（Planning）
+### フェーズ 3：計画（Planning）
 
-| トリガーワード | 対応するルールファイル | 必要情報 | 出力ファイル |
-|--------------|-------------------|--------|---------|
-| プロジェクトスコープ記述書<br>Project Scope Statement | basic/03_pmbok_planning.mdc | プロジェクト範囲、成果物、除外事項、制約、前提条件 | draft_project_scope_statement.md |
-| プロダクト要求仕様書<br>PRD<br>Product Requirements Document | basic/03_pmbok_planning.mdc | 製品概要、ユーザー、要件、優先度、制約 | draft_product_requirements.md |
-| Design Doc<br>デザインドック<br>設計文書 | basic/03_pmbok_planning.mdc | システム概要、アーキテクチャ、コンポーネント、インターフェース | draft_design_doc.md |
-| WBS作成<br>作業分解構造 | basic/pmbok_planning.mdc | 主要フェーズ、サブタスク、所要時間、担当者 | draft_wbs.md |
-| プロダクトバックログ初期化<br>backlog初期化<br>バックログ初期化 | basic/pmbok_planning.mdc | プロダクト名、ストーリー一覧、優先度、見積もり | backlog.yaml, epics.yaml |
-| ユーザーストーリー生成<br>ストーリー生成<br>story生成 | basic/00_master_rules.mdc | backlog.yaml（既存のもの） | stories/ ディレクトリ内の複数ファイル |
-| ロードマップ作成<br>プロダクトロードマップ<br>リリース計画 | basic/pmbok_planning.mdc | リリース計画、マイルストーン、機能、日程 | draft_product_roadmap.md |
+| トリガーワード                                                   | 対応するルールファイル      | 必要情報                                                       | 出力ファイル                          |
+| ---------------------------------------------------------------- | --------------------------- | -------------------------------------------------------------- | ------------------------------------- |
+| プロジェクトスコープ記述書<br>Project Scope Statement            | basic/03_pmbok_planning.mdc | プロジェクト範囲、成果物、除外事項、制約、前提条件             | draft_project_scope_statement.md      |
+| プロダクト要求仕様書<br>PRD<br>Product Requirements Document     | basic/03_pmbok_planning.mdc | 製品概要、ユーザー、要件、優先度、制約                         | draft_product_requirements.md         |
+| Design Doc<br>デザインドック<br>設計文書                         | basic/03_pmbok_planning.mdc | システム概要、アーキテクチャ、コンポーネント、インターフェース | draft_design_doc.md                   |
+| WBS 作成<br>作業分解構造                                         | basic/pmbok_planning.mdc    | 主要フェーズ、サブタスク、所要時間、担当者                     | draft_wbs.md                          |
+| プロダクトバックログ初期化<br>backlog 初期化<br>バックログ初期化 | basic/pmbok_planning.mdc    | プロダクト名、ストーリー一覧、優先度、見積もり                 | backlog.yaml, epics.yaml              |
+| ユーザーストーリー生成<br>ストーリー生成<br>story 生成           | basic/00_master_rules.mdc   | backlog.yaml（既存のもの）                                     | stories/ ディレクトリ内の複数ファイル |
+| ロードマップ作成<br>プロダクトロードマップ<br>リリース計画       | basic/pmbok_planning.mdc    | リリース計画、マイルストーン、機能、日程                       | draft_product_roadmap.md              |
 
-### フェーズ4：実行（Executing）
+### フェーズ 4：実行（Executing）
 
-| トリガーワード | 対応するルールファイル | 必要情報 | 出力ファイル |
-|--------------|-------------------|--------|---------|
-| 開発フェーズ<br>Development<br>実装フェーズ | basic/00_master_rules.mdc<br>(メニュー表示) | なし | なし |
-| 開発環境初期化<br>Development初期化<br>実装環境セットアップ | basic/09_pmbok_development.mdc | プロジェクト名、技術スタック、開発環境要件 | draft_dev_setup.md |
-| 開発計画作成<br>Development計画<br>実装計画 | basic/09_pmbok_development.mdc | 機能一覧、技術スタック、スケジュール、担当者 | draft_dev_plan.md |
-| 実装順序計画<br>開発順序<br>ストーリー依存関係 | basic/09_pmbok_development.mdc | ストーリーリスト、依存関係、優先度 | draft_implementation_order.md |
-| ストーリー実装<br>実装開始<br>ユーザーストーリー実装 | basic/09_pmbok_development.mdc | ストーリーID、実装詳細、タスク分割 | draft_dev_story.md |
-| 記事執筆<br>ドキュメント作成<br>記事作成 | basic/09_pmbok_development.mdc | タイトル、概要、対象読者、構成 | draft_dev_article.md |
-| 成果物確認<br>実装確認<br>確定レビュー | basic/09_pmbok_development.mdc | レビュー対象、確認項目、フィードバック | draft_development_review.md |
-| スプリントゴール<br>Sprint Goal | basic/pmbok_executing.mdc | スプリント番号、期間、目標、成功基準、デモ項目 | draft_sprint_goal_{{sprint_number}}.md |
-| 議事録<br>ミーティングノート | basic/pmbok_executing.mdc | 会議名、日時、参加者、議題、決定事項、アクション | draft_meeting_minutes.md |
+| トリガーワード                                               | 対応するルールファイル                      | 必要情報                                         | 出力ファイル                           |
+| ------------------------------------------------------------ | ------------------------------------------- | ------------------------------------------------ | -------------------------------------- |
+| 開発フェーズ<br>Development<br>実装フェーズ                  | basic/00_master_rules.mdc<br>(メニュー表示) | なし                                             | なし                                   |
+| 開発環境初期化<br>Development 初期化<br>実装環境セットアップ | basic/09_pmbok_development.mdc              | プロジェクト名、技術スタック、開発環境要件       | draft_dev_setup.md                     |
+| 開発計画作成<br>Development 計画<br>実装計画                 | basic/09_pmbok_development.mdc              | 機能一覧、技術スタック、スケジュール、担当者     | draft_dev_plan.md                      |
+| 実装順序計画<br>開発順序<br>ストーリー依存関係               | basic/09_pmbok_development.mdc              | ストーリーリスト、依存関係、優先度               | draft_implementation_order.md          |
+| ストーリー実装<br>実装開始<br>ユーザーストーリー実装         | basic/09_pmbok_development.mdc              | ストーリー ID、実装詳細、タスク分割              | draft_dev_story.md                     |
+| 記事執筆<br>ドキュメント作成<br>記事作成                     | basic/09_pmbok_development.mdc              | タイトル、概要、対象読者、構成                   | draft_dev_article.md                   |
+| 成果物確認<br>実装確認<br>確定レビュー                       | basic/09_pmbok_development.mdc              | レビュー対象、確認項目、フィードバック           | draft_development_review.md            |
+| スプリントゴール<br>Sprint Goal                              | basic/pmbok_executing.mdc                   | スプリント番号、期間、目標、成功基準、デモ項目   | draft*sprint_goal*{{sprint_number}}.md |
+| 議事録<br>ミーティングノート                                 | basic/pmbok_executing.mdc                   | 会議名、日時、参加者、議題、決定事項、アクション | draft_meeting_minutes.md               |
 
+### フェーズ 5：監視・コントロール（Monitoring）
 
-### フェーズ5：監視・コントロール（Monitoring）
+| トリガーワード                                | 対応するルールファイル       | 必要情報                                               | 出力ファイル                         |
+| --------------------------------------------- | ---------------------------- | ------------------------------------------------------ | ------------------------------------ |
+| 変更要求<br>チェンジリクエスト                | basic/pmbok_monitoring.mdc   | 変更内容、理由、影響範囲、優先度                       | draft_change_request.md              |
+| スプリントレビュー作成<br>Sprint Review       | basic/pmbok_executing.mdc    | スプリント番号、達成事項、デモ項目、課題、次のステップ | draft*sprint_review*{{sprint_id}}.md |
+| 今日のタスク<br>日次タスク作成<br>Daily tasks | basic/07_task_management.mdc | 当日の作業予定、完了タスク、メモ                       | daily_tasks.md                       |
+| 週次レビュー<br>Weekly review                 | basic/07_task_management.mdc | 週番号、主な成果、課題、次週の計画                     | weekly_review.md                     |
+| Sync<br>WBS と同期<br>リスクログと同期        | basic/07_task_management.mdc | 対象アーティファクト、更新内容                         | (既存の WBS やリスクログを更新)      |
 
-| トリガーワード | 対応するルールファイル | 必要情報 | 出力ファイル |
-|--------------|-------------------|--------|---------|
-| 変更要求<br>チェンジリクエスト | basic/pmbok_monitoring.mdc | 変更内容、理由、影響範囲、優先度 | draft_change_request.md |
-| スプリントレビュー作成<br>Sprint Review | basic/pmbok_executing.mdc | スプリント番号、達成事項、デモ項目、課題、次のステップ | draft_sprint_review_{{sprint_id}}.md |
-| 今日のタスク<br>日次タスク作成<br>Daily tasks | basic/07_task_management.mdc | 当日の作業予定、完了タスク、メモ | daily_tasks.md |
-| 週次レビュー<br>Weekly review | basic/07_task_management.mdc | 週番号、主な成果、課題、次週の計画 | weekly_review.md |
-| Sync<br>WBSと同期<br>リスクログと同期 | basic/07_task_management.mdc | 対象アーティファクト、更新内容 | (既存のWBSやリスクログを更新) |
+### フェーズ 6：終結（Closing）
 
-### フェーズ6：終結（Closing）
-
-| トリガーワード | 対応するルールファイル | 必要情報 | 出力ファイル |
-|--------------|-------------------|--------|---------|
+| トリガーワード                                     | 対応するルールファイル  | 必要情報                     | 出力ファイル             |
+| -------------------------------------------------- | ----------------------- | ---------------------------- | ------------------------ |
 | 教訓記録<br>レッスンラーニド<br>レッスンずらーんど | basic/pmbok_closing.mdc | 成功事例、改善点、学び、提案 | draft_lessons_learned.md |
 
 ### ユーティリティ
 
-| トリガーワード | 対応するルールファイル | 必要情報 | 出力ファイル |
-|--------------|-------------------|--------|---------|
-| 確定反映して | flow_to_stock_rules.mdc | 対象ドラフトファイル | (Stock内の対応ファイル) |
-| フェーズ追加<br>Phase追加<br>新フェーズ作成 | basic/90_rule_maintenance.mdc | フェーズ名、トリガーワード、ルールの詳細 | 新規ルールファイル |
+| トリガーワード                               | 対応するルールファイル        | 必要情報                                 | 出力ファイル             |
+| -------------------------------------------- | ----------------------------- | ---------------------------------------- | ------------------------ |
+| 確定反映して                                 | flow_to_stock_rules.mdc       | 対象ドラフトファイル                     | (Stock 内の対応ファイル) |
+| フェーズ追加<br>Phase 追加<br>新フェーズ作成 | basic/90_rule_maintenance.mdc | フェーズ名、トリガーワード、ルールの詳細 | 新規ルールファイル       |
 
 ### 各ドキュメント間の参照関係
 
 開発やドキュメント作成時に参考にできる主な参照関係は以下の通りです：
 
-* **ペルソナ作成**：市場調査レポート、ユーザーインタビュー結果、競合調査結果を参照すると効果的
-* **プロジェクト憲章**：プロダクト定義、ステークホルダー分析、リスク分析を基にすると整合性が高まる
-* **バックログ初期化**：プロダクト要求仕様書、WBS、ユーザージャーニーマップの内容を反映させると良い
-* **スプリントゴール**：プロダクトバックログ、ロードマップを参照して設定すると計画との整合性が確保できる
-* **週次レポート**：日次タスク、スプリントゴール、課題記録の情報を集約して作成すると効率的
-* **実装計画**：バックログ、デザインドック、技術仕様書を基に作成すると実装の指針が明確になる
-
+-   **ペルソナ作成**：市場調査レポート、ユーザーインタビュー結果、競合調査結果を参照すると効果的
+-   **プロジェクト憲章**：プロダクト定義、ステークホルダー分析、リスク分析を基にすると整合性が高まる
+-   **バックログ初期化**：プロダクト要求仕様書、WBS、ユーザージャーニーマップの内容を反映させると良い
+-   **スプリントゴール**：プロダクトバックログ、ロードマップを参照して設定すると計画との整合性が確保できる
+-   **週次レポート**：日次タスク、スプリントゴール、課題記録の情報を集約して作成すると効率的
+-   **実装計画**：バックログ、デザインドック、技術仕様書を基に作成すると実装の指針が明確になる
 
 ## 6. ユースケース：カレープロジェクト
 
 以下は、実際のプロジェクト例として「カレー作り」プロジェクトの流れを示します。
 
 ### 1. プロジェクト初期化
+
 ```
 User: カレー作りたい　プロジェクト開始して
 AI: 「カレー」のプログラム名（カテゴリ）を教えてください。
@@ -507,6 +510,7 @@ User: はい
 ```
 
 この対話により、以下のフォルダ構造が作成されます：
+
 ```
 Stock/programs/夕食作り/projects/カレー/
 └── documents/
@@ -523,128 +527,140 @@ Flow/202505/2025-05-05/夕食作り_カレー/
 ```
 
 ### 2. プロジェクト憲章の作成
+
 ```
 User: プロジェクト憲章つくって
 AI: 【プロジェクト憲章】の作成に必要な情報を収集します。以下の質問に回答してください。
     1. プロジェクト名: カレー
-    2. プロジェクトの目的: 
-    3. プロジェクトの背景: 
+    2. プロジェクトの目的:
+    3. プロジェクトの背景:
     [...]
 User: おまかせ
 AI: 収集した情報で「プロジェクト憲章」のドラフトを作成してよろしいですか？
 User: はい
 ```
 
-AIは以下の内容を含む詳細なプロジェクト憲章を作成します：
-- プロジェクト概要（名前、期間、オーナー）
-- 目的と背景
-- スコープ（含まれるもの/含まれないもの）
-- 成果物
-- ステークホルダー一覧
-- マイルストーン
-- 予算（食材費3,000円、消耗品500円）
-- リスク管理計画
-- 制約条件と前提条件
+AI は以下の内容を含む詳細なプロジェクト憲章を作成します：
+
+-   プロジェクト概要（名前、期間、オーナー）
+-   目的と背景
+-   スコープ（含まれるもの/含まれないもの）
+-   成果物
+-   ステークホルダー一覧
+-   マイルストーン
+-   予算（食材費 3,000 円、消耗品 500 円）
+-   リスク管理計画
+-   制約条件と前提条件
 
 ### 3. ペルソナの作成
+
 ```
 User: ペルソナ作成して
 AI: 【ペルソナ作成】に必要な情報を収集します。以下の質問に回答してください。
-    1. ペルソナの名前: 
-    2. 年齢・世代: 
+    1. ペルソナの名前:
+    2. 年齢・世代:
     [...]
 User: おまかせ
 ```
 
-AIは以下の詳細情報を含むペルソナを作成します：
-- 基本情報：田中健太（42歳、IT企業PM、4人家族）
-- ライフスタイル：平日は仕事、週末は料理担当
-- 目標と課題：家族の好みにばらつきがある、調理時間の見積もりが苦手
-- 行動特性：レシピサイトやSNSで情報収集、家族の意見を聞いて決定
-- 好みと傾向：程よい辛さのカレーが好き
-- 使用ツール：スマートフォン、料理アプリ
-- 代表的な発言：「家族が笑顔になる料理を作りたいな」
+AI は以下の詳細情報を含むペルソナを作成します：
+
+-   基本情報：田中健太（42 歳、IT 企業 PM、4 人家族）
+-   ライフスタイル：平日は仕事、週末は料理担当
+-   目標と課題：家族の好みにばらつきがある、調理時間の見積もりが苦手
+-   行動特性：レシピサイトや SNS で情報収集、家族の意見を聞いて決定
+-   好みと傾向：程よい辛さのカレーが好き
+-   使用ツール：スマートフォン、料理アプリ
+-   代表的な発言：「家族が笑顔になる料理を作りたいな」
 
 この例はプロジェクト管理手法を日常的なタスクに適用する方法を示しており、以下のフェーズに進むことで、カレープロジェクトは成功へと導かれます：
-- Discovery：材料や調理方法の調査
-- Planning：レシピ決定、買い物リスト作成
-- Executing：材料購入、調理
-- Monitoring：味の調整
-- Closing：完成・振り返り
+
+-   Discovery：材料や調理方法の調査
+-   Planning：レシピ決定、買い物リスト作成
+-   Executing：材料購入、調理
+-   Monitoring：味の調整
+-   Closing：完成・振り返り
 
 ## 7. 主要コマンドリファレンス
 
 ### 文書作成コマンド（トリガーワード）
 
 #### 立ち上げフェーズ
-| コマンド | 説明 | 出力先 |
-|--------|------|-------|
-| 「プロジェクト初期化」 | プログラム・プロジェクト構造作成 | Stock/programs/<PROGRAM>/projects/<PROJECT>/ |
-| 「プロダクト定義」 | プロダクト（プログラム）定義書作成 | Flow/YYYYMM/YYYY-MM-DD/draft_program_definition.md |
-| 「プロジェクト憲章」 | プロジェクト憲章作成 | Flow/YYYYMM/YYYY-MM-DD/draft_project_charter.md |
-| 「ステークホルダー分析」 | ステークホルダー分析 | Flow/YYYYMM/YYYY-MM-DD/draft_stakeholder_analysis.md |
 
-#### Discoveryフェーズ
-| コマンド | 説明 | 出力先 |
-|--------|------|-------|
-| 「仮説マップ」 | 前提条件マップ作成 | Flow/YYYYMM/YYYY-MM-DD/draft_assumption_map.md |
-| 「ペルソナ作成」 | ユーザーペルソナ作成 | Flow/YYYYMM/YYYY-MM-DD/draft_persona.md |
-| 「課題定義」 | 問題定義書作成 | Flow/YYYYMM/YYYY-MM-DD/draft_problem_statement.md |
-| 「仮説バックログ」 | 仮説リスト作成 | Flow/YYYYMM/YYYY-MM-DD/draft_hypothesis_backlog.md |
-| 「ジャーニーマップ」 | ユーザージャーニーマップ | Flow/YYYYMM/YYYY-MM-DD/draft_user_journey_map.md |
+| コマンド                 | 説明                               | 出力先                                               |
+| ------------------------ | ---------------------------------- | ---------------------------------------------------- |
+| 「プロジェクト初期化」   | プログラム・プロジェクト構造作成   | Stock/programs/<PROGRAM>/projects/<PROJECT>/         |
+| 「プロダクト定義」       | プロダクト（プログラム）定義書作成 | Flow/YYYYMM/YYYY-MM-DD/draft_program_definition.md   |
+| 「プロジェクト憲章」     | プロジェクト憲章作成               | Flow/YYYYMM/YYYY-MM-DD/draft_project_charter.md      |
+| 「ステークホルダー分析」 | ステークホルダー分析               | Flow/YYYYMM/YYYY-MM-DD/draft_stakeholder_analysis.md |
 
-#### Researchフェーズ
-| コマンド | 説明 | 出力先 |
-|--------|------|-------|
-| 「顧客調査」 | 顧客調査レポート | Flow/YYYYMM/YYYY-MM-DD/draft_customer_research.md |
-| 「競合調査」 | 競合分析レポート | Flow/YYYYMM/YYYY-MM-DD/draft_competitor_research.md |
-| 「デスクリサーチ」 | 総合調査レポート | Flow/YYYYMM/YYYY-MM-DD/draft_desk_research.md |
-| 「市場規模推定」 | TAM/SAM/SOM分析 | Flow/YYYYMM/YYYY-MM-DD/draft_market_size_estimation.md |
+#### Discovery フェーズ
+
+| コマンド             | 説明                     | 出力先                                             |
+| -------------------- | ------------------------ | -------------------------------------------------- |
+| 「仮説マップ」       | 前提条件マップ作成       | Flow/YYYYMM/YYYY-MM-DD/draft_assumption_map.md     |
+| 「ペルソナ作成」     | ユーザーペルソナ作成     | Flow/YYYYMM/YYYY-MM-DD/draft_persona.md            |
+| 「課題定義」         | 問題定義書作成           | Flow/YYYYMM/YYYY-MM-DD/draft_problem_statement.md  |
+| 「仮説バックログ」   | 仮説リスト作成           | Flow/YYYYMM/YYYY-MM-DD/draft_hypothesis_backlog.md |
+| 「ジャーニーマップ」 | ユーザージャーニーマップ | Flow/YYYYMM/YYYY-MM-DD/draft_user_journey_map.md   |
+
+#### Research フェーズ
+
+| コマンド           | 説明             | 出力先                                                 |
+| ------------------ | ---------------- | ------------------------------------------------------ |
+| 「顧客調査」       | 顧客調査レポート | Flow/YYYYMM/YYYY-MM-DD/draft_customer_research.md      |
+| 「競合調査」       | 競合分析レポート | Flow/YYYYMM/YYYY-MM-DD/draft_competitor_research.md    |
+| 「デスクリサーチ」 | 総合調査レポート | Flow/YYYYMM/YYYY-MM-DD/draft_desk_research.md          |
+| 「市場規模推定」   | TAM/SAM/SOM 分析 | Flow/YYYYMM/YYYY-MM-DD/draft_market_size_estimation.md |
 
 #### プレゼンテーションフェーズ
-| コマンド | 説明 | 出力先 |
-|--------|------|-------|
-| 「プレゼン資料生成」 | Marpによるスライド作成 | Flow/YYYYMM/YYYY-MM-DD/draft_presentation.md |
-| 「図表生成」 | Draw.io図表テンプレート作成 | Flow/YYYYMM/YYYY-MM-DD/assets/diagram.drawio |
 
-#### Planningフェーズ
-| コマンド | 説明 | 出力先 |
-|--------|------|-------|
-| 「WBS作成」 | WBSドラフト作成 | Flow/YYYYMM/YYYY-MM-DD/draft_wbs.md |
-| 「リスク計画」 | リスク分析と計画 | Flow/YYYYMM/YYYY-MM-DD/draft_risk_plan.md |
-| 「プロジェクトスコープ記述書」 | スコープ定義書 | Flow/YYYYMM/YYYY-MM-DD/draft_project_scope_statement.md |
-| 「プロダクト要求仕様書」 | PRD作成 | Flow/YYYYMM/YYYY-MM-DD/draft_product_requirements.md |
-| 「ロードマップ作成」 | リリース計画 | Flow/YYYYMM/YYYY-MM-DD/draft_product_roadmap.md |
+| コマンド             | 説明                         | 出力先                                       |
+| -------------------- | ---------------------------- | -------------------------------------------- |
+| 「プレゼン資料生成」 | Marp によるスライド作成      | Flow/YYYYMM/YYYY-MM-DD/draft_presentation.md |
+| 「図表生成」         | Draw.io 図表テンプレート作成 | Flow/YYYYMM/YYYY-MM-DD/assets/diagram.drawio |
 
-#### Developmentフェーズ
-| コマンド | 説明 | 出力先 |
-|--------|------|-------|
-| 「開発環境初期化」 | 環境セットアップ | Flow/YYYYMM/YYYY-MM-DD/development/draft_setup.md |
-| 「開発計画作成」 | 実装計画書 | Flow/YYYYMM/YYYY-MM-DD/development/draft_development_plan.md |
-| 「実装順序計画」 | 実装順序定義 | Flow/YYYYMM/YYYY-MM-DD/development/draft_implementation_order.md |
+#### Planning フェーズ
+
+| コマンド                       | 説明             | 出力先                                                  |
+| ------------------------------ | ---------------- | ------------------------------------------------------- |
+| 「WBS 作成」                   | WBS ドラフト作成 | Flow/YYYYMM/YYYY-MM-DD/draft_wbs.md                     |
+| 「リスク計画」                 | リスク分析と計画 | Flow/YYYYMM/YYYY-MM-DD/draft_risk_plan.md               |
+| 「プロジェクトスコープ記述書」 | スコープ定義書   | Flow/YYYYMM/YYYY-MM-DD/draft_project_scope_statement.md |
+| 「プロダクト要求仕様書」       | PRD 作成         | Flow/YYYYMM/YYYY-MM-DD/draft_product_requirements.md    |
+| 「ロードマップ作成」           | リリース計画     | Flow/YYYYMM/YYYY-MM-DD/draft_product_roadmap.md         |
+
+#### Development フェーズ
+
+| コマンド           | 説明               | 出力先                                                           |
+| ------------------ | ------------------ | ---------------------------------------------------------------- |
+| 「開発環境初期化」 | 環境セットアップ   | Flow/YYYYMM/YYYY-MM-DD/development/draft_setup.md                |
+| 「開発計画作成」   | 実装計画書         | Flow/YYYYMM/YYYY-MM-DD/development/draft_development_plan.md     |
+| 「実装順序計画」   | 実装順序定義       | Flow/YYYYMM/YYYY-MM-DD/development/draft_implementation_order.md |
 | 「ストーリー実装」 | ストーリー実装計画 | Flow/YYYYMM/YYYY-MM-DD/development/draft_story_implementation.md |
 
-#### Executingフェーズ
-| コマンド | 説明 | 出力先 |
-|--------|------|-------|
-| 「スプリントゴール」 | スプリント目標設定 | Flow/YYYYMM/YYYY-MM-DD/draft_sprint_goal_Sn.md |
-| 「今日のタスク」 | 日次タスク | Flow/YYYYMM/YYYY-MM-DD/daily_tasks.md |
-| 「議事録」 | 会議議事録 | Flow/YYYYMM/YYYY-MM-DD/draft_meeting_minutes.md |
+#### Executing フェーズ
 
-#### Closingフェーズ
-| コマンド | 説明 | 出力先 |
-|--------|------|-------|
-| 「教訓記録」 | 教訓記録 | Flow/YYYYMM/YYYY-MM-DD/draft_lessons_learned.md |
+| コマンド             | 説明               | 出力先                                          |
+| -------------------- | ------------------ | ----------------------------------------------- |
+| 「スプリントゴール」 | スプリント目標設定 | Flow/YYYYMM/YYYY-MM-DD/draft_sprint_goal_Sn.md  |
+| 「今日のタスク」     | 日次タスク         | Flow/YYYYMM/YYYY-MM-DD/daily_tasks.md           |
+| 「議事録」           | 会議議事録         | Flow/YYYYMM/YYYY-MM-DD/draft_meeting_minutes.md |
+
+#### Closing フェーズ
+
+| コマンド                 | 説明         | 出力先                                              |
+| ------------------------ | ------------ | --------------------------------------------------- |
+| 「教訓記録」             | 教訓記録     | Flow/YYYYMM/YYYY-MM-DD/draft_lessons_learned.md     |
 | 「移管ドキュメント作成」 | 引き継ぎ資料 | Flow/YYYYMM/YYYY-MM-DD/draft_transition_document.md |
 
 ### システムコマンド
 
-| コマンド | 説明 |
-|--------|------|
-| 「確定反映して」 | Flow→Stock同期を実行 |
-| 「作業開始」 | 今日の日付フォルダとタスクファイルを作成 |
-| 「フェーズ追加」 | 新しいフェーズルールの雛形を生成 |
-
+| コマンド         | 説明                                     |
+| ---------------- | ---------------------------------------- |
+| 「確定反映して」 | Flow→Stock 同期を実行                    |
+| 「作業開始」     | 今日の日付フォルダとタスクファイルを作成 |
+| 「フェーズ追加」 | 新しいフェーズルールの雛形を生成         |
 
 ## 8. ルール追加と拡張プロセス
 
@@ -658,7 +674,7 @@ AIは以下の詳細情報を含むペルソナを作成します：
 
 ### 自動更新される要素
 
-ルール追加機能は主に以下の3つの要素を自動的に更新します：
+ルール追加機能は主に以下の 3 つの要素を自動的に更新します：
 
 1. **マスタールールへのトリガー追加**: `00_master_rules_kc.mdc` にトリガーキーワードと処理フローを追加
 2. **専用ルールファイルの作成/更新**: 新しいフェーズ専用のルール（例: `0X_pmbok_xxxxx.mdc`）を作成するか、既存のカテゴリに質問やテンプレートを追加
@@ -682,7 +698,7 @@ AI: 以下の内容でルールを追加します：
     1. マスタールールにトリガーワード追加
     2. 12_pmbok_marketing.mdc ファイル作成
     3. パス変数追加
-    
+
     よろしいですか？
 
 User: はい
@@ -698,43 +714,39 @@ AI: ルール追加が完了しました。
 
 ### カスタムルールのメリット
 
-- **再利用性**: 一度定義したルールはプロジェクト間で再利用可能
-- **一貫性**: テンプレートやワークフローの標準化により、チーム全体での一貫性を確保
-- **効率化**: 繰り返し作業が自動化され、本質的な思考に集中できる
-- **知識の形式化**: チームの知見やベストプラクティスをルールとして形式化し共有
+-   **再利用性**: 一度定義したルールはプロジェクト間で再利用可能
+-   **一貫性**: テンプレートやワークフローの標準化により、チーム全体での一貫性を確保
+-   **効率化**: 繰り返し作業が自動化され、本質的な思考に集中できる
+-   **知識の形式化**: チームの知見やベストプラクティスをルールとして形式化し共有
 
 ルール追加自体もルール化することで、プロジェクト完了時や作業が一段落した時点で「次回からはこうしたい」という改善をすぐにシステムに反映できます。たとえ面倒に感じる場合でも、このプロセスが習慣化されることで、システムは継続的に進化していきます。
 
-
 ## 9. よくある質問 (FAQ)とベストプラクティス
-
 
 ### システムとツールの利用
 
 **Q1. トリガーワードが反応しない場合はどうすればいいですか？**
 
-A1. Rulesの限界により、トリガーワードが期待通り動作しない場合があります。その場合でも、LLMはRuleを読まなくてもPMBOKの知識をベースに基本的な対応はしてくれますが、カカクコム用のカスタムテンプレートは無視される可能性があります。対処法：
+A1. Rules の限界により、トリガーワードが期待通り動作しない場合があります。その場合でも、LLM は Rule を読まなくても PMBOK の知識をベースに基本的な対応はしてくれますが、カカクコム用のカスタムテンプレートは無視される可能性があります。対処法：
 
 1. **明示的なルール指定**: トリガーワードが属するルールを明示的にメンションする（例: @01_pmbok_initiating.mdc）
 2. **情報源の指定**: 特定のプロジェクト文書を参照させたい場合は、明示的にドキュメントを指定する
 3. **基本に戻る**: うまく動かない場合は、通常のプロンプトとして質問を具体的に記述する
 
-**Q2. Cursorの特徴と限界について教えてください**
+**Q2. Cursor の特徴と限界について教えてください**
 
-A2. Cursorの主な特徴と実用上のポイント：
+A2. Cursor の主な特徴と実用上のポイント：
 
-1. **ルールファイル参照**: MDファイルに書いたプロンプトをメンションするだけで呼び出せるため、毎回同じ指示を書く必要がない
+1. **ルールファイル参照**: MD ファイルに書いたプロンプトをメンションするだけで呼び出せるため、毎回同じ指示を書く必要がない
 2. **生成物の再利用**: 前のプロンプトで生成された成果物を次のプロンプトの入力に簡単に使える
-3. **限界**: ルールファイルの読み込みが常に完璧ではなく、Thinkingペインでの表示や動作に不安定な部分がある
-4. **β版としての位置づけ**: 本システムは継続的に改善されており、不具合や改善点のフィードバックを歓迎
-
-
+3. **限界**: ルールファイルの読み込みが常に完璧ではなく、Thinking ペインでの表示や動作に不安定な部分がある
+4. **β 版としての位置づけ**: 本システムは継続的に改善されており、不具合や改善点のフィードバックを歓迎
 
 ### チーム活用のベストプラクティス
 
 **Q3. チームでの成果物共有はどのように行うのが最適ですか？**
 
-A3. **Stockフォルダの共有**: GitHubやObsidian（Sync機能）などのファイル共有サービスを活用して、Stockフォルダをチーム全体で共有しましょう。これにより、確定した成果物に全員がアクセスできるようになります。
+A3. **Stock フォルダの共有**: GitHub や Obsidian（Sync 機能）などのファイル共有サービスを活用して、Stock フォルダをチーム全体で共有しましょう。これにより、確定した成果物に全員がアクセスできるようになります。
 
 **Q4. プロジェクト固有のニーズに対応するにはどうすればよいですか？**
 
@@ -760,15 +772,12 @@ A6. 以下のようなチーム連携のワークフローをお勧めします�
 
 A7. 最適な結果を得るためのヒント：
 
-- **推奨モデル**: ThinkingモードでClaude3.7を使用。高品質アウトプットが必要な場合はMAXモデルが推奨
-- **ルール参照確認**: Thinkingペインで「Rulesを読み取ってます」などの表示があればOK
-- **明示的指定**: うまく動作しない場合は、チャット入力時に@から必要なRuleを明示的に指定
-- **マスタールール重視**: 特に「Master Rules」が最重要。これが読み込まれていれば基本機能は動作
+-   **推奨モデル**: Thinking モードで Claude3.7 を使用。高品質アウトプットが必要な場合は MAX モデルが推奨
+-   **ルール参照確認**: Thinking ペインで「Rules を読み取ってます」などの表示があれば OK
+-   **明示的指定**: うまく動作しない場合は、チャット入力時に@から必要な Rule を明示的に指定
+-   **マスタールール重視**: 特に「Master Rules」が最重要。これが読み込まれていれば基本機能は動作
 
-
-
-
-## 10. 開発Tips
+## 10. 開発 Tips
 
 このワークスペースは単なるドキュメント管理だけでなく、開発活動自体もサポートする機能を備えています（※ベータ版/試験運用中）。
 
@@ -777,34 +786,39 @@ A7. 最適な結果を得るためのヒント：
 `.cursor/rules/basic/09_pmbok_development.mdc` に定義されたルールを活用することで、以下のような開発ワークフローを実現できます：
 
 1. **開発環境初期化**（「開発環境初期化」と入力）
-   - プロジェクト専用の開発フォルダ構造を自動生成
-   - 必要な初期ファイルのセットアップ
-   - 開発環境構成の定義
+
+    - プロジェクト専用の開発フォルダ構造を自動生成
+    - 必要な初期ファイルのセットアップ
+    - 開発環境構成の定義
 
 2. **開発計画作成**（「開発計画作成」と入力）
-   - 対象ストーリーの特定
-   - 実装アプローチの定義
-   - 技術スタックの選定
+
+    - 対象ストーリーの特定
+    - 実装アプローチの定義
+    - 技術スタックの選定
 
 3. **実装順序計画**（「実装順序計画」と入力）
-   - ストーリー間の依存関係分析
-   - 優先度付けと最適な実装順序の決定
-   - フェーズ分けと実装スケジュール案の作成
+
+    - ストーリー間の依存関係分析
+    - 優先度付けと最適な実装順序の決定
+    - フェーズ分けと実装スケジュール案の作成
 
 4. **ストーリー実装**（「ストーリー実装」と入力）
-   - 個別ストーリーの詳細な実装計画
-   - 実装ステップの定義
-   - 主要コード構造の設計
+
+    - 個別ストーリーの詳細な実装計画
+    - 実装ステップの定義
+    - 主要コード構造の設計
 
 5. **記事執筆**（「記事執筆」と入力）
-   - 技術記事やドキュメントの構成立案
-   - 執筆プラン作成
-   - 添付資料の管理
+
+    - 技術記事やドキュメントの構成立案
+    - 執筆プラン作成
+    - 添付資料の管理
 
 6. **成果物確認**（「成果物確認」と入力）
-   - 開発成果物の品質チェック
-   - レビュープロセスの実施
-   - Flow→Stockへの確定プロセス
+    - 開発成果物の品質チェック
+    - レビュープロセスの実施
+    - Flow→Stock への確定プロセス
 
 ### 開発ディレクトリ構造
 
@@ -819,45 +833,45 @@ A7. 最適な結果を得るためのヒント：
 └── documents/             # プロジェクトドキュメント（既存）
 ```
 
-### 開発Tipsの活用例
+### 開発 Tips の活用例
 
 1. ユーザーストーリーを「実装順序計画」で最適な順序に整理
 2. 最重要ストーリーを「ストーリー実装」で詳細設計
 3. 同時並行で「記事執筆」機能を使って技術ドキュメントを作成
-4. 開発完了後「成果物確認」でレビューし、Stockに確定
+4. 開発完了後「成果物確認」でレビューし、Stock に確定
 
 このワークフローにより、プロジェクト管理と開発作業を一貫したプロセスで進めることができます。
 
+## 11. バックログ管理と YAML ビューア
 
-## 11. バックログ管理とYAMLビューア
+本システムでは、プロダクトバックログを YAML 形式で管理する方法を採用しています。この方法には大きなメリットがありますが、YAML の可読性については工夫が必要です。
 
-本システムでは、プロダクトバックログをYAML形式で管理する方法を採用しています。この方法には大きなメリットがありますが、YAMLの可読性については工夫が必要です。
+### YAML でバックログを管理する利点
 
-### YAMLでバックログを管理する利点
+-   **AI エージェントとの親和性**: YAML 形式は Cursor エージェントが正確に解析・操作できるため、口語的な指示でもバックログを効率的に更新できます
+-   **構造化された情報管理**: 階層構造を持つバックログを自然に表現でき、ストーリー間の関係性を明確に記述できます
+-   **変更操作の簡便さ**: 「ストーリー A のステータスを完了に変更して」「担当者を B さんに変更して」といった指示を AI に伝えるだけで正確に更新されます
+-   **他システムとの連携**: YAML はプログラムで扱いやすく、JIRA や GitHub など他のツールとの連携も容易です
 
-- **AIエージェントとの親和性**: YAML形式はCursorエージェントが正確に解析・操作できるため、口語的な指示でもバックログを効率的に更新できます
-- **構造化された情報管理**: 階層構造を持つバックログを自然に表現でき、ストーリー間の関係性を明確に記述できます
-- **変更操作の簡便さ**: 「ストーリーAのステータスを完了に変更して」「担当者をBさんに変更して」といった指示をAIに伝えるだけで正確に更新されます
-- **他システムとの連携**: YAMLはプログラムで扱いやすく、JIRAやGitHubなど他のツールとの連携も容易です
+### YAML 可読性向上のためのツール
 
-### YAML可読性向上のためのツール
+バックログ YAML をより見やすく表示するために、以下のツールを推奨します：
 
-バックログYAMLをより見やすく表示するために、以下のツールを推奨します：
+1. **VSCode 拡張機能「Yaml2Table Preview」**
 
-1. **VSCode拡張機能「Yaml2Table Preview」**
-   - [Marketplace リンク](https://marketplace.visualstudio.com/items?itemName=adautomendes.yaml2table-preview)
-   - インストール方法: VSCodeのQuick Open (Ctrl+P)で`ext install adautomendes.yaml2table-preview`を実行
-   - 使用方法: YAMLファイルを開いた状態で`Ctrl+Shift+P`から「Yaml2Table: Open preview」を選択
+    - [Marketplace リンク](https://marketplace.visualstudio.com/items?itemName=adautomendes.yaml2table-preview)
+    - インストール方法: VSCode の Quick Open (Ctrl+P)で`ext install adautomendes.yaml2table-preview`を実行
+    - 使用方法: YAML ファイルを開いた状態で`Ctrl+Shift+P`から「Yaml2Table: Open preview」を選択
 
-   ![yaml2table preview example](https://github.com/adautomendes/vscode-yaml-preview/raw/HEAD/resources/preview.png)
+    ![yaml2table preview example](https://github.com/adautomendes/vscode-yaml-preview/raw/HEAD/resources/preview.png)
 
-2. **VSCodeの標準YAML拡張機能**
-   - YAMLの構文ハイライト、入れ子構造の折りたたみ、スキーマ検証などの基本機能を提供
-   - これだけでもかなり見やすくなります
+2. **VSCode の標準 YAML 拡張機能**
+    - YAML の構文ハイライト、入れ子構造の折りたたみ、スキーマ検証などの基本機能を提供
+    - これだけでもかなり見やすくなります
 
 ### バックログ操作テクニック
 
-YAMLファイルをAIエージェントで効率的に操作するテクニック：
+YAML ファイルを AI エージェントで効率的に操作するテクニック：
 
 ```
 User: バックログのストーリーUS-123のステータスを「完了」に変更して、担当者を田中さんにしてほしい
@@ -874,62 +888,61 @@ AI: backlog.yamlを更新しました。以下が変更内容です:
     - US-123のassignee: "佐藤" → "田中"
 ```
 
-このようにUI操作よりも自然言語での指示の方が、場合によってはスピーディーで正確なバックログ管理が可能になります。
+このように UI 操作よりも自然言語での指示の方が、場合によってはスピーディーで正確なバックログ管理が可能になります。
 
 ## 12. 作った人
 
 ### プロフィール
 
+株式会社エクスプラザで生成 AI エバンジェリスト・リード AI プロデューサーを務める宮田大督。生成 AI 技術の社会実装と普及に注力し、企業の AI 導入支援やコミュニティ活動を推進。
 
-株式会社エクスプラザで生成AIエバンジェリスト・リードAIプロデューサーを務める宮田大督。生成AI技術の社会実装と普及に注力し、企業のAI導入支援やコミュニティ活動を推進。
+前職の Gaudiy や令和トラベルでは、SNS でのエージェント実装や Dify などノーコードツール活用での大量コンテンツ生成など、様々な企画から実際の実装まで手がける。楽天やメルカリでの PdM の経験を活かし、PdM に関する登壇・執筆活動も行い、最近は AIxPM 領域に特に関心をもち活動している。
 
-前職のGaudiyや令和トラベルでは、SNSでのエージェント実装やDifyなどノーコードツール活用での大量コンテンツ生成など、様々な企画から実際の実装まで手がける。楽天やメルカリでのPdMの経験を活かし、PdMに関する登壇・執筆活動も行い、最近はAIxPM領域に特に関心をもち活動している。
+生成 AI 技術の可能性と実践的な活用方法について情報発信を行い、企業の DX 推進やイノベーション創出をサポート。AI と人間が共生する未来の実現を目指し、技術と社会の架け橋となることを使命としている。
 
-生成AI技術の可能性と実践的な活用方法について情報発信を行い、企業のDX推進やイノベーション創出をサポート。AIと人間が共生する未来の実現を目指し、技術と社会の架け橋となることを使命としている。
+### SNS アカウント
 
-
-### SNSアカウント
-- Twitter: [@miyatti](https://twitter.com/miyatti)
+-   Twitter: [@miyatti](https://twitter.com/miyatti)
 
 ### 企業情報
-- 会社名：株式会社エクスプラザ
-- ミッション：「プロダクトの力で、豊かな暮らしをつくる」
-- 事業内容：生成AIの活用支援/プロダクトマネジメントコンサルティング事業
-- 設立：2020年7月
-- 代表者：高橋一生
-- 本社：東京都港区六本木4-8-5 和幸ビル503
-- コーポレートサイト：[https://explaza.jp/](https://explaza.jp/)
-- 採用ページ：[https://lifeat.explaza.jp/](https://lifeat.explaza.jp/) 
+
+-   会社名：株式会社エクスプラザ
+-   ミッション：「プロダクトの力で、豊かな暮らしをつくる」
+-   事業内容：生成 AI の活用支援/プロダクトマネジメントコンサルティング事業
+-   設立：2020 年 7 月
+-   代表者：高橋一生
+-   本社：東京都港区六本木 4-8-5 和幸ビル 503
+-   コーポレートサイト：[https://explaza.jp/](https://explaza.jp/)
+-   採用ページ：[https://lifeat.explaza.jp/](https://lifeat.explaza.jp/)
 
 ## 13. 参考ブログ記事
 
-
 ### 実際の活用事例
-- [実際のCursorエージェントとのやり取り例（Twitter）](https://x.com/miyatti/status/1918922486739292432)
-  - ブログ作成プロジェクトでの実際の対話例を公開しています
-  - システムがどのように質問し、ユーザーの意図を理解していくかがわかります
+
+-   [実際の Cursor エージェントとのやり取り例（Twitter）](https://x.com/miyatti/status/1918922486739292432)
+    -   ブログ作成プロジェクトでの実際の対話例を公開しています
+    -   システムがどのように質問し、ユーザーの意図を理解していくかがわかります
 
 ### 活用シナリオ
-- ブログ記事作成プロジェクト管理
-- 技術ドキュメント整備
-- 研究プロジェクト管理
-- 小規模チームでの業務効率化
 
+-   ブログ記事作成プロジェクト管理
+-   技術ドキュメント整備
+-   研究プロジェクト管理
+-   小規模チームでの業務効率化
 
-
-
-### 基本コンセプトとCursorエージェント活用法
+### 基本コンセプトと Cursor エージェント活用法
 
 このシステムの背景にある考え方や活用方法について、以下の記事も参考にしてください：
 
-- [あなたの仕事に"AI秘書"を。ノンエンジニアでもOKなCursorエージェント超入門](https://note.com/miyatad/n/nae304a0024af)
-- [プロジェクト管理もストレスもAIがサポート！ ノンエンジニアでもOKなCursorエージェント講座 実践編](https://note.com/miyatad/n/ne9fb1575cddb)
+-   [あなたの仕事に"AI 秘書"を。ノンエンジニアでも OK な Cursor エージェント超入門](https://note.com/miyatad/n/nae304a0024af)
+-   [プロジェクト管理もストレスも AI がサポート！ ノンエンジニアでも OK な Cursor エージェント講座 実践編](https://note.com/miyatad/n/ne9fb1575cddb)
 
 ### 解説資料
-- [Cursorエージェント講座 超応用編](https://www.docswell.com/s/miyatti/KN182G-2025-03-21-202746)
-- [ノンエンジニアでもOKなCursorエージェント講座](https://www.docswell.com/s/miyatti/Z6VDGV-2025-03-30-192815)
 
-これらの記事では、Cursorを使ったAIエージェントによるタスク管理、プロジェクト管理、文書作成の自動化などについて詳しく解説しています。本システムを最大限に活用するためのヒントやテクニックを学ぶことができます。 
+-   [Cursor エージェント講座 超応用編](https://www.docswell.com/s/miyatti/KN182G-2025-03-21-202746)
+-   [ノンエンジニアでも OK な Cursor エージェント講座](https://www.docswell.com/s/miyatti/Z6VDGV-2025-03-30-192815)
+
+これらの記事では、Cursor を使った AI エージェントによるタスク管理、プロジェクト管理、文書作成の自動化などについて詳しく解説しています。本システムを最大限に活用するためのヒントやテクニックを学ぶことができます。
 
 ## 14. 著作権・ライセンス・免責事項
 
@@ -937,7 +950,7 @@ AI: backlog.yamlを更新しました。以下が変更内容です:
 
 © 2025 宮田大督 (Daisuke Miyata)
 
-本「俺の考えた最強のAIPMシステム with Cursor Agent」のコンテンツ（テキスト、ルールファイル、スクリプト、ドキュメント構造など）は、作者の許可なく無断で複製、配布することはできません。
+本「俺の考えた最強の AIPM システム with Cursor Agent」のコンテンツ（テキスト、ルールファイル、スクリプト、ドキュメント構造など）は、作者の許可なく無断で複製、配布することはできません。
 
 ### ライセンス
 
@@ -955,8 +968,9 @@ AI: backlog.yamlを更新しました。以下が変更内容です:
 ### 連絡先
 
 著作権、ライセンス、商用利用に関するお問い合わせ：
-- Twitter: @miyatti
-- 会社: 株式会社エクスプラザ
+
+-   Twitter: @miyatti
+-   会社: 株式会社エクスプラザ
 
 ### 謝辞
 

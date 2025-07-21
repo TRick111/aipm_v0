@@ -1,6 +1,6 @@
 #!/bin/bash
 
-INPUT="1.scripts/examples.yaml"
+INPUT="/Users/rikutanaka/Documents/aipm_v0/Stock/RestaurantAILab/ShefsRoomマーケティング支援/2.execute/1.scripts/examples.yaml"
 
 awk '
 /^- title:/ {

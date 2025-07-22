@@ -18,6 +18,6 @@ END {
     j = int(rand()*i)+1
     tmp=order[i]; order[i]=order[j]; order[j]=tmp
   }
-  for (i=1; i<=3 && i<=n; i++) print blocks[order[i]]
+  for (i=1; i<=10 && i<=n; i++) print blocks[order[i]]
 }
 ' "$INPUT" 

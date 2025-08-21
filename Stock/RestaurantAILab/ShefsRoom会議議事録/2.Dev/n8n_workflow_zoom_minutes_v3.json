@@ -1,0 +1,347 @@
+{
+  "name": "Zoom Transcription → Meta & Summary → Google Docs (HTTP only)",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "zoom/transcription-completed",
+        "responseMode": "onReceived",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              { "name": "Content-Type", "value": "application/json" }
+            ]
+          }
+        }
+      },
+      "id": "1",
+      "name": "Webhook: Zoom transcription_completed",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [220, 260]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Extract transcript URL and meeting meta from Zoom webhook\nconst body = items[0].json.body ?? items[0].json;\nconst payload = body?.payload ?? body;\nconst obj = payload?.object ?? payload;\n\nconst url = obj?.download_url || obj?.transcript_file_url || body?.download_url || body?.transcript_file_url || null;\nconst meeting = { id: obj?.id ?? null, uuid: obj?.uuid ?? null, topic: obj?.topic ?? '', start_time: obj?.start_time ?? '', timezone: obj?.timezone ?? '' };\nreturn [{ json: { transcriptUrl: url, meeting } }];"
+      },
+      "id": "2",
+      "name": "Function: Extract Transcript URL",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [520, 260]
+    },
+    {
+      "parameters": {
+        "url": "={{$json.transcriptUrl}}",
+        "responseFormat": "string",
+        "dataPropertyName": "vttRaw",
+        "options": {
+          "headerParametersUi": {
+            "parameter": [
+              { "name": "Accept", "value": "text/vtt,*/*" },
+              { "name": "Authorization", "value": "Basic {{$env.ZOOM_BASIC_B64}}" }
+            ]
+          }
+        }
+      },
+      "id": "3",
+      "name": "HTTP: Download VTT",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 5,
+      "position": [820, 260]
+    },
+    {
+      "parameters": {
+        "functionCode": "// stripVtt\nfunction stripVtt(vttText) {\n  const lf = (vttText || '').replace(/\\r/g, '');\n  const lines = lf.split('\\n');\n  const ts = /^\\d{2}:\\d{2}:\\d{2}\\.\\d{3}\\s-->\\s\\d{2}:\\d{2}:\\d{2}\\.\\d{3}(?:.*)?$/;\n  const out = [];\n  for (const raw of lines) {\n    const s = raw.trim();\n    if (!s) continue;\n    if (s === 'WEBVTT') continue;\n    if (/^\\d+$/.test(s)) continue;\n    if (ts.test(s)) continue;\n    out.push(s);\n  }\n  return out.join('\\n');\n}\nconst vttText = $json.vttRaw ?? $json.data ?? $json.body ?? '';\nconst cleanedTranscript = stripVtt(vttText);\nreturn [{ json: { ...$json, cleanedTranscript } }];"
+      },
+      "id": "4",
+      "name": "Function: Strip VTT",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [1120, 260]
+    },
+    {
+      "parameters": {
+        "functionCode": "// mergeSameSpeaker\nfunction mergeSameSpeaker(inputText) {\n  const lines = (inputText || '').split('\\n');\n  const endPunct = /[。．.!?！？]$/;\n  const startPunct = /^[、。．,!?！？]/;\n  let lastSpeaker = '';\n  let buffer = '';\n  const out = [];\n  const flush = () => { if (buffer) { out.push(lastSpeaker + ': ' + buffer); buffer=''; lastSpeaker=''; } };\n  for (const line of lines) {\n    const idxHalf = line.indexOf(':');\n    const idxFull = line.indexOf('：');\n    let idx = -1;\n    if (idxHalf === -1) idx = idxFull; else if (idxFull === -1) idx = idxHalf; else idx = Math.min(idxHalf, idxFull);\n    if (idx > -1) {\n      const speaker = line.slice(0, idx).trim();\n      const text = line.slice(idx + 1).replace(/^\\s+/, '');\n      if (!lastSpeaker || lastSpeaker === speaker) {\n        if (!buffer) { lastSpeaker = speaker; buffer = text; }\n        else { const sep = (endPunct.test(buffer) || startPunct.test(text)) ? '' : ' '; buffer = buffer + sep + text; }\n      } else {\n        flush(); lastSpeaker = speaker; buffer = text;\n      }\n    } else {\n      flush(); out.push(line);\n    }\n  }\n  flush();\n  return out.join('\\n');\n}\nconst mergedTranscript = mergeSameSpeaker($json.cleanedTranscript || '');\nreturn [{ json: { ...$json, mergedTranscript } }];"
+      },
+      "id": "5",
+      "name": "Function: Merge Same Speaker",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [1420, 260]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Titles and filenames\nfunction yyyymmdd(d) { return d.toISOString().slice(0,10).replace(/-/g, ''); }\nconst dtStr = $json.meeting?.start_time || new Date().toISOString();\nconst dateOnly = (dtStr || '').slice(0,10);\nconst ymd = dateOnly ? dateOnly.replace(/-/g,'') : yyyymmdd(new Date());\nconst client = 'UnknownClient';\nreturn [{ json: { ...$json,\n  metaDocTitle: '[Meta] ' + ymd + ' ' + client,\n  summaryDocTitle: '[Minutes] ' + ymd + ' ' + client,\n  transcriptDocTitle: '[Transcript] ' + ymd + ' ' + client } }];"
+      },
+      "id": "6",
+      "name": "Function: Prepare Titles",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [1710, 140]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "jsonParameters": true,
+        "sendBody": true,
+        "options": {
+          "headerParametersUi": {
+            "parameter": [
+              { "name": "Authorization", "value": "Bearer {{$env.OPENAI_API_KEY}}" },
+              { "name": "Content-Type", "value": "application/json" }
+            ]
+          }
+        },
+        "bodyParametersJson": "={\n          \"model\": \"gpt-4o\",\n          \"messages\": [\n            { \"role\": \"system\", \"content\": \"You extract meeting meta info (datetime, client name, participants) from a cleaned transcript and output Markdown in Japanese.\" },\n            { \"role\": \"user\", \"content\": \"出力フォーマット:\n# 会議メタ情報\n- ミーティング日時: <日時(可能ならタイムゾーン含む)>\n- クライアント名: <企業名/不明>\n- 参加者:\n  - <氏名>\n  - <氏名>\n\n次のトランスクリプトから必要情報を抽出してください。\n\n===== TRANSCRIPT START =====\n\" + $json.mergedTranscript + \"\n===== TRANSCRIPT END =====\" }\n          ]\n        }"
+      },
+      "id": "7",
+      "name": "HTTP: OpenAI (Meta)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 5,
+      "position": [2000, 140]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Parse OpenAI response\nconst c = $json.choices?.[0]?.message?.content || '';\nreturn [{ json: { ...$json, metaText: c } }];"
+      },
+      "id": "8",
+      "name": "Function: Parse OpenAI",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [2280, 140]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Build summary prompt from prompt.md\nconst basePrompt = `このミーティングは飲食コンサルタント「竹矢 匠吾」とクライアントの「べこやはは丸」の道上さんとの会話トランスクリプトです。音声認識の誤変換や聞き取りミスが含まれる可能性があるため、文脈・前後関係から意味を補完して正確に理解してください。\n\n出力方針（厳守）\n- 主語を必ず明示する。クライアント企業は初出で正式名称を用い（〇〇株式会社など）、以降は略記可。コンサル側は「竹矢」と明記。\n- 関連する議題ごとにサブタイトルをつけ、箇条書きじゃない文章で記載する。\n- 誤変換は文脈から推測して修正。特定不能な固有名詞は「不明」と明記。\n- 雑談・挨拶は省略。会議の実務内容のみ記載。\n- 担当者は役割から推測し「（推測：◯◯側）」を併記。確信がない事実は「不明」と明記。\n- 今後のアクションアイテム」はテーブル形式で記載。\n- 議事録の中で内容が不明な点があれば最後にまとめて読み取れなかった点を記載する\n\n出力フォーマット（Markdown）\n\n## クライアントから聞いた内容\nクライアントの（事実/要望/現状/課題）をテーマごとに記載。  \n\n## クライアントに伝えた内容\n竹矢が説明・提案・助言・報告した内容をテーマごとに記載。  \n\n## ミーティング内で決定したこと\n合意事項・採用が確定した方針をテーマごとに記載。  \n\n## 今後のアクションアイテムと担当者\nタスク内容 — 担当者（確定または推測） — 期限（あれば記載。なければ特に何も記載しない）  \n（同様に続ける）\n\n手順\n1) トランスクリプト全体を通読し、文脈優先で解釈する。  \n2) 誤聴・誤変換は推測修正し、修正不能は「不明」と明記。  \n3) 役割に応じて担当者を割り当てる（店舗作業＝飲食店側、分析・提案＝コンサル側）。  \n4) すべての文で主語を明示しする。  \n5) 「今後のアクションアイテム」はテーブル形式で「タスク — 担当者 — 期限（明確になければ省略）」で統一する。\n\n注意事項\n- 主観的推測は禁止（担当者推測は可とし、必ず「（推測：◯◯側）」を明記）。  \n- 事実不確定は「不明」と明記。  \n- 数値・日付は可能な範囲で具体化。不確定は「目安」「未確定」とする。`;\nconst transcript = $json.mergedTranscript || '';\nconst summaryPrompt = `${basePrompt}\n\n===== TRANSCRIPT START =====\n${transcript}\n===== TRANSCRIPT END =====`;\nreturn [{ json: { ...$json, summaryPrompt } }];"
+      },
+      "id": "9",
+      "name": "Function: Build Summary Prompt",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [1710, 380]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent",
+        "jsonParameters": true,
+        "sendBody": true,
+        "options": {
+          "headerParametersUi": {
+            "parameter": [
+              { "name": "x-goog-api-key", "value": "={{$env.GEMINI_API_KEY}}" },
+              { "name": "Content-Type", "value": "application/json" }
+            ]
+          }
+        },
+        "bodyParametersJson": "={ \n          \"contents\": [ { \"role\": \"user\", \"parts\": [ { \"text\": \"\" + $json.summaryPrompt + \"\" } ] } ]\n        }"
+      },
+      "id": "10",
+      "name": "HTTP: Gemini (Summary)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 5,
+      "position": [2000, 380]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Parse Gemini response\nlet text = '';\nconst cands = $json.candidates;\nif (Array.isArray(cands) && cands[0]?.content?.parts?.[0]?.text) { text = cands[0].content.parts[0].text; }\nelse if ($json?.content?.parts?.[0]?.text) { text = $json.content.parts[0].text; }\nreturn [{ json: { ...$json, summaryText: text } }];"
+      },
+      "id": "11",
+      "name": "Function: Parse Gemini",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [2280, 380]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://docs.googleapis.com/v1/documents",
+        "jsonParameters": true,
+        "sendBody": true,
+        "options": {
+          "headerParametersUi": {
+            "parameter": [
+              { "name": "Authorization", "value": "Bearer {{$env.GOOGLE_DOCS_TOKEN}}" },
+              { "name": "Content-Type", "value": "application/json" }
+            ]
+          }
+        },
+        "bodyParametersJson": "={ \"title\": \"\" + $json.metaDocTitle + \"\" }"
+      },
+      "id": "12",
+      "name": "HTTP: Docs Create (Meta)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 5,
+      "position": [2560, 140]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Extract documentId\nconst docId = $json.documentId;\nreturn [{ json: { ...$node[\"HTTP: Docs Create (Meta)\"].json, docId, metaText: $node[\"Function: Parse OpenAI\"].json.metaText, metaDocTitle: $json.metaDocTitle } }];"
+      },
+      "id": "13",
+      "name": "Function: Meta Doc ID",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [2840, 140]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://docs.googleapis.com/v1/documents/{{$json.docId}}:batchUpdate",
+        "jsonParameters": true,
+        "sendBody": true,
+        "options": {
+          "headerParametersUi": {
+            "parameter": [
+              { "name": "Authorization", "value": "Bearer {{$env.GOOGLE_DOCS_TOKEN}}" },
+              { "name": "Content-Type", "value": "application/json" }
+            ]
+          }
+        },
+        "bodyParametersJson": "={ \n          \"requests\": [ { \n            \"insertText\": { \n              \"text\": \"\" + $json.metaText + \"\", \n              \"location\": { \"index\": 1 } \n            } \n          } ] \n        }"
+      },
+      "id": "14",
+      "name": "HTTP: Docs Insert (Meta)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 5,
+      "position": [3120, 140]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://docs.googleapis.com/v1/documents",
+        "jsonParameters": true,
+        "sendBody": true,
+        "options": {
+          "headerParametersUi": {
+            "parameter": [
+              { "name": "Authorization", "value": "Bearer {{$env.GOOGLE_DOCS_TOKEN}}" },
+              { "name": "Content-Type", "value": "application/json" }
+            ]
+          }
+        },
+        "bodyParametersJson": "={ \"title\": \"\" + $json.summaryDocTitle + \"\" }"
+      },
+      "id": "15",
+      "name": "HTTP: Docs Create (Summary)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 5,
+      "position": [2560, 380]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Extract documentId + summary\nconst docId = $json.documentId;\nreturn [{ json: { ...$node[\"HTTP: Docs Create (Summary)\"].json, docId, summaryText: $node[\"Function: Parse Gemini\"].json.summaryText, summaryDocTitle: $json.summaryDocTitle } }];"
+      },
+      "id": "16",
+      "name": "Function: Summary Doc ID",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [2840, 380]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://docs.googleapis.com/v1/documents/{{$json.docId}}:batchUpdate",
+        "jsonParameters": true,
+        "sendBody": true,
+        "options": {
+          "headerParametersUi": {
+            "parameter": [
+              { "name": "Authorization", "value": "Bearer {{$env.GOOGLE_DOCS_TOKEN}}" },
+              { "name": "Content-Type", "value": "application/json" }
+            ]
+          }
+        },
+        "bodyParametersJson": "={ \n          \"requests\": [ { \n            \"insertText\": { \n              \"text\": \"\" + $json.summaryText + \"\", \n              \"location\": { \"index\": 1 } \n            } \n          } ] \n        }"
+      },
+      "id": "17",
+      "name": "HTTP: Docs Insert (Summary)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 5,
+      "position": [3120, 380]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://docs.googleapis.com/v1/documents",
+        "jsonParameters": true,
+        "sendBody": true,
+        "options": {
+          "headerParametersUi": {
+            "parameter": [
+              { "name": "Authorization", "value": "Bearer {{$env.GOOGLE_DOCS_TOKEN}}" },
+              { "name": "Content-Type", "value": "application/json" }
+            ]
+          }
+        },
+        "bodyParametersJson": "={ \"title\": \"\" + $json.transcriptDocTitle + \"\" }"
+      },
+      "id": "18",
+      "name": "HTTP: Docs Create (Transcript)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 5,
+      "position": [2560, 560]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Extract documentId + transcript text\nconst docId = $json.documentId;\nreturn [{ json: { ...$node[\"HTTP: Docs Create (Transcript)\"].json, docId, mergedTranscript: $node[\"Function: Merge Same Speaker\"].json.mergedTranscript } }];"
+      },
+      "id": "19",
+      "name": "Function: Transcript Doc ID",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [2840, 560]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://docs.googleapis.com/v1/documents/{{$json.docId}}:batchUpdate",
+        "jsonParameters": true,
+        "sendBody": true,
+        "options": {
+          "headerParametersUi": {
+            "parameter": [
+              { "name": "Authorization", "value": "Bearer {{$env.GOOGLE_DOCS_TOKEN}}" },
+              { "name": "Content-Type", "value": "application/json" }
+            ]
+          }
+        },
+        "bodyParametersJson": "={ \n          \"requests\": [ { \n            \"insertText\": { \n              \"text\": \"\" + $json.mergedTranscript + \"\", \n              \"location\": { \"index\": 1 } \n            } \n          } ] \n        }"
+      },
+      "id": "20",
+      "name": "HTTP: Docs Insert (Transcript)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 5,
+      "position": [3120, 560]
+    }
+  ],
+  "connections": {
+    "Webhook: Zoom transcription_completed": { "main": [[{ "node": "Function: Extract Transcript URL", "type": "main", "index": 0 }]] },
+    "Function: Extract Transcript URL": { "main": [[{ "node": "HTTP: Download VTT", "type": "main", "index": 0 }]] },
+    "HTTP: Download VTT": { "main": [[{ "node": "Function: Strip VTT", "type": "main", "index": 0 }]] },
+    "Function: Strip VTT": { "main": [[{ "node": "Function: Merge Same Speaker", "type": "main", "index": 0 }]] },
+    "Function: Merge Same Speaker": { "main": [
+      [{ "node": "Function: Prepare Titles", "type": "main", "index": 0 }],
+      [{ "node": "Function: Build Summary Prompt", "type": "main", "index": 0 }]
+    ] },
+    "Function: Prepare Titles": { "main": [[{ "node": "HTTP: OpenAI (Meta)", "type": "main", "index": 0 }]] },
+    "HTTP: OpenAI (Meta)": { "main": [[{ "node": "Function: Parse OpenAI", "type": "main", "index": 0 }]] },
+    "Function: Parse OpenAI": { "main": [[{ "node": "HTTP: Docs Create (Meta)", "type": "main", "index": 0 }]] },
+    "HTTP: Docs Create (Meta)": { "main": [[{ "node": "Function: Meta Doc ID", "type": "main", "index": 0 }]] },
+    "Function: Meta Doc ID": { "main": [[{ "node": "HTTP: Docs Insert (Meta)", "type": "main", "index": 0 }]] },
+    "Function: Build Summary Prompt": { "main": [[{ "node": "HTTP: Gemini (Summary)", "type": "main", "index": 0 }]] },
+    "HTTP: Gemini (Summary)": { "main": [[{ "node": "Function: Parse Gemini", "type": "main", "index": 0 }]] },
+    "Function: Parse Gemini": { "main": [[{ "node": "HTTP: Docs Create (Summary)", "type": "main", "index": 0 }]] },
+    "HTTP: Docs Create (Summary)": { "main": [[{ "node": "Function: Summary Doc ID", "type": "main", "index": 0 }]] },
+    "Function: Summary Doc ID": { "main": [[{ "node": "HTTP: Docs Insert (Summary)", "type": "main", "index": 0 }]] },
+    "HTTP: Docs Create (Transcript)": { "main": [[{ "node": "Function: Transcript Doc ID", "type": "main", "index": 0 }]] },
+    "Function: Transcript Doc ID": { "main": [[{ "node": "HTTP: Docs Insert (Transcript)", "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": {},
+  "staticData": null,
+  "pinData": {}
+}
+
+

@@ -1,0 +1,230 @@
+{
+  "name": "Zoom Transcription → Meta & Summary → Google Docs",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "zoom/transcription-completed",
+        "responseMode": "onReceived",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              { "name": "Content-Type", "value": "application/json" }
+            ]
+          }
+        }
+      },
+      "id": "00000001-0000-0000-0000-000000000001",
+      "name": "Webhook: Zoom transcription_completed",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [220, 260]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Extract transcript URL and meeting meta from Zoom webhook\n// Payload shape can vary. Try common locations.\nconst body = items[0].json.body ?? items[0].json;\nconst payload = body?.payload ?? body;\nconst obj = payload?.object ?? payload;\n\nconst url = obj?.download_url || obj?.transcript_file_url || body?.download_url || body?.transcript_file_url || null;\nconst meeting = { id: obj?.id ?? null, uuid: obj?.uuid ?? null, topic: obj?.topic ?? '', start_time: obj?.start_time ?? '', timezone: obj?.timezone ?? '' };\nreturn [{ json: { transcriptUrl: url, meeting } }];"
+      },
+      "id": "00000002-0000-0000-0000-000000000002",
+      "name": "Function: Extract Transcript URL",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [520, 260]
+    },
+    {
+      "parameters": {
+        "authentication": "basicAuth",
+        "url": "={{$json.transcriptUrl}}",
+        "responseFormat": "string",
+        "dataPropertyName": "vttRaw",
+        "options": {
+          "redirect": { "followRedirect": true },
+          "headerParametersUi": { "parameter": [{ "name": "Accept", "value": "text/vtt,*/*" }] }
+        }
+      },
+      "id": "00000003-0000-0000-0000-000000000003",
+      "name": "HTTP: Download VTT",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 5,
+      "position": [820, 260]
+    },
+    {
+      "parameters": {
+        "functionCode": "// stripVtt: remove WEBVTT header, numeric counters, timestamps, blank lines.\nfunction stripVtt(vttText) {\n  const lf = (vttText || '').replace(/\\r/g, '');\n  const lines = lf.split('\\n');\n  const ts = /^\\d{2}:\\d{2}:\\d{2}\\.\\d{3}\\s-->\\s\\d{2}:\\d{2}:\\d{2}\\.\\d{3}(?:.*)?$/;\n  const out = [];\n  for (const raw of lines) {\n    const s = raw.trim();\n    if (!s) continue;\n    if (s === 'WEBVTT') continue;\n    if (/^\\d+$/.test(s)) continue;\n    if (ts.test(s)) continue;\n    out.push(s);\n  }\n  return out.join('\\n');\n}\nconst vttText = $json.vttRaw ?? $json.data ?? $json.body ?? '';\nconst cleanedTranscript = stripVtt(vttText);\nreturn [{ json: { ...$json, cleanedTranscript } }];"
+      },
+      "id": "00000004-0000-0000-0000-000000000004",
+      "name": "Function: Strip VTT",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [1120, 260]
+    },
+    {
+      "parameters": {
+        "functionCode": "// mergeSameSpeaker: collapse consecutive lines from the same speaker.\nfunction mergeSameSpeaker(inputText) {\n  const lines = (inputText || '').split('\\n');\n  const endPunct = /[。．.!?！？]$/;\n  const startPunct = /^[、。．,!?！？]/;\n  let lastSpeaker = '';\n  let buffer = '';\n  const out = [];\n  const flush = () => { if (buffer) { out.push(lastSpeaker + ': ' + buffer); buffer=''; lastSpeaker=''; } };\n  for (const line of lines) {\n    const idxHalf = line.indexOf(':');\n    const idxFull = line.indexOf('：');\n    let idx = -1;\n    if (idxHalf === -1) idx = idxFull; else if (idxFull === -1) idx = idxHalf; else idx = Math.min(idxHalf, idxFull);\n    if (idx > -1) {\n      const speaker = line.slice(0, idx).trim();\n      const text = line.slice(idx + 1).replace(/^\\s+/, '');\n      if (!lastSpeaker || lastSpeaker === speaker) {\n        if (!buffer) { lastSpeaker = speaker; buffer = text; }\n        else { const sep = (endPunct.test(buffer) || startPunct.test(text)) ? '' : ' '; buffer = buffer + sep + text; }\n      } else {\n        flush(); lastSpeaker = speaker; buffer = text;\n      }\n    } else {\n      flush(); out.push(line);\n    }\n  }\n  flush();\n  return out.join('\\n');\n}\nconst mergedTranscript = mergeSameSpeaker($json.cleanedTranscript || '');\nreturn [{ json: { ...$json, mergedTranscript } }];"
+      },
+      "id": "00000005-0000-0000-0000-000000000005",
+      "name": "Function: Merge Same Speaker",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [1420, 260]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Prepare titles, filenames, and defaults.\nfunction yyyymmdd(d) { return d.toISOString().slice(0,10).replace(/-/g, ''); }\nconst dtStr = $json.meeting?.start_time || new Date().toISOString();\nconst dateOnly = (dtStr || '').slice(0,10);\nconst ymd = dateOnly ? dateOnly.replace(/-/g,'') : yyyymmdd(new Date());\nconst client = 'UnknownClient';\nconst metaDocTitle = '[Meta] ' + ymd + ' ' + client;\nconst summaryDocTitle = '[Minutes] ' + ymd + ' ' + client;\nconst cleanedFileName = ymd + '_' + client + '_Transcript_Cleaned.txt';\nconst geminiModelId = 'gemini-2.5-pro';\nreturn [{ json: { ...$json, metaDocTitle, summaryDocTitle, cleanedFileName, geminiModelId } }];"
+      },
+      "id": "00000006-0000-0000-0000-000000000006",
+      "name": "Function: Prepare Titles & Defaults",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [1710, 140]
+    },
+    {
+      "parameters": {
+        "operation": "chat",
+        "model": "gpt-4o",
+        "messages": {
+          "message": [
+            {
+              "text": "You are an assistant that extracts meeting meta information from a cleaned transcript. Return Markdown only. Output in Japanese.\n\n出力フォーマット:\n# 会議メタ情報\n- ミーティング日時: <日時(可能ならタイムゾーン含む)>\n- クライアント名: <企業名/不明>\n- 参加者:\n  - <氏名>\n  - <氏名>\n\n次のトランスクリプトから必要情報を抽出してください。\n\n===== TRANSCRIPT START =====\n{{$json.mergedTranscript}}\n===== TRANSCRIPT END =====",
+              "type": "text"
+            }
+          ]
+        },
+        "additionalFields": { "simple": true }
+      },
+      "id": "00000007-0000-0000-0000-000000000007",
+      "name": "OpenAI: Extract Meta (GPT-4o)",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 4,
+      "position": [2000, 140]
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "title": "={{$json.metaDocTitle}}",
+        "textContent": "={{$json.text}}"
+      },
+      "id": "00000008-0000-0000-0000-000000000008",
+      "name": "Google Docs: Create Meta",
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 1,
+      "position": [2280, 140]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Prepare summary prompt using prompt.md content (embedded)\nconst basePrompt = 'このミーティングは飲食コンサルタント「竹矢 匠吾」とクライアントの「べこやはは丸」の道上さんとの会話トランスクリプトです。音声認識の誤変換や聞き取りミスが含まれる可能性があるため、文脈・前後関係から意味を補完して正確に理解してください。\n\n出力方針（厳守）\n- 主語を必ず明示する。クライアント企業は初出で正式名称を用い（〇〇株式会社など）、以降は略記可。コンサル側は「竹矢」と明記。\n- 関連する議題ごとにサブタイトルをつけ、箇条書きじゃない文章で記載する。\n- 誤変換は文脈から推測して修正。特定不能な固有名詞は「不明」と明記。\n- 雑談・挨拶は省略。会議の実務内容のみ記載。\n- 担当者は役割から推測し「（推測：◯◯側）」を併記。確信がない事実は「不明」と明記。\n- 今後のアクションアイテム」はテーブル形式で記載。\n- 議事録の中で内容が不明な点があれば最後にまとめて読み取れなかった点を記載する\n\n出力フォーマット（Markdown）\n\n## クライアントから聞いた内容\nクライアントの（事実/要望/現状/課題）をテーマごとに記載。  \n\n## クライアントに伝えた内容\n竹矢が説明・提案・助言・報告した内容をテーマごとに記載。  \n\n## ミーティング内で決定したこと\n合意事項・採用が確定した方針をテーマごとに記載。  \n\n## 今後のアクションアイテムと担当者\nタスク内容 — 担当者（確定または推測） — 期限（あれば記載。なければ特に何も記載しない）  \n（同様に続ける）\n\n手順\n1) トランスクリプト全体を通読し、文脈優先で解釈する。  \n2) 誤聴・誤変換は推測修正し、修正不能は「不明」と明記。  \n3) 役割に応じて担当者を割り当てる（店舗作業＝飲食店側、分析・提案＝コンサル側）。  \n4) すべての文で主語を明示しする。  \n5) 「今後のアクションアイテム」はテーブル形式で「タスク — 担当者 — 期限（明確になければ省略）」で統一する。\n\n注意事項\n- 主観的推測は禁止（担当者推測は可とし、必ず「（推測：◯◯側）」を明記）。  \n- 事実不確定は「不明」と明記。  \n- 数値・日付は可能な範囲で具体化。不確定は「目安」「未確定」とする。';\nconst transcript = $json.mergedTranscript || '';\nconst prompt = basePrompt + '\n\n===== TRANSCRIPT START =====\n' + transcript + '\n===== TRANSCRIPT END =====';\nreturn [{ json: { ...$json, summaryPrompt: prompt } }];"
+      },
+      "id": "00000009-0000-0000-0000-000000000009",
+      "name": "Function: Prepare Summary Prompt",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [1710, 380]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Build Gemini request body\nconst body = { contents: [ { role: 'user', parts: [{ text: $json.summaryPrompt }] } ] };\nreturn [{ json: { ...$json, geminiRequest: body } }];"
+      },
+      "id": "0000000a-0000-0000-0000-00000000000a",
+      "name": "Function: Build Gemini Request",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [2000, 380]
+    },
+    {
+      "parameters": {
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/{{$json.geminiModelId}}:generateContent",
+        "options": {
+          "headerParametersUi": {
+            "parameter": [
+              { "name": "x-goog-api-key", "value": "={{$env.GEMINI_API_KEY}}" },
+              { "name": "Content-Type", "value": "application/json" }
+            ]
+          },
+          "queryParametersUi": { "parameter": [{ "name": "key", "value": "={{$env.GEMINI_API_KEY}}" }] }
+        },
+        "jsonParameters": true,
+        "sendBody": true,
+        "bodyParametersJson": "={{$json.geminiRequest}}",
+        "responseFormat": "json"
+      },
+      "id": "0000000b-0000-0000-0000-00000000000b",
+      "name": "HTTP: Gemini Generate (2.5 Pro)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 5,
+      "position": [2280, 380]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Extract text from Gemini response\nlet text = '';\nconst cands = $json.candidates;\nif (Array.isArray(cands) && cands[0]?.content?.parts?.[0]?.text) { text = cands[0].content.parts[0].text; }\nelse if ($json?.content?.parts?.[0]?.text) { text = $json.content.parts[0].text; }\nreturn [{ json: { ...$json, summaryText: text } }];"
+      },
+      "id": "0000000c-0000-0000-0000-00000000000c",
+      "name": "Function: Extract Gemini Text",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [2560, 380]
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "title": "={{$json.summaryDocTitle}}",
+        "textContent": "={{$json.summaryText}}"
+      },
+      "id": "0000000d-0000-0000-0000-00000000000d",
+      "name": "Google Docs: Create Summary",
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 1,
+      "position": [2840, 380]
+    },
+    {
+      "parameters": {
+        "setAllData": false,
+        "options": { "fileName": "={{$json.cleanedFileName}}" },
+        "sourceData": "text",
+        "textContent": "={{$json.mergedTranscript}}",
+        "binaryPropertyName": "data"
+      },
+      "id": "0000000e-0000-0000-0000-00000000000e",
+      "name": "Move Binary Data: Cleaned Transcript",
+      "type": "n8n-nodes-base.moveBinaryData",
+      "typeVersion": 2,
+      "position": [2000, 560]
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "binaryData": true,
+        "binaryPropertyName": "data",
+        "options": { "parentId": "={{$env.GDRIVE_FOLDER_ID}}" }
+      },
+      "id": "0000000f-0000-0000-0000-00000000000f",
+      "name": "Google Drive: Upload Cleaned",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [2280, 560]
+    }
+  ],
+  "connections": {
+    "Webhook: Zoom transcription_completed": { "main": [[{ "node": "Function: Extract Transcript URL", "type": "main", "index": 0 }]] },
+    "Function: Extract Transcript URL": { "main": [[{ "node": "HTTP: Download VTT", "type": "main", "index": 0 }]] },
+    "HTTP: Download VTT": { "main": [[{ "node": "Function: Strip VTT", "type": "main", "index": 0 }]] },
+    "Function: Strip VTT": { "main": [[{ "node": "Function: Merge Same Speaker", "type": "main", "index": 0 }]] },
+    "Function: Merge Same Speaker": {
+      "main": [
+        [{ "node": "Function: Prepare Titles & Defaults", "type": "main", "index": 0 }],
+        [{ "node": "Function: Prepare Summary Prompt", "type": "main", "index": 0 }],
+        [{ "node": "Move Binary Data: Cleaned Transcript", "type": "main", "index": 0 }]
+      ]
+    },
+    "Function: Prepare Titles & Defaults": { "main": [[{ "node": "OpenAI: Extract Meta (GPT-4o)", "type": "main", "index": 0 }]] },
+    "OpenAI: Extract Meta (GPT-4o)": { "main": [[{ "node": "Google Docs: Create Meta", "type": "main", "index": 0 }]] },
+    "Function: Prepare Summary Prompt": { "main": [[{ "node": "Function: Build Gemini Request", "type": "main", "index": 0 }]] },
+    "Function: Build Gemini Request": { "main": [[{ "node": "HTTP: Gemini Generate (2.5 Pro)", "type": "main", "index": 0 }]] },
+    "HTTP: Gemini Generate (2.5 Pro)": { "main": [[{ "node": "Function: Extract Gemini Text", "type": "main", "index": 0 }]] },
+    "Function: Extract Gemini Text": { "main": [[{ "node": "Google Docs: Create Summary", "type": "main", "index": 0 }]] },
+    "Move Binary Data: Cleaned Transcript": { "main": [[{ "node": "Google Drive: Upload Cleaned", "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": {},
+  "staticData": null,
+  "pinData": {}
+}
+
+

@@ -1,0 +1,277 @@
+{
+    "nodes": [
+      {
+        "parameters": {
+          "options": {
+            "responseCode": 200
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.4,
+        "position": [
+          400,
+          96
+        ],
+        "id": "8b85f684-eb02-4bd6-8f81-29cec3808c90",
+        "name": "Respond to Webhook1"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "12c89807-6e71-45c3-82f4-4f028389bf33",
+                "leftValue": "={{ $json.body.event }}",
+                "rightValue": "endpoint.url_validation",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals",
+                  "name": "filter.operator.equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          192,
+          0
+        ],
+        "id": "77e64a7a-a599-4f82-8464-14f312dabfcb",
+        "name": "If"
+      },
+      {
+        "parameters": {
+          "action": "hmac",
+          "type": "SHA256",
+          "value": "={{ $json.body.payload.plainToken}}",
+          "dataPropertyName": "encryptedToken",
+          "secret": "FPsyNmKpTzuQ2R0gDXk_sA"
+        },
+        "type": "n8n-nodes-base.crypto",
+        "typeVersion": 1,
+        "position": [
+          416,
+          -128
+        ],
+        "id": "e97ecf46-a9f7-45ab-8f9b-1d0ae5b702ea",
+        "name": "Crypto"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\n  \"plainToken\": \"{{ $json.body.payload.plainToken }}\",\n  \"encryptedToken\": \"{{ $json.encryptedToken }}\"\n}",
+          "options": {
+            "responseCode": 200
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.4,
+        "position": [
+          592,
+          -128
+        ],
+        "id": "e8adaa75-62f8-4c3a-8091-f948bc8e42f3",
+        "name": "Respond to Webhook"
+      },
+      {
+        "parameters": {
+          "operation": "copy",
+          "fileId": {
+            "__rl": true,
+            "value": "1b5Y9iEAo5MqqX-5PJMxYeuEn90wbjF25vovdedap8og",
+            "mode": "list",
+            "cachedResultName": "template_MTGレポート",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b5Y9iEAo5MqqX-5PJMxYeuEn90wbjF25vovdedap8og/edit?usp=drivesdk"
+          },
+          "name": "={{ $json.executionMode }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "position": [
+          576,
+          96
+        ],
+        "id": "018f93f2-2b86-4232-bc52-a83d5d2715fd",
+        "name": "Copy file",
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "r9DTWxY3mnx8vb7I",
+            "name": "Google Drive account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "6ccc4c86-ac38-4e74-873d-670ff1a0a38b",
+          "authentication": "basicAuth",
+          "responseMode": "responseNode",
+          "options": {
+            "rawBody": true
+          }
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "02b01b14-0ef7-44af-bca6-d558fac19846",
+        "name": "Webhook",
+        "webhookId": "6ccc4c86-ac38-4e74-873d-670ff1a0a38b",
+        "credentials": {
+          "httpBasicAuth": {
+            "id": "dqls1n8flw8ZxPpd",
+            "name": "Unnamed credential"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "modelId": {
+            "__rl": true,
+            "value": "models/gemini-2.5-pro",
+            "mode": "list",
+            "cachedResultName": "models/gemini-2.5-pro"
+          },
+          "messages": {
+            "values": [
+              {
+                "content": "＜ここにファイルを入れる＞"
+              }
+            ]
+          },
+          "simplify": false,
+          "options": {
+            "systemMessage": "このミーティングは飲食コンサルタント「竹矢 匠吾」とクライアントのの会話トランスクリプトです。音声認識の誤変換や聞き取りミスが含まれる可能性があるため、文脈・前後関係から意味を補完して正確に理解してください。  出力方針（厳守） - 主語を必ず明示する。クライアント企業は初出で正式名称を用い（〇〇株式会社など）、以降は略記可。コンサル側は「竹矢」と明記。 - 関連する議題ごとにサブタイトルをつけ、箇条書きじゃない文章で記載する。 - 誤変換は文脈から推測して修正。特定不能な固有名詞は「不明」と明記。 - 雑談・挨拶は省略。会議の実務内容のみ記載。 - 担当者は役割から推測し「（推測：◯◯側）」を併記。確信がない事実は「不明」と明記。 - 今後のアクションアイテム」はテーブル形式で記載。 - 議事録の中で内容が不明な点があれば最後にまとめて読み取れなかった点を記載する  出力フォーマット（Markdown）  ## クライアントから聞いた内容 クライアントの（事実/要望/現状/課題）をテーマごとに記載。    ## クライアントに伝えた内容 竹矢が説明・提案・助言・報告した内容をテーマごとに記載。    ## ミーティング内で決定したこと 合意事項・採用が確定した方針をテーマごとに記載。    ## 今後のアクションアイテムと担当者 タスク内容 — 担当者（確定または推測） — 期限（あれば記載。なければ特に何も記載しない）   （同様に続ける）  手順 1) トランスクリプト全体を通読し、文脈優先で解釈する。   2) 誤聴・誤変換は推測修正し、修正不能は「不明」と明記。   3) 役割に応じて担当者を割り当てる（店舗作業＝飲食店側、分析・提案＝コンサル側）。   4) すべての文で主語を明示しする。   5) 「今後のアクションアイテム」はテーブル形式で「タスク — 担当者 — 期限（明確になければ省略）」で統一する。  注意事項 - 主観的推測は禁止（担当者推測は可とし、必ず「（推測：◯◯側）」を明記）。   - 事実不確定は「不明」と明記。   - 数値・日付は可能な範囲で具体化。不確定は「目安」「未確定」とする。"
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.googleGemini",
+        "typeVersion": 1,
+        "position": [
+          800,
+          -128
+        ],
+        "id": "711842a0-2d0a-4d2f-ad13-4555311b0639",
+        "name": "Message a model",
+        "retryOnFail": true,
+        "credentials": {
+          "googlePalmApi": {
+            "id": "qeqBxSiK98exPUES",
+            "name": "Google Gemini(PaLM) Api account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "folderId": "1bovkwNxh0pjugK8bg580RHe1EYPQvKuQ",
+          "title": "<ここに会議名を入れる>"
+        },
+        "type": "n8n-nodes-base.googleDocs",
+        "typeVersion": 2,
+        "position": [
+          784,
+          96
+        ],
+        "id": "e00fecbd-b868-4191-8637-57817866a559",
+        "name": "Create a document",
+        "credentials": {
+          "googleDocsOAuth2Api": {
+            "id": "tKH7jVtMlNfsMdu2",
+            "name": "Google Docs account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Respond to Webhook1": {
+        "main": [
+          [
+            {
+              "node": "Copy file",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "Crypto",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Respond to Webhook1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Crypto": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Respond to Webhook": {
+        "main": [
+          [
+            {
+              "node": "Message a model",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Copy file": {
+        "main": [
+          [
+            {
+              "node": "Create a document",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "pinData": {},
+    "meta": {
+      "templateCredsSetupCompleted": true,
+      "instanceId": "ee490051027d6928cde782ae1a784c7f1c5c3a9913fd76a903bff07ee921af46"
+    }
+  }

@@ -1,4 +1,5 @@
 import os
+import time
 import re
 import wave
 from pathlib import Path
@@ -29,9 +30,10 @@ OUTPUT_DIR = "tts_outputs"
 ID_COL = None
 TITLE_COL = "title"
 PART_COLS = ["hook", "body1", "body2", "outro"]  # デフォルト
+SPEED_MULTIPLIER = 1.18  # 話速倍率（デフォルト1.18x）。CLIで上書き可能
 
 # --- モデル/音声 ---
-MODEL_NAME = "gemini-2.5-flash-preview-tts"  # "gemini-2.5-pro-preview-tts" も可
+MODEL_NAME = "gemini-2.5-pro-preview-tts"  # "gemini-2.5-pro-preview-tts" も可
 DEFAULT_VOICE = "Sulafat"
 
 # --- 生成パラメータ（★追加） ---
@@ -75,7 +77,12 @@ def write_wav_pcm16(filename: Path, pcm_bytes: bytes,
 
 def build_single_speaker_prompt(part_name: str, text: str) -> str:
     hint = PART_STYLE_HINTS.get(part_name, "")
-    return f"{hint}\n\n{text}" if hint else text
+    speed_directive = ""
+    if SPEED_MULTIPLIER and abs(SPEED_MULTIPLIER - 1.0) > 1e-6:
+        # 日本語と英語の併記で明示（モデルの解釈安定化）
+        speed_directive = f"(速度は通常の{SPEED_MULTIPLIER:.2f}倍で話してください / Please speak at approximately {SPEED_MULTIPLIER:.2f}x normal speed)\n\n"
+    base = f"{hint}\n\n{speed_directive}{text}" if hint else f"{speed_directive}{text}"
+    return base
 
 
 def _build_gen_config_for_single(voice_name: str) -> types.GenerateContentConfig:
@@ -122,33 +129,53 @@ def _build_gen_config_for_multi(speaker_to_voice: Dict[str, str]) -> types.Gener
     )
 
 
-def generate_tts_single_speaker(client: genai.Client, text: str, voice_name: str) -> bytes:
+def _extract_audio_bytes(resp) -> bytes | None:
+    try:
+        for cand in getattr(resp, "candidates", []) or []:
+            content = getattr(cand, "content", None)
+            if not content:
+                continue
+            for part in getattr(content, "parts", []) or []:
+                inline = getattr(part, "inline_data", None)
+                if inline and getattr(inline, "data", None):
+                    return inline.data
+    except Exception:
+        return None
+    return None
+
+
+def generate_tts_single_speaker(client: genai.Client, text: str, voice_name: str) -> bytes | None:
     resp = client.models.generate_content(
         model=MODEL_NAME,
         contents=text,
         config=_build_gen_config_for_single(voice_name),
     )
-    return resp.candidates[0].content.parts[0].inline_data.data
+    return _extract_audio_bytes(resp)
 
 
 def generate_tts_multi_speaker(client: genai.Client,
                                script_with_speaker_lines: str,
-                               speaker_to_voice: Dict[str, str]) -> bytes:
+                               speaker_to_voice: Dict[str, str]) -> bytes | None:
     resp = client.models.generate_content(
         model=MODEL_NAME,
         contents=script_with_speaker_lines,
         config=_build_gen_config_for_multi(speaker_to_voice),
     )
-    return resp.candidates[0].content.parts[0].inline_data.data
+    return _extract_audio_bytes(resp)
 
 
-def main(start_row=None, end_row=None, input_csv=None, start_col=None, end_col=None):
+def main(start_row=None, end_row=None, input_csv=None, start_col=None, end_col=None, speed_multiplier=None):
     api_key = os.getenv("GOOGLE_API_KEY")
     if not api_key:
         raise RuntimeError("Set GOOGLE_API_KEY in .env or environment variable.")
     print("[INFO] GOOGLE_API_KEY loaded.")
 
     client = genai.Client(api_key=api_key)
+
+    # 話速倍率の設定
+    global SPEED_MULTIPLIER
+    if speed_multiplier is not None:
+        SPEED_MULTIPLIER = float(speed_multiplier)
 
     csv_path = input_csv if input_csv else INPUT_CSV
     print(f"[INFO] Loading CSV: {csv_path}")
@@ -179,13 +206,29 @@ def main(start_row=None, end_row=None, input_csv=None, start_col=None, end_col=N
     data = data.iloc[s:e]
     print(f"[INFO] Processing rows: {s+1} to {e} (1-based, header excluded)")
 
-    for idx, row in tqdm(data.iterrows(), total=len(data), desc="Generating TTS"):
-        if ID_COL and ID_COL in df.columns:
-            base_name = str(row[ID_COL])
-        elif TITLE_COL and TITLE_COL in df.columns and pd.notna(row[TITLE_COL]):
-            base_name = safe_slug(str(row[TITLE_COL]))
-        else:
-            base_name = f"row_{idx+1}"
+    processed_count = 0
+    total_rows = len(data)
+    for idx, row in tqdm(data.iterrows(), total=total_rows, desc="Generating TTS"):
+        # --- Determine numbering and title columns ---
+        no_col = "No." if "No." in df.columns else None
+        theme_col = "テーマ" if "テーマ" in df.columns else (TITLE_COL if TITLE_COL in df.columns else None)
+
+        # Video number (3 digits)
+        try:
+            video_num = int(row[no_col]) if no_col and pd.notna(row[no_col]) else (idx + 1)
+        except Exception:
+            video_num = idx + 1
+        video_num_str = f"{video_num:03d}"
+
+        # Title (use theme/title if available)
+        raw_title = str(row[theme_col]) if theme_col and pd.notna(row[theme_col]) else (str(row[TITLE_COL]) if TITLE_COL in df.columns and pd.notna(row[TITLE_COL]) else f"row_{idx+1}")
+        title_slug = safe_slug(raw_title).strip("_")
+        # Shorten to first 3 characters with ellipsis if longer
+        short_core = title_slug[:3]
+        title_short = f"{short_core}..." if len(title_slug) > 3 else short_core
+
+        # Base directory name: 001_<short-title>
+        base_name = f"{video_num_str}_{title_short}"
 
         item_dir = out_root / base_name
         item_dir.mkdir(parents=True, exist_ok=True)
@@ -224,33 +267,43 @@ def main(start_row=None, end_row=None, input_csv=None, start_col=None, end_col=N
 
             print(f"[INFO] Generating multi-speaker TTS for {base_name}...")
             pcm = generate_tts_multi_speaker(client, script, speaker_map)
-            wav_path = item_dir / f"{base_name}.wav"
-            write_wav_pcm16(wav_path, pcm)
-            print(f"[INFO] Saved: {wav_path}")
-            part_wavs.append(wav_path)
+            if not pcm:
+                print(f"[WARN] No audio returned for {base_name} (multi). Skipping.")
+            else:
+                wav_path = item_dir / f"{base_name}.wav"
+                write_wav_pcm16(wav_path, pcm)
+                print(f"[INFO] Saved: {wav_path}")
+                part_wavs.append(wav_path)
 
         else:
-            for p in PART_COLS:
+            for part_index, p in enumerate(PART_COLS, start=1):
                 text = "" if pd.isna(row[p]) else str(row[p])
                 if not text.strip():
                     continue
                 prompt = build_single_speaker_prompt(p, text)
                 print(f"[INFO] Generating TTS for part '{p}' in {base_name}...")
+                # Filename: NNN_Title_YY_PartName.wav
+                # Clean part name: remove parentheses content like （xx-yy秒） or (xx-yy)
+                clean_part = re.sub(r"[（(][^）)]*[）)]", "", str(p)).strip()
+                wav_filename = f"{video_num_str}_{title_short}_{part_index:02d}_{clean_part}.wav"
+                wav_path = item_dir / wav_filename
+                # Resume support: skip if already exists
+                if wav_path.exists():
+                    print(f"[INFO] Exists, skip: {wav_path}")
+                    continue
+
                 pcm = generate_tts_single_speaker(client, prompt, DEFAULT_VOICE)
-                wav_path = item_dir / f"{idx+1:03d}_{p}.wav"
+                if not pcm:
+                    print(f"[WARN] No audio returned for part '{p}' in {base_name}. Skipping.")
+                    continue
                 write_wav_pcm16(wav_path, pcm)
                 print(f"[INFO] Saved: {wav_path}")
                 part_wavs.append(wav_path)
-
-            if HAS_PYDUB and part_wavs:
-                print(f"[INFO] Combining WAVs for {base_name}...")
-                combined = None
-                for pth in part_wavs:
-                    seg = AudioSegment.from_wav(pth)
-                    combined = seg if combined is None else combined + seg
-                (item_dir / f"{base_name}.wav").unlink(missing_ok=True)
-                (combined.export(item_dir / f"{base_name}.wav", format="wav"))
-                print(f"[INFO] Combined WAV saved: {item_dir / f'{base_name}.wav'}")
+            # Concatenation disabled per requirement
+        processed_count += 1
+        if processed_count < total_rows:
+            print("[INFO] Sleeping 30s between rows to throttle RPM...")
+            time.sleep(30)
     print(f"[INFO] Done. Outputs under: {out_root.resolve()}")
 
 
@@ -261,5 +314,6 @@ if __name__ == "__main__":
     parser.add_argument("--end-row", type=int, default=None, help="処理終了行番号（1始まり、含む）")
     parser.add_argument("--start-col", type=int, default=None, help="処理開始列番号（1始まり、ヘッダ含む）")
     parser.add_argument("--end-col", type=int, default=None, help="処理終了列番号（1始まり、含む、ヘッダ含む）")
+    parser.add_argument("--speed-multiplier", type=float, default=None, help="話速倍率（例: 1.25）")
     args = parser.parse_args()
-    main(start_row=args.start_row, end_row=args.end_row, input_csv=args.input_csv, start_col=args.start_col, end_col=args.end_col)
+    main(start_row=args.start_row, end_row=args.end_row, input_csv=args.input_csv, start_col=args.start_col, end_col=args.end_col, speed_multiplier=args.speed_multiplier)

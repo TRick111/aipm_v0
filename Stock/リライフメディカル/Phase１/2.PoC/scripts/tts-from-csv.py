@@ -3,7 +3,7 @@ import time
 import re
 import wave
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, Union, Optional
 
 import pandas as pd
 from tqdm import tqdm
@@ -29,7 +29,7 @@ INPUT_CSV = "scripts.csv"  # デフォルト値。コマンドラインで上書
 OUTPUT_DIR = "tts_outputs"
 ID_COL = None
 TITLE_COL = "title"
-PART_COLS = ["hook", "body1", "body2", "outro"]  # デフォルト
+PART_COLS = ["hook", "body1", "body2", "outro", "cta"]  # デフォルト（CTAを追加）
 SPEED_MULTIPLIER = 1.18  # 話速倍率（デフォルト1.18x）。CLIで上書き可能
 
 # --- モデル/音声 ---
@@ -46,8 +46,8 @@ MAX_OUTPUT_TOKENS = None  # 音声生成では通常未指定のままでOK
 
 PART_STYLE_HINTS = {
     "hook":  "Energetic, catchy social-video hook in Japanese.",
-    "body1": "Clear, friendly, and informative tone.",
-    "body2": "Keep the pace natural; emphasize key nouns.",
+    "body1": "Clear, friendly, and informative tone in Japanese",
+    "body2": "Keep the pace natural; emphasize key nouns in Japanese.",
     "outro": "Warm and upbeat call-to-action in Japanese."
 }
 
@@ -56,6 +56,10 @@ USE_MULTI_SPEAKER_IF_AVAILABLE = True
 WAV_RATE = 24000
 WAV_CHANNELS = 1
 WAV_SAMPLE_WIDTH = 2
+
+# --- 無音パディング設定 ---
+ADD_SILENCE_PADDING = True    # 前後に無音を追加するかどうか
+SILENCE_DURATION = 0.5        # 無音の長さ（秒）
 # ========================
 
 
@@ -65,9 +69,133 @@ def safe_slug(s: str) -> str:
     return s[:80] if s else "item"
 
 
+def split_text_by_sentences(text: str) -> List[str]:
+    """句点で区切って一文ずつに分割する"""
+    if not text.strip():
+        return []
+    
+    # 句点で分割（。！？で分割）
+    sentences = re.split(r'([。！？])', text)
+    
+    # 句点と文を再結合
+    result = []
+    for i in range(0, len(sentences), 2):
+        if i < len(sentences):
+            sentence = sentences[i].strip()
+            if sentence:  # 空文字列でない場合
+                # 次の要素が句点記号の場合は結合
+                if i + 1 < len(sentences) and sentences[i + 1] in '。！？':
+                    sentence += sentences[i + 1]
+                result.append(sentence)
+    
+    # 空の要素を除去
+    result = [s for s in result if s.strip()]
+    
+    return result if result else [text]
+
+
+def adjust_playback_speed(pcm_bytes: bytes, speed_multiplier: float = 1.0,
+                         channels=WAV_CHANNELS, rate=WAV_RATE, sample_width=WAV_SAMPLE_WIDTH) -> bytes:
+    """PCM音声データの再生速度を調整"""
+    if abs(speed_multiplier - 1.0) < 1e-6:
+        return pcm_bytes  # 速度変更なし
+    
+    try:
+        if HAS_PYDUB:
+            # pydubを使用した高品質な速度調整
+            import io
+            from pydub import AudioSegment
+            
+            # PCMデータをAudioSegmentに変換
+            audio_io = io.BytesIO(pcm_bytes)
+            audio_segment = AudioSegment.from_raw(
+                audio_io, 
+                sample_width=sample_width, 
+                frame_rate=rate, 
+                channels=channels
+            )
+            
+            # 速度調整（ピッチを保持）
+            if speed_multiplier > 1.0:
+                # 速くする場合：フレームレートを上げてからリサンプリング
+                fast_audio = audio_segment._spawn(audio_segment.raw_data, overrides={
+                    "frame_rate": int(audio_segment.frame_rate * speed_multiplier)
+                })
+                adjusted_audio = fast_audio.set_frame_rate(rate)
+            else:
+                # 遅くする場合：フレームレートを下げてからリサンプリング
+                slow_audio = audio_segment._spawn(audio_segment.raw_data, overrides={
+                    "frame_rate": int(audio_segment.frame_rate * speed_multiplier)
+                })
+                adjusted_audio = slow_audio.set_frame_rate(rate)
+            
+            return adjusted_audio.raw_data
+        else:
+            # pydubがない場合：シンプルなサンプリング調整
+            print("[WARN] pydub not available, using simple speed adjustment")
+            return simple_speed_adjustment(pcm_bytes, speed_multiplier, channels, rate, sample_width)
+            
+    except Exception as e:
+        print(f"[WARN] Speed adjustment failed: {e}, using original audio")
+        return pcm_bytes
+
+
+def simple_speed_adjustment(pcm_bytes: bytes, speed_multiplier: float,
+                           channels: int, rate: int, sample_width: int) -> bytes:
+    """シンプルな速度調整（pydubなしの場合）"""
+    if speed_multiplier == 1.0:
+        return pcm_bytes
+    
+    # サンプル数を計算
+    bytes_per_sample = channels * sample_width
+    total_samples = len(pcm_bytes) // bytes_per_sample
+    
+    # 新しいサンプル数を計算
+    new_sample_count = int(total_samples / speed_multiplier)
+    
+    # リサンプリング（線形補間）
+    result = bytearray()
+    for i in range(new_sample_count):
+        # 元のサンプルインデックスを計算
+        original_index = int(i * speed_multiplier)
+        if original_index < total_samples:
+            start_byte = original_index * bytes_per_sample
+            end_byte = start_byte + bytes_per_sample
+            result.extend(pcm_bytes[start_byte:end_byte])
+    
+    return bytes(result)
+
+
+def add_silence_padding(pcm_bytes: bytes, silence_duration: float = 0.5,
+                       channels=WAV_CHANNELS, rate=WAV_RATE, sample_width=WAV_SAMPLE_WIDTH) -> bytes:
+    """PCMバイトデータの前後に無音を追加"""
+    # 無音のサンプル数を計算
+    silence_samples = int(silence_duration * rate)
+    silence_bytes_per_sample = channels * sample_width
+    silence_byte_count = silence_samples * silence_bytes_per_sample
+    
+    # 無音データ（0で埋める）
+    silence_data = b'\x00' * silence_byte_count
+    
+    # 前後に無音を追加
+    return silence_data + pcm_bytes + silence_data
+
+
 def write_wav_pcm16(filename: Path, pcm_bytes: bytes,
-                    channels=WAV_CHANNELS, rate=WAV_RATE, sample_width=WAV_SAMPLE_WIDTH):
+                    channels=WAV_CHANNELS, rate=WAV_RATE, sample_width=WAV_SAMPLE_WIDTH,
+                    add_silence: bool = True, silence_duration: float = 0.5,
+                    speed_multiplier: float = 1.0):
     filename.parent.mkdir(parents=True, exist_ok=True)
+    
+    # 1. 速度調整を適用
+    if abs(speed_multiplier - 1.0) > 1e-6:
+        print(f"[INFO] Adjusting playback speed to {speed_multiplier:.2f}x")
+        pcm_bytes = adjust_playback_speed(pcm_bytes, speed_multiplier, channels, rate, sample_width)
+    
+    # 2. 無音パディングを追加
+    if add_silence:
+        pcm_bytes = add_silence_padding(pcm_bytes, silence_duration, channels, rate, sample_width)
+    
     with wave.open(str(filename), "wb") as wf:
         wf.setnchannels(channels)
         wf.setsampwidth(sample_width)
@@ -76,13 +204,18 @@ def write_wav_pcm16(filename: Path, pcm_bytes: bytes,
 
 
 def build_single_speaker_prompt(part_name: str, text: str) -> str:
+    """
+    シンプルなプロンプト構築（速度調整は後処理で行う）
+    """
     hint = PART_STYLE_HINTS.get(part_name, "")
-    speed_directive = ""
-    if SPEED_MULTIPLIER and abs(SPEED_MULTIPLIER - 1.0) > 1e-6:
-        # 日本語と英語の併記で明示（モデルの解釈安定化）
-        speed_directive = f"(速度は通常の{SPEED_MULTIPLIER:.2f}倍で話してください / Please speak at approximately {SPEED_MULTIPLIER:.2f}x normal speed)\n\n"
-    base = f"{hint}\n\n{speed_directive}{text}" if hint else f"{speed_directive}{text}"
-    return base
+    
+    # スタイルヒントのみを適用（速度指示は除去）
+    if hint:
+        # 自然な指示に変換（速度に関する指示は除く）
+        style_instruction = hint.replace("Energetic, catchy", "Natural and engaging")
+        return f"{style_instruction}\n\n{text.strip()}"
+    else:
+        return text.strip()
 
 
 def _build_gen_config_for_single(voice_name: str) -> types.GenerateContentConfig:
@@ -129,7 +262,7 @@ def _build_gen_config_for_multi(speaker_to_voice: Dict[str, str]) -> types.Gener
     )
 
 
-def _extract_audio_bytes(resp) -> bytes | None:
+def _extract_audio_bytes(resp) -> Optional[bytes]:
     try:
         for cand in getattr(resp, "candidates", []) or []:
             content = getattr(cand, "content", None)
@@ -144,7 +277,10 @@ def _extract_audio_bytes(resp) -> bytes | None:
     return None
 
 
-def generate_tts_single_speaker(client: genai.Client, text: str, voice_name: str) -> bytes | None:
+def generate_tts_single_speaker(client: genai.Client, text: str, voice_name: str) -> Optional[bytes]:
+    """
+    シンプルなTTS生成（速度調整は後処理で行う）
+    """
     resp = client.models.generate_content(
         model=MODEL_NAME,
         contents=text,
@@ -155,7 +291,7 @@ def generate_tts_single_speaker(client: genai.Client, text: str, voice_name: str
 
 def generate_tts_multi_speaker(client: genai.Client,
                                script_with_speaker_lines: str,
-                               speaker_to_voice: Dict[str, str]) -> bytes | None:
+                               speaker_to_voice: Dict[str, str]) -> Optional[bytes]:
     resp = client.models.generate_content(
         model=MODEL_NAME,
         contents=script_with_speaker_lines,
@@ -271,7 +407,7 @@ def main(start_row=None, end_row=None, input_csv=None, start_col=None, end_col=N
                 print(f"[WARN] No audio returned for {base_name} (multi). Skipping.")
             else:
                 wav_path = item_dir / f"{base_name}.wav"
-                write_wav_pcm16(wav_path, pcm)
+                write_wav_pcm16(wav_path, pcm, add_silence=ADD_SILENCE_PADDING, silence_duration=SILENCE_DURATION)
                 print(f"[INFO] Saved: {wav_path}")
                 part_wavs.append(wav_path)
 
@@ -280,25 +416,48 @@ def main(start_row=None, end_row=None, input_csv=None, start_col=None, end_col=N
                 text = "" if pd.isna(row[p]) else str(row[p])
                 if not text.strip():
                     continue
-                prompt = build_single_speaker_prompt(p, text)
-                print(f"[INFO] Generating TTS for part '{p}' in {base_name}...")
-                # Filename: NNN_Title_YY_PartName.wav
+                
+                # 一文ずつ分割
+                sentences = split_text_by_sentences(text)
+                print(f"[INFO] Part '{p}' split into {len(sentences)} sentences")
+                
                 # Clean part name: remove parentheses content like （xx-yy秒） or (xx-yy)
                 clean_part = re.sub(r"[（(][^）)]*[）)]", "", str(p)).strip()
-                wav_filename = f"{video_num_str}_{title_short}_{part_index:02d}_{clean_part}.wav"
-                wav_path = item_dir / wav_filename
-                # Resume support: skip if already exists
-                if wav_path.exists():
-                    print(f"[INFO] Exists, skip: {wav_path}")
-                    continue
+                
+                for sentence_index, sentence_text in enumerate(sentences, start=1):
+                    # シンプルなプロンプト構築（速度調整は後処理で行う）
+                    prompt = build_single_speaker_prompt(p, sentence_text)
+                    
+                    # 複数文の場合は番号を追加
+                    if len(sentences) > 1:
+                        wav_filename = f"{video_num_str}_{title_short}_{part_index:02d}_{clean_part}_{sentence_index:02d}.wav"
+                        print(f"[INFO] Generating TTS for part '{p}' sentence {sentence_index}/{len(sentences)} in {base_name}...")
+                    else:
+                        wav_filename = f"{video_num_str}_{title_short}_{part_index:02d}_{clean_part}.wav"
+                        print(f"[INFO] Generating TTS for part '{p}' in {base_name}...")
+                    
+                    print(f"[DEBUG] Prompt: {prompt}")
+                    
+                    wav_path = item_dir / wav_filename
+                    
+                    # Resume support: skip if already exists
+                    if wav_path.exists():
+                        print(f"[INFO] Exists, skip: {wav_path}")
+                        continue
 
-                pcm = generate_tts_single_speaker(client, prompt, DEFAULT_VOICE)
-                if not pcm:
-                    print(f"[WARN] No audio returned for part '{p}' in {base_name}. Skipping.")
-                    continue
-                write_wav_pcm16(wav_path, pcm)
-                print(f"[INFO] Saved: {wav_path}")
-                part_wavs.append(wav_path)
+                    # 通常速度でTTS生成
+                    pcm = generate_tts_single_speaker(client, prompt, DEFAULT_VOICE)
+                    if not pcm:
+                        print(f"[WARN] No audio returned for sentence {sentence_index} of part '{p}' in {base_name}. Skipping.")
+                        continue
+                    
+                    # 速度調整を含む後処理でWAVファイル作成
+                    write_wav_pcm16(wav_path, pcm, 
+                                   add_silence=ADD_SILENCE_PADDING, 
+                                   silence_duration=SILENCE_DURATION,
+                                   speed_multiplier=SPEED_MULTIPLIER)
+                    print(f"[INFO] Saved: {wav_path}")
+                    part_wavs.append(wav_path)
             # Concatenation disabled per requirement
         processed_count += 1
         if processed_count < total_rows:

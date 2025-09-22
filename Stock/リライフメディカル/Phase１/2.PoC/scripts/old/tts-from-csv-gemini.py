@@ -36,18 +36,21 @@ WAV_SAMPLE_WIDTH = 2
 # 処理設定
 PART_COLS = ["フック（0-5秒）", "共感（5-12秒）", "前提知識（12-21秒）", "メイン解説（21-30秒）", "解説まとめ（30-32秒）", "実践（32-44秒）", "CTA（42-45秒）"]
 SPEED_MULTIPLIER = 1.0  # プロンプトで速度調整するため後処理は無効
-ADD_SILENCE_PADDING = True
+ADD_SILENCE_PADDING = True  # 再度有効化
 SILENCE_DURATION = 0.5
 
-# パート別スタイルプロンプト（1.15倍速指定込み）
+# 統一されたスタイルプロンプト（1.5倍速指定込み）
+UNIFIED_STYLE_PROMPT = "Say the following naturally and clearly. Speak at 1.5x normal speed."
+
+# パート別スタイルプロンプト（統一版）
 PART_STYLE_PROMPTS = {
-    "フック（0-5秒）": "Say the following in an energetic and catchy way to grab attention. Speak at 1.15x normal speed.",
-    "共感（5-12秒）": "Say the following in a warm and understanding way, showing empathy. Speak at 1.15x normal speed.",
-    "前提知識（12-21秒）": "Say the following in a clear and informative way, as if explaining basics. Speak at 1.15x normal speed.",
-    "メイン解説（21-30秒）": "Say the following in a professional and detailed way, as the main explanation. Speak at 1.15x normal speed.",
-    "解説まとめ（30-32秒）": "Say the following in a conclusive and summarizing way. Speak at 1.15x normal speed.",
-    "実践（32-44秒）": "Say the following in an encouraging and practical way, motivating action. Speak at 1.15x normal speed.",
-    "CTA（42-45秒）": "Say the following in a friendly and inviting way, encouraging engagement. Speak at 1.15x normal speed."
+    "フック（0-5秒）": UNIFIED_STYLE_PROMPT,
+    "共感（5-12秒）": UNIFIED_STYLE_PROMPT,
+    "前提知識（12-21秒）": UNIFIED_STYLE_PROMPT,
+    "メイン解説（21-30秒）": UNIFIED_STYLE_PROMPT,
+    "解説まとめ（30-32秒）": UNIFIED_STYLE_PROMPT,
+    "実践（32-44秒）": UNIFIED_STYLE_PROMPT,
+    "CTA（42-45秒）": UNIFIED_STYLE_PROMPT
 }
 
 # pydub利用可能性チェック
@@ -159,17 +162,50 @@ def simple_speed_adjustment(pcm_bytes: bytes, speed_multiplier: float,
 
 def add_silence_padding(pcm_bytes: bytes, silence_duration: float = 0.5,
                        channels=WAV_CHANNELS, rate=WAV_RATE, sample_width=WAV_SAMPLE_WIDTH) -> bytes:
-    """PCMバイトデータの前後に無音を追加"""
+    """PCMバイトデータの前後に無音を追加（改良版：ノイズ対策 + フェード処理）"""
+    import struct
+    
     # 無音のサンプル数を計算
     silence_samples = int(silence_duration * rate)
     silence_bytes_per_sample = channels * sample_width
     silence_byte_count = silence_samples * silence_bytes_per_sample
     
-    # 無音データ（0で埋める）
+    # 完全な無音データ（0で埋める - フェード処理で滑らかに）
     silence_data = b'\x00' * silence_byte_count
     
+    # フェードイン・フェードアウト用の短いフェード（10ms）
+    fade_samples = int(0.01 * rate)  # 10ms
+    fade_bytes = fade_samples * channels * sample_width
+    
+    if len(pcm_bytes) >= fade_bytes * 2:  # フェード処理可能な長さがある場合
+        # 音声データを16bit符号付き整数として解釈
+        if sample_width == 2 and channels == 1:  # モノラル16bit
+            # フェードイン処理（最初の10ms）
+            fade_in_data = bytearray(pcm_bytes[:fade_bytes])
+            for i in range(0, fade_bytes, 2):
+                sample = struct.unpack('<h', fade_in_data[i:i+2])[0]
+                fade_factor = (i // 2) / fade_samples
+                faded_sample = int(sample * fade_factor)
+                fade_in_data[i:i+2] = struct.pack('<h', faded_sample)
+            
+            # フェードアウト処理（最後の10ms）
+            fade_out_data = bytearray(pcm_bytes[-fade_bytes:])
+            for i in range(0, fade_bytes, 2):
+                sample = struct.unpack('<h', fade_out_data[i:i+2])[0]
+                fade_factor = 1.0 - (i // 2) / fade_samples
+                faded_sample = int(sample * fade_factor)
+                fade_out_data[i:i+2] = struct.pack('<h', faded_sample)
+            
+            # 処理済み音声データを結合
+            processed_audio = bytes(fade_in_data) + pcm_bytes[fade_bytes:-fade_bytes] + bytes(fade_out_data)
+        else:
+            # フェード処理をスキップ（複雑な形式の場合）
+            processed_audio = pcm_bytes
+    else:
+        processed_audio = pcm_bytes
+    
     # 前後に無音を追加
-    return silence_data + pcm_bytes + silence_data
+    return silence_data + processed_audio + silence_data
 
 
 def write_wav_pcm16(filename: Path, pcm_bytes: bytes,
@@ -262,12 +298,8 @@ def main():
     
     args = parser.parse_args()
     
-    # Google API Key認証確認
-    api_key = os.getenv("GOOGLE_API_KEY")
-    if not api_key:
-        print("[ERROR] GOOGLE_API_KEY not found. Please set GOOGLE_API_KEY in .env or environment variable.")
-        return
-    print("[INFO] GOOGLE_API_KEY loaded.")
+    # サービスアカウント認証を使用（APIキーは不要）
+    print("[INFO] Using service account authentication for Google Cloud Text-to-Speech API")
     
     # CSVファイル読み込み
     csv_path = Path(args.csv_file)
@@ -292,28 +324,31 @@ def main():
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     
-    # Text-to-Speechクライアント初期化（APIキー使用）
+    # Text-to-Speechクライアント初期化（サービスアカウント使用）
     try:
         from google.cloud import texttospeech
         from google.oauth2 import service_account
-        import tempfile
-        import json
         
-        # APIキーを使用した認証（サービスアカウントキーの代替）
-        # 注意: Google Cloud Text-to-Speech APIは通常サービスアカウントを使用
-        # APIキーでの直接認証は制限される場合があります
+        # サービスアカウントJSONファイルのパス
+        service_account_path = Path(__file__).parent / ".config" / "relifemedical-31ebfad999f1.json"
         
-        # 環境変数でAPIキーを設定
-        os.environ['GOOGLE_API_KEY'] = api_key
+        if not service_account_path.exists():
+            print(f"[ERROR] Service account file not found: {service_account_path}")
+            print("[INFO] Please ensure the JSON file is placed at the correct location.")
+            return
+        
+        # サービスアカウント認証情報を読み込み
+        credentials = service_account.Credentials.from_service_account_file(
+            str(service_account_path)
+        )
         
         # クライアントを初期化
-        client = texttospeech.TextToSpeechClient()
+        client = texttospeech.TextToSpeechClient(credentials=credentials)
         
-        print("[INFO] Google Cloud Text-to-Speech client initialized")
+        print(f"[INFO] Google Cloud Text-to-Speech client initialized with service account: {service_account_path}")
     except Exception as e:
         print(f"[ERROR] Failed to initialize TTS client: {e}")
-        print("[INFO] Google Cloud Text-to-Speech requires service account credentials.")
-        print("[INFO] Consider using the GenAI API version (tts-from-csv.py) instead.")
+        print("[INFO] Please check the service account JSON file and permissions.")
         return
     
     # 使用する列を決定
@@ -331,12 +366,12 @@ def main():
         video_num = row.iloc[0] if not pd.isna(row.iloc[0]) else f"row_{idx}"
         title = row.iloc[1] if len(row) > 1 and not pd.isna(row.iloc[1]) else "untitled"
         
-        # ファイル名用の短縮タイトル
+        # ファイル名用の短縮タイトル（既存スクリプトと同じ形式）
         title_short = re.sub(r"[^\w\s]", "", str(title))[:20]
         video_num_str = f"{int(video_num):03d}" if isinstance(video_num, (int, float)) else str(video_num)
         base_name = f"{video_num_str}_{title_short}"
         
-        # アイテムディレクトリ作成
+        # アイテムディレクトリ作成（既存スクリプトと同じ形式）
         item_dir = output_dir / base_name
         item_dir.mkdir(parents=True, exist_ok=True)
         
@@ -359,7 +394,7 @@ def main():
                 # プロンプトとテキストを構築
                 prompt, clean_text = build_gemini_prompt_and_text(column_name, sentence_text)
                 
-                # ファイル名決定
+                # ファイル名決定（既存スクリプトと同じ形式）
                 if len(sentences) > 1:
                     wav_filename = f"{video_num_str}_{title_short}_{part_index:02d}_{clean_part}_{sentence_index:02d}.wav"
                     print(f"[INFO] Generating TTS for part '{column_name}' sentence {sentence_index}/{len(sentences)} in {base_name}...")

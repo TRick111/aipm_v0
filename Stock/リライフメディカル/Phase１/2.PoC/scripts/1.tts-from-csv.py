@@ -29,8 +29,8 @@ INPUT_CSV = "scripts.csv"  # デフォルト値。コマンドラインで上書
 OUTPUT_DIR = "tts_outputs"
 ID_COL = None
 TITLE_COL = "title"
-PART_COLS = ["hook", "body1", "body2", "outro", "cta"]  # デフォルト（CTAを追加）
-SPEED_MULTIPLIER = 1.18  # 話速倍率（デフォルト1.18x）。CLIで上書き可能
+PART_COLS = ["フック（0-5秒）", "共感（5-12秒）", "前提知識（12-21秒）", "メイン解説（21-30秒）", "解説まとめ（30-32秒）", "実践（32-44秒）", "CTA（42-45秒）"]
+SPEED_MULTIPLIER = 1.0  # プロンプトで速度指定するため、後処理では1.0（無効化）
 
 # --- モデル/音声 ---
 MODEL_NAME = "gemini-2.5-pro-preview-tts"  # "gemini-2.5-pro-preview-tts" も可
@@ -39,17 +39,12 @@ DEFAULT_VOICE = "Sulafat"
 # --- 生成パラメータ（★追加） ---
 # 公式APIの GenerateContentConfig で指定（AI Studio UI と同趣旨）:
 # temperature: 0.0〜2.0（Vertex/AI Studioの一般指針）/ デフォルトは 1.0 付近
-TEMPERATURE = 1.2  # ← ここを1.2で固定
+TEMPERATURE = 0.8 
 TOP_P = 0.9           # 任意：確率質量サンプリング
 TOP_K = 40            # 任意：上位K語彙サンプリング
 MAX_OUTPUT_TOKENS = None  # 音声生成では通常未指定のままでOK
 
-PART_STYLE_HINTS = {
-    "hook":  "Energetic, catchy social-video hook in Japanese.",
-    "body1": "Clear, friendly, and informative tone in Japanese",
-    "body2": "Keep the pace natural; emphasize key nouns in Japanese.",
-    "outro": "Warm and upbeat call-to-action in Japanese."
-}
+# PART_STYLE_HINTS削除：速度調整は後処理で行うため、プロンプトはシンプルに
 
 USE_MULTI_SPEAKER_IF_AVAILABLE = True
 
@@ -205,17 +200,34 @@ def write_wav_pcm16(filename: Path, pcm_bytes: bytes,
 
 def build_single_speaker_prompt(part_name: str, text: str) -> str:
     """
-    シンプルなプロンプト構築（速度調整は後処理で行う）
+    StyleInstructionとTextの形式でプロンプトを構築
     """
-    hint = PART_STYLE_HINTS.get(part_name, "")
+    style_instruction = """Important!!  かなり早口で話す。通常の1.4倍程度の速さで。
+
+全体イメージ
+	•	雰囲気：親しみやすくフレンドリー、でも清潔感や上品さを失わない。
+	•	キャラクター：SNSで日常の美容習慣を気軽にシェアしてくれる「ちょっと年上で信頼できるお姉さん」。
+	•	ゴール：聞き手が「自分もやってみようかな」と前向きな気持ちになれる。
+
+⸻
+
+トーン詳細
+	•	声色：明るくやさしい声。高すぎず、少しだけ上に寄せて軽やかさを出す。
+	•	抑揚：文頭を少し明るく立ち上げ、キーワードや数字を軽く強調。最後は落ち着いて締める。疑問文では語尾の音を上げる。断定する場合は文の終わりで語尾を下げる。
+	•	間の取り方：
+	•	キーフレーズの前後は200ms程度。
+
+⸻
+
+例えるなら…
+	•	友達のインスタストーリーで「最近これ試したんだけど、よかったよ〜」とシェアしている感じ。
+	•	営業感ゼロで、あくまで「自分が実際にやっていること」を優しく教えてくれる。"""
     
-    # スタイルヒントのみを適用（速度指示は除去）
-    if hint:
-        # 自然な指示に変換（速度に関する指示は除く）
-        style_instruction = hint.replace("Energetic, catchy", "Natural and engaging")
-        return f"{style_instruction}\n\n{text.strip()}"
-    else:
-        return text.strip()
+    return f"""StyleInstruction:
+'''
+{style_instruction}
+'''
+Text: {text.strip()}"""
 
 
 def _build_gen_config_for_single(voice_name: str) -> types.GenerateContentConfig:
@@ -275,6 +287,48 @@ def _extract_audio_bytes(resp) -> Optional[bytes]:
     except Exception:
         return None
     return None
+
+
+def add_furigana_with_gemini(client: genai.Client, text: str) -> str:
+    """
+    Geminiを使って小学生が読めない難しい漢字にふりがなを追加する
+    """
+    try:
+        furigana_prompt = f"""以下のテキストに含まれる小学生が読めない可能性のある難しい漢字や熟語にふりがなを追加してください。
+
+ルール:
+- 小学生レベルで読めない漢字・熟語にのみふりがなを追加
+- ふりがなの形式: 漢字（ひらがな）
+- 例: 不織布 → 不織布（ふしょくふ）
+- 一般的な漢字（例：知る、同じ、等）にはふりがなを追加しない
+- テキストの内容や意味は一切変更しない
+- ふりがな以外の文字は元のまま保持
+
+テキスト: {text}
+
+ふりがなを追加したテキスト:"""
+        
+        # テキスト生成モデルを使用（音声生成ではないため）
+        resp = client.models.generate_content(
+            model="gemini-2.0-flash-exp",  # テキスト生成用モデル
+            contents=furigana_prompt
+        )
+        
+        # レスポンスからテキストを抽出
+        if hasattr(resp, 'candidates') and resp.candidates:
+            candidate = resp.candidates[0]
+            if hasattr(candidate, 'content') and candidate.content:
+                if hasattr(candidate.content, 'parts') and candidate.content.parts:
+                    furigana_text = candidate.content.parts[0].text.strip()
+                    print(f"[INFO] Furigana added: {text} → {furigana_text}")
+                    return furigana_text
+        
+        print(f"[WARN] Failed to add furigana, using original text: {text}")
+        return text
+        
+    except Exception as e:
+        print(f"[ERROR] Furigana processing failed: {e}, using original text")
+        return text
 
 
 def generate_tts_single_speaker(client: genai.Client, text: str, voice_name: str) -> Optional[bytes]:
@@ -425,15 +479,20 @@ def main(start_row=None, end_row=None, input_csv=None, start_col=None, end_col=N
                 clean_part = re.sub(r"[（(][^）)]*[）)]", "", str(p)).strip()
                 
                 for sentence_index, sentence_text in enumerate(sentences, start=1):
+                    # ふりがな追加処理
+                    furigana_text = add_furigana_with_gemini(client, sentence_text)
+                    
                     # シンプルなプロンプト構築（速度調整は後処理で行う）
-                    prompt = build_single_speaker_prompt(p, sentence_text)
+                    prompt = build_single_speaker_prompt(p, furigana_text)
                     
                     # 複数文の場合は番号を追加
+                    suffix = os.getenv("TTS_FILENAME_SUFFIX", "").strip()
+                    suffix_part = f"_{suffix}" if suffix else ""
                     if len(sentences) > 1:
-                        wav_filename = f"{video_num_str}_{title_short}_{part_index:02d}_{clean_part}_{sentence_index:02d}.wav"
+                        wav_filename = f"{video_num_str}_{title_short}_{part_index:02d}_{clean_part}_{sentence_index:02d}{suffix_part}.wav"
                         print(f"[INFO] Generating TTS for part '{p}' sentence {sentence_index}/{len(sentences)} in {base_name}...")
                     else:
-                        wav_filename = f"{video_num_str}_{title_short}_{part_index:02d}_{clean_part}.wav"
+                        wav_filename = f"{video_num_str}_{title_short}_{part_index:02d}_{clean_part}{suffix_part}.wav"
                         print(f"[INFO] Generating TTS for part '{p}' in {base_name}...")
                     
                     print(f"[DEBUG] Prompt: {prompt}")
@@ -474,5 +533,19 @@ if __name__ == "__main__":
     parser.add_argument("--start-col", type=int, default=None, help="処理開始列番号（1始まり、ヘッダ含む）")
     parser.add_argument("--end-col", type=int, default=None, help="処理終了列番号（1始まり、含む、ヘッダ含む）")
     parser.add_argument("--speed-multiplier", type=float, default=None, help="話速倍率（例: 1.25）")
+    parser.add_argument("--suffix", type=str, default="", help="出力ファイル名の末尾に付与する文字列（例: temp0_7）")
+    parser.add_argument("--temperature", type=float, default=None, help="Gemini生成のtemperatureを上書き（0.0-2.0）")
     args = parser.parse_args()
+
+    # グローバル設定の上書き
+    if args.temperature is not None:
+        # 安全域にクランプ
+        t = max(0.0, min(2.0, float(args.temperature)))
+        globals()["TEMPERATURE"] = t
+        print(f"[INFO] TEMPERATURE overridden to {t}")
+
+    # 末尾サフィックスを環境変数で渡して生成側の命名に反映（簡便対応）
+    if args.suffix:
+        os.environ["TTS_FILENAME_SUFFIX"] = args.suffix
+
     main(start_row=args.start_row, end_row=args.end_row, input_csv=args.input_csv, start_col=args.start_col, end_col=args.end_col, speed_multiplier=args.speed_multiplier)

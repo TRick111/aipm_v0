@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>飲食店 課題整理 - 階層構造分析</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .level {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .level:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .level-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid;
+        }
+
+        .level-badge {
+            font-size: 1.5rem;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 10px;
+            color: white;
+            margin-right: 15px;
+        }
+
+        .level-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        /* レベル別カラー */
+        .level-1 .level-header { border-color: #e74c3c; }
+        .level-1 .level-badge { background: #e74c3c; }
+        .level-1 .level-title { color: #e74c3c; }
+
+        .level-2 .level-header { border-color: #f39c12; }
+        .level-2 .level-badge { background: #f39c12; }
+        .level-2 .level-title { color: #f39c12; }
+
+        .level-3 .level-header { border-color: #3498db; }
+        .level-3 .level-badge { background: #3498db; }
+        .level-3 .level-title { color: #3498db; }
+
+        .causality .level-header { border-color: #9b59b6; }
+        .causality .level-badge { background: #9b59b6; }
+        .causality .level-title { color: #9b59b6; }
+
+        .issue-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 5px solid;
+            transition: all 0.3s ease;
+        }
+
+        .issue-card:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .level-1 .issue-card { border-color: #e74c3c; }
+        .level-2 .issue-card { border-color: #f39c12; }
+        .level-3 .issue-card { border-color: #3498db; }
+
+        .issue-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .issue-title::before {
+            content: "▸";
+            margin-right: 10px;
+            color: #e74c3c;
+            font-size: 1.5rem;
+        }
+
+        .issue-detail {
+            padding-left: 30px;
+        }
+
+        .issue-item {
+            background: white;
+            padding: 12px 15px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border-left: 3px solid #95a5a6;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .issue-item strong {
+            color: #2c3e50;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .subsection {
+            margin-bottom: 25px;
+        }
+
+        .subsection-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #34495e;
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            background: linear-gradient(90deg, rgba(52,152,219,0.1) 0%, transparent 100%);
+            border-radius: 5px;
+        }
+
+        .flow-chain {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 15px 0;
+            border: 2px solid #9b59b6;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .flow-step:hover {
+            background: #e9ecef;
+            transform: scale(1.02);
+        }
+
+        .flow-step-content {
+            flex: 1;
+            font-size: 1.1rem;
+            color: #2c3e50;
+        }
+
+        .flow-arrow {
+            text-align: center;
+            font-size: 2rem;
+            color: #9b59b6;
+            margin: 10px 0;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .result-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+            font-weight: bold;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            border-top: 4px solid #3498db;
+        }
+
+        .category-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .category-title::before {
+            content: "●";
+            margin-right: 10px;
+            color: #3498db;
+        }
+
+        .category-item {
+            padding: 8px 0;
+            color: #555;
+            border-bottom: 1px solid #ecf0f1;
+            line-height: 1.5;
+        }
+
+        .category-item:last-child {
+            border-bottom: none;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .level {
+                padding: 20px;
+            }
+
+            .level-badge {
+                font-size: 1.2rem;
+                padding: 8px 15px;
+            }
+
+            .level-title {
+                font-size: 1.3rem;
+            }
+
+            .category-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 飲食店 課題整理分析</h1>
+            <p>根本原因の階層構造 × 因果関係の可視化</p>
+        </div>
+
+        <!-- レベル1：根本的な経営課題 -->
+        <div class="level level-1">
+            <div class="level-header">
+                <div class="level-badge">Level 1</div>
+                <div class="level-title">根本的な経営課題</div>
+            </div>
+
+            <div class="issue-card">
+                <div class="issue-title">1. ポジショニングの曖昧さ</div>
+                <div class="issue-detail">
+                    <div class="issue-item">
+                        <strong>目指す方向：</strong>
+                        モダンな創作居酒屋
+                    </div>
+                    <div class="issue-item">
+                        <strong>現実：</strong>
+                        大衆居酒屋のオペレーション継続
+                    </div>
+                    <div class="result-box">
+                        ⚠️ ブランドアイデンティティの不一致
+                    </div>
+                </div>
+            </div>
+
+            <div class="issue-card">
+                <div class="issue-title">2. データドリブン経営の不足</div>
+                <div class="issue-detail">
+                    <div class="issue-item">
+                        無駄コストの具体的把握不能
+                    </div>
+                    <div class="issue-item">
+                        リピート率・顧客行動データ不足
+                    </div>
+                    <div class="issue-item">
+                        意思決定が勘に依存
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- レベル2：運営上の構造的課題 -->
+        <div class="level level-2">
+            <div class="level-header">
+                <div class="level-badge">Level 2</div>
+                <div class="level-title">運営上の構造的課題</div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">A. オペレーション効率性</div>
+                <div class="flow-chain">
+                    <div class="flow-step">
+                        <div class="flow-step-content">
+                            メニュー数過多 → コスト増加 + オペレーション複雑化
+                        </div>
+                    </div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-step">
+                        <div class="flow-step-content">
+                            売上原価率悪化 + 現場混乱
+                        </div>
+                    </div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-step">
+                        <div class="flow-step-content">
+                            利益圧迫 + サービス品質低下
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">B. 品質とブランド価値の乖離</div>
+                <div class="flow-chain">
+                    <div class="flow-step">
+                        <div class="flow-step-content">
+                            期待値設定（ウェブ集客写真）
+                        </div>
+                    </div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-step">
+                        <div class="flow-step-content">
+                            実際の提供価値（大衆居酒屋レベル）
+                        </div>
+                    </div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-step">
+                        <div class="flow-step-content">
+                            顧客満足度低下 → リピート率低下
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">C. 集客構造の脆弱性</div>
+                <div class="flow-chain">
+                    <div class="flow-step">
+                        <div class="flow-step-content">
+                            2階立地 → ウェブ集客依存
+                        </div>
+                    </div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-step">
+                        <div class="flow-step-content">
+                            平日（月-木）集客不足
+                        </div>
+                    </div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-step">
+                        <div class="flow-step-content">
+                            稼働率低下 → 売上機会損失
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- レベル3：具体的な表面課題 -->
+        <div class="level level-3">
+            <div class="level-header">
+                <div class="level-badge">Level 3</div>
+                <div class="level-title">具体的な表面課題</div>
+            </div>
+
+            <div class="category-grid">
+                <div class="category-card">
+                    <div class="category-title">オペレーション面</div>
+                    <div class="category-item">✗ メニュー数多すぎ</div>
+                    <div class="category-item">✗ 在庫管理不適切</div>
+                    <div class="category-item">✗ 盛り付け・お皿の知識不足</div>
+                </div>
+
+                <div class="category-card">
+                    <div class="category-title">マーケティング面</div>
+                    <div class="category-item">✗ 公式LINEキャンペーン設計不十分</div>
+                    <div class="category-item">✗ 写真と実物のギャップ</div>
+                    <div class="category-item">✗ リピーター獲得施策不足</div>
+                </div>
+
+                <div class="category-card">
+                    <div class="category-title">データ管理面</div>
+                    <div class="category-item">✗ ABC分析未実施</div>
+                    <div class="category-item">✗ 顧客管理システム活用不足</div>
+                    <div class="category-item">✗ 原価率把握不十分</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 因果関係の連鎖 -->
+        <div class="level causality">
+            <div class="level-header">
+                <div class="level-badge">🔄</div>
+                <div class="level-title">因果関係の連鎖</div>
+            </div>
+
+            <div class="flow-chain">
+                <div class="flow-step">
+                    <div class="flow-step-content">
+                        <strong>データ不足</strong> → 意思決定の質低下 → 施策効果測定不能
+                    </div>
+                </div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-step">
+                    <div class="flow-step-content">
+                        <strong>ポジショニング曖昧</strong> → ブランド価値不明確 → 差別化困難
+                    </div>
+                </div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-step">
+                    <div class="flow-step-content">
+                        <strong>期待値管理失敗</strong> → 顧客満足度低下 → リピート率低下
+                    </div>
+                </div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-step">
+                    <div class="flow-step-content">
+                        <strong>平日集客不足</strong> → 稼働率低下 → 売上目標未達
+                    </div>
+                </div>
+            </div>
+
+            <div class="result-box" style="margin-top: 30px; font-size: 1.3rem;">
+                💡 改善アクション：根本原因（Level 1）の解決から着手することで、<br>
+                連鎖的に下層の課題が改善される構造的アプローチが必要
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+
+

@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>売上目標未達の根本原因分析 - フィッシュボーン図</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Yu Gothic', 'Hiragino Sans', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 1400px;
+            width: 100%;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+
+        #fishbone {
+            width: 100%;
+            height: 1600px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            background: #fafafa;
+            overflow-x: auto;
+        }
+
+        .category-info {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .category-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+
+        .category-card h3 {
+            color: #333;
+            margin-bottom: 12px;
+            font-size: 1.3rem;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+        }
+
+        .category-card ul {
+            list-style: none;
+        }
+
+        .category-card li {
+            padding: 8px 0;
+            color: #555;
+            font-size: 0.95rem;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .category-card li::before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .category-card small {
+            display: block;
+            margin-top: 5px;
+            line-height: 1.6;
+            color: #666;
+        }
+
+        .category-card li {
+            margin-bottom: 15px;
+        }
+
+        .legend {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .legend-item {
+            display: inline-block;
+            margin: 0 15px;
+            font-size: 0.9rem;
+        }
+
+        .legend-color {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            #fishbone {
+                height: 1200px;
+            }
+
+            .category-info {
+                grid-template-columns: 1fr;
+            }
+
+            .category-card {
+                margin-bottom: 15px;
+            }
+        }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🐟 売上目標未達の根本原因分析</h1>
+        <p>フィッシュボーン図（特性要因図）による階層的課題の可視化</p>
+    </div>
+
+    <div class="container">
+        <div class="controls">
+            <button class="btn btn-primary" onclick="resetZoom()">🔍 ズームリセット</button>
+            <button class="btn btn-primary" onclick="toggleAnimation()">✨ アニメーション</button>
+            <button class="btn btn-primary" onclick="exportSVG()">💾 SVGダウンロード</button>
+        </div>
+
+        <svg id="fishbone"></svg>
+
+        <div class="legend">
+            <div class="legend-item">
+                <span class="legend-color" style="background: #ff6b6b;"></span>
+                ポジショニング曖昧さ
+            </div>
+            <div class="legend-item">
+                <span class="legend-color" style="background: #4ecdc4;"></span>
+                データドリブン経営不足
+            </div>
+            <div class="legend-item">
+                <span class="legend-color" style="background: #45b7d1;"></span>
+                オペレーション効率性
+            </div>
+            <div class="legend-item">
+                <span class="legend-color" style="background: #96ceb4;"></span>
+                品質とブランド価値乖離
+            </div>
+            <div class="legend-item">
+                <span class="legend-color" style="background: #ffeaa7;"></span>
+                集客構造脆弱性
+            </div>
+        </div>
+
+        <div class="category-info">
+            <div class="category-card">
+                <h3>🎯 ポジショニング曖昧さ</h3>
+                <ul>
+                    <li><strong>目指す方向：創作居酒屋</strong><br>
+                        <small>モダンで洗練された創作居酒屋を目指しているが、実際の運営は従来型の大衆居酒屋スタイルを継続</small>
+                    </li>
+                    <li><strong>現実：大衆居酒屋運営</strong><br>
+                        <small>メニュー構成、価格設定、サービススタイルが大衆居酒屋レベルに留まり、創作居酒屋としての差別化ができていない</small>
+                    </li>
+                    <li><strong>ブランドID不一致</strong><br>
+                        <small>目指すブランドイメージと実際の提供価値にギャップがあり、顧客が店舗の特徴を理解できない状況</small>
+                    </li>
+                    <li><strong>差別化困難</strong><br>
+                        <small>競合との明確な違いを打ち出せず、価格競争に巻き込まれる悪循環に</small>
+                    </li>
+                </ul>
+            </div>
+            <div class="category-card">
+                <h3>📊 データドリブン経営不足</h3>
+                <ul>
+                    <li><strong>無駄コスト把握不能</strong><br>
+                        <small>ABC分析未実施により、売れない商品や無駄な在庫にかかるコストを定量的に把握できていない</small>
+                    </li>
+                    <li><strong>リピート率不明</strong><br>
+                        <small>顧客管理システムが活用されておらず、どのくらいの顧客がリピートしているか不明</small>
+                    </li>
+                    <li><strong>顧客行動データ不足</strong><br>
+                        <small>来店頻度、注文傾向、客単価推移などの重要データが蓄積されていない</small>
+                    </li>
+                    <li><strong>意思決定が勘依存</strong><br>
+                        <small>データに基づかない経験や勘による意思決定で、施策効果の測定も困難</small>
+                    </li>
+                </ul>
+            </div>
+            <div class="category-card">
+                <h3>⚙️ オペレーション効率性</h3>
+                <ul>
+                    <li><strong>メニュー数過多</strong><br>
+                        <small>メニュー数が多すぎることで、仕込み時間増加、在庫管理複雑化、食材廃棄増加などコストが膨らむ</small>
+                    </li>
+                    <li><strong>在庫管理不適切</strong><br>
+                        <small>食材の発注・在庫管理が適切でなく、過剰在庫や品切れが頻発し、廃棄ロスが増加</small>
+                    </li>
+                    <li><strong>売上原価率悪化</strong><br>
+                        <small>適切な原価管理ができておらず、利益を圧迫。目標原価率を大きく超える商品が存在</small>
+                    </li>
+                    <li><strong>盛り付け知識不足</strong><br>
+                        <small>創作居酒屋としての盛り付けやお皿選びの知識が不足し、見た目の価値向上ができていない</small>
+                    </li>
+                </ul>
+            </div>
+            <div class="category-card">
+                <h3>✨ 品質とブランド価値乖離</h3>
+                <ul>
+                    <li><strong>Web写真と実物ギャップ</strong><br>
+                        <small>ウェブサイトやSNSの料理写真と実際の提供料理にギャップがあり、顧客の期待を裏切る結果に</small>
+                    </li>
+                    <li><strong>期待値管理失敗</strong><br>
+                        <small>集客時に設定した期待値と実際の体験が一致せず、顧客満足度が低下</small>
+                    </li>
+                    <li><strong>サービス品質低下</strong><br>
+                        <small>スタッフ教育不足やオペレーション混乱により、接客やサービスの品質が不安定</small>
+                    </li>
+                    <li><strong>リピート率低下</strong><br>
+                        <small>期待を下回る体験により、一度来店しても再来店につながらない悪循環</small>
+                    </li>
+                </ul>
+            </div>
+            <div class="category-card">
+                <h3>🎪 集客構造脆弱性</h3>
+                <ul>
+                    <li><strong>2階立地→Web依存</strong><br>
+                        <small>2階という立地のため通行人の目に留まりにくく、ウェブ集客に過度に依存する構造</small>
+                    </li>
+                    <li><strong>平日(月-木)集客不足</strong><br>
+                        <small>週末は集客できるが、平日特に月曜～木曜の集客が弱く、週全体の稼働率が低い</small>
+                    </li>
+                    <li><strong>稼働率低下</strong><br>
+                        <small>平日の空席が多く、固定費を回収できない日が続き、売上機会を大きく損失</small>
+                    </li>
+                    <li><strong>LINE施策不十分</strong><br>
+                        <small>公式LINEのキャンペーン設計が不十分で、顧客エンゲージメントやリピート促進に活用できていない</small>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="tooltip" id="tooltip"></div>
+
+    <script>
+        const svg = document.getElementById('fishbone');
+        const tooltip = document.getElementById('tooltip');
+        let animationEnabled = true;
+
+        // データ定義（詳細説明付き）
+        const data = {
+            problem: "売上目標\n未達",
+            categories: [
+                {
+                    name: "ポジショニング\n曖昧さ",
+                    color: "#ff6b6b",
+                    position: "top",
+                    factors: [
+                        { 
+                            title: "目指す方向：創作居酒屋",
+                            detail: "モダンで洗練された創作居酒屋を目指しているが、実際の運営は従来型の大衆居酒屋スタイルを継続"
+                        },
+                        { 
+                            title: "現実：大衆居酒屋運営",
+                            detail: "メニュー構成、価格設定、サービススタイルが大衆居酒屋レベルに留まり、創作居酒屋としての差別化ができていない"
+                        },
+                        { 
+                            title: "ブランドID不一致",
+                            detail: "目指すブランドイメージと実際の提供価値にギャップがあり、顧客が店舗の特徴を理解できない状況"
+                        },
+                        { 
+                            title: "差別化困難",
+                            detail: "競合との明確な違いを打ち出せず、価格競争に巻き込まれる悪循環に"
+                        }
+                    ]
+                },
+                {
+                    name: "データドリブン\n経営不足",
+                    color: "#4ecdc4",
+                    position: "top",
+                    factors: [
+                        { 
+                            title: "無駄コスト把握不能",
+                            detail: "ABC分析未実施により、売れない商品や無駄な在庫にかかるコストを定量的に把握できていない"
+                        },
+                        { 
+                            title: "リピート率不明",
+                            detail: "顧客管理システムが活用されておらず、どのくらいの顧客がリピートしているか不明"
+                        },
+                        { 
+                            title: "顧客行動データ不足",
+                            detail: "来店頻度、注文傾向、客単価推移などの重要データが蓄積されていない"
+                        },
+                        { 
+                            title: "意思決定が勘依存",
+                            detail: "データに基づかない経験や勘による意思決定で、施策効果の測定も困難"
+                        }
+                    ]
+                },
+                {
+                    name: "オペレーション\n効率性",
+                    color: "#45b7d1",
+                    position: "bottom",
+                    factors: [
+                        { 
+                            title: "メニュー数過多",
+                            detail: "メニュー数が多すぎることで、仕込み時間増加、在庫管理複雑化、食材廃棄増加などコストが膨らむ"
+                        },
+                        { 
+                            title: "在庫管理不適切",
+                            detail: "食材の発注・在庫管理が適切でなく、過剰在庫や品切れが頻発し、廃棄ロスが増加"
+                        },
+                        { 
+                            title: "売上原価率悪化",
+                            detail: "適切な原価管理ができておらず、利益を圧迫。目標原価率を大きく超える商品が存在"
+                        },
+                        { 
+                            title: "盛り付け知識不足",
+                            detail: "創作居酒屋としての盛り付けやお皿選びの知識が不足し、見た目の価値向上ができていない"
+                        }
+                    ]
+                },
+                {
+                    name: "品質とブランド\n価値乖離",
+                    color: "#96ceb4",
+                    position: "bottom",
+                    factors: [
+                        { 
+                            title: "Web写真と実物ギャップ",
+                            detail: "ウェブサイトやSNSの料理写真と実際の提供料理にギャップがあり、顧客の期待を裏切る結果に"
+                        },
+                        { 
+                            title: "期待値管理失敗",
+                            detail: "集客時に設定した期待値と実際の体験が一致せず、顧客満足度が低下"
+                        },
+                        { 
+                            title: "サービス品質低下",
+                            detail: "スタッフ教育不足やオペレーション混乱により、接客やサービスの品質が不安定"
+                        },
+                        { 
+                            title: "リピート率低下",
+                            detail: "期待を下回る体験により、一度来店しても再来店につながらない悪循環"
+                        }
+                    ]
+                },
+                {
+                    name: "集客構造\n脆弱性",
+                    color: "#ffeaa7",
+                    position: "top",
+                    factors: [
+                        { 
+                            title: "2階立地→Web依存",
+                            detail: "2階という立地のため通行人の目に留まりにくく、ウェブ集客に過度に依存する構造"
+                        },
+                        { 
+                            title: "平日(月-木)集客不足",
+                            detail: "週末は集客できるが、平日特に月曜～木曜の集客が弱く、週全体の稼働率が低い"
+                        },
+                        { 
+                            title: "稼働率低下",
+                            detail: "平日の空席が多く、固定費を回収できない日が続き、売上機会を大きく損失"
+                        },
+                        { 
+                            title: "LINE施策不十分",
+                            detail: "公式LINEのキャンペーン設計が不十分で、顧客エンゲージメントやリピート促進に活用できていない"
+                        }
+                    ]
+                }
+            ]
+        };
+
+        function drawFishbone() {
+            const width = Math.max(svg.clientWidth, 1800);
+            const height = Math.max(svg.clientHeight, 1600);
+            
+            svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+            svg.innerHTML = '';
+
+            // 背景のグラデーション定義
+            const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+            const gradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+            gradient.setAttribute('id', 'spineGradient');
+            gradient.innerHTML = `
+                <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+            `;
+            defs.appendChild(gradient);
+            svg.appendChild(defs);
+
+            const centerY = height / 2;
+            const startX = 50;
+            const endX = width - 150;
+            const headX = width - 50;
+
+            // 背骨（中心線）を描画
+            drawLine(startX, centerY, endX, centerY, 'url(#spineGradient)', 4);
+
+            // 魚の頭部（問題）を描画
+            drawHead(endX, centerY, headX, centerY, data.problem);
+
+            // カテゴリごとに骨を描画
+            const categoryWidth = (endX - startX) / data.categories.length;
+            
+            data.categories.forEach((category, index) => {
+                const x = startX + categoryWidth * (index + 0.5);
+                const isTop = category.position === "top";
+                const angle = isTop ? -45 : 45;
+                
+                drawCategory(x, centerY, category, angle, index);
+            });
+        }
+
+        function drawLine(x1, y1, x2, y2, color, width = 2, className = '') {
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', x1);
+            line.setAttribute('y1', y1);
+            line.setAttribute('x2', x2);
+            line.setAttribute('y2', y2);
+            line.setAttribute('stroke', color);
+            line.setAttribute('stroke-width', width);
+            line.setAttribute('class', className);
+            
+            if (animationEnabled) {
+                line.style.strokeDasharray = Math.sqrt(Math.pow(x2-x1, 2) + Math.pow(y2-y1, 2));
+                line.style.strokeDashoffset = line.style.strokeDasharray;
+                line.style.animation = 'drawLine 1s ease-out forwards';
+            }
+            
+            svg.appendChild(line);
+            return line;
+        }
+
+        function drawHead(x1, y1, x2, y2, text) {
+            // 魚の頭部の三角形
+            const headSize = 80;
+            const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+            const points = `${x2},${y2} ${x2-headSize},${y2-headSize/2} ${x2-headSize},${y2+headSize/2}`;
+            polygon.setAttribute('points', points);
+            polygon.setAttribute('fill', '#667eea');
+            polygon.setAttribute('stroke', '#764ba2');
+            polygon.setAttribute('stroke-width', '4');
+            
+            if (animationEnabled) {
+                polygon.style.opacity = '0';
+                polygon.style.animation = 'fadeIn 0.5s ease-out 0.5s forwards';
+            }
+            
+            svg.appendChild(polygon);
+
+            // 問題テキスト
+            const textLines = text.split('\n');
+            const textGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            
+            textLines.forEach((line, i) => {
+                const textElement = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                textElement.setAttribute('x', x2 - headSize/2);
+                textElement.setAttribute('y', y2 + (i - textLines.length/2 + 0.5) * 24);
+                textElement.setAttribute('text-anchor', 'middle');
+                textElement.setAttribute('dominant-baseline', 'middle');
+                textElement.setAttribute('fill', 'white');
+                textElement.setAttribute('font-size', '20');
+                textElement.setAttribute('font-weight', 'bold');
+                textElement.textContent = line;
+                
+                if (animationEnabled) {
+                    textElement.style.opacity = '0';
+                    textElement.style.animation = 'fadeIn 0.5s ease-out 0.7s forwards';
+                }
+                
+                textGroup.appendChild(textElement);
+            });
+            
+            svg.appendChild(textGroup);
+        }
+
+        function drawCategory(x, centerY, category, angle, index) {
+            const boneLength = 200;
+            const isTop = angle < 0;
+            const angleRad = (angle * Math.PI) / 180;
+            
+            const endX = x + boneLength * Math.cos(angleRad);
+            const endY = centerY + boneLength * Math.sin(angleRad);
+
+            // 大骨
+            const mainBone = drawLine(x, centerY, endX, endY, category.color, 4, 'main-bone');
+            
+            if (animationEnabled) {
+                mainBone.style.animationDelay = `${index * 0.1}s`;
+            }
+
+            // カテゴリ名（複数行対応）
+            const categoryLines = category.name.split('\n');
+            categoryLines.forEach((line, lineIndex) => {
+                const categoryText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                categoryText.setAttribute('x', endX);
+                categoryText.setAttribute('y', endY + (isTop ? -35 - (categoryLines.length - lineIndex - 1) * 20 : 45 + lineIndex * 20));
+                categoryText.setAttribute('text-anchor', 'middle');
+                categoryText.setAttribute('fill', category.color);
+                categoryText.setAttribute('font-size', '20');
+                categoryText.setAttribute('font-weight', 'bold');
+                categoryText.textContent = line;
+                
+                if (animationEnabled) {
+                    categoryText.style.opacity = '0';
+                    categoryText.style.animation = `fadeIn 0.5s ease-out ${index * 0.1 + 0.3}s forwards`;
+                }
+                
+                svg.appendChild(categoryText);
+            });
+
+            // 小骨（要因）- 間隔を広げる
+            const verticalSpacing = isTop ? 180 : 180; // 各要因間のスペース
+            category.factors.forEach((factor, factorIndex) => {
+                const factorSpacing = boneLength / (category.factors.length + 1);
+                const factorX = x + factorSpacing * (factorIndex + 1) * Math.cos(angleRad);
+                const factorY = centerY + factorSpacing * (factorIndex + 1) * Math.sin(angleRad);
+                
+                const smallBoneLength = 150;
+                const smallBoneEndX = factorX + smallBoneLength * Math.cos(angleRad + (isTop ? Math.PI/4 : -Math.PI/4));
+                const smallBoneEndY = factorY + smallBoneLength * Math.sin(angleRad + (isTop ? Math.PI/4 : -Math.PI/4));
+
+                // 小骨の線
+                const smallBone = drawLine(factorX, factorY, smallBoneEndX, smallBoneEndY, category.color, 2.5, 'small-bone');
+                
+                if (animationEnabled) {
+                    smallBone.style.animationDelay = `${index * 0.1 + factorIndex * 0.05}s`;
+                }
+
+                // 要因タイトルと詳細を複数行で表示
+                const textGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                
+                // タイトル
+                const titleText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                titleText.setAttribute('x', smallBoneEndX + 10);
+                titleText.setAttribute('y', smallBoneEndY + (isTop ? -15 : 25));
+                titleText.setAttribute('text-anchor', 'start');
+                titleText.setAttribute('fill', category.color);
+                titleText.setAttribute('font-size', '14');
+                titleText.setAttribute('font-weight', 'bold');
+                titleText.textContent = factor.title;
+                
+                if (animationEnabled) {
+                    titleText.style.opacity = '0';
+                    titleText.style.animation = `fadeIn 0.5s ease-out ${index * 0.1 + factorIndex * 0.05 + 0.2}s forwards`;
+                }
+                
+                textGroup.appendChild(titleText);
+
+                // 詳細説明（改行対応）
+                const detailLines = wrapText(factor.detail, 40); // 40文字で折り返し
+                detailLines.forEach((line, lineIndex) => {
+                    const detailText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    detailText.setAttribute('x', smallBoneEndX + 10);
+                    detailText.setAttribute('y', smallBoneEndY + (isTop ? -15 : 25) + (lineIndex + 1) * 16);
+                    detailText.setAttribute('text-anchor', 'start');
+                    detailText.setAttribute('fill', '#555');
+                    detailText.setAttribute('font-size', '11');
+                    detailText.textContent = line;
+                    
+                    if (animationEnabled) {
+                        detailText.style.opacity = '0';
+                        detailText.style.animation = `fadeIn 0.5s ease-out ${index * 0.1 + factorIndex * 0.05 + 0.3}s forwards`;
+                    }
+                    
+                    textGroup.appendChild(detailText);
+                });
+
+                // 背景矩形（読みやすさ向上）
+                const textBBox = titleText.getBBox ? titleText.getBBox() : { x: smallBoneEndX + 10, y: smallBoneEndY - 20, width: 300, height: 60 };
+                const bgRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                bgRect.setAttribute('x', smallBoneEndX + 5);
+                bgRect.setAttribute('y', smallBoneEndY + (isTop ? -25 : 15));
+                bgRect.setAttribute('width', 350);
+                bgRect.setAttribute('height', (detailLines.length + 1) * 16 + 10);
+                bgRect.setAttribute('fill', 'white');
+                bgRect.setAttribute('fill-opacity', '0.85');
+                bgRect.setAttribute('rx', '6');
+                bgRect.setAttribute('stroke', category.color);
+                bgRect.setAttribute('stroke-width', '1');
+                bgRect.setAttribute('stroke-opacity', '0.3');
+                
+                if (animationEnabled) {
+                    bgRect.style.opacity = '0';
+                    bgRect.style.animation = `fadeIn 0.5s ease-out ${index * 0.1 + factorIndex * 0.05 + 0.15}s forwards`;
+                }
+
+                svg.appendChild(bgRect);
+                svg.appendChild(textGroup);
+            });
+        }
+
+        // テキスト折り返し関数
+        function wrapText(text, maxLength) {
+            const words = text.split('');
+            const lines = [];
+            let currentLine = '';
+            
+            for (let i = 0; i < words.length; i++) {
+                if (currentLine.length + 1 <= maxLength) {
+                    currentLine += words[i];
+                } else {
+                    lines.push(currentLine);
+                    currentLine = words[i];
+                }
+            }
+            if (currentLine) {
+                lines.push(currentLine);
+            }
+            
+            return lines;
+        }
+
+        function showTooltip(event, title, detail, category) {
+            tooltip.innerHTML = `
+                <div style="font-weight: bold; margin-bottom: 5px; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 5px;">
+                    ${category}
+                </div>
+                <div style="font-weight: 600; margin-bottom: 5px; font-size: 13px;">
+                    ${title}
+                </div>
+                <div style="font-size: 12px; line-height: 1.5; opacity: 0.95;">
+                    ${detail}
+                </div>
+            `;
+            tooltip.style.opacity = '1';
+            tooltip.style.maxWidth = '350px';
+            updateTooltipPosition(event);
+        }
+
+        function updateTooltipPosition(event) {
+            tooltip.style.left = event.pageX + 10 + 'px';
+            tooltip.style.top = event.pageY + 10 + 'px';
+        }
+
+        function hideTooltip() {
+            tooltip.style.opacity = '0';
+        }
+
+        function resetZoom() {
+            drawFishbone();
+        }
+
+        function toggleAnimation() {
+            animationEnabled = !animationEnabled;
+            drawFishbone();
+        }
+
+        function exportSVG() {
+            const svgData = svg.outerHTML;
+            const blob = new Blob([svgData], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'fishbone_diagram.svg';
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // アニメーション用CSS
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes drawLine {
+                to {
+                    stroke-dashoffset: 0;
+                }
+            }
+            @keyframes fadeIn {
+                to {
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // 初期描画
+        drawFishbone();
+
+        // ウィンドウリサイズ時の再描画
+        window.addEventListener('resize', drawFishbone);
+    </script>
+</body>
+</html>

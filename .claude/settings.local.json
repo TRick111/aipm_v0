@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python:*)",
+      "Bash(if [ ! -f \"Stock/RestaurantAILab/週報/2_output_2025w42/週報作成基礎資料.md\" ])",
+      "Bash(then echo \"File does not exist\")",
+      "Bash(else echo \"File exists\")",
+      "Bash(fi)",
+      "Bash(cat:*)",
+      "Bash(findstr:*)",
+      "Bash(move \"レポート作成プロンプト.md\" \"月報作成プロンプト.md\")",
+      "Bash(ren:*)",
+      "Bash(dir:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

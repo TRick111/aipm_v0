@@ -1,0 +1,25 @@
+version: 1
+
+# MasterIndex.yaml（AI専用）
+# 目的:
+# - ユーザー入力に対してAIが「どのプロジェクトのREADMEを読むべきか」を判断するための全体インデックス。
+# ルール:
+# - programs / projects のキーは「ID=名前」（同一）とする。
+# - Stock更新（確定反映）時にAIが必要に応じて summary / keywords を更新する。
+
+programs:
+  "<ProgramName>":
+    summary: "<Program summary (1-2 lines)>"
+    keywords:
+      - "<keyword1>"
+      - "<keyword2>"
+    projects:
+      "<ProjectName>":
+        summary: "<Project summary (1-2 lines)>"
+        keywords:
+          - "<keyword1>"
+          - "<keyword2>"
+        path: "Stock/<ProgramName>/<ProjectName>"
+        readme: "Stock/<ProgramName>/<ProjectName>/README.md"
+        index: "Stock/<ProgramName>/<ProjectName>/ProjectIndex.yaml"
+

@@ -1,0 +1,39 @@
+---
+description: "AIOS Ops: Project initialization"
+alwaysApply: false
+---
+
+# 運用フロー: プロジェクト初期化（AIがStock生成＋MasterIndex/ProjectIndex生成）
+
+## ゴール（完了条件）
+- `Stock/<Program>/<Project>/` が存在する
+- `Stock/<Program>/<Project>/README.md` が存在する
+- `Stock/<Program>/<Project>/ProjectIndex.yaml` が存在する
+- `Stock/<Program>/<Project>/log.md` が存在する
+- `Stock/MasterIndex.yaml` に `programs.<Program>.projects.<Project>` が登録されている
+
+## ユーザーに最小で聞くこと（不足時のみ）
+- Program名（存在しない場合は「プログラム初期化」も実施）
+- Project名（ID=名前）
+- Project概要（1〜2行）
+- Projectゴール（完了条件。1〜3個）
+- 関係者（名前/役職/役割。分かる範囲でOK）
+- 重要リンク（外部URL。分かる範囲でOK）
+- keywords（3〜10個目安）
+
+## 手順（AIが実施）
+1. `Stock/<Program>/<Project>/` を作成
+2. `README.md` を作成（テンプレート: `aios/templates/README.template.md`）
+3. `ProjectIndex.yaml` を作成（テンプレート: `aios/templates/ProjectIndex.template.yaml`）
+   - `project`: `<Project>`
+   - `root`: `Stock/<Program>/<Project>`
+   - `canonical`: `readme`, `log`
+   - `files`: 初期状態として README/log と、既知の成果物があれば登録
+4. `log.md` を作成（テンプレート: `aios/templates/log.template.md`。初期化の記録を1行で追加）
+5. `Stock/MasterIndex.yaml` を更新してプロジェクトを登録
+   - `summary`, `keywords`, `path`, `readme`, `index`
+6. 変更内容をユーザーにサマリーで提示
+
+## 補足
+- READMEは「人間向け入口」。ProjectIndexは「AIの参照ファイル選定」目的で構造化する。
+

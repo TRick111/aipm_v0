@@ -1,0 +1,29 @@
+---
+description: "AIOS Ops: Meeting close (save transcript + update README)"
+alwaysApply: false
+---
+
+# 運用フロー: 会議終了（AIがMeetings保存＋README更新）
+
+## ゴール（完了条件）
+- `Meetings/` に会議トランスクリプト/議事録が保存されている
+- 関連Projectの `README.md` に「リンク＋要点（決定/宿題）」が反映されている
+- （任意）`log.md` に更新履歴が追記されている
+
+## ユーザーに最小で聞くこと（不足時のみ）
+- 会議トランスクリプト（テキスト or ファイル）
+- メモ（補足）
+- 会議日付/タイトル
+- 関連 Program/Project（分かる範囲でOK。AIがMasterIndexで補完可）
+
+## 手順（AIが実施）
+1. 会議内容を整理（決定/宿題/論点/関連プロジェクト）
+2. `Meetings/YYYY-MM-DD_<title>.<ext>` で保存（`.md` 推奨。元が`.vtt`等なら併存可）
+3. 関連Projectごとに `README.md` を更新
+   - 会議リンク
+   - 決定事項
+   - 宿題（担当/期限が分かるなら記載）
+4. （必要なら）`log.md` を追記
+5. **Index（Master/Project）は更新しない**（会議アップロードでは変化させない）
+6. ユーザーに更新サマリーを提示（保存ファイル・反映先README・宿題一覧）
+

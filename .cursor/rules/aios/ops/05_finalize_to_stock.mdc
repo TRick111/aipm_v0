@@ -1,0 +1,35 @@
+---
+description: "AIOS Ops: Finalize from Flow to Stock (update YAML indexes + README + log)"
+alwaysApply: false
+---
+
+# 運用フロー: Stockへ確定反映（AIが保存＋README/MasterIndex/ProjectIndex/log更新）
+
+## ゴール（完了条件）
+- 指定されたFlow成果物が `Stock/<Program>/<Project>/` に保存されている
+- 同時に以下が最新化されている
+  - `Stock/MasterIndex.yaml`
+  - `Stock/<Program>/<Project>/ProjectIndex.yaml`
+  - `Stock/<Program>/<Project>/README.md`
+  - `Stock/<Program>/<Project>/log.md`
+
+## ユーザーに最小で聞くこと（不足時のみ）
+- 確定反映したいFlowファイル（パス or ファイル名）
+- 対象 Program/Project
+- 保存先の希望（任意：ファイル名の希望、配置先フォルダなど）
+
+## 手順（AIが実施）
+1. Flow成果物を読み、タイトル/要点/keywords候補を抽出
+2. `Stock/<Program>/<Project>/` へ保存（新規 or 上書き）
+3. `ProjectIndex.yaml` を更新
+   - **Stockへ確定反映した成果物は全件** `files` に追記/更新（`path`, `summary`, `keywords`）
+   - keywordsは **最大20語・重複排除**
+4. `README.md` を更新
+   - 現在の状況、次アクション、重要リンクに反映（必要最小限）
+5. `log.md` を追記
+   - 日付 / 種別（create/edit/delete） / ファイル を最低限
+   - 変更内容・変更理由は任意（AIのコンテキストに無ければ空欄でOK）
+6. `MasterIndex.yaml` を更新
+   - Projectの `summary/keywords` を必要に応じて更新（Project選定精度のため）
+7. ユーザーに更新サマリーを提示（保存先・更新したファイル・重要差分）
+

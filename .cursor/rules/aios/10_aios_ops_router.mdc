@@ -1,0 +1,36 @@
+---
+description: "AIOS: Route user intent to the right ops rule"
+alwaysApply: false
+---
+
+# AIOS Ops Router（必要時参照）
+
+ユーザーの依頼を、以下の運用フローにマッピングして実行してください。
+該当する運用ルール（`aios/ops/*.mdc`）の内容を守ります。
+
+## マッピング
+
+### プログラム初期化
+- **ユーザー意図の例**: 「新しいプログラムを作って」「◯◯プログラムを初期化して」
+- **参照すべき運用ルール**: `aios/ops/01_program_init.mdc`
+
+### プロジェクト初期化
+- **ユーザー意図の例**: 「新しいプロジェクトを作って」「◯◯プロジェクトを初期化して」
+- **参照すべき運用ルール**: `aios/ops/02_project_init.mdc`
+
+### 1日のタスク計画（Flow生成）
+- **ユーザー意図の例**: 「今日のタスク作って」「作業開始」「今日やることは…」
+- **参照すべき運用ルール**: `aios/ops/03_daily_task_planning.mdc`
+
+### プロジェクト作業（Flow成果物作成）
+- **ユーザー意図の例**: 「◯◯の投稿案作って」「売上をまとめて」「資料のドラフト作って」
+- **参照すべき運用ルール**: `aios/ops/04_project_work.mdc`
+
+### Stockへ確定反映（保存＋Index/README/log更新）
+- **ユーザー意図の例**: 「この成果物を確定反映して」「Stockに保存して」
+- **参照すべき運用ルール**: `aios/ops/05_finalize_to_stock.mdc`
+
+### 会議終了（Meetings保存＋README更新）
+- **ユーザー意図の例**: 「この会議メモを反映して」「議事録アップして反映して」
+- **参照すべき運用ルール**: `aios/ops/06_meeting_close.mdc`
+

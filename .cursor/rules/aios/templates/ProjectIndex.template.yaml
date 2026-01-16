@@ -1,0 +1,27 @@
+version: 1
+
+# ProjectIndex.yaml（AI専用）
+# 目的:
+# - ユーザー入力に対してAIが「このプロジェクト内のどのファイルを参照すべきか」を判断するためのプロジェクト内インデックス。
+# ルール:
+# - Stockにファイルを追加/更新したら、AIが files を更新する。
+# - READMEは「状況/次アクション/会議リンク」などの入口。ProjectIndexは「参照ファイル選定」のためのカタログ。
+
+project: "<ProjectName>"
+root: "Stock/<ProgramName>/<ProjectName>"
+
+canonical:
+  readme: "README.md"
+  log: "log.md"
+
+# プロジェクト内ファイルのカタログ
+# - path: rootからの相対パス（例: "folder_structure_and_rules.md"）
+# - summary: 何が書いてあるか（1-2行）
+# - keywords: ユーザー入力とのマッチングに使う
+files:
+  - path: "<relative/path/to/file.md>"
+    summary: "<1-2 line summary>"
+    keywords:
+      - "<keyword1>"
+      - "<keyword2>"
+

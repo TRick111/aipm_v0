@@ -1,0 +1,24 @@
+---
+description: "AIOS Ops: Daily task planning (Flow generation)"
+alwaysApply: false
+---
+
+# 運用フロー: 1日のタスク計画（AIがFlow生成）
+
+## ゴール（完了条件）
+- `Flow/YYYYMM/YYYY-MM-DD/` が存在する
+- その配下に `mmdd_daily_tasks.md` が存在し、今日やることが整理されている
+
+## ユーザーに最小で聞くこと（不足時のみ）
+- 今日やること（箇条書き）
+- 対象の Program/Project（分かる範囲でOK。不明ならAIがMasterIndexから推定）
+
+## 手順（AIが実施）
+1. 必要に応じて `Stock/MasterIndex.yaml` を参照し、対象Projectを推定
+2. 今日の日付で `Flow/YYYYMM/YYYY-MM-DD/` を作成
+3. `mmdd_daily_tasks.md` を作成/更新
+   - タスク一覧
+   - 各タスクの対象 `Program/Project`（推定の場合は「推定」と明記）
+4. ユーザーに「確認してほしい点」だけ提示（不足、優先度、対象プロジェクト）
+5. ユーザーが必要なら最終微修正
+

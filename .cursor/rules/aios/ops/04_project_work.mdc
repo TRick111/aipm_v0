@@ -1,0 +1,27 @@
+---
+description: "AIOS Ops: Project work (AI dialogue -> Flow artifacts)"
+alwaysApply: false
+---
+
+# 運用フロー: プロジェクト作業（AI対話→Flow成果物作成）
+
+## ゴール（完了条件）
+- AIが必要な文脈（README/Index/関連資料）を参照し、Flowに成果物ドラフトが生成されている
+- ユーザーが必要なら、最後にFlow上で仕上げ修正できる状態になっている
+
+## ユーザーに最小で聞くこと（不足時のみ）
+- 対象 Program/Project
+- 作業目的（何を作る/決める）
+- インプット（メモ/URL/データ/会議名など）
+
+## 手順（AIが実施）
+1. `Stock/MasterIndex.yaml` を参照して対象Projectを確定（候補が複数なら最小質問で絞る）
+2. `Stock/<Program>/<Project>/README.md` を参照して背景/現状/制約を把握
+3. `Stock/<Program>/<Project>/ProjectIndex.yaml` を参照して「見るべきファイル候補」を選定
+4. 必要に応じて `Meetings/` を参照（会議トランスクリプト）
+5. Flowに成果物を作成（ドラフト・分析・原稿など）
+6. 仕上げ観点だけをユーザーに提示し、必要ならユーザーが微修正
+
+## 注意
+- このフローではStockを更新しない（更新は「確定反映」フローで行う）
+

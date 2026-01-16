@@ -1,0 +1,109 @@
+---
+description: "AIOS: Core operating principles (always on)"
+alwaysApply: true
+---
+
+# AIOS Core Rules（常時参照・このファイルで完結）
+
+## 0. 前提
+- このリポジトリのルールは **AIOSのみ**。
+- AIは本ファイルを常時参照し、ユーザーの「ファイル操作」を最小化して運用を実行する。
+- 外部参照は以下に限定する:
+  - Index（`Stock/MasterIndex.yaml` と各 `ProjectIndex.yaml`）
+  - テンプレート（`aios/templates/*`）
+  - 個別運用手順（`aios/ops/*.mdc`）※必要なときだけ
+
+## 1. 目的（AIOSが目指す状態）
+- ユーザーは原則、**AIとの対話**を通して Flow / Stock / Meetings を更新する。
+- AIがユーザー入力から「どのプロジェクトを参照するべきか」「どのファイルを見るべきか」を判断できるように、Index（YAML）とREADMEを常に最新化する。
+
+## 2. 基本的な考え方（運用原則）
+- **作業はFlowで行う**（WIP）
+- **参照はStock**（確定版の正）
+- **会議はMeetings**（Stockの外に横串保管）
+- **確定した成果物はStockへ保存**し、そのたびに **Index/README/logを更新**
+- **ユーザーは最小入力**（箇条書き・URL・メモ）でよく、AIが作成/更新を実施し、最後にユーザーが必要なら微修正する
+
+## 3. フォルダ構造（確定）
+- **Flow**: `Flow/YYYYMM/YYYY-MM-DD/`
+  - 日次作業フォルダ（WIP）
+  - `mmdd_daily_tasks.md` を起点に運用する
+- **Stock**: `Stock/<Program>/<Project>/`
+  - 確定成果物の保管場所
+  - プロジェクト直下に必ず `README.md` / `ProjectIndex.yaml` / `log.md`
+  - `Stock/MasterIndex.yaml` が全体の入口
+- **Meetings**: `Meetings/`
+  - 会議トランスクリプト/議事録を **直下に保存**
+  - 命名: `Meetings/YYYY-MM-DD_<title>.<ext>`（`.md` / `.txt` / `.vtt` 等）
+
+## 4. 参照の導線（AIが必ず守る）
+1. **プロジェクト特定**: `Stock/MasterIndex.yaml` から候補Projectを選ぶ（summary/keywordsでマッチング）
+2. **プロジェクト理解**: 候補Projectの `README.md` を読む（背景/目的/現状/次アクション）
+3. **参照ファイル選定**: `ProjectIndex.yaml` の `files` から参照すべきファイルを選ぶ（keywordsでマッチング）
+4. 必要なら Meetings を参照（会議前提が必要な場合のみ）
+
+## 5. 役割が違う3つのファイル（重要）
+- `README.md`（人間向け入口）
+  - 背景/目的/ゴール/関係者/現在の状況・ネクストアクション/今後のプラン/重要リンク（外部）
+  - 会議の要点反映（リンク＋決定/宿題）もここ
+- `ProjectIndex.yaml`（AI向け：プロジェクト内の参照ファイル選定）
+  - ユーザー入力→プロジェクト内で「どのファイルを見るか」を決めるためのカタログ
+- `MasterIndex.yaml`（AI向け：プロジェクト選定）
+  - ユーザー入力→「どのプロジェクトのREADMEを見るか」を決めるための全体カタログ
+
+### `log.md` の扱い（重要）
+- logは「関連ファイルの作成/削除/編集」が追えれば十分。
+- 変更内容・変更理由は **任意**（AIのコンテキストに無ければ書かなくてOK）。
+
+## 6. 更新ポリシー（最重要）
+
+### 6.1 Stockへ確定反映したとき（必ず同時更新）
+AIは成果物をStockへ保存したら、必ず同時に以下を更新する。
+- `Stock/MasterIndex.yaml`
+- `Stock/<Program>/<Project>/ProjectIndex.yaml`
+- `Stock/<Program>/<Project>/README.md`
+- `Stock/<Program>/<Project>/log.md`
+
+### 6.2 会議終了（Meetings保存＋README更新）
+AIは会議トランスクリプト/メモを受け取ったら:
+- `Meetings/` に保存
+- 関連Projectの `README.md` に「リンク＋要点（決定/宿題）」を追記
+- （必要なら）`log.md` を追記
+- **会議アップロードだけでは Index（Master/Project）は更新しない**
+
+## 7. Index（YAML）のスキーマ方針（シンプル）
+
+### 7.1 `Stock/MasterIndex.yaml`
+- 辞書（map）構造で **キー=ID=名前**
+- 最低限:
+  - Program: `summary`, `keywords`, `projects`
+  - Project: `summary`, `keywords`, `path`, `readme`, `index`
+- keywordsの運用:
+  - **最大20語**
+  - **重複排除**（表記揺れも可能なら揃える）
+
+### 7.2 `Stock/<Program>/<Project>/ProjectIndex.yaml`
+- 最低限:
+  - `project`, `root`, `canonical`
+  - `files: [{path, summary, keywords}]`
+- `path` は `root` からの相対パス
+- 運用:
+  - **Stockへ確定反映（保存）した成果物は全件 `files` に載せる**
+  - keywordsは **最大20語・重複排除**
+
+## 8. 運用フロー（AIの動きの型）
+ユーザーの依頼を、以下にマッピングして実行する。
+
+| ユーザー意図 | 適用する運用（詳細は必要時に参照） |
+|---|---|
+| プログラムを作る/初期化 | `aios/ops/01_program_init.mdc` |
+| プロジェクトを作る/初期化 | `aios/ops/02_project_init.mdc` |
+| 今日のタスク作成/作業開始 | `aios/ops/03_daily_task_planning.mdc` |
+| 投稿案/集計/資料作成など作業 | `aios/ops/04_project_work.mdc` |
+| 確定反映/Stockに保存 | `aios/ops/05_finalize_to_stock.mdc` |
+| 会議反映/議事録アップ | `aios/ops/06_meeting_close.mdc` |
+
+## 9. AIの出力スタイル（ユーザーの手を最小化）
+- AIは「実行したこと」を短く報告し、必要なら次の入力だけ求める。
+- ファイル作成/更新を行った場合は、**更新したファイルパスを列挙**する。
+

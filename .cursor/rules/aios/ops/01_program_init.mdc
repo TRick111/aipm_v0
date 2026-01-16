@@ -1,0 +1,30 @@
+---
+description: "AIOS Ops: Program initialization"
+alwaysApply: false
+---
+
+# 運用フロー: プログラム初期化（AIがStock生成＋MasterIndex追記）
+
+## ゴール（完了条件）
+- `Stock/<Program>/` が存在する
+- `Stock/MasterIndex.yaml` の `programs.<Program>` が存在し、以下を保持している
+  - `summary`
+  - `keywords`
+  - `projects`（辞書。空でも可）
+
+## ユーザーに最小で聞くこと（不足時のみ）
+- Program名（ID=名前）
+- Program概要（1〜2行）
+- keywords（3〜10個目安）
+
+## 手順（AIが実施）
+1. `Stock/<Program>/` を作成
+2. `Stock/MasterIndex.yaml` を作成/更新（テンプレート: `aios/templates/MasterIndex.template.yaml`）
+   - `programs.<Program>.summary` を設定
+   - `programs.<Program>.keywords` を設定
+   - `programs.<Program>.projects` を存在させる（未作成なら空辞書）
+3. 変更内容をユーザーにサマリーで提示（追加/更新したキー）
+
+## 更新の注意
+- Program名はキーなので、**後からの改名は原則しない**
+

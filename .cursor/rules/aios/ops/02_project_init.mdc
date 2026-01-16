@@ -17,23 +17,26 @@ alwaysApply: false
 - Project名（ID=名前）
 - Project概要（1〜2行）
 - Projectゴール（完了条件。1〜3個）
-- 関係者（名前/役職/役割。分かる範囲でOK）
+- 関係者（名前/役職/役割。分かる範囲でOK。**プログラムと共通なら省略可**）
 - 重要リンク（外部URL。分かる範囲でOK）
 - keywords（3〜10個目安）
 
 ## 手順（AIが実施）
 1. `Stock/<Program>/<Project>/` を作成
-2. `README.md` を作成（テンプレート: `aios/templates/README.template.md`）
-3. `ProjectIndex.yaml` を作成（テンプレート: `aios/templates/ProjectIndex.template.yaml`）
+2. **`Stock/<Program>/README.md`（プログラムREADME）を参照**し、背景・目的・関係者をコンテキストとして把握
+3. `README.md` を作成（テンプレート: `aios/templates/README.template.md`）
+   - **関係者**: ユーザーから追加指定がなければ、プログラムREADMEの関係者を引用/参照として記載
+4. `ProjectIndex.yaml` を作成（テンプレート: `aios/templates/ProjectIndex.template.yaml`）
    - `project`: `<Project>`
    - `root`: `Stock/<Program>/<Project>`
    - `canonical`: `readme`, `log`
    - `files`: 初期状態として README/log と、既知の成果物があれば登録
-4. `log.md` を作成（テンプレート: `aios/templates/log.template.md`。初期化の記録を1行で追加）
-5. `Stock/MasterIndex.yaml` を更新してプロジェクトを登録
+5. `log.md` を作成（テンプレート: `aios/templates/log.template.md`。初期化の記録を1行で追加）
+6. `Stock/MasterIndex.yaml` を更新してプロジェクトを登録
    - `summary`, `keywords`, `path`, `readme`, `index`
-6. 変更内容をユーザーにサマリーで提示
+7. 変更内容をユーザーにサマリーで提示
 
 ## 補足
 - READMEは「人間向け入口」。ProjectIndexは「AIの参照ファイル選定」目的で構造化する。
+- **プロジェクトREADME作成時はプログラムREADMEを必ず参照**し、重複を避けつつ一貫性を保つ。
 

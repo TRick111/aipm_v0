@@ -7,24 +7,33 @@ alwaysApply: false
 
 ## ゴール（完了条件）
 - `Stock/<Program>/` が存在する
+- `Stock/<Program>/README.md` が存在する（背景/目的/関係者）
 - `Stock/MasterIndex.yaml` の `programs.<Program>` が存在し、以下を保持している
   - `summary`
   - `keywords`
+  - `readme`（プログラムREADMEのパス）
   - `projects`（辞書。空でも可）
 
 ## ユーザーに最小で聞くこと（不足時のみ）
 - Program名（ID=名前）
 - Program概要（1〜2行）
+- 背景（なぜこのプログラムが必要か）
+- 目的（このプログラムで達成したいこと）
+- 関係者（名前/役職/役割。プログラム共通の関係者）
 - keywords（3〜10個目安）
 
 ## 手順（AIが実施）
 1. `Stock/<Program>/` を作成
-2. `Stock/MasterIndex.yaml` を作成/更新（テンプレート: `aios/templates/MasterIndex.template.yaml`）
+2. `Stock/<Program>/README.md` を作成（テンプレート: `aios/templates/ProgramREADME.template.md`）
+   - 背景/目的/関係者 を設定
+3. `Stock/MasterIndex.yaml` を作成/更新（テンプレート: `aios/templates/MasterIndex.template.yaml`）
    - `programs.<Program>.summary` を設定
    - `programs.<Program>.keywords` を設定
+   - `programs.<Program>.readme` を設定（`Stock/<Program>/README.md`）
    - `programs.<Program>.projects` を存在させる（未作成なら空辞書）
-3. 変更内容をユーザーにサマリーで提示（追加/更新したキー）
+4. 変更内容をユーザーにサマリーで提示（追加/更新したキー）
 
 ## 更新の注意
 - Program名はキーなので、**後からの改名は原則しない**
+- ProgramのREADMEは「プロジェクトREADME作成時の参照用」であり、通常の運用では更新しない
 

@@ -127,8 +127,8 @@ HACCP 温度記録アプリ（ハサッカーアプリ）の開発プロジェ�
        2.4.2 テスト・ビルド・デプロイパイプライン {due: 2025-05-28}
        2.4.3 IaC (AWS CDK/Terraform) 化 {due: 2025-05-30}
    2.5 本番環境構築
-       2.5.1 GitHubレポジトリをShefsRoomに移管
-       2.5.2 Vercel実装をShefsRoomに移管
+       2.5.1 GitHubレポジトリをChefsRoomに移管
+       2.5.2 Vercel実装をChefsRoomに移管
        2.5.3 各種権限設定の確認
        2.5.4 本番用DBの構築
        2.5.5 本番用S3バケットの構築

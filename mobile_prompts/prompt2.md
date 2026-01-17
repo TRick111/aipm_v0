@@ -6,23 +6,23 @@
 
 -   **{input_csv}**  
     インプット CSV ファイルパス  
-    `Stock/RestaurantAILab/ShefsRoomマーケティング支援/2.execute/2.input/input04.csv`
+    `Stock/RestaurantAILab/ChefsRoomマーケティング支援/2.execute/2.input/input04.csv`
 
 -   **{random_examples_script}**  
     過去動画例ランダム抽出スクリプト  
-    `Stock/RestaurantAILab/ShefsRoomマーケティング支援/2.execute/1.scripts/extract_random_examples.sh`
+    `Stock/RestaurantAILab/ChefsRoomマーケティング支援/2.execute/1.scripts/extract_random_examples.sh`
 
 -   **{output_csv}**  
     出力 CSV ファイル（単一ファイル）  
-    `Stock/RestaurantAILab/ShefsRoomマーケティング支援/2.execute/3.output/generated_scripts.csv`
+    `Stock/RestaurantAILab/ChefsRoomマーケティング支援/2.execute/3.output/generated_scripts.csv`
 
 -   **{prompt_file}**  
     プロンプトファイル（作業内容確認用）  
-    `Stock/RestaurantAILab/ShefsRoomマーケティング支援/2.execute/prompt2.md`
+    `Stock/RestaurantAILab/ChefsRoomマーケティング支援/2.execute/prompt2.md`
 
 -   **{work_log}**  
     作業ログファイル  
-    `Stock/RestaurantAILab/ShefsRoomマーケティング支援/2.execute/work_log.md`
+    `Stock/RestaurantAILab/ChefsRoomマーケティング支援/2.execute/work_log.md`
 
 ---
 

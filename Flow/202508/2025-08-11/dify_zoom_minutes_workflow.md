@@ -65,7 +65,7 @@
   "start_time": "2025-08-11T10:00:00Z",
   "end_time": "2025-08-11T11:00:00Z",
   "transcript_url": "https://signed.example.com/zoom/abc.vtt?token=...",
-  "project": "RestaurantAILab/ShefsRoom"
+  "project": "RestaurantAILab/ChefsRoom"
 }
 ```
 

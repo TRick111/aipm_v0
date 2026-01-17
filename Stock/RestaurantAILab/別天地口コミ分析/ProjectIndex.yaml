@@ -1,0 +1,108 @@
+version: 1
+
+# ProjectIndex.yaml（AI専用）
+
+project: "別天地口コミ分析"
+root: "Stock/RestaurantAILab/別天地口コミ分析"
+
+canonical:
+  readme: "README.md"
+  log: "log.md"
+
+files:
+  - path: "メニュー別口コミ分析_20260117.md"
+    summary: "別天地銀座のメニュー別口コミ分析（売上上位・下位メニューの評価、改善提言）"
+    keywords:
+      - 別天地
+      - 口コミ
+      - メニュー分析
+      - 松坂牛
+      - しゃぶしゃぶ
+      - 金目鯛
+      - カラスミ蕎麦
+      - 売上
+      - 改善提言
+      - 食べログ
+
+  - path: "数値分析レポート_20260117.md"
+    summary: "別天地銀座の食べログ口コミ43件の数値分析レポート（評価分布、カテゴリ別評価、時系列トレンド、いいね数分析）"
+    keywords:
+      - 別天地
+      - 口コミ
+      - 数値分析
+      - 統計
+      - 評価分布
+      - カテゴリ別評価
+      - 時系列
+      - いいね数
+      - Python
+      - グラフ
+      - 食べログ
+
+  - path: "data/reviews_output.csv"
+    summary: "別天地銀座の食べログ口コミデータ（43件、2025年11月～2026年1月）"
+    keywords:
+      - 口コミデータ
+      - CSV
+      - 食べログ
+      - 評価スコア
+      - 投稿日
+
+  - path: "data/analysis_summary.txt"
+    summary: "口コミデータの統計サマリー（平均、中央値、標準偏差、分布）"
+    keywords:
+      - 統計
+      - サマリー
+      - 分析結果
+
+  - path: "scripts/regenerate_graphs.py"
+    summary: "口コミデータから数値分析グラフ（6種類）を生成するPythonスクリプト"
+    keywords:
+      - Python
+      - グラフ生成
+      - matplotlib
+      - 可視化
+      - 日本語フォント対応
+
+  - path: "images/1_overall_rating.png"
+    summary: "総合評価の分布ヒストグラム"
+    keywords:
+      - グラフ
+      - 総合評価
+      - 分布
+
+  - path: "images/2_category_avg.png"
+    summary: "カテゴリ別平均評価の横棒グラフ"
+    keywords:
+      - グラフ
+      - カテゴリ別
+      - 平均評価
+
+  - path: "images/3_boxplot.png"
+    summary: "カテゴリ別評価分布の箱ひげ図"
+    keywords:
+      - グラフ
+      - 箱ひげ図
+      - 分布比較
+
+  - path: "images/4_monthly_trend.png"
+    summary: "月別レビュー数の推移グラフ"
+    keywords:
+      - グラフ
+      - 時系列
+      - レビュー数
+
+  - path: "images/4_monthly_avg_rating.png"
+    summary: "月別平均評価の推移グラフ（移動平均含む）"
+    keywords:
+      - グラフ
+      - 時系列
+      - 平均評価
+      - 移動平均
+
+  - path: "images/5_likes_analysis.png"
+    summary: "いいね数の分布と評価スコアとの関係グラフ"
+    keywords:
+      - グラフ
+      - いいね数
+      - 散布図

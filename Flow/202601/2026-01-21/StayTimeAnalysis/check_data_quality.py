@@ -59,12 +59,12 @@ print(f'\n■ 極端なケースのサンプル')
 print(f'\n  【5分以下の例（最初の10件）】')
 short = df[stay <= 5][['来店時刻', '退店時刻', '滞在時間_分', 'H.客数（合計）', 'H.小計']].head(10)
 for _, row in short.iterrows():
-    print(f"    {row['来店時刻']} → {row['退店時刻']} | {row['滞在時間_分']:.1f}分 | {row['H.客数（合計）']}人 | ¥{row['H.小計']:,.0f}")
+    print(f"    {row['来店時刻']} -> {row['退店時刻']} | {row['滞在時間_分']:.1f}分 | {row['H.客数（合計）']}人 | {row['H.小計']:,.0f}円")
 
 print(f'\n  【120分以上の例（最初の10件）】')
 long_stay = df[stay >= 120][['来店時刻', '退店時刻', '滞在時間_分', 'H.客数（合計）', 'H.小計']].head(10)
 for _, row in long_stay.iterrows():
-    print(f"    {row['来店時刻']} → {row['退店時刻']} | {row['滞在時間_分']:.1f}分 | {row['H.客数（合計）']}人 | ¥{row['H.小計']:,.0f}")
+    print(f"    {row['来店時刻']} -> {row['退店時刻']} | {row['滞在時間_分']:.1f}分 | {row['H.客数（合計）']}人 | {row['H.小計']:,.0f}円")
 
 print(f'\n■ 分布の歪み')
 print(f'  平均: {stay.mean():.2f}分')
@@ -83,8 +83,8 @@ short_df = df[stay <= 5]
 normal_df = df[(stay > 5) & (stay <= 60)]
 print(f'  5分以下の平均客数: {short_df["H.客数（合計）"].mean():.1f}人')
 print(f'  通常(5-60分)の平均客数: {normal_df["H.客数（合計）"].mean():.1f}人')
-print(f'  5分以下の平均単価: ¥{short_df["H.小計"].mean():,.0f}')
-print(f'  通常(5-60分)の平均単価: ¥{normal_df["H.小計"].mean():,.0f}')
+print(f'  5分以下の平均単価: {short_df["H.小計"].mean():,.0f}円')
+print(f'  通常(5-60分)の平均単価: {normal_df["H.小計"].mean():,.0f}円')
 
 # 長い滞在の詳細分析
 print(f'\n■ 長い滞在時間の特徴分析')

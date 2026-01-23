@@ -52,7 +52,13 @@ visits = df.groupby('H.伝票番号').agg({
 visits['滞在時間_分'] = (visits['退店時刻'] - visits['来店時刻']).dt.total_seconds() / 60
 
 # 異常値除去（0分以下、180分以上を除外）
-visits_clean = visits[(visits['滞在時間_分'] > 0) & (visits['滞在時間_分'] <= 180)].copy()
+# 売上0円のデータも除外（キャンセルや入力ミスの可能性）
+visits_clean = visits[
+    (visits['滞在時間_分'] > 0) & 
+    (visits['滞在時間_分'] <= 180) &
+    (visits['H.小計'] > 0)
+].copy()
+print(f"  売上0円のデータを除外しました")
 
 # 特徴量追加
 visits_clean['来店時間帯'] = visits_clean['来店時刻'].dt.hour

@@ -186,7 +186,7 @@ def main() -> int:
 
         try:
             print(f"  → Gemini呼び出し中...", flush=True)
-            resp = llm([HumanMessage(content=prompt)])
+            resp = llm.invoke([HumanMessage(content=prompt)])
             content = resp.content if isinstance(resp.content, str) else str(resp.content)
             print(f"  → 応答受領（{len(content)}文字）", flush=True)
             scenes = parse_scenes_json(content)

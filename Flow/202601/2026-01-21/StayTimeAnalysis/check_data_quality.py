@@ -90,7 +90,7 @@ print(f'  通常(5-60分)の平均単価: {normal_df["H.小計"].mean():,.0f}円
 print(f'\n■ 長い滞在時間の特徴分析')
 long_df = df[stay >= 60]
 print(f'  60分以上の平均客数: {long_df["H.客数（合計）"].mean():.1f}人')
-print(f'  60分以上の平均単価: ¥{long_df["H.小計"].mean():,.0f}')
+print(f'  60分以上の平均単価: {long_df["H.小計"].mean():,.0f}円')
 
 # 可視化: 外れ値を強調したヒストグラム
 fig, axes = plt.subplots(2, 2, figsize=(14, 10))

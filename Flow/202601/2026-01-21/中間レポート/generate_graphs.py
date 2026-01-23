@@ -755,4 +755,246 @@ plt.savefig(OUTPUT_DIR / "graph08_sales_2d_separation.png", dpi=150, bbox_inches
 plt.close()
 print("graph08_sales_2d_separation.png を作成しました")
 
+# =========================================
+# 図9-12: CustomerCountAnalysis用グラフ（6月含む）
+# =========================================
+print("\n=== 図9-12: CustomerCountAnalysis用グラフ（6月含む）===")
+
+# 時間帯別・曜日別データ読み込み
+time_month = pd.read_csv(DATA_DIR / 'CustomerCountAnalysis' / '04_time_month_comparison.csv')
+weekday_month = pd.read_csv(DATA_DIR / 'CustomerCountAnalysis' / '03_weekday_month_comparison.csv')
+
+# 有効な月（3月のみ除外、6月は含める）
+valid_months_all = [1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+# 図9: 時間帯別ヒートマップ（6月含む）
+time_order = ['ランチ(11-15時)', 'アイドル(15-17時)', 'ディナー(17-22時)']
+time_pivot = time_month[time_month['月'].isin(valid_months_all)].pivot_table(
+    index='時間帯', columns='月', values='差分_日当たり客数'
+).reindex(time_order)
+
+fig, ax = plt.subplots(figsize=(14, 5))
+im = ax.imshow(time_pivot.values, cmap='RdYlGn', aspect='auto', vmin=-100, vmax=100)
+
+ax.set_xticks(np.arange(len(valid_months_all)))
+ax.set_yticks(np.arange(len(time_order)))
+ax.set_xticklabels([f'{m}月' for m in valid_months_all])
+ax.set_yticklabels(time_order)
+
+for i in range(len(time_order)):
+    for j in range(len(valid_months_all)):
+        val = time_pivot.iloc[i, j] if j < len(time_pivot.columns) else np.nan
+        if pd.notna(val):
+            text_color = 'white' if abs(val) > 50 else 'black'
+            ax.text(j, i, f'{val:.0f}', ha='center', va='center', color=text_color, fontsize=10)
+
+ax.set_title(f'時間帯別・営業日当たり客数の前年比増減（2025年 - 2024年）', fontsize=14)
+fig.colorbar(im, ax=ax, label='増減（人/日）')
+
+plt.tight_layout()
+plt.savefig(OUTPUT_DIR / 'graph09_time_heatmap.png', dpi=150)
+plt.close()
+print("graph09_time_heatmap.png を作成しました")
+
+# 図10: 時間帯別の寄与度分析（積み上げ棒グラフ、6月含む）
+time_contrib = time_month[time_month['月'].isin(valid_months_all) & 
+                          time_month['時間帯'].isin(time_order)].copy()
+time_contrib_pivot = time_contrib.pivot_table(
+    index='月', columns='時間帯', values='差分_日当たり客数'
+)[time_order]
+
+fig, ax = plt.subplots(figsize=(14, 6))
+
+bottom_pos = np.zeros(len(valid_months_all))
+bottom_neg = np.zeros(len(valid_months_all))
+colors_time = {'ランチ(11-15時)': '#3498DB', 'アイドル(15-17時)': '#9B59B6', 'ディナー(17-22時)': '#E67E22'}
+
+for time_slot in time_order:
+    values = []
+    for m in valid_months_all:
+        if m in time_contrib_pivot.index:
+            values.append(time_contrib_pivot.loc[m, time_slot] if time_slot in time_contrib_pivot.columns else 0)
+        else:
+            values.append(0)
+    values = np.array(values)
+    pos_values = np.where(values > 0, values, 0)
+    neg_values = np.where(values < 0, values, 0)
+    
+    ax.bar(valid_months_all, pos_values, bottom=bottom_pos, label=time_slot, color=colors_time[time_slot])
+    ax.bar(valid_months_all, neg_values, bottom=bottom_neg, color=colors_time[time_slot])
+    
+    bottom_pos += pos_values
+    bottom_neg += neg_values
+
+ax.axhline(y=0, color='black', linestyle='-', linewidth=0.5)
+ax.set_xlabel('月', fontsize=12)
+ax.set_ylabel('営業日当たり客数の増減（人）', fontsize=12)
+ax.set_title(f'時間帯別の客数増減寄与（2025年 - 2024年）', fontsize=14)
+ax.set_xticks(valid_months_all)
+ax.set_xticklabels([f'{m}月' for m in valid_months_all])
+ax.legend(loc='upper right')
+ax.grid(axis='y', alpha=0.3)
+
+plt.tight_layout()
+plt.savefig(OUTPUT_DIR / 'graph10_time_contribution.png', dpi=150)
+plt.close()
+print("graph10_time_contribution.png を作成しました")
+
+# 図11: 曜日別ヒートマップ（6月含む）
+weekday_order = ['月', '火', '水', '木', '金', '土', '日']
+weekday_pivot = weekday_month[weekday_month['月'].isin(valid_months_all)].pivot_table(
+    index='曜日', columns='月', values='差分_日当たり客数'
+).reindex(weekday_order)
+
+fig, ax = plt.subplots(figsize=(14, 6))
+im = ax.imshow(weekday_pivot.values, cmap='RdYlGn', aspect='auto', vmin=-100, vmax=200)
+
+ax.set_xticks(np.arange(len(valid_months_all)))
+ax.set_yticks(np.arange(len(weekday_order)))
+ax.set_xticklabels([f'{m}月' for m in valid_months_all])
+ax.set_yticklabels(weekday_order)
+
+for i in range(len(weekday_order)):
+    for j in range(len(valid_months_all)):
+        val = weekday_pivot.iloc[i, j] if j < len(weekday_pivot.columns) else np.nan
+        if pd.notna(val):
+            text_color = 'white' if abs(val) > 80 else 'black'
+            ax.text(j, i, f'{val:.0f}', ha='center', va='center', color=text_color, fontsize=9)
+
+ax.set_title(f'曜日別・営業日当たり客数の前年比増減（2025年 - 2024年）', fontsize=14)
+fig.colorbar(im, ax=ax, label='増減（人/日）')
+
+plt.tight_layout()
+plt.savefig(OUTPUT_DIR / 'graph11_weekday_heatmap.png', dpi=150)
+plt.close()
+print("graph11_weekday_heatmap.png を作成しました")
+
+# 図12: 平日vs土日比較（6月含む）
+weekday_month_copy = weekday_month.copy()
+weekday_month_copy['曜日タイプ'] = weekday_month_copy['曜日'].apply(lambda x: '土日' if x in ['土', '日'] else '平日')
+daytype_contrib = weekday_month_copy[weekday_month_copy['月'].isin(valid_months_all)].groupby(['月', '曜日タイプ'])['差分_日当たり客数'].mean().reset_index()
+daytype_pivot = daytype_contrib.pivot_table(index='月', columns='曜日タイプ', values='差分_日当たり客数')
+
+fig, ax = plt.subplots(figsize=(14, 6))
+
+x = np.arange(len(valid_months_all))
+width = 0.35
+
+weekday_values = [daytype_pivot.loc[m, '平日'] if m in daytype_pivot.index else 0 for m in valid_months_all]
+weekend_values = [daytype_pivot.loc[m, '土日'] if m in daytype_pivot.index else 0 for m in valid_months_all]
+
+bars1 = ax.bar(x - width/2, weekday_values, width, label='平日', color='#2980B9')
+bars2 = ax.bar(x + width/2, weekend_values, width, label='土日', color='#C0392B')
+
+ax.axhline(y=0, color='black', linestyle='-', linewidth=0.5)
+ax.set_xlabel('月', fontsize=12)
+ax.set_ylabel('営業日当たり客数の増減（人）', fontsize=12)
+ax.set_title(f'平日vs土日の客数増減寄与（2025年 - 2024年）', fontsize=14)
+ax.set_xticks(x)
+ax.set_xticklabels([f'{m}月' for m in valid_months_all])
+ax.legend()
+ax.grid(axis='y', alpha=0.3)
+
+for bar in bars1:
+    height = bar.get_height()
+    if height != 0:
+        sign = '+' if height > 0 else ''
+        ax.annotate(f'{sign}{height:.0f}',
+                    xy=(bar.get_x() + bar.get_width() / 2, height),
+                    xytext=(0, 3 if height > 0 else -12), textcoords="offset points",
+                    ha='center', va='bottom' if height > 0 else 'top', fontsize=8)
+for bar in bars2:
+    height = bar.get_height()
+    if height != 0:
+        sign = '+' if height > 0 else ''
+        ax.annotate(f'{sign}{height:.0f}',
+                    xy=(bar.get_x() + bar.get_width() / 2, height),
+                    xytext=(0, 3 if height > 0 else -12), textcoords="offset points",
+                    ha='center', va='bottom' if height > 0 else 'top', fontsize=8)
+
+plt.tight_layout()
+plt.savefig(OUTPUT_DIR / 'graph12_weekday_vs_weekend.png', dpi=150)
+plt.close()
+print("graph12_weekday_vs_weekend.png を作成しました")
+
+# =========================================
+# 図13: 曜日別・入店時刻別の平均滞在時間（フォント修正）
+# =========================================
+print("\n=== 図13: 曜日別・入店時刻別の平均滞在時間 ===")
+
+VISITS_FILE_STAY = DATA_DIR / "visits_with_duration.csv"
+
+# データ読み込み
+stay_data = defaultdict(lambda: defaultdict(list))
+
+with open(VISITS_FILE_STAY, "r", encoding="utf-8") as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+        duration = int(row["滞在時間_分"])
+        weekday = row["曜日"]
+        entry_time = row["入店時刻"]
+        
+        if duration > 120:
+            continue
+        
+        try:
+            dt = datetime.strptime(entry_time, "%Y/%m/%d %H:%M:%S")
+            hour = dt.hour
+            stay_data[weekday][hour].append(duration)
+        except:
+            continue
+
+weekday_order_stay = ["月", "火", "水", "木", "金", "土", "日"]
+hours_stay = list(range(10, 23))
+
+avg_stay_data = {}
+for wd in weekday_order_stay:
+    avg_stay_data[wd] = []
+    for h in hours_stay:
+        durations = stay_data[wd][h]
+        if durations:
+            avg_stay_data[wd].append(sum(durations) / len(durations))
+        else:
+            avg_stay_data[wd].append(None)
+
+fig, ax = plt.subplots(figsize=(14, 7))
+
+colors_stay = {
+    "月": "#1976D2",
+    "火": "#2196F3", 
+    "水": "#42A5F5",
+    "木": "#64B5F6",
+    "金": "#90CAF9",
+    "土": "#E53935",
+    "日": "#FF7043"
+}
+
+markers_stay = {
+    "月": "o", "火": "s", "水": "^", "木": "D", 
+    "金": "v", "土": "o", "日": "s"
+}
+
+for wd in weekday_order_stay:
+    y_values = avg_stay_data[wd]
+    valid_x = [h for h, v in zip(hours_stay, y_values) if v is not None]
+    valid_y = [v for v in y_values if v is not None]
+    
+    linewidth = 2.5 if wd in ["土", "日"] else 1.5
+    ax.plot(valid_x, valid_y, marker=markers_stay[wd], label=wd, 
+            color=colors_stay[wd], linewidth=linewidth, markersize=6)
+
+ax.set_xlabel('入店時刻', fontsize=12)
+ax.set_ylabel('平均滞在時間（分）', fontsize=12)
+ax.set_title('曜日別・入店時刻別の平均滞在時間', fontsize=14)
+ax.set_xticks(hours_stay)
+ax.set_xticklabels([f"{h}:00" for h in hours_stay], rotation=45)
+ax.legend(loc='upper right', title='曜日')
+ax.grid(True, alpha=0.3)
+ax.set_ylim(15, 45)
+
+plt.tight_layout()
+plt.savefig(OUTPUT_DIR / "graph13_duration_by_hour_weekday.png", dpi=150, bbox_inches='tight')
+plt.close()
+print("graph13_duration_by_hour_weekday.png を作成しました")
+
 print("\n=== 全グラフ作成完了 ===")

@@ -1,4 +1,4 @@
-mmmmmmmmm# THE BIFTEKI 赤坂見附店 客単価上昇要因の包括的分析レポート
+# THE BIFTEKI 赤坂見附店 客単価上昇要因の包括的分析レポート
 
 ## 分析概要
 

@@ -15,7 +15,8 @@ rcParams['font.family'] = 'sans-serif'
 rcParams['font.sans-serif'] = ['Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', 'sans-serif']
 rcParams['axes.unicode_minus'] = False
 
-OUTPUT_DIR = '/Users/rikutanaka/aipm_v0/Flow/202601/2026-01-21/SegmentAnalysis'
+import os
+OUTPUT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # データ読み込み
 daily = pd.read_csv(f'{OUTPUT_DIR}/daily_by_segment.csv')

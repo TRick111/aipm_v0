@@ -18,7 +18,8 @@ rcParams['font.family'] = 'sans-serif'
 rcParams['font.sans-serif'] = ['Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', 'sans-serif']
 rcParams['axes.unicode_minus'] = False
 
-OUTPUT_DIR = '/Users/rikutanaka/aipm_v0/Flow/202601/2026-01-21/SegmentAnalysis/HighLowAnalysis'
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+OUTPUT_DIR = os.path.join(SCRIPT_DIR, 'HighLowAnalysis')
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 print("=" * 60)
@@ -30,7 +31,7 @@ print("=" * 60)
 # ============================================================
 print("\n[Step 1] データ読み込み...")
 
-df = pd.read_csv('/Users/rikutanaka/aipm_v0/Flow/202601/2026-01-21/transformed_pos_data_eatin.csv')
+df = pd.read_csv(os.path.join(os.path.dirname(SCRIPT_DIR), 'transformed_pos_data_eatin.csv'))
 
 # 日付・時間の処理
 df['H.集計対象営業年月日'] = pd.to_datetime(df['H.集計対象営業年月日'])

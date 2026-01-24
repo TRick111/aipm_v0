@@ -20,4 +20,4 @@
 | 2026-01-24 | create | `THE BIFTEKI 赤坂見附店/scripts/08_segment/` | セグメント分析スクリプト | Flowから確定反映 |
 | 2026-01-24 | create | `THE BIFTEKI 赤坂見附店/scripts/09_interim_report/` | 中間レポート用グラフ生成スクリプト | Flowから確定反映 |
 | 2026-01-24 | edit | `ProjectIndex.yaml` | 新規成果物を追加 | |
-| 2026-01-24 | edit | `README.md` | 関係者に八木さん（GFS意思決定者）追加、背景にGFS説明追記 | |
+| 2026-01-24 | edit | `README.md` | 関係者にGFS清水さん（意思決定者）・八木さん（担当者）追加、背景にGFS説明追記 | |

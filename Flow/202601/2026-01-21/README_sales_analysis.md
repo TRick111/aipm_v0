@@ -17,8 +17,8 @@ POSデータを用いた売上分析。ピークタイムの処理能力、滞�
 | `transformed_pos_data.csv` | 商品コード/商品名分割、ベース価格追加 | `transform_pos_data.py` |
 | `transformed_pos_data_eatin.csv` | Eat Inデータのみ抽出 | `split_by_category.py` |
 | `transformed_pos_data_takeout.csv` | Take Outデータのみ抽出 | `split_by_category.py` |
-| `visits_with_duration.csv` | 伝票単位の滞在時間データ | `analyze_turnover.py` |
-| `occupancy_10min.csv` | 10分刻みの店内人数データ | `analyze_turnover.py` |
+| `StayTimeAnalysis/visits_with_duration.csv` | 伝票単位の滞在時間データ | `StayTimeAnalysis/analyze_turnover.py` |
+| `StayTimeAnalysis/occupancy_10min.csv` | 10分刻みの店内人数データ | `StayTimeAnalysis/analyze_turnover.py` |
 
 ---
 
@@ -28,15 +28,15 @@ POSデータを用いた売上分析。ピークタイムの処理能力、滞�
 
 | 画像 | 分析内容 | スクリプト |
 |---|---|---|
-| `duration_histogram.png` | 滞在時間のヒストグラム（120分以下）と曜日別箱ひげ図。平均滞在時間は約25〜30分。 | `plot_duration_histogram.py` |
-| `duration_by_hour_weekday.png` | 入店時刻別の平均滞在時間（曜日別折れ線）。ディナー帯の滞在時間がランチより長い。 | `plot_duration_by_hour.py` |
+| `StayTimeAnalysis/duration_histogram.png` | 滞在時間のヒストグラム（120分以下）と曜日別箱ひげ図。平均滞在時間は約25〜30分。 | `StayTimeAnalysis/plot_duration_histogram.py` |
+| `StayTimeAnalysis/duration_by_hour_weekday.png` | 入店時刻別の平均滞在時間（曜日別折れ線）。ディナー帯の滞在時間がランチより長い。 | `StayTimeAnalysis/plot_duration_by_hour.py` |
 
 ### 📊 ピークタイム処理能力分析
 
 | 画像 | 分析内容 | スクリプト |
 |---|---|---|
-| `occupancy_timeseries_weekday.png` | 曜日別の店内人数推移（10分刻み）。ランチピークは12時台、ディナーピークは19-20時台。 | `plot_peak_analysis.py` |
-| `hourly_visits_occupancy_split.png` | 平日/土日別の時間帯別来店組数（棒）と店内人数（折れ線）の複合グラフ。ランチのほうが店内人数が多い理由＝来店数が多いため（リトルの法則）。 | `plot_peak_analysis_weekday_weekend.py` |
+| `PeakAnalysis/occupancy_timeseries_weekday.png` | 曜日別の店内人数推移（10分刻み）。ランチピークは12時台、ディナーピークは19-20時台。 | `PeakAnalysis/plot_peak_analysis.py` |
+| `PeakAnalysis/hourly_visits_occupancy_split.png` | 平日/土日別の時間帯別来店組数（棒）と店内人数（折れ線）の複合グラフ。ランチのほうが店内人数が多い理由＝来店数が多いため（リトルの法則）。 | `PeakAnalysis/plot_peak_analysis_weekday_weekend.py` |
 
 ### 📊 ピーク来店数 vs 売上分析（PeakAnalysisフォルダ）
 
@@ -117,34 +117,38 @@ Flow/202601/2026-01-21/
 ├── split_by_category.py        # EatIn/TakeOut分割
 ├── transformed_pos_data_eatin.csv
 ├── transformed_pos_data_takeout.csv
-├── analyze_turnover.py         # 滞在時間・店内人数計算
-├── visits_with_duration.csv    # 伝票単位滞在時間
-├── occupancy_10min.csv         # 10分刻み店内人数
-├── plot_duration_histogram.py
-├── duration_histogram.png
-├── plot_duration_by_hour.py
-├── duration_by_hour_weekday.png
-├── plot_peak_analysis.py
-├── occupancy_timeseries_weekday.png
-├── plot_peak_analysis_weekday_weekend.py
-├── hourly_visits_occupancy_split.png
-└── PeakAnalysis/
-    ├── analyze_peak_vs_sales.py
-    ├── peak_visits_vs_sales.png
-    ├── analyze_split_cause.py
-    ├── split_cause_analysis.png
-    ├── explore_sales_factors.py
-    ├── sales_factor_exploration.png
-    ├── sales_2d_separation.png
-    ├── explore_sales_factors_split.py
-    ├── sales_factor_exploration_平日.png
-    ├── sales_factor_exploration_土日.png
-    ├── sales_2d_separation_平日.png
-    ├── sales_2d_separation_土日.png
-    ├── plot_spend_by_time.py
-    ├── spend_by_time_15min.png
-    ├── plot_spend_customers_by_time.py
-    └── spend_customers_by_time_split.png
+├── StayTimeAnalysis/           # 滞在時間分析
+│   ├── analyze_turnover.py     # 滞在時間・店内人数計算
+│   ├── visits_with_duration.csv # 伝票単位滞在時間
+│   ├── occupancy_10min.csv     # 10分刻み店内人数
+│   ├── plot_duration_histogram.py
+│   ├── duration_histogram.png
+│   ├── plot_duration_by_hour.py
+│   └── duration_by_hour_weekday.png
+├── PeakAnalysis/               # ピークタイム分析
+│   ├── plot_peak_analysis.py
+│   ├── occupancy_timeseries_weekday.png
+│   ├── plot_peak_analysis_weekday_weekend.py
+│   ├── hourly_visits_occupancy_split.png
+│   ├── analyze_peak_reason.py
+│   ├── analyze_peak_vs_sales.py
+│   ├── peak_visits_vs_sales.png
+│   ├── analyze_split_cause.py
+│   ├── split_cause_analysis.png
+│   ├── explore_sales_factors.py
+│   ├── sales_factor_exploration.png
+│   ├── sales_2d_separation.png
+│   ├── explore_sales_factors_split.py
+│   ├── sales_factor_exploration_平日.png
+│   ├── sales_factor_exploration_土日.png
+│   ├── sales_2d_separation_平日.png
+│   ├── sales_2d_separation_土日.png
+│   ├── plot_spend_by_time.py
+│   ├── spend_by_time_15min.png
+│   ├── plot_spend_customers_by_time.py
+│   └── spend_customers_by_time_split.png
+└── SalesFactorAnalysis/        # 売上要因分析
+    └── sales_factor_analysis.py
 ```
 
 ---

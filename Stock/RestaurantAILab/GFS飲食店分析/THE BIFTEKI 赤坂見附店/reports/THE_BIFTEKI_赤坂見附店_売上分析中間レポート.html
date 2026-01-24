@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE BIFTEKI 赤坂見附店 売上分析 中間レポート</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+            font-size: 11px;
+            line-height: 1.5;
+            color: #333;
+            max-width: 210mm;
+            margin: 0 auto;
+            padding: 10mm;
+            background: white;
+        }
+        h1 {
+            font-size: 24px;
+            color: #1565c0;
+            border-bottom: 3px solid #1976d2;
+            padding-bottom: 8px;
+            margin-top: 0;
+        }
+        h2 {
+            font-size: 18px;
+            color: #1565c0;
+            border-bottom: 2px solid #42a5f5;
+            padding-bottom: 5px;
+            margin-top: 20px;
+            page-break-after: avoid;
+        }
+        h3 {
+            font-size: 12px;
+            color: #1976d2;
+            margin-top: 15px;
+            page-break-after: avoid;
+        }
+        h4 {
+            font-size: 11px;
+            color: #1976d2;
+            margin-top: 10px;
+            page-break-after: avoid;
+        }
+        p {
+            margin: 5px 0;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 8px 0;
+            font-size: 10px;
+        }
+        th, td {
+            border: 1px solid #90caf9;
+            padding: 4px 6px;
+            text-align: left;
+        }
+        th {
+            background-color: #e3f2fd;
+            color: #1565c0;
+            font-weight: bold;
+        }
+        td:not(:first-child) {
+            text-align: right;
+        }
+        img {
+            width: 100%;
+            height: auto;
+            margin: 10px 0;
+            page-break-inside: avoid;
+        }
+        .meta {
+            font-size: 10px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        .toc {
+            background: #e3f2fd;
+            padding: 10px 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            border-left: 4px solid #1976d2;
+        }
+        .toc ol {
+            margin: 5px 0;
+            padding-left: 20px;
+        }
+        .toc li {
+            margin: 3px 0;
+        }
+        .toc a {
+            color: #1565c0;
+            text-decoration: none;
+        }
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid #90caf9;
+            margin: 15px 0;
+        }
+        blockquote {
+            background: #e3f2fd;
+            border-left: 4px solid #1976d2;
+            margin: 10px 0;
+            padding: 8px 12px;
+            font-size: 10px;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 10px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+        ul, ol {
+            margin: 5px 0;
+            padding-left: 20px;
+        }
+        li {
+            margin: 2px 0;
+        }
+        strong {
+            color: #0d47a1;
+        }
+        .highlight {
+            background: #fffde7;
+            padding: 2px 4px;
+        }
+        .page-break {
+            page-break-before: always;
+        }
+        @media print {
+            body {
+                padding: 0;
+            }
+            h2 {
+                page-break-after: avoid;
+            }
+            img {
+                page-break-inside: avoid;
+            }
+            table {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h1>THE BIFTEKI 赤坂見附店 売上分析 中間レポート</h1>
+
+<p class="meta">
+<strong>作成日</strong>: 2026年1月24日<br>
+<strong>分析対象期間</strong>: 2024年1月 〜 2026年1月<br>
+<strong>データソース</strong>: POSデータ（イートイン）
+</p>
+
+<hr>
+
+<div class="toc">
+<h2 style="margin-top:0; border:none;">目次</h2>
+<ol>
+    <li><a href="#sec1">エグゼクティブサマリー</a></li>
+    <li><a href="#sec2">売上の全体推移</a></li>
+    <li><a href="#sec3">客数の部</a></li>
+    <li><a href="#sec4">客単価の部</a></li>
+    <li><a href="#sec5">回転率の部</a></li>
+    <li><a href="#sec6">その他インサイトなど</a></li>
+    <li><a href="#sec7">結論：客数・客単価・回転率</a></li>
+</ol>
+</div>
+
+<hr>
+
+<h2 id="sec1">1. エグゼクティブサマリー</h2>
+
+<h3>分析の目的</h3>
+<p><strong>2025年の売上変化が「客数の増減」によるものか「客単価の増減」によるものかを明らかにし、今後の施策方針を判断する材料を提供する。</strong></p>
+
+<h3>主要な発見</h3>
+<table>
+    <tr><th>観点</th><th style="text-align:left">主要な発見</th></tr>
+    <tr><td><strong>売上</strong></td><td style="text-align:left">2025年4月以降、前年比で<strong>80〜190%増</strong>と大幅に成長</td></tr>
+    <tr><td><strong>客数</strong></td><td style="text-align:left">2025年4月以降、営業日当たり客数が<strong>+53%</strong>増加。ディナー帯の伸びが顕著</td></tr>
+    <tr><td><strong>客単価</strong></td><td style="text-align:left">2024年→2025年で<strong>+40%</strong>上昇（1,189円→1,661円）。高単価メニューへのシフトが主因</td></tr>
+    <tr><td><strong>回転率</strong></td><td style="text-align:left">滞在時間は平均約28分で安定。売上との相関はほぼゼロ</td></tr>
+</table>
+
+<h3>結論</h3>
+<p><strong>2025年の売上増加は「客数増」と「客単価上昇」の両方によるものだが、特に客単価の伸び率が客数の約3倍（+40% vs +14%）と高く、高付加価値商品戦略が成功している。</strong></p>
+
+<p>今後の売上向上の鍵は：</p>
+<ol>
+    <li><strong>ディナー帯の集客強化</strong>（売上との相関r=0.926）</li>
+    <li><strong>高単価メニュー戦略の継続</strong></li>
+</ol>
+
+<hr>
+
+<h2 id="sec2">2. 売上の全体推移</h2>
+
+<h3>2.1 年別サマリー</h3>
+<table>
+    <tr><th>年</th><th>売上</th><th>客数</th><th>客単価</th></tr>
+    <tr><td>2024年</td><td>6,106万円</td><td>51,374人</td><td>1,189円</td></tr>
+    <tr><td>2025年</td><td>9,732万円</td><td>58,590人</td><td>1,661円</td></tr>
+    <tr><td>2026年（1月のみ）</td><td>546万円</td><td>3,142人</td><td>1,737円</td></tr>
+</table>
+
+<p><strong>2024年→2025年の変化</strong>:</p>
+<ul>
+    <li>売上: <strong>+59%</strong></li>
+    <li>客数: <strong>+14%</strong></li>
+    <li>客単価: <strong>+40%</strong></li>
+</ul>
+
+<h3>2.2 月別推移グラフ（営業日あたり）</h3>
+<p>営業日数の違いを排除するため、営業日あたりの指標で推移を示します。</p>
+<img src="../Y2Y/monthly_trends_normalized.png" alt="月別推移（営業日あたり）">
+
+<h4>観察ポイント</h4>
+<ul>
+    <li><strong>売上/営業日</strong>: 2024年は約15〜26万円/日 → 2025年4月以降は約33〜49万円/日</li>
+    <li><strong>客数/営業日</strong>: 2024年は約120〜230人/日 → 2025年4月以降は約190〜315人/日</li>
+    <li><strong>客単価</strong>: 2024年は1,100〜1,400円 → 2025年は1,500〜1,900円</li>
+</ul>
+
+<h3>2.3 前年同月比較（営業日あたり）</h3>
+<img src="../Y2Y/y2y_comparison_normalized.png" alt="年比較（営業日あたり）">
+
+<table>
+    <tr><th>月</th><th>2024年売上</th><th>2025年売上</th><th>増減率</th></tr>
+    <tr><td>1月</td><td>438万円</td><td>385万円</td><td>-12%</td></tr>
+    <tr><td>2月</td><td>491万円</td><td>469万円</td><td>-5%</td></tr>
+    <tr><td>4月</td><td>511万円</td><td>1,480万円</td><td><strong>+189%</strong></td></tr>
+    <tr><td>5月</td><td>540万円</td><td>1,204万円</td><td><strong>+123%</strong></td></tr>
+    <tr><td>6月</td><td>481万円</td><td>298万円</td><td>-38%（営業8日のみ）</td></tr>
+    <tr><td>10月</td><td>558万円</td><td>1,122万円</td><td><strong>+101%</strong></td></tr>
+    <tr><td>12月</td><td>462万円</td><td>832万円</td><td><strong>+80%</strong></td></tr>
+</table>
+
+<p><strong>重要</strong>: 2025年1-2月は前年割れだが、<strong>4月以降は全ての月で前年を大幅に上回っている</strong>（6月は営業日数8日のみのため参考値）。</p>
+
+<hr>
+
+<h2 id="sec3">3. 客数の部</h2>
+
+<h3>3.1 営業日当たり客数の推移：4月以降、全ての月で前年比増加</h3>
+<table>
+    <tr><th>月</th><th>2024年</th><th>2025年</th><th>増減</th><th>増減率</th></tr>
+    <tr><td style="text-align:center">1月</td><td>180.6</td><td>106.8</td><td><strong>-73.8</strong></td><td>-40.9%</td></tr>
+    <tr><td style="text-align:center">2月</td><td>145.2</td><td>119.6</td><td><strong>-25.7</strong></td><td>-17.7%</td></tr>
+    <tr><td style="text-align:center">4月</td><td>149.8</td><td>314.8</td><td><strong>+165.0</strong></td><td>+110.2%</td></tr>
+    <tr><td style="text-align:center">5月</td><td>152.8</td><td>234.8</td><td><strong>+82.0</strong></td><td>+53.7%</td></tr>
+    <tr><td style="text-align:center">6月</td><td>138.4</td><td>222.9</td><td><strong>+84.4</strong></td><td>+61.0%</td></tr>
+    <tr><td style="text-align:center">10月</td><td>150.4</td><td>213.3</td><td><strong>+62.8</strong></td><td>+41.8%</td></tr>
+    <tr><td style="text-align:center">12月</td><td>107.7</td><td>199.3</td><td><strong>+91.6</strong></td><td>+85.0%</td></tr>
+</table>
+
+<img src="./graph01_monthly_comparison.png" alt="月別比較グラフ">
+<img src="./graph02_yoy_change.png" alt="前年比増減グラフ">
+
+<h3>3.2 時間帯別分析：ディナータイムが増加の最大要因</h3>
+<p><strong>結論：全ての月において、ディナータイム（17-22時）の客数増加が全体の増加を牽引している。</strong></p>
+
+<h4>時間帯別の増減詳細（営業日当たり・人）</h4>
+<table>
+    <tr><th>月</th><th>ランチ(11-15時)</th><th>アイドル(15-17時)</th><th>ディナー(17-22時)</th></tr>
+    <tr><td style="text-align:center">4月</td><td><strong>+72.8</strong></td><td>+20.1</td><td><strong>+79.0</strong></td></tr>
+    <tr><td style="text-align:center">5月</td><td>+29.8</td><td>+9.9</td><td><strong>+49.9</strong></td></tr>
+    <tr><td style="text-align:center">7月</td><td>+12.8</td><td>+6.7</td><td><strong>+39.9</strong></td></tr>
+    <tr><td style="text-align:center">10月</td><td>+22.1</td><td>+8.3</td><td><strong>+39.3</strong></td></tr>
+    <tr><td style="text-align:center">12月</td><td>+35.3</td><td>+9.1</td><td><strong>+51.8</strong></td></tr>
+</table>
+
+<img src="./graph10_time_contribution.png" alt="時間帯別寄与度">
+<img src="./graph09_time_heatmap.png" alt="時間帯別ヒートマップ">
+
+<h3>3.3 曜日別分析：平日（特に水〜金）の伸びが顕著</h3>
+
+<h4>曜日別の増減詳細（営業日当たり・人）</h4>
+<table>
+    <tr><th>月</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th>土</th><th>日</th></tr>
+    <tr><td style="text-align:center">4月</td><td>+131</td><td>+157</td><td><strong>+202</strong></td><td>+165</td><td>+191</td><td>+168</td><td>+137</td></tr>
+    <tr><td style="text-align:center">5月</td><td>+87</td><td>+58</td><td>+69</td><td>+96</td><td>+68</td><td><strong>+109</strong></td><td>+97</td></tr>
+    <tr><td style="text-align:center">11月</td><td>+49</td><td>+60</td><td>+94</td><td><strong>+105</strong></td><td>+103</td><td>+89</td><td>+82</td></tr>
+    <tr><td style="text-align:center">12月</td><td>+69</td><td>+96</td><td>+103</td><td>+80</td><td><strong>+107</strong></td><td>+81</td><td>+106</td></tr>
+</table>
+
+<img src="./graph11_weekday_heatmap.png" alt="曜日別ヒートマップ">
+<img src="./graph12_weekday_vs_weekend.png" alt="平日vs土日比較">
+
+<h3>3.4 客数分析まとめ</h3>
+<table>
+    <tr><th>発見</th><th style="text-align:left">内容</th></tr>
+    <tr><td>増加の時期</td><td style="text-align:left">2025年4月以降、営業日当たり客数が<strong>+53%</strong>増加</td></tr>
+    <tr><td>最大寄与時間帯</td><td style="text-align:left"><strong>ディナータイム（17-22時）</strong>が全月で最大寄与</td></tr>
+    <tr><td>最大寄与曜日</td><td style="text-align:left"><strong>水〜金曜日</strong>の平日ディナー需要が成長を牽引</td></tr>
+    <tr><td>1-2月の減少</td><td style="text-align:left">季節要因または何らかの営業状況変化が推測される</td></tr>
+</table>
+
+<hr>
+
+<h2 id="sec4">4. 客単価の部</h2>
+
+<h3>4.1 客単価の推移：2025年5-7月と10-12月の比較</h3>
+<table>
+    <tr><th>指標</th><th>2024年</th><th>2025年</th><th>変化率</th></tr>
+    <tr><td>客単価</td><td>1,189円</td><td>1,661円</td><td><strong>+40%</strong></td></tr>
+</table>
+
+<p><strong>リニューアル後の詳細比較（期間A: 2025年5-7月 → 期間B: 2025年10-12月）</strong>:</p>
+<table>
+    <tr><th>指標</th><th>期間A</th><th>期間B</th><th>変化</th></tr>
+    <tr><td>客単価（中央値）</td><td>1,639円</td><td>1,672円</td><td>+2.0%</td></tr>
+    <tr><td>平均商品単価</td><td>1,108円</td><td>1,178円</td><td><strong>+6.4%</strong></td></tr>
+    <tr><td>伝票数</td><td>12,014</td><td>13,466</td><td>+12.1%</td></tr>
+</table>
+
+<h3>4.2 客単価上昇の主要因</h3>
+<p><strong>Q. なぜ客単価が上昇したのか？</strong></p>
+<p><strong>A. 平均商品単価の上昇が主要因（寄与度: 約115%）</strong></p>
+
+<img src="../CustomerPriceAnalysis/01_decomposition_analysis.png" alt="要因分解">
+
+<table>
+    <tr><th>指標</th><th>期間A</th><th>期間B</th><th>変化</th></tr>
+    <tr><td>一人当たり品数</td><td>1.63品</td><td>1.61品</td><td><strong>-0.02品 (-1.0%)</strong></td></tr>
+    <tr><td>平均商品単価</td><td>1,018円</td><td>1,098円</td><td><strong>+80円 (+7.9%)</strong></td></tr>
+</table>
+
+<p><strong>結論</strong>: 客は<strong>より少ない品数で、より高い商品</strong>を選んでいる。</p>
+
+<h3>4.3 分布の変化：高額層の増加</h3>
+<img src="./graph03_percentile_change.png" alt="パーセンタイル別変化">
+
+<h4>パーセンタイル別の変化</h4>
+<table>
+    <tr><th>パーセンタイル</th><th>期間A</th><th>期間B</th><th>変化</th><th>変化率</th></tr>
+    <tr><td>25%タイル</td><td>1,380円</td><td>1,452円</td><td>+72円</td><td>+5.2%</td></tr>
+    <tr><td>50%タイル（中央値）</td><td>1,639円</td><td>1,672円</td><td>+33円</td><td>+2.0%</td></tr>
+    <tr><td>75%タイル</td><td>1,848円</td><td>2,013円</td><td><strong>+165円</strong></td><td><strong>+8.9%</strong></td></tr>
+    <tr><td>95%タイル</td><td>2,497円</td><td>2,727円</td><td><strong>+230円</strong></td><td><strong>+9.2%</strong></td></tr>
+</table>
+
+<p><strong>解釈</strong>: 高額層ほど上昇率が高い = 高付加価値商品の浸透が成功</p>
+
+<h3>4.4 曜日・時間帯別の傾向：全体的に客単価上昇</h3>
+<img src="./graph04_weekday_hour_analysis.png" alt="曜日・時間帯分析">
+
+<h4>曜日別客単価の変化</h4>
+<table>
+    <tr><th>曜日</th><th>期間A</th><th>期間B</th><th>変化</th></tr>
+    <tr><td>月</td><td>1,633円</td><td>1,752円</td><td>+119円</td></tr>
+    <tr><td>金</td><td>1,676円</td><td>1,749円</td><td>+72円</td></tr>
+    <tr><td><strong>日</strong></td><td><strong>1,736円</strong></td><td><strong>1,877円</strong></td><td><strong>+142円</strong></td></tr>
+</table>
+
+<p><strong>特徴</strong>: 全曜日で客単価が上昇。日曜日の上昇が最大（+142円）。</p>
+
+<h3>4.5 売上増加に貢献したメニュー</h3>
+<img src="./graph05_menu_contribution.png" alt="メニュー貢献度">
+
+<p><strong>貢献度の定義</strong>: 期間B（10-12月）の売上 - 期間A（5-7月）の売上（売上増減額）</p>
+
+<h4>カテゴリ別売上増減額</h4>
+<table>
+    <tr><th>カテゴリ</th><th>増減額</th></tr>
+    <tr><td><strong>期間限定フェア</strong></td><td><strong>+374万円</strong></td></tr>
+    <tr><td>単品</td><td>+25万円</td></tr>
+    <tr><td>アラカルト</td><td>+21万円</td></tr>
+    <tr><td>アルコール</td><td>+19万円</td></tr>
+</table>
+
+<p><strong>重要な発見</strong>: <strong>期間限定フェア商品が売上増加の85%を占める</strong></p>
+
+<h4>販売数が最も増加したメニューTOP5</h4>
+<table>
+    <tr><th>メニュー</th><th>販売数増加</th></tr>
+    <tr><td>ビフハラ定食</td><td>+1,088</td></tr>
+    <tr><td>クアトロ</td><td>+580</td></tr>
+    <tr><td>サンハラ定食（新商品）</td><td>+567</td></tr>
+    <tr><td>ハラチキ定食</td><td>+415</td></tr>
+    <tr><td>ハラスマ定食</td><td>+383</td></tr>
+</table>
+
+<h3>4.6 客単価分析まとめ</h3>
+<table>
+    <tr><th>要因</th><th style="text-align:left">寄与度</th></tr>
+    <tr><td><strong>高単価メニューへのシフト</strong></td><td style="text-align:left">最重要（1,500円以上の販売比率+9.5pt）</td></tr>
+    <tr><td><strong>新商品「サン」シリーズの投入</strong></td><td style="text-align:left">売上構成比18.3%</td></tr>
+    <tr><td><strong>期間限定フェア商品の拡大</strong></td><td style="text-align:left">カテゴリ別貢献度85%</td></tr>
+    <tr><td><strong>ビフハラ定食・クアトロの浸透</strong></td><td style="text-align:left">既存商品の貢献</td></tr>
+</table>
+
+<hr>
+
+<h2 id="sec5">5. 回転率の部</h2>
+
+<h3>5.1 滞在時間の基本統計量：平均滞在時間は約27分で一定</h3>
+<table>
+    <tr><th>指標</th><th>値</th></tr>
+    <tr><td>平均滞在時間</td><td>28.3分</td></tr>
+    <tr><td>標準偏差</td><td>11.6分</td></tr>
+    <tr><td>中央値</td><td>26.1分</td></tr>
+    <tr><td>25パーセンタイル</td><td>21.2分</td></tr>
+    <tr><td>75パーセンタイル</td><td>32.8分</td></tr>
+</table>
+
+<h4>曜日別・入店時刻別の平均滞在時間</h4>
+<img src="./graph13_duration_by_hour_weekday.png" alt="曜日別・時間帯別滞在時間">
+
+<p><strong>観察ポイント</strong>:</p>
+<ul>
+    <li>入店時刻が遅いほど滞在時間は長くなる傾向</li>
+    <li>ただし、<strong>変化は緩やか</strong>（ランチ約25分 → ディナー約30分）</li>
+    <li>曜日による大きな差はない</li>
+</ul>
+
+<p><strong>結論</strong>: 滞在時間は時間帯による影響が小さく、<strong>回転率は1日を通じてほぼ一定</strong>。</p>
+
+<h3>5.2 店内人数と来店の関係</h3>
+<img src="./graph06_hourly_visits_occupancy.png" alt="時間帯別来店組数と店内人数">
+
+<h4>時間帯別の特徴（平日）</h4>
+<table>
+    <tr><th>時間帯</th><th>来店組数/時</th><th>平均店内人数</th></tr>
+    <tr><td>ランチ（12時台）</td><td>約32組</td><td>約18人</td></tr>
+    <tr><td>ディナー（19時台）</td><td>約15組</td><td>約12人</td></tr>
+</table>
+
+<p><strong>重要な発見</strong>:</p>
+<ul>
+    <li><strong>店内人数ピークは「平日ランチ」</strong>（12時台）</li>
+    <li>しかし、<strong>売上に効くのは「ディナー組数」</strong>（詳細は6.1を参照）</li>
+</ul>
+
+<h3>5.3 滞在時間と売上の相関：滞在時間は売上とほぼ相関しない</h3>
+<table>
+    <tr><th>要因</th><th>平日</th><th>土日</th></tr>
+    <tr><td>ディナー組数</td><td><strong>0.926</strong></td><td>0.891</td></tr>
+    <tr><td>総来店客数</td><td>0.911</td><td><strong>0.961</strong></td></tr>
+    <tr><td>平均滞在時間</td><td><strong>-0.079</strong></td><td><strong>-0.026</strong></td></tr>
+</table>
+
+<p><strong>結論</strong>: <strong>滞在時間は売上とほぼ相関しない</strong>。回転率向上より来店数増加が重要。</p>
+
+<hr>
+
+<h2 id="sec6">6. その他インサイトなど</h2>
+
+<h3>6.1 売上上位日と下位日の違い：ディナー組数の影響が最も大きい</h3>
+<img src="./graph08_sales_2d_separation.png" alt="売上上位/下位の2軸分布">
+
+<h4>売上との相関係数（平日）</h4>
+<table>
+    <tr><th>要因</th><th>相関係数</th></tr>
+    <tr><td><strong>ディナー組数</strong></td><td><strong>0.926</strong></td></tr>
+    <tr><td>総来店客数</td><td>0.911</td></tr>
+    <tr><td>総来店組数</td><td>0.865</td></tr>
+    <tr><td>ランチ組数</td><td>0.654</td></tr>
+</table>
+
+<p><strong>重要</strong>: 売上上位日と下位日は<strong>ディナー組数で明確に分離</strong>する。</p>
+
+<h3>6.2 ピーク帯分析：なぜランチは売上に効きにくいのか</h3>
+<img src="./graph07_spend_customers_by_time.png" alt="時間帯別の客数と客単価">
+
+<h4>時間帯別客単価（平日）</h4>
+<table>
+    <tr><th>時間帯</th><th style="text-align:left">客数</th><th style="text-align:left">客単価</th></tr>
+    <tr><td>ランチ（11-13時）</td><td style="text-align:left"><strong>最大</strong></td><td style="text-align:left"><strong>最低</strong>（約1,300円）</td></tr>
+    <tr><td>ディナー（18-21時）</td><td style="text-align:left">中程度</td><td style="text-align:left"><strong>最高</strong>（約1,550円）</td></tr>
+</table>
+
+<p><strong>結論</strong>:</p>
+<pre>
+ランチ売上 ≒ 多い客数 × 低い客単価
+ディナー売上 ≒ 少ない客数 × 高い客単価
+</pre>
+
+<h3>6.3 4セグメント分析（期間×ランチ/ディナー）</h3>
+<img src="../SegmentAnalysis/09_overlay_all.png" alt="4セグメント比較">
+
+<p><strong>発見</strong>:</p>
+<ul>
+    <li>2025年4月を境に、ランチ/ディナー両方で<strong>客数レンジと売上レンジが上方にシフト</strong></li>
+    <li>「曜日だけ」「時間帯だけ」の議論より前に、<strong>2025年4月の構造変化を境界として別モデルで捉える</strong>のが妥当</li>
+</ul>
+
+<h3>6.4 High/Low分析（4月以降）：水曜・木曜・金曜が好調の傾向</h3>
+<img src="../SegmentAnalysis/HighLowAnalysis/01_high_low_distribution.png" alt="High/Low比較">
+<img src="../SegmentAnalysis/HighLowAnalysis/02_factor_ratio.png" alt="要因比率">
+
+<h4>High日とLow日の違い</h4>
+<table>
+    <tr><th>時間帯</th><th style="text-align:left">最も影響が大きい要因</th><th>High/Low比</th></tr>
+    <tr><td>ランチ</td><td style="text-align:left"><strong>客数</strong></td><td>1.98x</td></tr>
+    <tr><td>ディナー</td><td style="text-align:left"><strong>客数</strong></td><td>1.71x</td></tr>
+</table>
+
+<p><strong>示唆</strong>: 4月以降の「高い日」を作る主因は、両時間帯とも<strong>客数（集客）</strong>。</p>
+
+<blockquote>
+<strong>補足：「客単価は上昇している」と「High/Low日で客単価差がない」は矛盾しない</strong><br><br>
+上記の分析でHigh日とLow日の客単価に差がないのは、<strong>同一期間内での日ごとの比較</strong>をしているため。一方、4章で説明した客単価上昇は、<strong>期間Aと期間Bの時系列比較</strong>である。<br><br>
+つまり、「今日の売上が高いか低いか」は<strong>客数で決まる</strong>が、「今月の客単価が先月より高いか」は<strong>長期トレンド（メニュー改定・価格戦略など）</strong>で決まる。両者は異なるレベルの分析であり、矛盾ではない。
+</blockquote>
+
+<hr>
+
+<h2 id="sec7">7. 結論：客数・客単価・回転率</h2>
+
+<h3>7.1 分析結果のまとめ</h3>
+
+<h4>売上増加の構造</h4>
+<table>
+    <tr><th>指標</th><th>2024年</th><th>2025年</th><th>変化率</th></tr>
+    <tr><td>客単価</td><td>1,189円</td><td>1,661円</td><td><strong>+40%</strong></td></tr>
+    <tr><td>客数</td><td>51,374人</td><td>58,590人</td><td>+14%</td></tr>
+</table>
+
+<p><strong>客単価の伸び率が客数の約3倍</strong> → 高付加価値商品戦略の成功</p>
+
+<h4>客数増加の構造</h4>
+<ul>
+    <li><strong>最大寄与時間帯</strong>: ディナータイム（17-22時）</li>
+    <li><strong>最大寄与曜日</strong>: 水〜金曜日</li>
+    <li><strong>売上との相関</strong>: ディナー組数が最も強い（r=0.926）</li>
+</ul>
+
+<h4>客単価上昇の構造</h4>
+<ul>
+    <li><strong>主因</strong>: 高単価メニューへのシフト（1,500円以上の販売比率+9.5pt）</li>
+    <li><strong>新商品効果</strong>: サンシリーズが売上構成比18.3%</li>
+    <li><strong>価格帯シフト</strong>: 1,000-1,500円帯 → 1,500-2,000円帯</li>
+</ul>
+
+<h3>7.2 結論：売上を伸ばす鍵</h3>
+<pre style="background:#e3f2fd; border-left:4px solid #1976d2;">
+┌──────────────────────────────────────────┐
+│  売上向上の最重要ポイント：              │
+│  「ディナー帯の集客強化」                │
+│                                          │
+│  理由：                                   │
+│  ・ディナー組数と売上の相関が最強(0.926) │
+│  ・客単価がランチより+250円高い          │
+│  ・現在も稼働率に余裕があり伸びしろ大    │
+└──────────────────────────────────────────┘
+</pre>
+
+<h3>7.3 今後の施策への示唆</h3>
+
+<h4>注力すべき方向性</h4>
+<table>
+    <tr><th>優先度</th><th style="text-align:left">施策</th><th style="text-align:left">理由</th></tr>
+    <tr><td style="text-align:center"><strong>1</strong></td><td style="text-align:left">ディナー帯の来店組数を増やす</td><td style="text-align:left">売上と最も強く相関（r=0.926）。稼働率に余裕あり</td></tr>
+    <tr><td style="text-align:center"><strong>2</strong></td><td style="text-align:left">客単価上昇の維持</td><td style="text-align:left">+40%の客単価上昇は継続中。現在の価格戦略は有効</td></tr>
+    <tr><td style="text-align:center"><strong>3</strong></td><td style="text-align:left">ランチは現状維持</td><td style="text-align:left">すでに処理能力の限界に近い。無理な改善より安定運用</td></tr>
+</table>
+
+<h4>具体的なアクション案</h4>
+<ol>
+    <li><strong>ディナー集客施策</strong>
+        <ul>
+            <li>平日のディナー組数が売上と最も強く相関</li>
+            <li>SNS、クーポン、予約促進などの検討</li>
+        </ul>
+    </li>
+    <li><strong>高単価メニュー戦略の継続</strong>
+        <ul>
+            <li>サンシリーズの継続・拡充</li>
+            <li>ハラミ系メニューの強化</li>
+            <li>1,500-2,000円帯の商品開発</li>
+        </ul>
+    </li>
+    <li><strong>週末対策</strong>
+        <ul>
+            <li>土日がLowに寄りやすい傾向</li>
+            <li>週末の集客再現条件を別途設計</li>
+        </ul>
+    </li>
+</ol>
+
+<h4>調査すべき事項</h4>
+<ul>
+    <li><strong>2025年4月に何があったか</strong>の詳細確認（価格改定？メニュー改定？店舗改装？）</li>
+    <li>商品別売上構成の変化分析（高単価商品の比率推移）</li>
+    <li>ディナー集客に効く施策の検討</li>
+</ul>
+
+<hr>
+
+<p style="font-size:9px; color:#666; margin-top:30px; text-align:center;">
+<em>本レポートは、各分析フォルダのレポート群を統合して作成</em>
+</p>
+
+</body>
+</html>

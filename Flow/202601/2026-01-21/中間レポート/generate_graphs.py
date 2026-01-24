@@ -387,8 +387,8 @@ print("graph05_menu_contribution.png を作成しました")
 # =========================================
 print("\n=== 図6: 時間帯別来店組数と店内人数 ===")
 
-VISITS_FILE = DATA_DIR / "visits_with_duration.csv"
-OCCUPANCY_FILE = DATA_DIR / "occupancy_10min.csv"
+VISITS_FILE = DATA_DIR / "StayTimeAnalysis" / "visits_with_duration.csv"
+OCCUPANCY_FILE = DATA_DIR / "StayTimeAnalysis" / "occupancy_10min.csv"
 
 weekdays = ["月", "火", "水", "木", "金"]
 weekends = ["土", "日"]
@@ -610,8 +610,8 @@ print("graph07_spend_customers_by_time.png を作成しました")
 # =========================================
 print("\n=== 図8: 売上上位/下位の2軸分布 ===")
 
-VISITS_FILE = DATA_DIR / "visits_with_duration.csv"
-OCCUPANCY_FILE = DATA_DIR / "occupancy_10min.csv"
+VISITS_FILE = DATA_DIR / "StayTimeAnalysis" / "visits_with_duration.csv"
+OCCUPANCY_FILE = DATA_DIR / "StayTimeAnalysis" / "occupancy_10min.csv"
 
 weekdays_list = ["月", "火", "水", "木", "金"]
 
@@ -922,7 +922,7 @@ print("graph12_weekday_vs_weekend.png を作成しました")
 # =========================================
 print("\n=== 図13: 曜日別・入店時刻別の平均滞在時間 ===")
 
-VISITS_FILE_STAY = DATA_DIR / "visits_with_duration.csv"
+VISITS_FILE_STAY = DATA_DIR / "StayTimeAnalysis" / "visits_with_duration.csv"
 
 # データ読み込み
 stay_data = defaultdict(lambda: defaultdict(list))

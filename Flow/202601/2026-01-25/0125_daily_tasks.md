@@ -8,6 +8,7 @@
 | [ ] | GFS分析：Eatopia案件 | Eatopia案件の分析結果レポートを作成 | RestaurantAILab/GFS飲食店分析 |
 | [ ] | AI日報 複数店舗対応 | 複数店舗で情報を分けて表示、質問を個別店舗で設定可能 | RestaurantAILab（要プロジェクト確認） |
 | [ ] | AIOS開発（Ponさん案件） | AIOSシステム定義・Flow-first原則のプロンプト設計 | RestaurantAILab/バンコクPonさん案件/AIOS提供 |
+| [ ] | AIOS: モバイルデバイス対応検証 | Cursorモバイル版での作業フローを検証、課題を洗い出す | RestaurantAILab/バンコクPonさん案件/AIOS提供 |
 
 ## 完了したタスク
 

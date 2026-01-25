@@ -1,0 +1,30 @@
+version: 1
+
+# ProjectIndex.yaml（AI専用）
+# 目的:
+# - ユーザー入力に対してAIが「このプロジェクト内のどのファイルを参照すべきか」を判断するためのプロジェクト内インデックス。
+# ルール:
+# - Stockにファイルを追加/更新したら、AIが files を更新する。
+# - READMEは「状況/次アクション/会議リンク」などの入口。ProjectIndexは「参照ファイル選定」のためのカタログ。
+
+project: "振り返り"
+root: "Stock/SelfCare/振り返り"
+
+canonical:
+  readme: "README.md"
+  log: "log.md"
+
+# プロジェクト内ファイルのカタログ
+files:
+  - path: "README.md"
+    summary: "振り返りプロジェクトの概要・目的・現状・計画"
+    keywords:
+      - 振り返り
+      - 概要
+      - 目的
+      - 計画
+  - path: "log.md"
+    summary: "プロジェクトの変更履歴"
+    keywords:
+      - 変更履歴
+      - ログ

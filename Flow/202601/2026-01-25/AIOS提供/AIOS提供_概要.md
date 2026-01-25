@@ -1,4 +1,4 @@
-# AIOS提供 概要とカリキュラム
+# AIOS提供 概要
 
 作成日: 2026-01-25  
 対象: 近藤Ponさん（Rio's Innovation）

@@ -74,6 +74,24 @@ AIは成果物をStockへ保存したら、必ず同時に以下を更新する�
 - `Stock/<Program>/<Project>/README.md`
 - `Stock/<Program>/<Project>/log.md`
 
+### 6.1.1 ファイル移動・コピーの方法（重要）
+**確定反映時、FlowからStockへファイルを移す際は、ファイル内容を新規作成せずにシェルコマンドでコピー/移動する。**
+- **Windows（PowerShell）**: `Copy-Item` または `Move-Item`
+- **macOS/Linux（Bash）**: `cp` または `mv`
+
+```powershell
+# Windows例: FlowからStockへコピー
+Copy-Item "Flow/202601/2026-01-25/Project/file.md" "Stock/Program/Project/"
+```
+
+```bash
+# macOS/Linux例: FlowからStockへコピー
+cp "Flow/202601/2026-01-25/Project/file.md" "Stock/Program/Project/"
+```
+
+- 新規フォルダが必要な場合は事前に作成する（`New-Item -ItemType Directory` / `mkdir -p`）
+- ユーザーのOSに応じて適切なコマンドを使い分ける
+
 ### 6.2 会議終了（Meetings保存＋README更新）
 AIは会議トランスクリプト/メモを受け取ったら:
 - `Meetings/` に保存

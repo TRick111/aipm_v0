@@ -9,6 +9,7 @@
 | [ ] | AI日報 複数店舗対応 | 複数店舗で情報を分けて表示、質問を個別店舗で設定可能 | RestaurantAILab（要プロジェクト確認） |
 | [ ] | AIOS開発（Ponさん案件） | AIOSシステム定義・Flow-first原則のプロンプト設計 | RestaurantAILab/バンコクPonさん案件/AIOS提供 |
 | [ ] | AIOS: モバイルデバイス対応検証 | Cursorモバイル版での作業フローを検証、課題を洗い出す | RestaurantAILab/バンコクPonさん案件/AIOS提供 |
+| [ ] | AIOS: メール送信機能の設計 | AIOSでメール送信を行う場合のフロー・MCP活用方法を検討 | RestaurantAILab/バンコクPonさん案件/AIOS提供 |
 
 ## 完了したタスク
 

@@ -1,0 +1,86 @@
+version: 1
+
+# ProjectIndex.yaml（AI専用）
+
+project: "週報"
+root: "Stock/RestaurantAILab/週報"
+
+canonical:
+  readme: "README.md"
+  log: "log.md"
+
+files:
+  - path: "README.md"
+    summary: "週報作成システムの運用ガイド（入力データ、分析フロー、実行方法、出力物、トラブルシューティング）"
+    keywords:
+      - 週報
+      - POS
+      - 売上分析
+      - 運用ガイド
+      - analysis_script
+
+  - path: "Scripts/analysis_script.py"
+    summary: "週報の基礎分析を行うメインスクリプト（週次/曜日/時間帯/カテゴリ/商品などの集計と出力）"
+    keywords:
+      - Python
+      - 週次分析
+      - 可視化
+      - CSV
+      - JSON
+      - グラフ
+
+  - path: "Scripts/deep_dive_weekday_analysis.py"
+    summary: "曜日深掘り分析用スクリプト（好調/不調曜日の詳細比較）"
+    keywords:
+      - Python
+      - 曜日分析
+      - 深掘り
+      - 比較
+
+  - path: "Scripts/bfa_category_product_ranking_html.py"
+    summary: "BFAのrawdata.csvから、期間指定でカテゴリ別の商品売上ランキングを集計し、ダッシュボード風HTMLで出力するスクリプト"
+    keywords:
+      - BFA
+      - ランキング
+      - カテゴリ別
+      - 商品
+      - 売上
+      - HTML
+      - PDF印刷
+      - print-color-adjust
+      - 期間指定
+
+  - path: "category_product_ranking.py"
+    summary: "カテゴリ内商品ランキング分析（TOP/Bottomの抽出）を行う参考スクリプト（JSON/CSV/Markdown出力）"
+    keywords:
+      - ランキング
+      - カテゴリ
+      - 商品
+      - 売上
+      - Python
+
+  - path: "1_input/"
+    summary: "入力データ（BFA/BBCのrawdata.csv、reviews.csvなど）"
+    keywords:
+      - input
+      - rawdata
+      - reviews
+      - CSV
+
+  - path: "2_output/"
+    summary: "週次アウトプット（BFA/BBC別に週フォルダ。分析結果JSON/CSV、グラフPNG、週報基礎資料など）"
+    keywords:
+      - output
+      - 週次
+      - CSV
+      - JSON
+      - PNG
+      - レポート
+
+  - path: "3.template/"
+    summary: "週報スライド構成テンプレート等"
+    keywords:
+      - テンプレート
+      - スライド
+      - 構成
+

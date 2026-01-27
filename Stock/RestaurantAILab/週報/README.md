@@ -260,6 +260,27 @@ python "Stock/RestaurantAILab/週報/generate_docx.py"
 
 **出力**: `2_output/週報作成基礎資料.docx`
 
+---
+
+## 5.x 追加ツール: BFA カテゴリ別「商品売り上げランキング」HTML出力
+
+rawdata.csv を使って、指定期間の **カテゴリ別の商品売り上げランキング**を **ダッシュボード風HTML** で出力します（PDF印刷向けのCSSも同梱）。
+
+- **スクリプト**: `Scripts/bfa_category_product_ranking_html.py`
+- **入力**: `1_input/BFA/rawdata.csv`
+- **出力**: 任意のHTML（例: `Flow/.../output/*.html`）
+
+実行例（macOS / システムpython3）:
+
+```bash
+/Library/Developer/CommandLineTools/usr/bin/python3 \
+  "Stock/RestaurantAILab/週報/Scripts/bfa_category_product_ranking_html.py" \
+  --sales-data "Stock/RestaurantAILab/週報/1_input/BFA/rawdata.csv" \
+  --start-date 2026-01-19 \
+  --end-date   2026-01-25 \
+  --output-html "Flow/202601/2026-01-27/週報/BFA_売上ランキング/output/bfa_category_product_ranking_2026-01-19_2026-01-25.html"
+```
+
 ### 5.2 別の週の分析（例: Week 42）
 
 #### 方法1: 既存スクリプトを使用

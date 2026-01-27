@@ -1,0 +1,885 @@
+<!doctype html>
+    <html lang="ja">
+    <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <title>🏆 売り上げランキング</title>
+      <style>
+    :root {
+      --bg:#f4f7fb;
+      --text:#1f2a44;
+      --muted:#6b7a99;
+      --line:#e5eaf3;
+      --card:#ffffff;
+      --shadow: 0 6px 18px rgba(31,42,68,0.10);
+      --header:#1e4fd6;
+    }
+    /* PDF印刷で色が落ちるのを防ぐ（ブラウザ側の設定も必要な場合あり） */
+    html, body, * {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Hiragino Sans', 'Noto Sans JP', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .topbar {
+      background: linear-gradient(180deg, #1e4fd6, #1943b7);
+      color: #fff;
+      padding: 18px 20px;
+      box-shadow: 0 10px 22px rgba(0,0,0,0.12);
+    }
+    .topbar h1 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: 0.2px; }
+    .topbar .sub { margin: 6px 0 0; opacity: 0.95; font-size: 13px; }
+    .container { max-width: 1100px; margin: 18px auto 40px; padding: 0 16px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    @media (max-width: 860px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+    .cat-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .cat-header {
+      padding: 10px 12px;
+      color: #fff;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .cat-title { font-size: 14px; }
+    .cat-meta {
+      padding: 10px 12px 0;
+      color: var(--muted);
+      display:flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      font-size: 12px;
+    }
+    .cat-meta b { color: var(--text); }
+    table.tbl {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0 12px;
+    }
+    table.tbl caption {
+      text-align: left;
+      color: var(--muted);
+      padding: 0 12px 8px;
+      font-weight: 700;
+      font-size: 12px;
+    }
+    table.tbl thead th {
+      background: #f0f4ff;
+      color: var(--text);
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      padding: 8px 10px;
+      font-size: 12px;
+      text-align: left;
+      position: sticky;
+      top: 0;
+    }
+    table.tbl td {
+      border-bottom: 1px solid var(--line);
+      padding: 7px 10px;
+      font-size: 12px;
+      background: #fff;
+    }
+    table.tbl tr:nth-child(even) td { background: #fbfcff; }
+    table.tbl td:nth-child(1) { width: 56px; }
+    /* 右寄せ: 販売数/売上/構成比 */
+    table.tbl td:nth-child(3), table.tbl td:nth-child(4), table.tbl td:nth-child(5) { text-align: right; }
+    .footer { color: var(--muted); font-size: 12px; margin-top: 14px; }
+
+    @media print {
+      @page { margin: 10mm; }
+      body { background: #ffffff !important; }
+      .topbar {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .cat-card, .cat-header, table.tbl thead th, table.tbl td {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      /* 影は印刷で汚く見えることがあるので弱める */
+      .cat-card { box-shadow: none !important; }
+    }
+    </style>
+    </head>
+    <body>
+      <header class="topbar">
+        <h1>🏆 売り上げランキング</h1>
+        <p class="sub">対象期間: 2026-01-19 〜 2026-01-25　｜　総売上: ¥608,200</p>
+      </header>
+      <main class="container">
+        <div class='grid'><section class='cat-card'><div class='cat-header' style='background:#ef5350'><span class='cat-title'>コース&セット</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥140,000</span><span><b>商品数</b>: 2</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>その他CLPコース</td>
+      <td>20</td>
+      <td>¥110,000</td>
+      <td>78.57%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>ショートコース(食事のみ)+チャージ込み＋サ別</td>
+      <td>3</td>
+      <td>¥30,000</td>
+      <td>21.43%</td>
+    </tr>
+  </tbody>
+</table></section><section class='cat-card'><div class='cat-header' style='background:#ffa726'><span class='cat-title'>未設定</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥84,000</span><span><b>商品数</b>: 2</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>7000円飲み放題付（2時間制）</td>
+      <td>12</td>
+      <td>¥84,000</td>
+      <td>100.00%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>No charge</td>
+      <td>6</td>
+      <td>¥0</td>
+      <td>0.00%</td>
+    </tr>
+  </tbody>
+</table></section><section class='cat-card'><div class='cat-header' style='background:#ffa726'><span class='cat-title'>イベント</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥55,000</span><span><b>商品数</b>: 1</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>イベント費用</td>
+      <td>1</td>
+      <td>¥55,000</td>
+      <td>100.00%</td>
+    </tr>
+  </tbody>
+</table></section><section class='cat-card'><div class='cat-header' style='background:#26c6da'><span class='cat-title'>ウイスキー</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥41,100</span><span><b>商品数</b>: 14</span></div><table class="dataframe tbl"><caption>Top 5（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>グレンアラヒー8年</td>
+      <td>5</td>
+      <td>¥8,000</td>
+      <td>19.46%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>カリラ12年</td>
+      <td>4</td>
+      <td>¥6,400</td>
+      <td>15.57%</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>グレンリベット12年</td>
+      <td>3</td>
+      <td>¥4,200</td>
+      <td>10.22%</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>ラフロイグ10年</td>
+      <td>2</td>
+      <td>¥3,400</td>
+      <td>8.27%</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>ジュラ 10年</td>
+      <td>2</td>
+      <td>¥2,800</td>
+      <td>6.81%</td>
+    </tr>
+  </tbody>
+</table><table class="dataframe tbl"><caption>Bottom 5（売上昇順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>バスカー</td>
+      <td>1</td>
+      <td>¥1,300</td>
+      <td>3.16%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>ジョニーウォーカー ブラックルビー</td>
+      <td>1</td>
+      <td>¥1,500</td>
+      <td>3.65%</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>アードベック 10年</td>
+      <td>1</td>
+      <td>¥1,600</td>
+      <td>3.89%</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>グレンフィディック12年</td>
+      <td>1</td>
+      <td>¥1,600</td>
+      <td>3.89%</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>ボウモア12年</td>
+      <td>1</td>
+      <td>¥1,600</td>
+      <td>3.89%</td>
+    </tr>
+  </tbody>
+</table></section><section class='cat-card'><div class='cat-header' style='background:#ffca28'><span class='cat-title'>その他</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥38,800</span><span><b>商品数</b>: 2</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>tablecharge</td>
+      <td>77</td>
+      <td>¥38,500</td>
+      <td>99.23%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>丸氷</td>
+      <td>3</td>
+      <td>¥300</td>
+      <td>0.77%</td>
+    </tr>
+  </tbody>
+</table></section><section class='cat-card'><div class='cat-header' style='background:#66bb6a'><span class='cat-title'>ジャパニーズカクテル</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥38,500</span><span><b>商品数</b>: 6</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>本わさびジンソニック</td>
+      <td>5</td>
+      <td>¥9,000</td>
+      <td>23.38%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>山葵と梨のスマッシュ</td>
+      <td>3</td>
+      <td>¥6,900</td>
+      <td>17.92%</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>Hojicha Negroni</td>
+      <td>4</td>
+      <td>¥6,800</td>
+      <td>17.66%</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>焙じ茶ジンソーダ</td>
+      <td>4</td>
+      <td>¥5,600</td>
+      <td>14.55%</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>Japanese High Tea</td>
+      <td>3</td>
+      <td>¥5,400</td>
+      <td>14.03%</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>Niu Japonica</td>
+      <td>3</td>
+      <td>¥4,800</td>
+      <td>12.47%</td>
+    </tr>
+  </tbody>
+</table></section><section class='cat-card'><div class='cat-header' style='background:#ffca28'><span class='cat-title'>スナック</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥35,000</span><span><b>商品数</b>: 11</span></div><table class="dataframe tbl"><caption>Top 5（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>チーズ盛り合わせ</td>
+      <td>5</td>
+      <td>¥11,000</td>
+      <td>31.43%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>生ハム盛り</td>
+      <td>6</td>
+      <td>¥9,600</td>
+      <td>27.43%</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>生チョコレート</td>
+      <td>4</td>
+      <td>¥4,000</td>
+      <td>11.43%</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>バーニャカウダ</td>
+      <td>2</td>
+      <td>¥2,000</td>
+      <td>5.71%</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>牡蠣のレモンマリネ</td>
+      <td>2</td>
+      <td>¥2,000</td>
+      <td>5.71%</td>
+    </tr>
+  </tbody>
+</table><table class="dataframe tbl"><caption>Bottom 5（売上昇順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>MIXローストナッツ</td>
+      <td>1</td>
+      <td>¥800</td>
+      <td>2.29%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>パテドカンパーニュ</td>
+      <td>1</td>
+      <td>¥1,000</td>
+      <td>2.86%</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>パプリカ詰めオリーブ</td>
+      <td>1</td>
+      <td>¥1,000</td>
+      <td>2.86%</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>ビーフジャーキー</td>
+      <td>1</td>
+      <td>¥1,000</td>
+      <td>2.86%</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>ブルスケッタ</td>
+      <td>1</td>
+      <td>¥1,000</td>
+      <td>2.86%</td>
+    </tr>
+  </tbody>
+</table></section><section class='cat-card'><div class='cat-header' style='background:#ef5350'><span class='cat-title'>オリジナルカクテル</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥30,000</span><span><b>商品数</b>: 6</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>Tommy's Verde Margarita</td>
+      <td>4</td>
+      <td>¥7,200</td>
+      <td>24.00%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>ゴールデンタイムフィズ</td>
+      <td>4</td>
+      <td>¥6,800</td>
+      <td>22.67%</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>Syndicate</td>
+      <td>3</td>
+      <td>¥5,400</td>
+      <td>18.00%</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>Arrow Head</td>
+      <td>2</td>
+      <td>¥4,000</td>
+      <td>13.33%</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>Espresso Martini</td>
+      <td>2</td>
+      <td>¥3,600</td>
+      <td>12.00%</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>セイロンバックスフィズ</td>
+      <td>2</td>
+      <td>¥3,000</td>
+      <td>10.00%</td>
+    </tr>
+  </tbody>
+</table></section><section class='cat-card'><div class='cat-header' style='background:#26c6da'><span class='cat-title'>ワイン（グラス）</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥29,600</span><span><b>商品数</b>: 4</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>サングリア赤　1,800円</td>
+      <td>6</td>
+      <td>¥10,800</td>
+      <td>36.49%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>デバルド・ロッソ</td>
+      <td>9</td>
+      <td>¥10,800</td>
+      <td>36.49%</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>パナメラ・カルベネ・ソーヴィニョン</td>
+      <td>3</td>
+      <td>¥4,800</td>
+      <td>16.22%</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>グラスワイン</td>
+      <td>4</td>
+      <td>¥3,200</td>
+      <td>10.81%</td>
+    </tr>
+  </tbody>
+</table></section><section class='cat-card'><div class='cat-header' style='background:#26c6da'><span class='cat-title'>アラカルト</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥24,800</span><span><b>商品数</b>: 7</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>トマトのカプレーゼ</td>
+      <td>4</td>
+      <td>¥6,000</td>
+      <td>24.19%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>カルパッチョ</td>
+      <td>3</td>
+      <td>¥5,100</td>
+      <td>20.56%</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>フレンチフライ</td>
+      <td>4</td>
+      <td>¥4,000</td>
+      <td>16.13%</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>鶏もものソテー</td>
+      <td>2</td>
+      <td>¥3,600</td>
+      <td>14.52%</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>ガーリックシュリンプ</td>
+      <td>2</td>
+      <td>¥3,000</td>
+      <td>12.10%</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>前菜の盛り合わせ</td>
+      <td>1</td>
+      <td>¥1,800</td>
+      <td>7.26%</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>唐揚げ</td>
+      <td>1</td>
+      <td>¥1,300</td>
+      <td>5.24%</td>
+    </tr>
+  </tbody>
+</table></section><section class='cat-card'><div class='cat-header' style='background:#26c6da'><span class='cat-title'>ビール</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥19,500</span><span><b>商品数</b>: 1</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>ガージェリー</td>
+      <td>15</td>
+      <td>¥19,500</td>
+      <td>100.00%</td>
+    </tr>
+  </tbody>
+</table></section><section class='cat-card'><div class='cat-header' style='background:#78909c'><span class='cat-title'>ウイスキー（ハイボール・ボトル・オリジナル）</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥18,300</span><span><b>商品数</b>: 3</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>ハウスハイボール</td>
+      <td>10</td>
+      <td>¥13,000</td>
+      <td>71.04%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>BFAグレングラッサ8年</td>
+      <td>1</td>
+      <td>¥2,800</td>
+      <td>15.30%</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>ウイスキー</td>
+      <td>1</td>
+      <td>¥2,500</td>
+      <td>13.66%</td>
+    </tr>
+  </tbody>
+</table></section><section class='cat-card'><div class='cat-header' style='background:#ffca28'><span class='cat-title'>ノンアルコールカクテル</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥13,500</span><span><b>商品数</b>: 2</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>シャーリーテンプル</td>
+      <td>9</td>
+      <td>¥11,700</td>
+      <td>86.67%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>ピニャコラーダ</td>
+      <td>1</td>
+      <td>¥1,800</td>
+      <td>13.33%</td>
+    </tr>
+  </tbody>
+</table></section><section class='cat-card'><div class='cat-header' style='background:#66bb6a'><span class='cat-title'>ワイン</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥10,000</span><span><b>商品数</b>: 1</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>パ・フェネオン</td>
+      <td>1</td>
+      <td>¥10,000</td>
+      <td>100.00%</td>
+    </tr>
+  </tbody>
+</table></section><section class='cat-card'><div class='cat-header' style='background:#ef5350'><span class='cat-title'>ソフトドリンク</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥9,600</span><span><b>商品数</b>: 5</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>ウーロン茶</td>
+      <td>5</td>
+      <td>¥4,000</td>
+      <td>41.67%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>フィーバーツリーソーダ</td>
+      <td>3</td>
+      <td>¥2,400</td>
+      <td>25.00%</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>ソフトドリンク</td>
+      <td>2</td>
+      <td>¥1,600</td>
+      <td>16.67%</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>グレープフルーツジュース</td>
+      <td>1</td>
+      <td>¥800</td>
+      <td>8.33%</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>コーヒー</td>
+      <td>1</td>
+      <td>¥800</td>
+      <td>8.33%</td>
+    </tr>
+  </tbody>
+</table></section><section class='cat-card'><div class='cat-header' style='background:#26c6da'><span class='cat-title'>ジャパニーズウイスキー</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥7,700</span><span><b>商品数</b>: 2</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>白州</td>
+      <td>2</td>
+      <td>¥4,200</td>
+      <td>54.55%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>山崎12年</td>
+      <td>1</td>
+      <td>¥3,500</td>
+      <td>45.45%</td>
+    </tr>
+  </tbody>
+</table></section><section class='cat-card'><div class='cat-header' style='background:#26c6da'><span class='cat-title'>ご飯もの</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥6,800</span><span><b>商品数</b>: 3</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>ボロネーゼ</td>
+      <td>2</td>
+      <td>¥3,200</td>
+      <td>47.06%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>マルゲリータ</td>
+      <td>1</td>
+      <td>¥1,800</td>
+      <td>26.47%</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>禁断パスタ</td>
+      <td>1</td>
+      <td>¥1,800</td>
+      <td>26.47%</td>
+    </tr>
+  </tbody>
+</table></section><section class='cat-card'><div class='cat-header' style='background:#ab47bc'><span class='cat-title'>カクテル</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥3,100</span><span><b>商品数</b>: 1</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>クラシックカクテル</td>
+      <td>2</td>
+      <td>¥3,100</td>
+      <td>100.00%</td>
+    </tr>
+  </tbody>
+</table></section><section class='cat-card'><div class='cat-header' style='background:#ffa726'><span class='cat-title'>ジン</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥1,700</span><span><b>商品数</b>: 1</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>ロードオブバーベス</td>
+      <td>1</td>
+      <td>¥1,700</td>
+      <td>100.00%</td>
+    </tr>
+  </tbody>
+</table></section><section class='cat-card'><div class='cat-header' style='background:#78909c'><span class='cat-title'>ドリンク</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥1,200</span><span><b>商品数</b>: 1</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>梅酒</td>
+      <td>1</td>
+      <td>¥1,200</td>
+      <td>100.00%</td>
+    </tr>
+  </tbody>
+</table></section></div>
+      </main>
+    </body>
+    </html>
+    

@@ -35,6 +35,8 @@ def parse_args():
     parser.add_argument('--input-dir', default='Stock/RestaurantAILab/週報/1_input',
                         help='入力ディレクトリ（rawdata.csvの場所）')
     parser.add_argument('--output-dir', help='出力ディレクトリ（指定しない場合は2_output_{week}）')
+    parser.add_argument('--export-slide-data', action='store_true',
+                        help='スライド用データをテキストファイルに出力')
     return parser.parse_args()
 
 

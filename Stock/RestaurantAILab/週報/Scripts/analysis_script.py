@@ -135,6 +135,8 @@ parser.add_argument('--sales-data', type=str,
 parser.add_argument('--reviews-data', type=str,
                     default=r'Stock\RestaurantAILab\週報\1_input\reviews.csv',
                     help='口コミデータのパス')
+parser.add_argument('--images', action='store_true',
+                    help='グラフ画像を出力する（デフォルト: 出力しない）')
 
 args = parser.parse_args()
 
@@ -407,8 +409,67 @@ if prev_year_data is not None:
 
 save_memo("週次売上比較", comparison_memo)
 
+# ==========================================
+# スライド用データ出力（テキスト形式）
+# ==========================================
+
+# 第1部用：直近5週間トレンドデータ
+slide_data_part1 = []
+slide_data_part1.append("=" * 60)
+slide_data_part1.append("【スライド第1部用】週次トレンドデータ（直近5週間）")
+slide_data_part1.append("=" * 60)
+slide_data_part1.append("")
+
+# 直近5週間のデータテーブル
+slide_data_part1.append("## 直近5週間の推移データ（グラフ用）")
+slide_data_part1.append("")
+slide_data_part1.append("| 週 | 売上 | 客数 | 客単価 | 組数 |")
+slide_data_part1.append("|---|---|---|---|---|")
+for week in recent_week_list:
+    w_data = weekly_sales.loc[week]
+    slide_data_part1.append(f"| {week} | ¥{w_data['売上']:,.0f} | {w_data['客数']:.0f}人 | ¥{w_data['客単価']:,.0f} | {w_data['組数']:.0f}組 |")
+slide_data_part1.append("")
+
+# 前年同週比較データ
+slide_data_part1.append("## 前年同週比較データ")
+slide_data_part1.append("")
+if prev_year_data is not None:
+    slide_data_part1.append(f"| 指標 | 今週 ({latest_week}) | 前年同週 ({prev_year_week}) | 成長率 |")
+    slide_data_part1.append("|---|---|---|---|")
+    slide_data_part1.append(f"| 売上 | ¥{latest_week_data['売上']:,.0f} | ¥{prev_year_data['売上']:,.0f} | {(latest_week_data['売上']/prev_year_data['売上']-1)*100:+.1f}% |")
+    slide_data_part1.append(f"| 客数 | {latest_week_data['客数']:.0f}人 | {prev_year_data['客数']:.0f}人 | {(latest_week_data['客数']/prev_year_data['客数']-1)*100:+.1f}% |")
+    slide_data_part1.append(f"| 客単価 | ¥{latest_week_data['客単価']:,.0f} | ¥{prev_year_data['客単価']:,.0f} | {(latest_week_data['客単価']/prev_year_data['客単価']-1)*100:+.1f}% |")
+else:
+    slide_data_part1.append("前年同週データなし")
+slide_data_part1.append("")
+
+# エグゼクティブサマリー用KPI
+slide_data_part1.append("## エグゼクティブサマリー用KPI")
+slide_data_part1.append("")
+slide_data_part1.append(f"| 指標 | 実績 | 前週比 | 前年比 |")
+slide_data_part1.append("|---|---|---|---|")
+
+prev_week_sales_change = f"{(latest_week_data['売上']/prev_week_data['売上']-1)*100:+.1f}%" if prev_week_data is not None else "N/A"
+prev_week_cust_change = f"{(latest_week_data['客数']/prev_week_data['客数']-1)*100:+.1f}%" if prev_week_data is not None else "N/A"
+prev_week_unit_change = f"{(latest_week_data['客単価']/prev_week_data['客単価']-1)*100:+.1f}%" if prev_week_data is not None else "N/A"
+
+prev_year_sales_change = f"{(latest_week_data['売上']/prev_year_data['売上']-1)*100:+.1f}%" if prev_year_data is not None else "N/A"
+prev_year_cust_change = f"{(latest_week_data['客数']/prev_year_data['客数']-1)*100:+.1f}%" if prev_year_data is not None else "N/A"
+prev_year_unit_change = f"{(latest_week_data['客単価']/prev_year_data['客単価']-1)*100:+.1f}%" if prev_year_data is not None else "N/A"
+
+slide_data_part1.append(f"| 売上 | ¥{latest_week_data['売上']:,.0f} | {prev_week_sales_change} | {prev_year_sales_change} |")
+slide_data_part1.append(f"| 客数 | {latest_week_data['客数']:.0f}人 | {prev_week_cust_change} | {prev_year_cust_change} |")
+slide_data_part1.append(f"| 客単価 | ¥{latest_week_data['客単価']:,.0f} | {prev_week_unit_change} | {prev_year_unit_change} |")
+slide_data_part1.append("")
+
+# ファイル出力
+with open(os.path.join(output_dir, 'slide_data_part1.txt'), 'w', encoding='utf-8') as f:
+    f.write('\n'.join(slide_data_part1))
+
+print("\n[出力] slide_data_part1.txt - 第1部用トレンドデータ")
+
 # グラフ作成：週次売上比較（棒グラフ）- モダンデザイン
-if prev_week_data is not None:
+if args.images and prev_week_data is not None:
     fig, axes = plt.subplots(2, 2, figsize=(17, 11), facecolor='white')
     fig.suptitle('週次指標比較分析', fontsize=18, fontweight='bold', y=0.995, color='#2c3e50')
 
@@ -539,80 +600,74 @@ if prev_week_data is not None:
     save_memo("グラフ保存", "週次売上比較グラフ（棒グラフ）を保存しました")
 
 # グラフ作成：週次売上推移（折れ線グラフ）- 過去1ヶ月（直近5週間）
-# 対象週を含む直近5週間のデータを抽出
-recent_weeks_count = 5
-if latest_week_idx >= recent_weeks_count - 1:
-    recent_week_list = week_list[latest_week_idx - recent_weeks_count + 1:latest_week_idx + 1]
-else:
-    recent_week_list = week_list[:latest_week_idx + 1]
+if args.images:
+    weekly_sales_recent = weekly_sales.loc[recent_week_list]
 
-weekly_sales_recent = weekly_sales.loc[recent_week_list]
+    fig, axes = plt.subplots(2, 2, figsize=(17, 11), facecolor='white')
+    fig.suptitle('週次推移トレンド分析（直近5週間）', fontsize=18, fontweight='bold', y=0.995, color='#2c3e50')
 
-fig, axes = plt.subplots(2, 2, figsize=(17, 11), facecolor='white')
-fig.suptitle('週次推移トレンド分析（直近5週間）', fontsize=18, fontweight='bold', y=0.995, color='#2c3e50')
+    # 売上推移
+    weekly_sales_recent['売上'].plot(ax=axes[0, 0], marker='o', linewidth=3, markersize=10,
+                                    color=COLORS['primary'], markerfacecolor=COLORS['warning'],
+                                    markeredgecolor='white', markeredgewidth=2)
+    axes[0, 0].set_title('売上推移', fontsize=13, fontweight='bold', pad=12, color='#34495e')
+    axes[0, 0].set_ylabel('売上 (円)', fontsize=11, fontweight='600')
+    axes[0, 0].grid(True, alpha=0.3, linestyle='--', linewidth=0.8)
+    axes[0, 0].tick_params(axis='x', rotation=15, labelsize=9)
+    axes[0, 0].spines['top'].set_visible(False)
+    axes[0, 0].spines['right'].set_visible(False)
+    axes[0, 0].set_facecolor('#f8f9fa')
+    axes[0, 0].fill_between(range(len(weekly_sales_recent)), weekly_sales_recent['売上'],
+                            alpha=0.2, color=COLORS['primary'])
 
-# 売上推移
-weekly_sales_recent['売上'].plot(ax=axes[0, 0], marker='o', linewidth=3, markersize=10,
-                                color=COLORS['primary'], markerfacecolor=COLORS['warning'],
-                                markeredgecolor='white', markeredgewidth=2)
-axes[0, 0].set_title('売上推移', fontsize=13, fontweight='bold', pad=12, color='#34495e')
-axes[0, 0].set_ylabel('売上 (円)', fontsize=11, fontweight='600')
-axes[0, 0].grid(True, alpha=0.3, linestyle='--', linewidth=0.8)
-axes[0, 0].tick_params(axis='x', rotation=15, labelsize=9)
-axes[0, 0].spines['top'].set_visible(False)
-axes[0, 0].spines['right'].set_visible(False)
-axes[0, 0].set_facecolor('#f8f9fa')
-axes[0, 0].fill_between(range(len(weekly_sales_recent)), weekly_sales_recent['売上'],
-                        alpha=0.2, color=COLORS['primary'])
+    # 客数推移
+    weekly_sales_recent['客数'].plot(ax=axes[0, 1], marker='o', linewidth=3, markersize=10,
+                                    color=COLORS['success'], markerfacecolor=COLORS['warning'],
+                                    markeredgecolor='white', markeredgewidth=2)
+    axes[0, 1].set_title('客数推移', fontsize=13, fontweight='bold', pad=12, color='#34495e')
+    axes[0, 1].set_ylabel('客数 (人)', fontsize=11, fontweight='600')
+    axes[0, 1].grid(True, alpha=0.3, linestyle='--', linewidth=0.8)
+    axes[0, 1].tick_params(axis='x', rotation=15, labelsize=9)
+    axes[0, 1].spines['top'].set_visible(False)
+    axes[0, 1].spines['right'].set_visible(False)
+    axes[0, 1].set_facecolor('#f8f9fa')
+    axes[0, 1].fill_between(range(len(weekly_sales_recent)), weekly_sales_recent['客数'],
+                            alpha=0.2, color=COLORS['success'])
 
-# 客数推移
-weekly_sales_recent['客数'].plot(ax=axes[0, 1], marker='o', linewidth=3, markersize=10,
-                                color=COLORS['success'], markerfacecolor=COLORS['warning'],
-                                markeredgecolor='white', markeredgewidth=2)
-axes[0, 1].set_title('客数推移', fontsize=13, fontweight='bold', pad=12, color='#34495e')
-axes[0, 1].set_ylabel('客数 (人)', fontsize=11, fontweight='600')
-axes[0, 1].grid(True, alpha=0.3, linestyle='--', linewidth=0.8)
-axes[0, 1].tick_params(axis='x', rotation=15, labelsize=9)
-axes[0, 1].spines['top'].set_visible(False)
-axes[0, 1].spines['right'].set_visible(False)
-axes[0, 1].set_facecolor('#f8f9fa')
-axes[0, 1].fill_between(range(len(weekly_sales_recent)), weekly_sales_recent['客数'],
-                        alpha=0.2, color=COLORS['success'])
+    # 客単価推移
+    weekly_sales_recent['客単価'].plot(ax=axes[1, 0], marker='o', linewidth=3, markersize=10,
+                                      color=COLORS['warning'], markerfacecolor=COLORS['danger'],
+                                      markeredgecolor='white', markeredgewidth=2)
+    axes[1, 0].set_title('客単価推移', fontsize=13, fontweight='bold', pad=12, color='#34495e')
+    axes[1, 0].set_ylabel('客単価 (円)', fontsize=11, fontweight='600')
+    axes[1, 0].grid(True, alpha=0.3, linestyle='--', linewidth=0.8)
+    axes[1, 0].tick_params(axis='x', rotation=15, labelsize=9)
+    axes[1, 0].spines['top'].set_visible(False)
+    axes[1, 0].spines['right'].set_visible(False)
+    axes[1, 0].set_facecolor('#f8f9fa')
+    axes[1, 0].fill_between(range(len(weekly_sales_recent)), weekly_sales_recent['客単価'],
+                            alpha=0.2, color=COLORS['warning'])
 
-# 客単価推移
-weekly_sales_recent['客単価'].plot(ax=axes[1, 0], marker='o', linewidth=3, markersize=10,
-                                  color=COLORS['warning'], markerfacecolor=COLORS['danger'],
-                                  markeredgecolor='white', markeredgewidth=2)
-axes[1, 0].set_title('客単価推移', fontsize=13, fontweight='bold', pad=12, color='#34495e')
-axes[1, 0].set_ylabel('客単価 (円)', fontsize=11, fontweight='600')
-axes[1, 0].grid(True, alpha=0.3, linestyle='--', linewidth=0.8)
-axes[1, 0].tick_params(axis='x', rotation=15, labelsize=9)
-axes[1, 0].spines['top'].set_visible(False)
-axes[1, 0].spines['right'].set_visible(False)
-axes[1, 0].set_facecolor('#f8f9fa')
-axes[1, 0].fill_between(range(len(weekly_sales_recent)), weekly_sales_recent['客単価'],
-                        alpha=0.2, color=COLORS['warning'])
+    # 組数推移
+    weekly_sales_recent['組数'].plot(ax=axes[1, 1], marker='o', linewidth=3, markersize=10,
+                                    color=COLORS['info'], markerfacecolor=COLORS['warning'],
+                                    markeredgecolor='white', markeredgewidth=2)
+    axes[1, 1].set_title('組数推移', fontsize=13, fontweight='bold', pad=12, color='#34495e')
+    axes[1, 1].set_ylabel('組数', fontsize=11, fontweight='600')
+    axes[1, 1].grid(True, alpha=0.3, linestyle='--', linewidth=0.8)
+    axes[1, 1].tick_params(axis='x', rotation=15, labelsize=9)
+    axes[1, 1].spines['top'].set_visible(False)
+    axes[1, 1].spines['right'].set_visible(False)
+    axes[1, 1].set_facecolor('#f8f9fa')
+    axes[1, 1].fill_between(range(len(weekly_sales_recent)), weekly_sales_recent['組数'],
+                            alpha=0.2, color=COLORS['info'])
 
-# 組数推移
-weekly_sales_recent['組数'].plot(ax=axes[1, 1], marker='o', linewidth=3, markersize=10,
-                                color=COLORS['info'], markerfacecolor=COLORS['warning'],
-                                markeredgecolor='white', markeredgewidth=2)
-axes[1, 1].set_title('組数推移', fontsize=13, fontweight='bold', pad=12, color='#34495e')
-axes[1, 1].set_ylabel('組数', fontsize=11, fontweight='600')
-axes[1, 1].grid(True, alpha=0.3, linestyle='--', linewidth=0.8)
-axes[1, 1].tick_params(axis='x', rotation=15, labelsize=9)
-axes[1, 1].spines['top'].set_visible(False)
-axes[1, 1].spines['right'].set_visible(False)
-axes[1, 1].set_facecolor('#f8f9fa')
-axes[1, 1].fill_between(range(len(weekly_sales_recent)), weekly_sales_recent['組数'],
-                        alpha=0.2, color=COLORS['info'])
+    plt.tight_layout(rect=[0, 0, 1, 0.98])
+    plt.savefig(os.path.join(output_dir, 'weekly_sales_trend.png'), dpi=200, bbox_inches='tight',
+                facecolor='white', edgecolor='none')
+    plt.close()
 
-plt.tight_layout(rect=[0, 0, 1, 0.98])
-plt.savefig(os.path.join(output_dir, 'weekly_sales_trend.png'), dpi=200, bbox_inches='tight',
-            facecolor='white', edgecolor='none')
-plt.close()
-
-save_memo("グラフ保存", f"週次売上推移グラフ（直近5週間）を保存しました")
+    save_memo("グラフ保存", f"週次売上推移グラフ（直近5週間）を保存しました")
 
 # ==========================================
 # 曜日別売上分析（詳細版：要因分解付き）
@@ -785,51 +840,99 @@ if not weekday_ma4.empty:
 
     save_memo("曜日別要因分解", weekday_decomp_memo)
 
+    # ==========================================
+    # 第2部用：曜日別概況データ出力（スライド用テキスト）
+    # ==========================================
+    slide_data_part2 = []
+    slide_data_part2.append("=" * 60)
+    slide_data_part2.append("【スライド第2部用】曜日別詳細分析データ")
+    slide_data_part2.append("=" * 60)
+    slide_data_part2.append("")
+
+    # 曜日別概況テーブル（スライド7用）
+    slide_data_part2.append("## スライド7: 曜日別概況（グラフ用データ）")
+    slide_data_part2.append("")
+    slide_data_part2.append("| 曜日 | 対象週売上 | 4週平均 | 差額 | 客数要因 | 客単価要因 |")
+    slide_data_part2.append("|---|---|---|---|---|---|")
+    for _, row in weekday_decomp_df.iterrows():
+        slide_data_part2.append(f"| {row['曜日']} | ¥{row['対象週売上']:,.0f} | ¥{row['過去4週平均売上']:,.0f} | ¥{row['売上差']:,.0f} | ¥{row['客数要因寄与']:,.0f} | ¥{row['客単価要因寄与']:,.0f} |")
+    slide_data_part2.append("")
+
+    # 好調/不調曜日の特定
+    best_day_row = weekday_decomp_df.loc[weekday_decomp_df['売上差'].idxmax()]
+    worst_day_row = weekday_decomp_df.loc[weekday_decomp_df['売上差'].idxmin()]
+
+    slide_data_part2.append("## 深掘り対象曜日")
+    slide_data_part2.append(f"- 好調曜日: {best_day_row['曜日']}曜日 (売上差: ¥{best_day_row['売上差']:,.0f})")
+    slide_data_part2.append(f"- 不調曜日: {worst_day_row['曜日']}曜日 (売上差: ¥{worst_day_row['売上差']:,.0f})")
+    slide_data_part2.append("")
+
+    # 好調/不調曜日の基本数字（スライド8, 13用）
+    for label, day_row in [("不調", worst_day_row), ("好調", best_day_row)]:
+        slide_data_part2.append(f"## {label}曜日（{day_row['曜日']}）基本数字（スライド用）")
+        slide_data_part2.append("")
+        slide_data_part2.append("| 指標 | 対象週 | 4週平均 | 達成率 |")
+        slide_data_part2.append("|---|---|---|---|")
+        sales_rate = (day_row['対象週売上'] / day_row['過去4週平均売上'] * 100) if day_row['過去4週平均売上'] > 0 else 0
+        cust_rate = (day_row['対象週客数'] / day_row['過去4週平均客数'] * 100) if day_row['過去4週平均客数'] > 0 else 0
+        unit_rate = (day_row['対象週1人単価'] / day_row['過去4週平均1人単価'] * 100) if day_row['過去4週平均1人単価'] > 0 else 0
+        slide_data_part2.append(f"| 売上 | ¥{day_row['対象週売上']:,.0f} | ¥{day_row['過去4週平均売上']:,.0f} | {sales_rate:.1f}% |")
+        slide_data_part2.append(f"| 客数 | {day_row['対象週客数']:.0f}人 | {day_row['過去4週平均客数']:.1f}人 | {cust_rate:.1f}% |")
+        slide_data_part2.append(f"| 客単価 | ¥{day_row['対象週1人単価']:,.0f} | ¥{day_row['過去4週平均1人単価']:,.0f} | {unit_rate:.1f}% |")
+        slide_data_part2.append("")
+
+    # ファイル出力
+    with open(os.path.join(output_dir, 'slide_data_part2.txt'), 'w', encoding='utf-8') as f:
+        f.write('\n'.join(slide_data_part2))
+
+    print("\n[出力] slide_data_part2.txt - 第2部用曜日別データ")
+
     # グラフ作成：要因分解の可視化（要因分解のみ）- モダンデザイン
-    fig, ax = plt.subplots(figsize=(15, 7), facecolor='white')
+    if args.images:
+        fig, ax = plt.subplots(figsize=(15, 7), facecolor='white')
 
-    # 客数要因と客単価要因の寄与
-    x = np.arange(len(weekday_decomp_df))
-    width = 0.38
+        # 客数要因と客単価要因の寄与
+        x = np.arange(len(weekday_decomp_df))
+        width = 0.38
 
-    bars1 = ax.bar(x - width/2, weekday_decomp_df['客数要因寄与'], width,
-                   label='客数要因', color=COLORS['primary'],
-                   edgecolor='white', linewidth=2, alpha=0.9)
-    bars2 = ax.bar(x + width/2, weekday_decomp_df['客単価要因寄与'], width,
-                   label='客単価要因', color=COLORS['warning'],
-                   edgecolor='white', linewidth=2, alpha=0.9)
+        bars1 = ax.bar(x - width/2, weekday_decomp_df['客数要因寄与'], width,
+                       label='客数要因', color=COLORS['primary'],
+                       edgecolor='white', linewidth=2, alpha=0.9)
+        bars2 = ax.bar(x + width/2, weekday_decomp_df['客単価要因寄与'], width,
+                       label='客単価要因', color=COLORS['warning'],
+                       edgecolor='white', linewidth=2, alpha=0.9)
 
-    # 値ラベルの追加
-    for bars in [bars1, bars2]:
-        for bar in bars:
-            height = bar.get_height()
-            if abs(height) > 1000:  # 小さい値は表示しない
-                ax.text(bar.get_x() + bar.get_width()/2., height,
-                       f'¥{height:,.0f}',
-                       ha='center', va='bottom' if height > 0 else 'top',
-                       fontsize=9, fontweight='bold',
-                       bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
-                                edgecolor='#dee2e6', alpha=0.7, linewidth=1))
+        # 値ラベルの追加
+        for bars in [bars1, bars2]:
+            for bar in bars:
+                height = bar.get_height()
+                if abs(height) > 1000:  # 小さい値は表示しない
+                    ax.text(bar.get_x() + bar.get_width()/2., height,
+                           f'¥{height:,.0f}',
+                           ha='center', va='bottom' if height > 0 else 'top',
+                           fontsize=9, fontweight='bold',
+                           bbox=dict(boxstyle='round,pad=0.3', facecolor='white',
+                                    edgecolor='#dee2e6', alpha=0.7, linewidth=1))
 
-    ax.set_xlabel('曜日', fontsize=12, fontweight='600')
-    ax.set_ylabel('寄与額 (円)', fontsize=12, fontweight='600')
-    ax.set_title(f'曜日別売上差の要因分解 ({latest_week} vs {ma_label})',
-                 fontsize=15, fontweight='bold', pad=15, color='#2c3e50')
-    ax.set_xticks(x)
-    ax.set_xticklabels(weekday_decomp_df['曜日'], fontsize=11, fontweight='bold')
-    ax.axhline(y=0, color='#34495e', linestyle='-', linewidth=1.5, alpha=0.7)
-    ax.legend(loc='upper left', fontsize=11, frameon=True, fancybox=True, shadow=True)
-    ax.grid(axis='y', alpha=0.3, linestyle='--', linewidth=0.8)
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    ax.set_facecolor('#f8f9fa')
+        ax.set_xlabel('曜日', fontsize=12, fontweight='600')
+        ax.set_ylabel('寄与額 (円)', fontsize=12, fontweight='600')
+        ax.set_title(f'曜日別売上差の要因分解 ({latest_week} vs {ma_label})',
+                     fontsize=15, fontweight='bold', pad=15, color='#2c3e50')
+        ax.set_xticks(x)
+        ax.set_xticklabels(weekday_decomp_df['曜日'], fontsize=11, fontweight='bold')
+        ax.axhline(y=0, color='#34495e', linestyle='-', linewidth=1.5, alpha=0.7)
+        ax.legend(loc='upper left', fontsize=11, frameon=True, fancybox=True, shadow=True)
+        ax.grid(axis='y', alpha=0.3, linestyle='--', linewidth=0.8)
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.set_facecolor('#f8f9fa')
 
-    plt.tight_layout()
-    plt.savefig(os.path.join(output_dir, 'weekday_decomposition.png'), dpi=200, bbox_inches='tight',
-                facecolor='white', edgecolor='none')
-    plt.close()
+        plt.tight_layout()
+        plt.savefig(os.path.join(output_dir, 'weekday_decomposition.png'), dpi=200, bbox_inches='tight',
+                    facecolor='white', edgecolor='none')
+        plt.close()
 
-    save_memo("グラフ保存", "曜日別要因分解グラフを保存しました（過去4週間平均との比較）")
+        save_memo("グラフ保存", "曜日別要因分解グラフを保存しました（過去4週間平均との比較）")
 
     # CSV保存
     weekday_decomp_df.to_csv(os.path.join(output_dir, 'weekday_decomposition.csv'),
@@ -876,36 +979,75 @@ hourly_memo = f"""
 """
 save_memo("時間別分析", hourly_memo)
 
+# 時間帯バケット別集計（スライド用）
+def get_time_bucket_label(hour):
+    if 18 <= hour < 20:
+        return '18-20時'
+    elif 20 <= hour < 22:
+        return '20-22時'
+    elif 22 <= hour < 24:
+        return '22-24時'
+    elif 24 <= hour < 26:
+        return '24-26時'
+    else:
+        return 'その他'
+
+hourly_sales['time_bucket'] = [get_time_bucket_label(h) for h in hourly_sales.index]
+hourly_bucket = hourly_sales.groupby('time_bucket').agg({
+    'account_total': 'sum',
+    'customer_count': 'sum',
+    'account_id': 'sum'
+})
+# 順序を指定
+bucket_order = ['18-20時', '20-22時', '22-24時', '24-26時', 'その他']
+hourly_bucket = hourly_bucket.reindex([b for b in bucket_order if b in hourly_bucket.index])
+
+# 時間帯別データ出力（スライド用）
+time_bucket_data = []
+time_bucket_data.append("")
+time_bucket_data.append("## 時間帯別売上（全体・スライド用）")
+time_bucket_data.append("")
+time_bucket_data.append("| 時間帯 | 売上 | 客数 | 会計数 |")
+time_bucket_data.append("|---|---|---|---|")
+for bucket in hourly_bucket.index:
+    row = hourly_bucket.loc[bucket]
+    time_bucket_data.append(f"| {bucket} | ¥{row['account_total']:,.0f} | {row['customer_count']:.0f}人 | {row['account_id']:.0f}件 |")
+
+# slide_data_part2に追記
+with open(os.path.join(output_dir, 'slide_data_part2.txt'), 'a', encoding='utf-8') as f:
+    f.write('\n'.join(time_bucket_data))
+
 # グラフ作成：時間別売上
-fig, ax = plt.subplots(figsize=(14, 5))
+if args.images:
+    fig, ax = plt.subplots(figsize=(14, 5))
 
-# X軸ラベルを見やすく調整
-hour_labels = [format_hour(h) for h in hourly_sales.index]
-x_pos = np.arange(len(hourly_sales))
+    # X軸ラベルを見やすく調整
+    hour_labels = [format_hour(h) for h in hourly_sales.index]
+    x_pos = np.arange(len(hourly_sales))
 
-bars = ax.bar(x_pos, hourly_sales['account_total'], color='lightcoral', edgecolor='black')
+    bars = ax.bar(x_pos, hourly_sales['account_total'], color='lightcoral', edgecolor='black')
 
-# 深夜帯（24時以降）を異なる色で強調
-for i, hour in enumerate(hourly_sales.index):
-    if hour >= 24:
-        bars[i].set_color('darkred')
-        bars[i].set_alpha(0.7)
+    # 深夜帯（24時以降）を異なる色で強調
+    for i, hour in enumerate(hourly_sales.index):
+        if hour >= 24:
+            bars[i].set_color('darkred')
+            bars[i].set_alpha(0.7)
 
-ax.set_title('時間別売上（営業時間基準：深夜は24時以降表記）', fontsize=14, fontweight='bold')
-ax.set_ylabel('売上 (円)', fontsize=12)
-ax.set_xlabel('時間帯', fontsize=12)
-ax.set_xticks(x_pos)
-ax.set_xticklabels(hour_labels, rotation=45, ha='right')
-ax.grid(axis='y', alpha=0.3)
+    ax.set_title('時間別売上（営業時間基準：深夜は24時以降表記）', fontsize=14, fontweight='bold')
+    ax.set_ylabel('売上 (円)', fontsize=12)
+    ax.set_xlabel('時間帯', fontsize=12)
+    ax.set_xticks(x_pos)
+    ax.set_xticklabels(hour_labels, rotation=45, ha='right')
+    ax.grid(axis='y', alpha=0.3)
 
-# ピーク時間帯を強調
-peak_idx = list(hourly_sales.index).index(peak_hour)
-ax.axvline(x=peak_idx, color='red', linestyle='--', alpha=0.7, linewidth=2, label=f'ピーク: {format_hour(peak_hour)}')
-ax.legend()
+    # ピーク時間帯を強調
+    peak_idx = list(hourly_sales.index).index(peak_hour)
+    ax.axvline(x=peak_idx, color='red', linestyle='--', alpha=0.7, linewidth=2, label=f'ピーク: {format_hour(peak_hour)}')
+    ax.legend()
 
-plt.tight_layout()
-plt.savefig(os.path.join(output_dir, 'hourly_sales.png'), dpi=150, bbox_inches='tight')
-plt.close()
+    plt.tight_layout()
+    plt.savefig(os.path.join(output_dir, 'hourly_sales.png'), dpi=150, bbox_inches='tight')
+    plt.close()
 
 # ==========================================
 # 2. 商品分析
@@ -968,41 +1110,66 @@ for idx, row in latest_week_category.head(10).iterrows():
 
 save_memo("カテゴリランキング", category_memo)
 
+# ==========================================
+# 第3部用：カテゴリ・商品分析データ出力（スライド用テキスト）
+# ==========================================
+slide_data_part3 = []
+slide_data_part3.append("=" * 60)
+slide_data_part3.append("【スライド第3部用】商品・カテゴリ分析データ")
+slide_data_part3.append("=" * 60)
+slide_data_part3.append("")
+
+# カテゴリ別構成比データ（スライド19用）
+slide_data_part3.append("## スライド19: カテゴリ別売上構成比（円グラフ用データ）")
+slide_data_part3.append("")
+slide_data_part3.append("| カテゴリ | 売上 | 構成比 | 販売数 |")
+slide_data_part3.append("|---|---|---|---|")
+for _, row in latest_week_category.iterrows():
+    slide_data_part3.append(f"| {row['category1']} | ¥{row['subtotal']:,.0f} | {row['構成比']:.1f}% | {row['quantity']:.0f}個 |")
+slide_data_part3.append("")
+
+# ファイル出力（後で追記）
+with open(os.path.join(output_dir, 'slide_data_part3.txt'), 'w', encoding='utf-8') as f:
+    f.write('\n'.join(slide_data_part3))
+
+print("\n[出力] slide_data_part3.txt - 第3部用商品・カテゴリデータ")
+
 # グラフ作成：カテゴリ別売上構成比（円グラフ）- モダンデザイン
-fig, ax = plt.subplots(figsize=(13, 9), facecolor='white')
-colors = sns.color_palette('husl', len(latest_week_category))
+if args.images:
+    fig, ax = plt.subplots(figsize=(13, 9), facecolor='white')
+    colors = sns.color_palette('husl', len(latest_week_category))
 
-# 円グラフの描画（エクスプローション効果付き）
-explode = [0.05 if i == 0 else 0.02 for i in range(len(latest_week_category))]  # 最大カテゴリを強調
-wedges, texts, autotexts = ax.pie(
-    latest_week_category['subtotal'],
-    labels=latest_week_category['category1'],
-    autopct='%1.1f%%',
-    colors=colors,
-    startangle=90,
-    explode=explode,
-    textprops={'fontsize': 11, 'weight': 'bold'},
-    pctdistance=0.85
-)
+    # 円グラフの描画（エクスプローション効果付き）
+    explode = [0.05 if i == 0 else 0.02 for i in range(len(latest_week_category))]  # 最大カテゴリを強調
+    wedges, texts, autotexts = ax.pie(
+        latest_week_category['subtotal'],
+        labels=latest_week_category['category1'],
+        autopct='%1.1f%%',
+        colors=colors,
+        startangle=90,
+        explode=explode,
+        textprops={'fontsize': 11, 'weight': 'bold'},
+        pctdistance=0.85
+    )
 
-# ラベルのスタイル設定
-for text in texts:
-    text.set_fontsize(12)
-    text.set_fontweight('bold')
-    text.set_color('#2c3e50')
+    # ラベルのスタイル設定
+    for text in texts:
+        text.set_fontsize(12)
+        text.set_fontweight('bold')
+        text.set_color('#2c3e50')
 
-for autotext in autotexts:
-    autotext.set_color('white')
-    autotext.set_fontweight('bold')
-    autotext.set_fontsize(10)
+    for autotext in autotexts:
+        autotext.set_color('white')
+        autotext.set_fontweight('bold')
+        autotext.set_fontsize(10)
 
-ax.set_title(f'カテゴリ別売上構成比 ({latest_week})', fontsize=16, fontweight='bold',
-            pad=20, color='#2c3e50')
+    ax.set_title(f'カテゴリ別売上構成比 ({latest_week})', fontsize=16, fontweight='bold',
+                pad=20, color='#2c3e50')
 
-plt.tight_layout()
-plt.savefig(os.path.join(output_dir, 'category_sales.png'), dpi=200, bbox_inches='tight',
-            facecolor='white', edgecolor='none')
-plt.close()
+    plt.tight_layout()
+    plt.savefig(os.path.join(output_dir, 'category_sales.png'), dpi=200, bbox_inches='tight',
+                facecolor='white', edgecolor='none')
+    plt.close()
 
 # カテゴリ別構成比の時系列データを作成（自然言語分析用）
 save_memo("カテゴリ構成比時系列データ作成", "各週のカテゴリ別構成比を計算しています...")
@@ -1077,57 +1244,139 @@ for idx, row in latest_week_product.head(20).iterrows():
 
 save_memo("商品別ランキング", product_memo)
 
+# 過去4週間の商品別売上平均を計算（スライド用）
+if latest_week_idx >= 4:
+    ma4_product_weeks = week_list[latest_week_idx - 4:latest_week_idx]
+    ma4_product_data = product_weekly[product_weekly['year_week'].isin(ma4_product_weeks)]
+    ma4_product_avg = ma4_product_data.groupby('menu_name').agg({
+        'subtotal': 'mean',
+        'quantity': 'mean'
+    }).reset_index()
+    ma4_product_avg.columns = ['menu_name', '4週平均売上', '4週平均数量']
+    ma4_product_avg = ma4_product_avg.set_index('menu_name')
+else:
+    ma4_product_avg = pd.DataFrame()
+
+# 商品TOP10データ（スライド21用）- 4週平均比較付き
+slide_data_part3_products = []
+slide_data_part3_products.append("")
+slide_data_part3_products.append("## スライド21: 商品別売上TOP10（グラフ用データ）")
+slide_data_part3_products.append("")
+slide_data_part3_products.append("| 商品名 | 対象週売上 | 構成比 | 4週平均 | 成長率 |")
+slide_data_part3_products.append("|---|---|---|---|---|")
+
+for _, row in latest_week_product.head(10).iterrows():
+    product_name = row['menu_name']
+    sales = row['subtotal']
+    ratio = row['構成比']
+    if not ma4_product_avg.empty and product_name in ma4_product_avg.index:
+        ma4_sales = ma4_product_avg.loc[product_name, '4週平均売上']
+        growth = (sales / ma4_sales - 1) * 100 if ma4_sales > 0 else 0
+        slide_data_part3_products.append(f"| {product_name} | ¥{sales:,.0f} | {ratio:.1f}% | ¥{ma4_sales:,.0f} | {growth:+.1f}% |")
+    else:
+        slide_data_part3_products.append(f"| {product_name} | ¥{sales:,.0f} | {ratio:.1f}% | - | - |")
+slide_data_part3_products.append("")
+
+# 構成比増減商品リスト（スライド22用）
+slide_data_part3_products.append("## スライド22: 構成比増減商品（前週比）")
+slide_data_part3_products.append("")
+if not prev_week_product.empty:
+    # 対象週と前週の構成比を比較
+    composition_changes = []
+    for _, row in latest_week_product.iterrows():
+        product_name = row['menu_name']
+        current_ratio = row['構成比']
+        if product_name in prev_week_product.index:
+            prev_ratio = prev_week_product.loc[product_name, '構成比']
+            change = current_ratio - prev_ratio
+            composition_changes.append({
+                'product': product_name,
+                'current': current_ratio,
+                'prev': prev_ratio,
+                'change': change
+            })
+
+    composition_df = pd.DataFrame(composition_changes)
+    if not composition_df.empty:
+        # 増加TOP5
+        top_increase = composition_df.nlargest(5, 'change')
+        slide_data_part3_products.append("### 構成比増加TOP5")
+        slide_data_part3_products.append("")
+        slide_data_part3_products.append("| 商品名 | 今週構成比 | 前週構成比 | 変化 |")
+        slide_data_part3_products.append("|---|---|---|---|")
+        for _, row in top_increase.iterrows():
+            slide_data_part3_products.append(f"| {row['product']} | {row['current']:.2f}% | {row['prev']:.2f}% | {row['change']:+.2f}pt |")
+        slide_data_part3_products.append("")
+
+        # 減少TOP5
+        top_decrease = composition_df.nsmallest(5, 'change')
+        slide_data_part3_products.append("### 構成比減少TOP5")
+        slide_data_part3_products.append("")
+        slide_data_part3_products.append("| 商品名 | 今週構成比 | 前週構成比 | 変化 |")
+        slide_data_part3_products.append("|---|---|---|---|")
+        for _, row in top_decrease.iterrows():
+            slide_data_part3_products.append(f"| {row['product']} | {row['current']:.2f}% | {row['prev']:.2f}% | {row['change']:+.2f}pt |")
+        slide_data_part3_products.append("")
+else:
+    slide_data_part3_products.append("前週データがないため比較不可")
+    slide_data_part3_products.append("")
+
+# slide_data_part3.txtに追記
+with open(os.path.join(output_dir, 'slide_data_part3.txt'), 'a', encoding='utf-8') as f:
+    f.write('\n'.join(slide_data_part3_products))
+
 # グラフ作成：商品別売上構成比（円グラフ、TOP10 + その他）- モダンデザイン
-fig, ax = plt.subplots(figsize=(14, 10), facecolor='white')
+if args.images:
+    fig, ax = plt.subplots(figsize=(14, 10), facecolor='white')
 
-top10_products = latest_week_product.head(10).copy()
-other_sales = latest_week_product.iloc[10:]['subtotal'].sum() if len(latest_week_product) > 10 else 0
+    top10_products = latest_week_product.head(10).copy()
+    other_sales = latest_week_product.iloc[10:]['subtotal'].sum() if len(latest_week_product) > 10 else 0
 
-# TOP10 + その他のデータを作成
-pie_labels = top10_products['menu_name'].tolist()
-pie_values = top10_products['subtotal'].tolist()
+    # TOP10 + その他のデータを作成
+    pie_labels = top10_products['menu_name'].tolist()
+    pie_values = top10_products['subtotal'].tolist()
 
-if other_sales > 0:
-    pie_labels.append('その他')
-    pie_values.append(other_sales)
+    if other_sales > 0:
+        pie_labels.append('その他')
+        pie_values.append(other_sales)
 
-# カラーパレット（TOP10は明るい色、その他はグレー）
-colors = sns.color_palette('husl', 10)
-if other_sales > 0:
-    colors = list(colors) + ['#bdc3c7']
+    # カラーパレット（TOP10は明るい色、その他はグレー）
+    colors = sns.color_palette('husl', 10)
+    if other_sales > 0:
+        colors = list(colors) + ['#bdc3c7']
 
-# エクスプローション（TOP3を強調）
-explode = [0.08, 0.05, 0.03] + [0.01] * (len(pie_values) - 3)
+    # エクスプローション（TOP3を強調）
+    explode = [0.08, 0.05, 0.03] + [0.01] * (len(pie_values) - 3)
 
-wedges, texts, autotexts = ax.pie(
-    pie_values,
-    labels=pie_labels,
-    autopct='%1.1f%%',
-    colors=colors,
-    startangle=45,
-    explode=explode,
-    textprops={'fontsize': 10, 'weight': 'bold'},
-    pctdistance=0.82
-)
+    wedges, texts, autotexts = ax.pie(
+        pie_values,
+        labels=pie_labels,
+        autopct='%1.1f%%',
+        colors=colors,
+        startangle=45,
+        explode=explode,
+        textprops={'fontsize': 10, 'weight': 'bold'},
+        pctdistance=0.82
+    )
 
-# ラベルのスタイル設定
-for text in texts:
-    text.set_fontsize(11)
-    text.set_fontweight('bold')
-    text.set_color('#2c3e50')
+    # ラベルのスタイル設定
+    for text in texts:
+        text.set_fontsize(11)
+        text.set_fontweight('bold')
+        text.set_color('#2c3e50')
 
-for autotext in autotexts:
-    autotext.set_color('white')
-    autotext.set_fontweight('bold')
-    autotext.set_fontsize(9)
+    for autotext in autotexts:
+        autotext.set_color('white')
+        autotext.set_fontweight('bold')
+        autotext.set_fontsize(9)
 
-ax.set_title(f'商品別売上構成比 TOP10 + その他 ({latest_week})', fontsize=16, fontweight='bold',
-            pad=20, color='#2c3e50')
+    ax.set_title(f'商品別売上構成比 TOP10 + その他 ({latest_week})', fontsize=16, fontweight='bold',
+                pad=20, color='#2c3e50')
 
-plt.tight_layout()
-plt.savefig(os.path.join(output_dir, 'top_products.png'), dpi=200, bbox_inches='tight',
-            facecolor='white', edgecolor='none')
-plt.close()
+    plt.tight_layout()
+    plt.savefig(os.path.join(output_dir, 'top_products.png'), dpi=200, bbox_inches='tight',
+                facecolor='white', edgecolor='none')
+    plt.close()
 
 # 商品別構成比の時系列データを作成（自然言語分析用）
 save_memo("商品構成比時系列データ作成", "各週の商品別構成比を計算しています（TOP20商品のみ）...")
@@ -1196,7 +1445,7 @@ monthly_reviews = reviews_df.groupby('year_month').agg({
     '投稿者': 'count'
 }).rename(columns={'投稿者': '投稿数'})
 
-if len(monthly_reviews) > 0:
+if args.images and len(monthly_reviews) > 0:
     fig, axes = plt.subplots(1, 2, figsize=(15, 5))
 
     monthly_reviews['総合点数'].plot(ax=axes[0], marker='o', linewidth=2, markersize=6, color='green')
@@ -1309,20 +1558,16 @@ with open(memo_file, 'w', encoding='utf-8') as f:
     for memo in memo_content:
         f.write(memo)
 
-save_memo("完了", f"""
+# 出力ファイルリスト
+output_files_list = f"""
 分析完了！結果は {output_dir} に保存されました。
 
-生成されたファイル:
-【グラフ】
-- weekly_sales_comparison.png: 週次売上比較（棒グラフ：前年/前月平均/前週/対象週）
-- weekly_sales_trend.png: 週次売上推移（折れ線グラフ、直近5週間）
-- weekday_decomposition.png: 曜日別要因分解グラフ（客数要因・客単価要因）
-- hourly_sales.png: 時間別売上グラフ（営業時間基準、深夜強調表示）
-- category_sales.png: カテゴリ別売上構成比（円グラフ）
-- top_products.png: 商品別売上構成比 TOP10 + その他（円グラフ）
-- review_ratings.png: 口コミ評価分布グラフ
+【スライド用データ（テキスト形式）】※ 常に出力
+- slide_data_part1.txt: 第1部用（週次トレンド、KPI、前年比較）
+- slide_data_part2.txt: 第2部用（曜日別概況、深掘り対象曜日、時間帯別）
+- slide_data_part3.txt: 第3部用（カテゴリ構成比、商品TOP10、構成比増減）
 
-【データ】
+【データファイル（CSV/JSON）】※ 常に出力
 - analysis_results.json: 分析結果（JSON、商品別データ含む）
 - weekly_sales.csv: 週次売上データ
 - weekday_decomposition.csv: 曜日別要因分解データ
@@ -1333,7 +1578,25 @@ save_memo("完了", f"""
 - product_composition_trend.csv: 商品別構成比時系列データ（TOP20）
 - reviews_latest_week.csv: 対象週の口コミ
 - analysis_memo.txt: 分析中間メモ
-""")
+"""
+
+if args.images:
+    output_files_list += """
+【グラフ画像（PNG）】※ --images 指定時のみ出力
+- weekly_sales_comparison.png: 週次売上比較（棒グラフ）
+- weekly_sales_trend.png: 週次売上推移（折れ線グラフ）
+- weekday_decomposition.png: 曜日別要因分解グラフ
+- hourly_sales.png: 時間別売上グラフ
+- category_sales.png: カテゴリ別売上構成比（円グラフ）
+- top_products.png: 商品別売上構成比TOP10（円グラフ）
+- reviews_trend.png: 口コミ評価推移
+"""
+else:
+    output_files_list += """
+【グラフ画像】スキップ（--images 未指定）
+"""
+
+save_memo("完了", output_files_list)
 
 print("\n" + "=" * 80)
 print("分析完了")

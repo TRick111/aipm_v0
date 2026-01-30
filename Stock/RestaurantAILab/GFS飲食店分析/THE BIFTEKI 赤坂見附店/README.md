@@ -147,6 +147,7 @@ THE BIFTEKI 赤坂見附店/
 | `y2y_analysis_report.md` | 前年比分析レポート（Markdown） |
 | `y2y_analysis_report.html` | 前年比分析レポート（HTML） |
 | `THE BIFTEKI 赤坂見附店 売上分析レポート — aipm_v0.pdf` | 最終PDFレポート |
+| `slidedraft/2026-01-28/スライド構成_ドラフト.md` | スライド作成用の構成ドラフト（画像埋め込み済み） |
 
 ---
 
@@ -197,6 +198,17 @@ THE BIFTEKI 赤坂見附店/
 | `y2y_analysis.py` | `charts/y2y/monthly_trends.png`<br>`charts/y2y/monthly_trends_normalized.png`<br>`charts/y2y/sales_decomposition.png`<br>`charts/y2y/sales_decomposition_normalized.png`<br>`charts/y2y/sales_decomposition_yoy.png`<br>`charts/y2y/sales_decomposition_yoy_normalized.png`<br>`charts/y2y/y2y_comparison.png`<br>`charts/y2y/y2y_comparison_normalized.png`<br>`data/output/monthly_stats.csv`<br>`data/output/sales_decomposition.csv`<br>`data/output/sales_decomposition_normalized.csv`<br>`reports/y2y_analysis_report.md` |
 | `convert_to_html.py` | `reports/y2y_analysis_report.html` |
 | `convert_to_pdf.py` | （PDF変換用） |
+
+#### スライド素材（画像分割）
+スライド用途で「複数グラフが1枚になっている画像」を分割して使いたい場合は、以下のフラグを利用する。
+
+- **`--split-assets`**: 分割を有効化（デフォルトOFF）
+- **`--assets-dir`**: 分割素材の出力先（例: `Flow/.../THEBIFTEKI赤坂見附スライド/assets/`）
+
+対象スクリプト（現状）:
+- `scripts/05_y2y/y2y_analysis.py`（4段の複合図 → 4分割）
+- `scripts/09_interim_report/generate_graphs.py`（左右2分割、2x2分割）
+- `scripts/08_segment/high_low_analysis.py`（2行x3列 → 列ごとに切り出し）
 
 ---
 

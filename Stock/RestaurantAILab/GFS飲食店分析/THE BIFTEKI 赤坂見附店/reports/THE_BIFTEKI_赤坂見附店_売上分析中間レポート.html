@@ -226,7 +226,7 @@
 
 <h3>2.2 月別推移グラフ（営業日あたり）</h3>
 <p>営業日数の違いを排除するため、営業日あたりの指標で推移を示します。</p>
-<img src="../Y2Y/monthly_trends_normalized.png" alt="月別推移（営業日あたり）">
+<img src="../charts/y2y/monthly_trends_normalized.png" alt="月別推移（営業日あたり）">
 
 <h4>観察ポイント</h4>
 <ul>
@@ -236,7 +236,7 @@
 </ul>
 
 <h3>2.3 前年同月比較（営業日あたり）</h3>
-<img src="../Y2Y/y2y_comparison_normalized.png" alt="年比較（営業日あたり）">
+<img src="../charts/y2y/y2y_comparison_normalized.png" alt="年比較（営業日あたり）">
 
 <table>
     <tr><th>月</th><th>2024年売上</th><th>2025年売上</th><th>増減率</th></tr>
@@ -331,7 +331,7 @@
 <p><strong>Q. なぜ客単価が上昇したのか？</strong></p>
 <p><strong>A. 平均商品単価の上昇が主要因（寄与度: 約115%）</strong></p>
 
-<img src="../CustomerPriceAnalysis/01_decomposition_analysis.png" alt="要因分解">
+<img src="./01_decomposition_analysis.png" alt="要因分解">
 
 <table>
     <tr><th>指標</th><th>期間A</th><th>期間B</th><th>変化</th></tr>
@@ -342,18 +342,26 @@
 <p><strong>結論</strong>: 客は<strong>より少ない品数で、より高い商品</strong>を選んでいる。</p>
 
 <h3>4.3 分布の変化：高額層の増加</h3>
-<img src="./graph03_percentile_change.png" alt="パーセンタイル別変化">
-
-<h4>パーセンタイル別の変化</h4>
+<h4>20%刻み（0-20 / 20-40 / 40-60 / 60-80 / 80-100 の5エリア）</h4>
+<img src="./graph03_percentile_change_20pct.png" alt="客単価分布の変化（20%刻み・5エリア）">
 <table>
-    <tr><th>パーセンタイル</th><th>期間A</th><th>期間B</th><th>変化</th><th>変化率</th></tr>
-    <tr><td>25%タイル</td><td>1,380円</td><td>1,452円</td><td>+72円</td><td>+5.2%</td></tr>
-    <tr><td>50%タイル（中央値）</td><td>1,639円</td><td>1,672円</td><td>+33円</td><td>+2.0%</td></tr>
-    <tr><td>75%タイル</td><td>1,848円</td><td>2,013円</td><td><strong>+165円</strong></td><td><strong>+8.9%</strong></td></tr>
-    <tr><td>95%タイル</td><td>2,497円</td><td>2,727円</td><td><strong>+230円</strong></td><td><strong>+9.2%</strong></td></tr>
+    <tr>
+        <th>エリア（パーセンタイル）</th>
+        <th>期間A：客単価レンジ</th>
+        <th>期間B：客単価レンジ</th>
+        <th>平均A</th>
+        <th>平均B</th>
+        <th>平均の変化</th>
+        <th>変化率</th>
+    </tr>
+    <tr><td>0-20%</td><td>0〜1,298円</td><td>0〜1,348円</td><td>1,139円</td><td>1,130円</td><td>-9円</td><td>-0.8%</td></tr>
+    <tr><td>20-40%</td><td>1,302〜1,518円</td><td>1,349〜1,625円</td><td>1,415円</td><td>1,483円</td><td>+68円</td><td>+4.8%</td></tr>
+    <tr><td>40-60%</td><td>1,522〜1,639円</td><td>1,628〜1,782円</td><td>1,614円</td><td>1,677円</td><td>+63円</td><td>+3.9%</td></tr>
+    <tr><td>60-80%</td><td>1,644〜1,969円</td><td>1,786〜2,167円</td><td>1,805円</td><td>1,954円</td><td>+149円</td><td>+8.3%</td></tr>
+    <tr><td>80-100%</td><td>1,973〜13,178円</td><td>2,171〜15,455円</td><td>2,401円</td><td>2,608円</td><td><strong>+207円</strong></td><td><strong>+8.6%</strong></td></tr>
 </table>
 
-<p><strong>解釈</strong>: 高額層ほど上昇率が高い = 高付加価値商品の浸透が成功</p>
+<p><strong>補足</strong>: 各期間の分布を20%ずつに分割した「5エリア」ごとに平均客単価の変化を比較。上位側（60〜100%）の上昇が大きい。</p>
 
 <h3>4.4 曜日・時間帯別の傾向：全体的に客単価上昇</h3>
 <img src="./graph04_weekday_hour_analysis.png" alt="曜日・時間帯分析">
@@ -490,7 +498,7 @@
 </pre>
 
 <h3>6.3 4セグメント分析（期間×ランチ/ディナー）</h3>
-<img src="../SegmentAnalysis/09_overlay_all.png" alt="4セグメント比較">
+<img src="./09_overlay_all.png" alt="4セグメント比較">
 
 <p><strong>発見</strong>:</p>
 <ul>
@@ -499,8 +507,8 @@
 </ul>
 
 <h3>6.4 High/Low分析（4月以降）：水曜・木曜・金曜が好調の傾向</h3>
-<img src="../SegmentAnalysis/HighLowAnalysis/01_high_low_distribution.png" alt="High/Low比較">
-<img src="../SegmentAnalysis/HighLowAnalysis/02_factor_ratio.png" alt="要因比率">
+<img src="./HighLowAnalysis/01_high_low_distribution.png" alt="High/Low比較">
+<img src="./HighLowAnalysis/02_factor_ratio.png" alt="要因比率">
 
 <h4>High日とLow日の違い</h4>
 <table>

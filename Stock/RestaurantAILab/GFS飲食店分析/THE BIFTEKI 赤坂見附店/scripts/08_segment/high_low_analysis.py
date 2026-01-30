@@ -12,6 +12,9 @@ import matplotlib
 matplotlib.use('Agg')
 from matplotlib import rcParams
 import os
+from pathlib import Path
+import argparse
+from PIL import Image
 
 # 日本語フォント設定
 rcParams['font.family'] = 'sans-serif'
@@ -19,7 +22,44 @@ rcParams['font.sans-serif'] = ['Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu
 rcParams['axes.unicode_minus'] = False
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-OUTPUT_DIR = os.path.join(SCRIPT_DIR, 'HighLowAnalysis')
+PROJECT_DIR = Path(__file__).resolve().parents[2]
+OUTPUT_DIR = PROJECT_DIR / "reports" / "HighLowAnalysis"
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+parser = argparse.ArgumentParser(add_help=False)
+parser.add_argument("--split-assets", action="store_true", help="複合グラフをスライド素材用に分割して出力する（デフォルトOFF）")
+parser.add_argument("--assets-dir", default=None, help="分割素材の出力先（未指定なら reports/_slide_assets/）")
+args, _ = parser.parse_known_args()
+
+ASSETS_DIR = Path(args.assets_dir).resolve() if args.assets_dir else (PROJECT_DIR / "reports" / "_slide_assets")
+if args.split_assets:
+    ASSETS_DIR.mkdir(parents=True, exist_ok=True)
+
+def _split_2x3_cols(img_path: Path):
+    """
+    2行×3列の図を「列ごと」に切り出す（上下2枚を含む）。
+    - 左列: 客数分布（ランチ/ディナー）
+    - 中央列: 客単価分布（ランチ/ディナー）
+    - 右列: 曜日別High/Low日数（ランチ/ディナー）
+    """
+    img = Image.open(img_path)
+    w, h = img.size
+    col_w = w // 3
+    # 端数は右側列に寄せる
+    boxes = [
+        (0, 0, col_w, h),
+        (col_w, 0, col_w * 2, h),
+        (col_w * 2, 0, w, h),
+    ]
+    names = [
+        "high_low_distribution__customers_dist.png",
+        "high_low_distribution__unit_price_dist.png",
+        "high_low_distribution__weekday_counts.png",
+    ]
+    for box, name in zip(boxes, names):
+        out = ASSETS_DIR / name
+        out.parent.mkdir(parents=True, exist_ok=True)
+        img.crop(box).save(out)
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 print("=" * 60)
@@ -31,7 +71,7 @@ print("=" * 60)
 # ============================================================
 print("\n[Step 1] データ読み込み...")
 
-df = pd.read_csv(os.path.join(os.path.dirname(SCRIPT_DIR), 'transformed_pos_data_eatin.csv'))
+df = pd.read_csv(PROJECT_DIR / "data" / "output" / "transformed_pos_data_eatin.csv")
 
 # 日付・時間の処理
 df['H.集計対象営業年月日'] = pd.to_datetime(df['H.集計対象営業年月日'])
@@ -303,9 +343,12 @@ ax.legend()
 
 plt.suptitle('売上上位(緑) vs 下位(赤) の比較', fontsize=16, fontweight='bold')
 plt.tight_layout()
-plt.savefig(f'{OUTPUT_DIR}/01_high_low_distribution.png', dpi=150, bbox_inches='tight')
+plt.savefig(OUTPUT_DIR / "01_high_low_distribution.png", dpi=150, bbox_inches='tight')
 plt.close()
 print("  保存: 01_high_low_distribution.png")
+
+if args.split_assets:
+    _split_2x3_cols(OUTPUT_DIR / "01_high_low_distribution.png")
 
 # 図2: 要因の影響度比較（バーチャート）
 fig, axes = plt.subplots(1, 2, figsize=(16, 8))
@@ -361,7 +404,7 @@ for i, ratio in enumerate(high_ratios):
     ax.text(i - width/2, ratio + 0.02, f'{ratio:.2f}x', ha='center', fontsize=10)
 
 plt.tight_layout()
-plt.savefig(f'{OUTPUT_DIR}/02_factor_ratio.png', dpi=150, bbox_inches='tight')
+plt.savefig(OUTPUT_DIR / "02_factor_ratio.png", dpi=150, bbox_inches='tight')
 plt.close()
 print("  保存: 02_factor_ratio.png")
 
@@ -391,7 +434,7 @@ ax.set_title('【ディナー】客数 vs 売上')
 ax.legend()
 
 plt.tight_layout()
-plt.savefig(f'{OUTPUT_DIR}/03_scatter_high_low.png', dpi=150, bbox_inches='tight')
+plt.savefig(OUTPUT_DIR / "03_scatter_high_low.png", dpi=150, bbox_inches='tight')
 plt.close()
 print("  保存: 03_scatter_high_low.png")
 
@@ -446,7 +489,7 @@ ax.set_title('【ディナー】各指標のHigh/Low比較')
 ax.legend()
 
 plt.tight_layout()
-plt.savefig(f'{OUTPUT_DIR}/04_metrics_comparison.png', dpi=150, bbox_inches='tight')
+plt.savefig(OUTPUT_DIR / "04_metrics_comparison.png", dpi=150, bbox_inches='tight')
 plt.close()
 print("  保存: 04_metrics_comparison.png")
 
@@ -564,13 +607,13 @@ summary += f"""
 *生成日: 2026-01-21*
 """
 
-with open(f'{OUTPUT_DIR}/analysis_report.md', 'w', encoding='utf-8') as f:
+with open(OUTPUT_DIR / "analysis_report.md", 'w', encoding='utf-8') as f:
     f.write(summary)
 print("  保存: analysis_report.md")
 
 # CSVも保存
-lunch_daily.to_csv(f'{OUTPUT_DIR}/lunch_daily_classified.csv', index=False)
-dinner_daily.to_csv(f'{OUTPUT_DIR}/dinner_daily_classified.csv', index=False)
+lunch_daily.to_csv(OUTPUT_DIR / "lunch_daily_classified.csv", index=False)
+dinner_daily.to_csv(OUTPUT_DIR / "dinner_daily_classified.csv", index=False)
 print("  保存: lunch_daily_classified.csv, dinner_daily_classified.csv")
 
 print("\n" + "=" * 60)

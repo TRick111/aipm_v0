@@ -11,15 +11,19 @@ THE BIFTEKI赤坂見附店 客単価上昇要因の包括的分析
 """
 
 import pandas as pd
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 from datetime import datetime
+from pathlib import Path
 import warnings
 warnings.filterwarnings('ignore')
 
-# 日本語フォント設定
-plt.rcParams['font.sans-serif'] = ['MS Gothic', 'Yu Gothic', 'Meiryo']
+# 日本語フォント設定（macOS優先でフォールバック）
+plt.rcParams['font.family'] = 'sans-serif'
+plt.rcParams['font.sans-serif'] = ['Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', 'sans-serif']
 plt.rcParams['axes.unicode_minus'] = False
 
 print("=" * 80)
@@ -27,7 +31,12 @@ print("THE BIFTEKI赤坂見附店 客単価上昇要因の包括的分析")
 print("=" * 80)
 
 # データ読み込み
-df = pd.read_csv('transformed_pos_data_eatin.csv')
+PROJECT_DIR = Path(__file__).resolve().parents[2]
+DATA_FILE = PROJECT_DIR / "data" / "output" / "transformed_pos_data_eatin.csv"
+OUTPUT_DIR = PROJECT_DIR / "reports"
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+df = pd.read_csv(DATA_FILE)
 df['日付'] = pd.to_datetime(df['H.集計対象営業年月日'])
 df['年月'] = df['日付'].dt.to_period('M')
 df['曜日'] = df['H.曜日']
@@ -159,7 +168,7 @@ for i, (ax, metric) in enumerate(zip(axes, metrics)):
                 bbox=dict(boxstyle='round', facecolor='yellow', alpha=0.5))
 
 plt.tight_layout()
-plt.savefig('01_decomposition_analysis.png', dpi=300, bbox_inches='tight')
+plt.savefig(OUTPUT_DIR / '01_decomposition_analysis.png', dpi=300, bbox_inches='tight')
 print("\n[OK] 要因分解グラフを保存: 01_decomposition_analysis.png")
 
 # ================================================================================
@@ -273,7 +282,7 @@ ax4.set_title('客単価の箱ひげ図', fontsize=12, fontweight='bold')
 ax4.grid(True, alpha=0.3, axis='y')
 
 plt.tight_layout()
-plt.savefig('02_distribution_analysis.png', dpi=300, bbox_inches='tight')
+plt.savefig(OUTPUT_DIR / '02_distribution_analysis.png', dpi=300, bbox_inches='tight')
 print("\n[OK] 分布分析グラフを保存: 02_distribution_analysis.png")
 
 # ================================================================================
@@ -402,7 +411,7 @@ ax4.grid(True, alpha=0.3, axis='y')
 ax4.set_xticks(range(0, 24, 2))
 
 plt.tight_layout()
-plt.savefig('03_weekday_hour_analysis.png', dpi=300, bbox_inches='tight')
+plt.savefig(OUTPUT_DIR / '03_weekday_hour_analysis.png', dpi=300, bbox_inches='tight')
 print("\n[OK] 曜日・時間帯分析グラフを保存: 03_weekday_hour_analysis.png")
 
 print("\n" + "=" * 80)

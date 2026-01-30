@@ -62,7 +62,7 @@
 
 営業日数の違いを排除するため、営業日あたりの指標で推移を示します。
 
-![月別推移（営業日あたり）](../Y2Y/monthly_trends_normalized.png)
+![月別推移（営業日あたり）](../charts/y2y/monthly_trends_normalized.png)
 
 #### 観察ポイント
 
@@ -72,7 +72,7 @@
 
 ### 2.3 前年同月比較（営業日あたり）
 
-![年比較（営業日あたり）](../Y2Y/y2y_comparison_normalized.png)
+![年比較（営業日あたり）](../charts/y2y/y2y_comparison_normalized.png)
 
 | 月 | 2024年売上 | 2025年売上 | 増減率 |
 |---|---:|---:|---:|
@@ -172,7 +172,7 @@
 
 **A. 平均商品単価の上昇が主要因（寄与度: 約115%）**
 
-![要因分解](../CustomerPriceAnalysis/01_decomposition_analysis.png)
+![要因分解](./01_decomposition_analysis.png)
 
 | 指標 | 期間A | 期間B | 変化 |
 |------|---:|---:|---:|
@@ -182,19 +182,19 @@
 **結論**: 客は**より少ない品数で、より高い商品**を選んでいる。
 
 ### 4.3 分布の変化：高額層の増加
+#### 20%刻み（0-20 / 20-40 / 40-60 / 60-80 / 80-100 の5エリア）
 
-![パーセンタイル別変化](./graph03_percentile_change.png)
+![客単価分布の変化（20%刻み・5エリア）](./graph03_percentile_change_20pct.png)
 
-#### パーセンタイル別の変化
+| エリア（パーセンタイル） | 期間A：客単価レンジ | 期間B：客単価レンジ | 平均A | 平均B | 平均の変化 | 変化率 |
+|---|---:|---:|---:|---:|---:|---:|
+| 0-20% | 0〜1,298円 | 0〜1,348円 | 1,139円 | 1,130円 | -9円 | -0.8% |
+| 20-40% | 1,302〜1,518円 | 1,349〜1,625円 | 1,415円 | 1,483円 | +68円 | +4.8% |
+| 40-60% | 1,522〜1,639円 | 1,628〜1,782円 | 1,614円 | 1,677円 | +63円 | +3.9% |
+| 60-80% | 1,644〜1,969円 | 1,786〜2,167円 | 1,805円 | 1,954円 | +149円 | +8.3% |
+| 80-100% | 1,973〜13,178円 | 2,171〜15,455円 | 2,401円 | 2,608円 | **+207円** | **+8.6%** |
 
-| パーセンタイル | 期間A | 期間B | 変化 | 変化率 |
-|--------------|---:|---:|---:|---:|
-| 25%タイル | 1,380円 | 1,452円 | +72円 | +5.2% |
-| 50%タイル（中央値） | 1,639円 | 1,672円 | +33円 | +2.0% |
-| 75%タイル | 1,848円 | 2,013円 | **+165円** | **+8.9%** |
-| 95%タイル | 2,497円 | 2,727円 | **+230円** | **+9.2%** |
-
-**解釈**: 高額層ほど上昇率が高い = 高付加価値商品の浸透が成功
+**補足**: 各期間の分布を20%ずつに分割した「5エリア」ごとに平均客単価の変化を比較。上位側（60〜100%）の上昇が大きい。
 
 ### 4.4 曜日・時間帯別の傾向：全体的に客単価上昇
 
@@ -334,7 +334,7 @@
 
 ### 6.3 4セグメント分析（期間×ランチ/ディナー）
 
-![4セグメント比較](../SegmentAnalysis/09_overlay_all.png)
+![4セグメント比較](./09_overlay_all.png)
 
 **発見**:
 - 2025年4月を境に、ランチ/ディナー両方で**客数レンジと売上レンジが上方にシフト**
@@ -342,9 +342,9 @@
 
 ### 6.4 High/Low分析（4月以降）：水曜・木曜・金曜が好調の傾向
 
-![High/Low比較](../SegmentAnalysis/HighLowAnalysis/01_high_low_distribution.png)
+![High/Low比較](./HighLowAnalysis/01_high_low_distribution.png)
 
-![要因比率](../SegmentAnalysis/HighLowAnalysis/02_factor_ratio.png)
+![要因比率](./HighLowAnalysis/02_factor_ratio.png)
 
 #### High日とLow日の違い
 
@@ -438,8 +438,8 @@
 ## 添付資料一覧
 
 ### 全体推移
-- [月別推移（営業日あたり）](../Y2Y/monthly_trends_normalized.png)
-- [年比較（営業日あたり）](../Y2Y/y2y_comparison_normalized.png)
+- [月別推移（営業日あたり）](../charts/y2y/monthly_trends_normalized.png)
+- [年比較（営業日あたり）](../charts/y2y/y2y_comparison_normalized.png)
 
 ### 客数分析
 - [月別比較グラフ](./graph01_monthly_comparison.png)
@@ -450,8 +450,8 @@
 - [平日vs土日比較](./graph12_weekday_vs_weekend.png)
 
 ### 客単価分析
-- [要因分解](../CustomerPriceAnalysis/01_decomposition_analysis.png)
-- [パーセンタイル別変化](./graph03_percentile_change.png)
+- [要因分解](./01_decomposition_analysis.png)
+- [客単価分布の変化（20%刻み・5エリア）](./graph03_percentile_change_20pct.png)
 - [曜日・時間帯分析](./graph04_weekday_hour_analysis.png)
 - [メニュー貢献度](./graph05_menu_contribution.png)
 
@@ -462,8 +462,8 @@
 - [時間帯別来店組数と店内人数](./graph06_hourly_visits_occupancy.png)
 - [時間帯別の客数と客単価](./graph07_spend_customers_by_time.png)
 - [売上上位/下位の2軸分布](./graph08_sales_2d_separation.png)
-- [4セグメント比較](../SegmentAnalysis/09_overlay_all.png)
-- [High/Low比較](../SegmentAnalysis/HighLowAnalysis/01_high_low_distribution.png)
+- [4セグメント比較](./09_overlay_all.png)
+- [High/Low比較](./HighLowAnalysis/01_high_low_distribution.png)
 
 ---
 

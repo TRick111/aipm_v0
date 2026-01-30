@@ -14,22 +14,66 @@ from datetime import datetime
 import csv
 import warnings
 warnings.filterwarnings('ignore')
+import argparse
+from PIL import Image
 
-# 日本語フォント設定（Windows）
-plt.rcParams['font.family'] = 'MS Gothic'
+# 日本語フォント設定（macOS優先でフォールバック）
+plt.rcParams['font.family'] = 'sans-serif'
+plt.rcParams['font.sans-serif'] = ['Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', 'sans-serif']
 plt.rcParams['axes.unicode_minus'] = False
 
-OUTPUT_DIR = Path(__file__).parent
-DATA_DIR = OUTPUT_DIR.parent
+PROJECT_DIR = Path(__file__).resolve().parents[2]
+OUTPUT_DIR = PROJECT_DIR / "reports"
+DATA_DIR = PROJECT_DIR / "data" / "output"
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
 print(f"出力ディレクトリ: {OUTPUT_DIR}")
 print(f"データディレクトリ: {DATA_DIR}")
+
+# ---------------------------------
+# 素材（分割）出力
+# ---------------------------------
+parser = argparse.ArgumentParser(add_help=False)
+parser.add_argument("--split-assets", action="store_true", help="複合グラフをスライド素材用に分割して出力する（デフォルトOFF）")
+parser.add_argument("--assets-dir", default=None, help="分割素材の出力先（未指定なら reports/_slide_assets/）")
+args, _ = parser.parse_known_args()
+
+ASSETS_DIR = Path(args.assets_dir).resolve() if args.assets_dir else (OUTPUT_DIR / "_slide_assets")
+if args.split_assets:
+    ASSETS_DIR.mkdir(parents=True, exist_ok=True)
+
+def _safe_save_crop(img: Image.Image, crop_box, out_path: Path):
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    cropped = img.crop(crop_box)
+    cropped.save(out_path)
+
+def _split_2cols(img_path: Path, left_name: str, right_name: str):
+    img = Image.open(img_path)
+    w, h = img.size
+    mid = w // 2
+    _safe_save_crop(img, (0, 0, mid, h), ASSETS_DIR / left_name)
+    _safe_save_crop(img, (mid, 0, w, h), ASSETS_DIR / right_name)
+
+def _split_2x2(img_path: Path, names: list[str]):
+    img = Image.open(img_path)
+    w, h = img.size
+    mid_x = w // 2
+    mid_y = h // 2
+    boxes = [
+        (0, 0, mid_x, mid_y),        # top-left
+        (mid_x, 0, w, mid_y),        # top-right
+        (0, mid_y, mid_x, h),        # bottom-left
+        (mid_x, mid_y, w, h),        # bottom-right
+    ]
+    for name, box in zip(names, boxes):
+        _safe_save_crop(img, box, ASSETS_DIR / name)
 
 # =========================================
 # 図1 & 図2: 月別営業日当たり客数（6月含む）
 # =========================================
 print("\n=== 図1 & 図2: 月別営業日当たり客数の比較 ===")
 
-monthly_summary = pd.read_csv(DATA_DIR / 'CustomerCountAnalysis' / '02_monthly_summary.csv')
+monthly_summary = pd.read_csv(DATA_DIR / '02_monthly_summary.csv')
 
 year1, year2 = 2024, 2025
 
@@ -110,9 +154,10 @@ plt.close()
 print("graph02_yoy_change.png を作成しました")
 
 # =========================================
-# 図3: パーセンタイル別客単価の変化（4.3用）
+# 図3: パーセンタイル別客単価の変化（旧：不均一な分位）
+#   - レポートでは20%刻み（5エリア）を採用するため、旧図は生成しない
 # =========================================
-print("\n=== 図3: パーセンタイル別客単価の変化 ===")
+print("\n=== 図3: パーセンタイル別客単価の変化（旧）: skip ===")
 
 df = pd.read_csv(DATA_DIR / 'transformed_pos_data_eatin.csv')
 df['日付'] = pd.to_datetime(df['H.集計対象営業年月日'])
@@ -139,54 +184,88 @@ def get_customer_price(df_period):
 receipt_a = get_customer_price(df_period_a)
 receipt_b = get_customer_price(df_period_b)
 
-# パーセンタイル計算
-percentiles = [10, 25, 50, 75, 90, 95]
-percentile_labels = ['10%', '25%', '50%\n(中央値)', '75%', '90%', '95%']
-percentile_values_a = [receipt_a['客単価'].quantile(p/100) for p in percentiles]
-percentile_values_b = [receipt_b['客単価'].quantile(p/100) for p in percentiles]
-changes = [b - a for a, b in zip(percentile_values_a, percentile_values_b)]
-change_rates = [(b/a - 1) * 100 for a, b in zip(percentile_values_a, percentile_values_b)]
+# NOTE: 旧図の生成ロジックは削除（必要ならgit履歴から復元）
 
-# グラフ作成
+# =========================================
+# 図3-2: 客単価分布の変化（20%刻み・5エリア・4.3追加用）
+#   - 0-20 / 20-40 / 40-60 / 60-80 / 80-100 の5区間
+# =========================================
+print("\n=== 図3-2: 客単価分布の変化（20%刻み・5エリア） ===")
+
+bin_edges = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+bin_labels = ['0-20%', '20-40%', '40-60%', '60-80%', '80-100%']
+
+def add_quintile_bins(receipt_df: pd.DataFrame) -> pd.DataFrame:
+    out = receipt_df.copy()
+    # qcutで各期間内を20%ずつの5区間に分割（同率が多い場合はduplicates='drop'で安全側）
+    out['エリア'] = pd.qcut(out['客単価'], q=bin_edges, labels=bin_labels, duplicates='drop')
+    return out
+
+ra = add_quintile_bins(receipt_a)
+rb = add_quintile_bins(receipt_b)
+
+def summarize_bins(r: pd.DataFrame) -> pd.DataFrame:
+    s = r.groupby('エリア', observed=True).agg(
+        平均客単価=('客単価', 'mean'),
+        下限=('客単価', 'min'),
+        上限=('客単価', 'max'),
+        件数=('客単価', 'count'),
+    ).reindex(bin_labels)
+    return s
+
+sa = summarize_bins(ra)
+sb = summarize_bins(rb)
+
+# 変化（平均客単価ベース）
+mean_a = sa['平均客単価'].values
+mean_b = sb['平均客単価'].values
+changes = mean_b - mean_a
+change_rates = (mean_b / mean_a - 1) * 100
+
+# グラフ作成（5エリア）
 fig, axes = plt.subplots(1, 2, figsize=(14, 6))
-fig.suptitle('客単価分布の変化（期間A: 5-7月 → 期間B: 10-12月）', fontsize=14, fontweight='bold')
+fig.suptitle('客単価分布の変化（20%刻み・5エリア）（期間A: 5-7月 → 期間B: 10-12月）', fontsize=14, fontweight='bold')
 
-# 左: パーセンタイル別客単価の比較
+# 左: エリア別の平均客単価（各期間内で20%ずつの区間）
 ax1 = axes[0]
-x = np.arange(len(percentiles))
+x = np.arange(len(bin_labels))
 width = 0.35
-bars1 = ax1.bar(x - width/2, percentile_values_a, width, label='期間A (5-7月)', color='steelblue', alpha=0.7)
-bars2 = ax1.bar(x + width/2, percentile_values_b, width, label='期間B (10-12月)', color='coral', alpha=0.7)
+ax1.bar(x - width/2, mean_a, width, label='期間A (5-7月)', color='steelblue', alpha=0.7)
+ax1.bar(x + width/2, mean_b, width, label='期間B (10-12月)', color='coral', alpha=0.7)
 ax1.set_xticks(x)
-ax1.set_xticklabels(percentile_labels)
-ax1.set_ylabel('客単価（円）', fontsize=11)
-ax1.set_title('パーセンタイル別客単価の比較', fontsize=12, fontweight='bold')
+ax1.set_xticklabels(bin_labels)
+ax1.set_ylabel('平均客単価（円）', fontsize=11)
+ax1.set_title('エリア別の平均客単価（20%刻み）', fontsize=12, fontweight='bold')
 ax1.legend()
 ax1.grid(True, alpha=0.3, axis='y')
 
-# 右: 変化量と変化率
+# 右: 平均客単価の変化量と変化率
 ax2 = axes[1]
 colors = ['#27AE60' if c > 0 else '#E74C3C' for c in changes]
 bars = ax2.bar(x, changes, color=colors, alpha=0.7)
 ax2.set_xticks(x)
-ax2.set_xticklabels(percentile_labels)
-ax2.set_ylabel('客単価の変化（円）', fontsize=11)
-ax2.set_title('パーセンタイル別の客単価変化', fontsize=12, fontweight='bold')
+ax2.set_xticklabels(bin_labels)
+ax2.set_ylabel('平均客単価の変化（円）', fontsize=11)
+ax2.set_title('エリア別の平均客単価変化（20%刻み）', fontsize=12, fontweight='bold')
 ax2.axhline(0, color='black', linewidth=0.8)
 ax2.grid(True, alpha=0.3, axis='y')
 
-# 変化率を注釈で表示
 for i, bar in enumerate(bars):
     height = bar.get_height()
-    ax2.annotate(f'+{changes[i]:.0f}円\n(+{change_rates[i]:.1f}%)',
-                xy=(bar.get_x() + bar.get_width() / 2, height),
-                xytext=(0, 3), textcoords="offset points",
-                ha='center', va='bottom', fontsize=9)
+    sign_yen = '+' if height >= 0 else ''
+    sign_pct = '+' if change_rates[i] >= 0 else ''
+    ax2.annotate(f'{sign_yen}{height:.0f}円\n({sign_pct}{change_rates[i]:.1f}%)',
+                 xy=(bar.get_x() + bar.get_width() / 2, height),
+                 xytext=(0, 3 if height >= 0 else -28),
+                 textcoords="offset points",
+                 ha='center',
+                 va='bottom' if height >= 0 else 'top',
+                 fontsize=9)
 
 plt.tight_layout()
-plt.savefig(OUTPUT_DIR / 'graph03_percentile_change.png', dpi=150, bbox_inches='tight')
+plt.savefig(OUTPUT_DIR / 'graph03_percentile_change_20pct.png', dpi=150, bbox_inches='tight')
 plt.close()
-print("graph03_percentile_change.png を作成しました")
+print("graph03_percentile_change_20pct.png を作成しました")
 
 # =========================================
 # 図4: 曜日・時間帯別客単価（X軸10-22時）
@@ -382,13 +461,21 @@ plt.savefig(OUTPUT_DIR / 'graph05_menu_contribution.png', dpi=150, bbox_inches='
 plt.close()
 print("graph05_menu_contribution.png を作成しました")
 
+if args.split_assets:
+    # 左: カテゴリ別売上増減額 / 右: 販売数増加TOP
+    _split_2cols(
+        OUTPUT_DIR / "graph05_menu_contribution.png",
+        "graph05_menu_contribution__category_contribution.png",
+        "graph05_menu_contribution__top_volume.png",
+    )
+
 # =========================================
 # 図6: 時間帯別来店組数と店内人数（フォント修正）
 # =========================================
 print("\n=== 図6: 時間帯別来店組数と店内人数 ===")
 
-VISITS_FILE = DATA_DIR / "StayTimeAnalysis" / "visits_with_duration.csv"
-OCCUPANCY_FILE = DATA_DIR / "StayTimeAnalysis" / "occupancy_10min.csv"
+VISITS_FILE = DATA_DIR / "visits_with_duration.csv"
+OCCUPANCY_FILE = DATA_DIR / "occupancy_10min.csv"
 
 weekdays = ["月", "火", "水", "木", "金"]
 weekends = ["土", "日"]
@@ -610,8 +697,8 @@ print("graph07_spend_customers_by_time.png を作成しました")
 # =========================================
 print("\n=== 図8: 売上上位/下位の2軸分布 ===")
 
-VISITS_FILE = DATA_DIR / "StayTimeAnalysis" / "visits_with_duration.csv"
-OCCUPANCY_FILE = DATA_DIR / "StayTimeAnalysis" / "occupancy_10min.csv"
+VISITS_FILE = DATA_DIR / "visits_with_duration.csv"
+OCCUPANCY_FILE = DATA_DIR / "occupancy_10min.csv"
 
 weekdays_list = ["月", "火", "水", "木", "金"]
 
@@ -755,14 +842,26 @@ plt.savefig(OUTPUT_DIR / "graph08_sales_2d_separation.png", dpi=150, bbox_inches
 plt.close()
 print("graph08_sales_2d_separation.png を作成しました")
 
+if args.split_assets:
+    # 2x2を分割（スライドでは主に左上を使用）
+    _split_2x2(
+        OUTPUT_DIR / "graph08_sales_2d_separation.png",
+        [
+            "graph08_sales_2d_separation__lunch_vs_dinner.png",
+            "graph08_sales_2d_separation__total_groups_vs_dinner.png",
+            "graph08_sales_2d_separation__total_customers_vs_dinner.png",
+            "graph08_sales_2d_separation__lunch_vs_total_customers.png",
+        ],
+    )
+
 # =========================================
 # 図9-12: CustomerCountAnalysis用グラフ（6月含む）
 # =========================================
 print("\n=== 図9-12: CustomerCountAnalysis用グラフ（6月含む）===")
 
 # 時間帯別・曜日別データ読み込み
-time_month = pd.read_csv(DATA_DIR / 'CustomerCountAnalysis' / '04_time_month_comparison.csv')
-weekday_month = pd.read_csv(DATA_DIR / 'CustomerCountAnalysis' / '03_weekday_month_comparison.csv')
+time_month = pd.read_csv(DATA_DIR / '04_time_month_comparison.csv')
+weekday_month = pd.read_csv(DATA_DIR / '03_weekday_month_comparison.csv')
 
 # 有効な月（3月のみ除外、6月は含める）
 valid_months_all = [1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12]
@@ -922,7 +1021,7 @@ print("graph12_weekday_vs_weekend.png を作成しました")
 # =========================================
 print("\n=== 図13: 曜日別・入店時刻別の平均滞在時間 ===")
 
-VISITS_FILE_STAY = DATA_DIR / "StayTimeAnalysis" / "visits_with_duration.csv"
+VISITS_FILE_STAY = DATA_DIR / "visits_with_duration.csv"
 
 # データ読み込み
 stay_data = defaultdict(lambda: defaultdict(list))

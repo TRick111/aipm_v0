@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('Agg')
 from matplotlib import rcParams
+from pathlib import Path
 
 # 日本語フォント設定
 rcParams['font.family'] = 'sans-serif'
@@ -16,10 +17,12 @@ rcParams['font.sans-serif'] = ['Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu
 rcParams['axes.unicode_minus'] = False
 
 import os
-OUTPUT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_DIR = Path(__file__).resolve().parents[2]
+OUTPUT_DIR = PROJECT_DIR / "reports"
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # データ読み込み
-daily = pd.read_csv(f'{OUTPUT_DIR}/daily_by_segment.csv')
+daily = pd.read_csv(PROJECT_DIR / "data" / "output" / "daily_by_segment.csv")
 
 # セグメント定義
 segments = ['Before_Lunch', 'Before_Dinner', 'After_Lunch', 'After_Dinner']
@@ -92,7 +95,7 @@ ax.legend(loc='upper left')
 
 plt.suptitle('4セグメント比較（重ね表示）', fontsize=16, fontweight='bold', y=1.02)
 plt.tight_layout()
-plt.savefig(f'{OUTPUT_DIR}/09_overlay_all.png', dpi=150, bbox_inches='tight')
+plt.savefig(OUTPUT_DIR / "09_overlay_all.png", dpi=150, bbox_inches='tight')
 plt.close()
 print("  保存: 09_overlay_all.png")
 
@@ -113,7 +116,7 @@ ax.set_ylabel('頻度', fontsize=14)
 ax.set_title('4セグメント 売上分布の比較', fontsize=16, fontweight='bold')
 ax.legend(loc='upper right', fontsize=11)
 plt.tight_layout()
-plt.savefig(f'{OUTPUT_DIR}/10_overlay_sales.png', dpi=150, bbox_inches='tight')
+plt.savefig(OUTPUT_DIR / "10_overlay_sales.png", dpi=150, bbox_inches='tight')
 plt.close()
 print("  保存: 10_overlay_sales.png")
 
@@ -133,7 +136,7 @@ ax.set_ylabel('頻度', fontsize=14)
 ax.set_title('4セグメント 客数分布の比較', fontsize=16, fontweight='bold')
 ax.legend(loc='upper right', fontsize=11)
 plt.tight_layout()
-plt.savefig(f'{OUTPUT_DIR}/11_overlay_customers.png', dpi=150, bbox_inches='tight')
+plt.savefig(OUTPUT_DIR / "11_overlay_customers.png", dpi=150, bbox_inches='tight')
 plt.close()
 print("  保存: 11_overlay_customers.png")
 
@@ -153,7 +156,7 @@ ax.set_ylabel('頻度', fontsize=14)
 ax.set_title('4セグメント 客単価分布の比較', fontsize=16, fontweight='bold')
 ax.legend(loc='upper right', fontsize=11)
 plt.tight_layout()
-plt.savefig(f'{OUTPUT_DIR}/12_overlay_unit_price.png', dpi=150, bbox_inches='tight')
+plt.savefig(OUTPUT_DIR / "12_overlay_unit_price.png", dpi=150, bbox_inches='tight')
 plt.close()
 print("  保存: 12_overlay_unit_price.png")
 
@@ -182,7 +185,7 @@ ax.set_title('4セグメント 客数 vs 売上', fontsize=16, fontweight='bold'
 ax.legend(loc='upper left', fontsize=11)
 ax.grid(True, alpha=0.3)
 plt.tight_layout()
-plt.savefig(f'{OUTPUT_DIR}/13_overlay_scatter.png', dpi=150, bbox_inches='tight')
+plt.savefig(OUTPUT_DIR / "13_overlay_scatter.png", dpi=150, bbox_inches='tight')
 plt.close()
 print("  保存: 13_overlay_scatter.png")
 
@@ -230,7 +233,7 @@ ax.tick_params(axis='x', rotation=30)
 
 plt.suptitle('4セグメント比較（箱ひげ図）', fontsize=16, fontweight='bold')
 plt.tight_layout()
-plt.savefig(f'{OUTPUT_DIR}/14_boxplot_comparison.png', dpi=150, bbox_inches='tight')
+plt.savefig(OUTPUT_DIR / "14_boxplot_comparison.png", dpi=150, bbox_inches='tight')
 plt.close()
 print("  保存: 14_boxplot_comparison.png")
 

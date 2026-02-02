@@ -268,7 +268,7 @@ rawdata.csv を使って、指定期間の **カテゴリ別の商品売り上�
 
 - **スクリプト**: `Scripts/bfa_category_product_ranking_html.py`
 - **入力**: `1_input/BFA/rawdata.csv`
-- **出力**: 任意のHTML（例: `Flow/.../output/*.html`）
+- **出力**: HTML（命名規則推奨: `yyyymmdd_yyyymmdd＜店舗名＞売り上げランキング.html`）
 
 実行例（macOS / システムpython3）:
 
@@ -278,8 +278,12 @@ rawdata.csv を使って、指定期間の **カテゴリ別の商品売り上�
   --sales-data "Stock/RestaurantAILab/週報/1_input/BFA/rawdata.csv" \
   --start-date 2026-01-19 \
   --end-date   2026-01-25 \
-  --output-html "Flow/202601/2026-01-27/週報/BFA_売上ランキング/output/bfa_category_product_ranking_2026-01-19_2026-01-25.html"
+  --output-dir  "Flow/202601/2026-01-27" \
+  --store-name  "BARFIveArrows"
 ```
+
+- `--output-dir` 指定時は、ファイル名が自動で `yyyymmdd_yyyymmdd＜店舗名＞売り上げランキング.html` になります
+- 既存運用どおり `--output-html` を明示指定することも可能です（任意のファイル名で出力）
 
 ### 5.2 別の週の分析（例: Week 42）
 

@@ -324,6 +324,10 @@ latest_week_idx = week_list.index(latest_week) if latest_week in week_list else 
 prev_week = week_list[latest_week_idx - 1] if latest_week_idx > 0 else None
 prev_week_data = weekly_sales.loc[prev_week] if prev_week else None
 
+# 直近5週間のリスト（スライドデータ・グラフ用）
+recent_start = max(0, latest_week_idx - 4)
+recent_week_list = week_list[recent_start:latest_week_idx + 1]
+
 # 前月平均の計算：対象週の開始日から1ヶ月前の月に該当する週の平均
 try:
     from datetime import datetime

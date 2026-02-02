@@ -23,6 +23,7 @@
 - 現状: 継続運用中（定期的に台本テーマを受け取り納品）
 - ネクストアクション:
   - [ ] 次回テーマリスト受領後、台本作成
+  - [ ] （2026-02-01）`2.execute/2.input/2026-02-01/` の入力から台本生成 → `2.execute/3.output/2026-02-01/` を納品用に整形/共有
 
 ---
 
@@ -89,6 +90,11 @@ $env:CSV_IN = "<入力CSVのフルパス>"
 $env:CSV_OUT = "<出力CSVのフルパス>"
 python "Stock\RestaurantAILab\ChefsRoomマーケティング支援\2.execute\1.scripts\generate_scripts_with_gemini.py"
 ```
+
+**方法C: Flowに置いたまま実行（Flow runner）**
+
+- Flow実行用一式: `2.execute/1.scripts/flow_runner/`
+- 入力/出力は `CSV_IN` / `CSV_OUT` で指定（未指定ならFlow日付フォルダ直下 `input.csv` を読む想定）
 
 ### 3. 出力
 

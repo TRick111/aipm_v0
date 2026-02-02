@@ -7,7 +7,7 @@ import os
 import random
 import re
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Set, Tuple
 
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -178,6 +178,37 @@ def parse_scenes_json(resp_text: str) -> List[str]:
         return [""] * 17
 
 
+def load_done_nos(path_out: Path) -> Set[int]:
+    """
+    既に生成済みの出力CSV（CSV_OUT）から、No列を読み取り完了済みのNo集合を返す。
+    - 既存ファイルが無ければ空集合
+    - CSVの途中行や空行があっても壊れないように保守的にパース
+    """
+    if not path_out.exists():
+        return set()
+
+    done: Set[int] = set()
+    try:
+        with open(path_out, encoding="utf-8", newline="") as f:
+            r = csv.reader(f)
+            # ヘッダを読み飛ばし（存在しなくてもOK）
+            _ = next(r, None)
+            for row in r:
+                if not row:
+                    continue
+                try:
+                    done.add(int(str(row[0]).strip()))
+                except Exception:
+                    continue
+    except Exception:
+        # 壊れていても「最初からやり直し」にならないよう、ここでは空集合にしない。
+        # ただし、読み取り不能ならresumeを諦めて安全側（上書き）に倒すのは危険なので、
+        # 今回は「何もスキップしない」= 空集合を返す。
+        return set()
+
+    return done
+
+
 def main() -> int:
     path_in = Path(CSV_IN)
     path_out = Path(CSV_OUT)
@@ -200,11 +231,15 @@ def main() -> int:
         print("入力CSVが空です")
         return 1
 
-    # 出力初期化（毎回新規作成）
     path_out.parent.mkdir(parents=True, exist_ok=True)
-    with open(path_out, "w", encoding="utf-8", newline="") as f:
-        writer = csv.writer(f)
-        writer.writerow(OUTPUT_HEADERS)
+    done_nos = load_done_nos(path_out)
+    if done_nos:
+        print(f"再開モード: 既存出力を検出（生成済み {len(done_nos)} 件）。未生成分のみ続行します。")
+    else:
+        # 出力初期化（新規作成時のみ）
+        with open(path_out, "w", encoding="utf-8", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(OUTPUT_HEADERS)
 
     print(
         "開始: {n} 行を処理します\n"
@@ -222,40 +257,43 @@ def main() -> int:
         )
     )
 
-    for idx, row in enumerate(reader, 1):
-        # 一部CSVで列名にBOMが付与されるケースへ対応（例: '\ufeffタイトル'）
-        theme = (
-            row.get("テーマ")
-            or row.get("タイトル")
-            or row.get("\ufeffタイトル")
-            or f"テーマ{idx}"
-        )
-        # 行ごとに参考例5件をランダム抽出
-        examples_text, examples_id = sample_examples(EXAMPLES_YAML, k=5)
-        prompt = build_prompt(prompt_md, theme, row, examples_text)
-        print(f"[{idx}/{len(reader)}] 処理開始: No.{idx} 『{theme}』", flush=True)
+    with open(path_out, "a", encoding="utf-8", newline="") as f:
+        writer = csv.writer(f)
+        for idx, row in enumerate(reader, 1):
+            if idx in done_nos:
+                continue
 
-        try:
-            print(f"  → Gemini呼び出し中...", flush=True)
-            resp = llm.invoke([HumanMessage(content=prompt)])
-            content = resp.content if isinstance(resp.content, str) else str(resp.content)
-            print(f"  → 応答受領（{len(content)}文字）", flush=True)
-            scenes = parse_scenes_json(content)
-            if any(scenes):
-                print(f"  → JSON解析OK（17シーン）", flush=True)
-            else:
-                print(f"  → JSON解析失敗：空で埋めます", flush=True)
-        except Exception as e:
-            # 失敗時は空シーンで穴埋めし、次へ
-            print(f"  × エラー: {e}. 空で継続します。", flush=True)
-            scenes = [""] * 17
+            # 一部CSVで列名にBOMが付与されるケースへ対応（例: '\ufeffタイトル'）
+            theme = (
+                row.get("テーマ")
+                or row.get("タイトル")
+                or row.get("\ufeffタイトル")
+                or f"テーマ{idx}"
+            )
+            # 行ごとに参考例5件をランダム抽出
+            examples_text, examples_id = sample_examples(EXAMPLES_YAML, k=5)
+            prompt = build_prompt(prompt_md, theme, row, examples_text)
+            print(f"[{idx}/{len(reader)}] 処理開始: No.{idx} 『{theme}』", flush=True)
 
-        out_row = [str(idx), theme] + scenes + [examples_id]
-        with open(path_out, "a", encoding="utf-8", newline="") as f:
-            writer = csv.writer(f)
+            try:
+                print(f"  → Gemini呼び出し中...", flush=True)
+                resp = llm.invoke([HumanMessage(content=prompt)])
+                content = resp.content if isinstance(resp.content, str) else str(resp.content)
+                print(f"  → 応答受領（{len(content)}文字）", flush=True)
+                scenes = parse_scenes_json(content)
+                if any(scenes):
+                    print(f"  → JSON解析OK（17シーン）", flush=True)
+                else:
+                    print(f"  → JSON解析失敗：空で埋めます", flush=True)
+            except Exception as e:
+                # 失敗時は空シーンで穴埋めし、次へ
+                print(f"  × エラー: {e}. 空で継続します。", flush=True)
+                scenes = [""] * 17
+
+            out_row = [str(idx), theme] + scenes + [examples_id]
             writer.writerow(out_row)
 
-        print(f"  完了: No.{idx} 『{theme}』", flush=True)
+            print(f"  完了: No.{idx} 『{theme}』", flush=True)
 
     print(f"完了: {len(reader)} 行を台本生成しました → {path_out}")
     return 0

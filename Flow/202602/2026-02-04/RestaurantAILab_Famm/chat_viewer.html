@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chat Viewer (JSON)</title>
+    <style>
+      :root {
+        --bg: #0b0f14;
+        --panel: #111826;
+        --panel2: #0f172a;
+        --text: #e5e7eb;
+        --muted: #9ca3af;
+        --border: rgba(255, 255, 255, 0.08);
+        --user: #1d4ed8;
+        --assistant: #0f766e;
+        --unknown: #6b7280;
+        --bubble: rgba(255, 255, 255, 0.06);
+        --bubble2: rgba(255, 255, 255, 0.09);
+      }
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        background: radial-gradient(1200px 800px at 20% 0%, #0b1220 0%, var(--bg) 55%);
+        color: var(--text);
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      }
+      .app {
+        height: 100%;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+      }
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        backdrop-filter: blur(10px);
+        background: rgba(11, 15, 20, 0.75);
+        border-bottom: 1px solid var(--border);
+      }
+      .wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 14px 16px;
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 12px;
+        align-items: center;
+      }
+      .controls .title {
+        font-weight: 700;
+        letter-spacing: 0.2px;
+        margin-right: 10px;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border);
+        padding: 8px 10px;
+        border-radius: 999px;
+      }
+      input[type="file"] { color: var(--muted); max-width: 340px; }
+      label { color: var(--muted); font-size: 13px; }
+      select, button {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border);
+        color: var(--text);
+        border-radius: 10px;
+        padding: 8px 10px;
+      }
+      button { cursor: pointer; }
+      button:hover { background: rgba(255, 255, 255, 0.06); }
+      main {
+        overflow: auto;
+      }
+      .chat {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 18px 16px 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .meta {
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.4;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px dashed var(--border);
+        border-radius: 14px;
+        padding: 10px 12px;
+      }
+      .row { display: flex; gap: 10px; }
+      .row.user { justify-content: flex-end; }
+      .row.assistant { justify-content: flex-start; }
+      .row.unknown { justify-content: center; }
+      .bubble {
+        max-width: min(760px, 92%);
+        border: 1px solid var(--border);
+        background: var(--bubble);
+        border-radius: 16px;
+        padding: 10px 12px;
+        white-space: pre-wrap;
+        line-height: 1.55;
+        font-size: 14px;
+      }
+      .row.user .bubble {
+        background: color-mix(in srgb, var(--user) 30%, var(--bubble2));
+        border-color: color-mix(in srgb, var(--user) 35%, var(--border));
+      }
+      .row.assistant .bubble {
+        background: color-mix(in srgb, var(--assistant) 26%, var(--bubble2));
+        border-color: color-mix(in srgb, var(--assistant) 35%, var(--border));
+      }
+      .row.unknown .bubble {
+        background: rgba(255, 255, 255, 0.02);
+        border-style: dashed;
+      }
+      .tagline {
+        margin-top: 6px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .tag {
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.03);
+        padding: 2px 8px;
+        border-radius: 999px;
+      }
+      footer {
+        border-top: 1px solid var(--border);
+        background: rgba(15, 23, 42, 0.35);
+      }
+      .hint {
+        color: var(--muted);
+        font-size: 12px;
+      }
+      code {
+        background: rgba(255, 255, 255, 0.06);
+        padding: 1px 6px;
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header>
+        <div class="wrap">
+          <div class="controls">
+            <div class="title">Chat Viewer</div>
+            <div class="pill">
+              <label for="file">JSONファイル</label>
+              <input id="file" type="file" accept="application/json,.json" />
+            </div>
+            <div class="pill">
+              <label for="segment">セグメント</label>
+              <select id="segment">
+                <option value="__all__">すべて</option>
+              </select>
+            </div>
+            <div class="pill">
+              <label for="showInferred">推測AI応答</label>
+              <select id="showInferred">
+                <option value="all">表示</option>
+                <option value="hide_inferred">非表示</option>
+                <option value="only_inferred">推測のみ</option>
+              </select>
+            </div>
+            <button id="loadSample" title="同フォルダのサンプルJSONを読み込み（環境によってはブラウザ制限で失敗します）">サンプル読込</button>
+            <button id="toBottom">最下部へ</button>
+          </div>
+        </div>
+      </header>
+
+      <main id="main">
+        <div class="chat" id="chat">
+          <div class="meta" id="meta">
+            <div><b>使い方</b></div>
+            <div>- 上の <code>JSONファイル</code> から、生成済みのJSONを選択するとチャットUIで表示します。</div>
+            <div>- 推奨: <code>chat_record_inferred_speakers_rawtext_with_assistant_2026-02-04.json</code>（推測AI応答入り）</div>
+          </div>
+        </div>
+      </main>
+
+      <footer>
+        <div class="wrap hint">
+          ヒント: ローカルHTMLはブラウザの制限で <code>fetch</code> が失敗することがあるため、確実なのは「ファイル選択」で読み込む方法です。
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      const elFile = document.getElementById('file');
+      const elSegment = document.getElementById('segment');
+      const elShowInferred = document.getElementById('showInferred');
+      const elChat = document.getElementById('chat');
+      const elMeta = document.getElementById('meta');
+      const elMain = document.getElementById('main');
+      const elLoadSample = document.getElementById('loadSample');
+      const elToBottom = document.getElementById('toBottom');
+
+      /** @type {{data: any|null}} */
+      const state = { data: null };
+
+      function clearChat() {
+        [...elChat.querySelectorAll('.row')].forEach(n => n.remove());
+      }
+
+      function setMeta(textLines) {
+        elMeta.innerHTML = textLines.map(t => `<div>${escapeHtml(t)}</div>`).join('');
+      }
+
+      function escapeHtml(str) {
+        return String(str)
+          .replaceAll('&', '&amp;')
+          .replaceAll('<', '&lt;')
+          .replaceAll('>', '&gt;')
+          .replaceAll('"', '&quot;')
+          .replaceAll(\"'\", '&#039;');
+      }
+
+      function upsertSegments(segments) {
+        const cur = elSegment.value;
+        elSegment.innerHTML = `<option value="__all__">すべて</option>`;
+        (segments || []).forEach(s => {
+          const opt = document.createElement('option');
+          opt.value = s.segment_id;
+          opt.textContent = `${s.segment_id} — ${s.title}${s.missing_turns ? '（欠落あり）' : ''}`;
+          elSegment.appendChild(opt);
+        });
+        if ([...elSegment.options].some(o => o.value === cur)) elSegment.value = cur;
+      }
+
+      function shouldShowMessage(m) {
+        const seg = elSegment.value;
+        if (seg !== '__all__' && m.segment_id !== seg) return false;
+        const mode = elShowInferred.value;
+        const isInferred = !!m.inferred;
+        if (mode === 'hide_inferred' && isInferred) return false;
+        if (mode === 'only_inferred' && !isInferred) return false;
+        return true;
+      }
+
+      function render(data) {
+        state.data = data;
+        clearChat();
+        upsertSegments(data.segments);
+
+        const created = data.created_at || '';
+        const notes = (data.source && data.source.notes) ? data.source.notes : [];
+        const msgCount = (data.messages || []).length;
+        setMeta([
+          `created_at: ${created}`,
+          `messages: ${msgCount}`,
+          `notes:`,
+          ...notes.map(n => `- ${n}`),
+        ]);
+
+        const msgs = (data.messages || []).filter(shouldShowMessage);
+        msgs.forEach(m => {
+          const speaker = m.speaker || 'unknown';
+          const row = document.createElement('div');
+          row.className = `row ${speaker}`;
+
+          const bubble = document.createElement('div');
+          bubble.className = 'bubble';
+          bubble.textContent = m.text ?? '';
+
+          const tagline = document.createElement('div');
+          tagline.className = 'tagline';
+          const tag1 = document.createElement('span');
+          tag1.className = 'tag';
+          tag1.textContent = `id: ${m.id || ''}`;
+          const tag2 = document.createElement('span');
+          tag2.className = 'tag';
+          tag2.textContent = `speaker: ${speaker}`;
+          const tag3 = document.createElement('span');
+          tag3.className = 'tag';
+          tag3.textContent = `confidence: ${typeof m.confidence === 'number' ? m.confidence.toFixed(2) : ''}`;
+          const tag4 = document.createElement('span');
+          tag4.className = 'tag';
+          tag4.textContent = m.inferred ? 'inferred: true' : 'inferred: false';
+          const tag5 = document.createElement('span');
+          tag5.className = 'tag';
+          tag5.textContent = `segment: ${m.segment_id || ''}`;
+          tagline.append(tag1, tag2, tag3, tag4, tag5);
+
+          const container = document.createElement('div');
+          container.style.display = 'flex';
+          container.style.flexDirection = 'column';
+          container.style.gap = '6px';
+          container.append(bubble, tagline);
+
+          row.append(container);
+          elChat.append(row);
+        });
+      }
+
+      async function readFileAsJson(file) {
+        const text = await file.text();
+        return JSON.parse(text);
+      }
+
+      elFile.addEventListener('change', async () => {
+        const file = elFile.files && elFile.files[0];
+        if (!file) return;
+        try {
+          const data = await readFileAsJson(file);
+          render(data);
+          elMain.scrollTop = elMain.scrollHeight;
+        } catch (e) {
+          alert(`JSONの読み込みに失敗しました: ${e}`);
+        }
+      });
+
+      elSegment.addEventListener('change', () => {
+        if (state.data) render(state.data);
+      });
+
+      elShowInferred.addEventListener('change', () => {
+        if (state.data) render(state.data);
+      });
+
+      elToBottom.addEventListener('click', () => {
+        elMain.scrollTop = elMain.scrollHeight;
+      });
+
+      elLoadSample.addEventListener('click', async () => {
+        // 同フォルダ前提。ローカル制限で失敗する場合はファイル選択を使う。
+        const sampleName = 'chat_record_inferred_speakers_rawtext_with_assistant_2026-02-04.json';
+        try {
+          const res = await fetch(sampleName);
+          if (!res.ok) throw new Error(`fetch failed: ${res.status}`);
+          const data = await res.json();
+          render(data);
+          elMain.scrollTop = elMain.scrollHeight;
+        } catch (e) {
+          alert(`サンプル読込に失敗しました（ブラウザ制限の可能性）: ${e}\\n\\n上の「JSONファイル」から手動で選択してください。`);
+        }
+      });
+    </script>
+  </body>
+</html>
+

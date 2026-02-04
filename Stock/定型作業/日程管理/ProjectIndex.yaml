@@ -1,0 +1,35 @@
+version: 1
+
+# ProjectIndex.yaml（AI専用）
+# 目的:
+# - ユーザー入力に対してAIが「このプロジェクト内のどのファイルを参照すべきか」を判断するためのプロジェクト内インデックス。
+# ルール:
+# - Stockにファイルを追加/更新したら、AIが files を更新する。
+# - READMEは「状況/次アクション/会議リンク」などの入口。ProjectIndexは「参照ファイル選定」のためのカタログ。
+
+project: "日程管理"
+root: "Stock/定型作業/日程管理"
+
+canonical:
+  readme: "README.md"
+  log: "log.md"
+
+files:
+  - path: "README.md"
+    summary: "背景/目的/ゴール/次アクションなど、プロジェクトの入口情報"
+    keywords:
+      - 日程管理
+      - 日程調整
+      - busy
+      - ブロック
+      - Googleカレンダー
+      - MCP
+      - 自動化
+      - セキュリティ
+  - path: "log.md"
+    summary: "変更履歴（作成/編集/削除）を記録するログ"
+    keywords:
+      - log
+      - 変更履歴
+      - 作業記録
+

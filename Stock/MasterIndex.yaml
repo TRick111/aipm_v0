@@ -4,6 +4,38 @@ version: 1
 # - programs / projects のキーは「ID=名前」（同一）とする。
 
 programs:
+  定型作業:
+    summary: "提携で行う定型作業の手順・参照ファイル・運用ルールを蓄積し、必要に応じて自動化までつなげるプログラム"
+    keywords:
+      - 定型作業
+      - 提携
+      - 手順
+      - 参照ファイル
+      - 運用
+      - 自動化
+      - MCP
+      - エージェント
+      - セキュリティ
+      - カレンダー
+    readme: "Stock/定型作業/README.md"
+    projects:
+      日程管理:
+        summary: "社外向けのGoogleカレンダー等に、会社カレンダーを出さずにbusy時間をブロック登録できる仕組みを整備"
+        keywords:
+          - 日程調整
+          - 日程管理
+          - Googleカレンダー
+          - busy
+          - ブロック
+          - MCP
+          - 自動化
+          - 会社カレンダー
+          - セキュリティ
+          - タイムゾーン
+        path: "Stock/定型作業/日程管理"
+        readme: "Stock/定型作業/日程管理/README.md"
+        index: "Stock/定型作業/日程管理/ProjectIndex.yaml"
+
   RestaurantAILab:
     summary: "飲食店向けにAIサービスを提供するプログラム（飲食コンサルChef's Roomと協業）"
     keywords:

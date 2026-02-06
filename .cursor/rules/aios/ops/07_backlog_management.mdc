@@ -1,0 +1,37 @@
+---
+description: "AIOS Ops: Backlog management (single-file backlog + programmatic extraction)"
+alwaysApply: false
+---
+
+# 運用フロー: バックログ運用（横断タスク管理）
+
+## ゴール（完了条件）
+- `Stock/定型作業/バックログ/Backlog.md` が「タスクの単一の正」として維持されている
+- 必要に応じて `Stock/定型作業/バックログ/backlog_tools.py` でタスクを抽出できる
+
+## 参照（正）
+- バックログ本体: `Stock/定型作業/バックログ/Backlog.md`
+- 抽出ツール: `Stock/定型作業/バックログ/backlog_tools.py`
+
+## バックログのフォーマット（重要）
+- バックログは **Markdown表が単一の正（Single Source of Truth）**
+- 見た目の分かりやすさと、機械処理（抽出/整形）の両立を狙う
+
+### ルール（パース可能にするため）
+- **列は固定**（ヘッダ名・順序を変えない）
+- `Due` は `YYYY-MM-DD`（未定は空欄でOK）
+- `Priority` は `P0/P1/P2/P3`（P0が最優先）
+- `Status` は `todo/doing/blocked/done`
+- セル内で `|` を使わない（Markdown表が崩れてパースできなくなる）
+- `Tags` は `tag1,tag2` のカンマ区切り（空欄OK）
+
+## 最小コマンド（抽出）
+- 全件をJSON: `python Stock/定型作業/バックログ/backlog_tools.py list --format json`
+- 指定日（未指定は今日）: `python Stock/定型作業/バックログ/backlog_tools.py today --date YYYY-MM-DD`
+- 期限超過: `python Stock/定型作業/バックログ/backlog_tools.py overdue`
+
+## 運用の型
+- 追加/更新したいタスクが出たら、まず `Backlog.md` に追記（ID採番して1行追加）
+- 毎日（もしくは作業開始時）に `overdue` と「今日期日」を確認し、`Flow/YYYYMM/YYYY-MM-DD/mmdd_daily_tasks.md` に“今日やる分”だけ落とす
+- doneは週1程度で整理（残す/アーカイブは運用次第）
+

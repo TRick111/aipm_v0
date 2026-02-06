@@ -1,0 +1,48 @@
+version: 1
+
+# ProjectIndex.yaml（AI専用）
+# - このプロジェクト内の「どのファイルを参照すべきか」を判断するためのカタログ
+
+project: "バックログ"
+root: "Stock/定型作業/バックログ"
+
+canonical:
+  readme: "README.md"
+  log: "log.md"
+
+files:
+  - path: "README.md"
+    summary: "プロジェクトの背景/目的/ゴール/運用方針の入口"
+    keywords:
+      - バックログ
+      - タスク管理
+      - 優先度
+      - 期日
+      - 横断
+      - 運用
+  - path: "Backlog.md"
+    summary: "タスクの単一の正（優先度/期日/所属を表で管理）"
+    keywords:
+      - Backlog
+      - タスク
+      - 優先度
+      - 期日
+      - Program
+      - Project
+      - todo
+  - path: "backlog_tools.py"
+    summary: "Backlog.mdをパースして、今日/期限超過などを抽出するツール（標準ライブラリのみ）"
+    keywords:
+      - Python
+      - 抽出
+      - パース
+      - today
+      - overdue
+      - 自動化
+  - path: "log.md"
+    summary: "変更履歴（作成/編集/削除）を記録するログ"
+    keywords:
+      - log
+      - 変更履歴
+      - 作業記録
+

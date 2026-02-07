@@ -20,7 +20,7 @@ Google公式の **Google Calendar API + OAuth** を使って、指定カレン�
 ```bash
 cd "/Users/rikutanaka/aipm_v0/Flow/202602/2026-02-07/日程管理/gcal_busy_blocker"
 npm install
-npm run auth
+npm run auth -- --force
 ```
 
 ## 使い方
@@ -78,5 +78,5 @@ npm run block -- --calendar=work --title=BUSY --timezone=Asia/Tokyo --start="202
 
 ## セキュリティ注意
 - `credentials.json` / `token.json` は機密情報です（`.gitignore` 済み）
-- 権限（scope）は `calendar.events` のみにしてあります（最小権限）
+- 権限（scope）は **`calendar.readonly`（一覧取得） + `calendar.events`（予定作成）** のみにしています
 

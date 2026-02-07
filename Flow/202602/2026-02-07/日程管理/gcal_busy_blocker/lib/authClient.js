@@ -22,13 +22,28 @@ export class AuthClient {
     this.oauth2Client = null;
   }
 
+  static pickRedirectUri(redirectUris) {
+    const uris = Array.isArray(redirectUris) ? redirectUris.filter(Boolean) : [];
+    // Prefer explicit loopback with port (matches local server)
+    const preferred = uris.find((u) => /localhost:3000|127\.0\.0\.1:3000/.test(u));
+    if (preferred) return preferred;
+
+    // If user registered localhost without port, append :3000 so callback reaches our server.
+    const localhostNoPort = uris.find((u) => /^http:\/\/(localhost|127\.0\.0\.1)\/?$/.test(u));
+    if (localhostNoPort) return localhostNoPort.replace(/\/?$/, ":3000");
+
+    // Fallback: first available
+    return uris[0];
+  }
+
   async getAuthClient() {
     if (this.oauth2Client) return this.oauth2Client;
 
     const { client_id, client_secret, redirect_uris } =
       this.credentials.installed || this.credentials.web;
 
-    this.oauth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
+    const redirectUri = AuthClient.pickRedirectUri(redirect_uris);
+    this.oauth2Client = new google.auth.OAuth2(client_id, client_secret, redirectUri);
 
     if (!fs.existsSync(this.tokenPath)) {
       throw new Error("token.json が見つかりません。先に `npm run auth` を実行してください。");
@@ -43,7 +58,8 @@ export class AuthClient {
     const { client_id, client_secret, redirect_uris } =
       this.credentials.installed || this.credentials.web;
 
-    this.oauth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
+    const redirectUri = AuthClient.pickRedirectUri(redirect_uris);
+    this.oauth2Client = new google.auth.OAuth2(client_id, client_secret, redirectUri);
 
     if (fs.existsSync(this.tokenPath)) {
       const token = JSON.parse(fs.readFileSync(this.tokenPath, "utf8"));
@@ -63,7 +79,15 @@ export class AuthClient {
     console.log("\n[Auth] ブラウザを自動で開きます...\n");
     await open(authUrl);
 
-    const code = await this.getAuthCode(redirect_uris[0]);
+    if (redirectUri && /^http:\/\/(localhost|127\.0\.0\.1):3000/.test(redirectUri) === false) {
+      console.warn(
+        `[Auth] 注意: redirect_uri が "${redirectUri}" です。\n` +
+          `[Auth] もし認証後に戻ってこない場合は、Google Cloud Console の OAuth クライアントに ` +
+          `"http://localhost:3000" をリダイレクトURIとして追加してください。`
+      );
+    }
+
+    const code = await this.getAuthCode(redirectUri);
     const { tokens } = await this.oauth2Client.getToken(code);
     this.oauth2Client.setCredentials(tokens);
     this.saveToken(tokens);

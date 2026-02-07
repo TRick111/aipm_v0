@@ -1,0 +1,17 @@
+{
+  "name": "gcal-busy-blocker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Insert BUSY blocks into Google Calendar (work) via official Calendar API (OAuth).",
+  "scripts": {
+    "auth": "node auth.js",
+    "block": "node block.js",
+    "list": "node list_calendars.js"
+  },
+  "dependencies": {
+    "googleapis": "^140.0.0",
+    "open": "^10.1.0"
+  }
+}
+

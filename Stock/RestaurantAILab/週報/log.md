@@ -11,3 +11,7 @@
 - edit: `Stock/RestaurantAILab/週報/03_スライド構成案作成_プロンプト.md`
 - edit: `Stock/RestaurantAILab/週報/ProjectIndex.yaml`
 
+## 2026-02-09
+- create: `Stock/RestaurantAILab/週報/1_input/pos_store_accounts.yaml`
+- edit: `Stock/RestaurantAILab/週報/ProjectIndex.yaml`
+

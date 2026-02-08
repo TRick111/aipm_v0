@@ -1,45 +1,42 @@
 ---
 name: "Dinii注文一覧CSVダウンロード"
-description: "Diniiから複数店舗の注文一覧データをCSV形式で一括ダウンロードします。"
-version: "1.0.0"
+description: "Diniiから店舗の注文一覧データをCSV形式でダウンロードします。"
+version: "2.0.0"
 author: "Restaurant AI Lab"
 created: "2026-01-05"
+updated: "2026-02-09"
 dependencies:
   - playwright-mcp
 parameters:
   - name: startDate
     type: string
     required: true
-    description: 集計開始日（YYYY-MM-DD形式）
-    example: "2026-01-01"
+    description: 集計開始日（YYYYMMDD形式）
+    example: "20260101"
   - name: endDate
     type: string
     required: true
-    description: 集計終了日（YYYY-MM-DD形式）
-    example: "2026-01-31"
-  - name: accountsFilePath
-    type: string
-    required: false
-    description: 店舗アカウントCSVファイルのパス（指定しない場合は単一店舗モード）
-    default: "プロンプト/Download/dinii_accounts.csv"
+    description: 集計終了日（YYYYMMDD形式）
+    example: "20260131"
   - name: email
     type: string
-    required: false
-    description: メールアドレス（単一店舗モード時に使用）
+    required: true
+    description: メールアドレス
     example: "example@email.com"
   - name: password
     type: string
-    required: false
-    description: パスワード（単一店舗モード時に使用）
+    required: true
+    description: パスワード
     sensitive: true
   - name: storeName
     type: string
-    required: false
-    description: 店舗名（単一店舗モード時に使用）
+    required: true
+    description: 店舗名
+    example: "昼からワイン食堂"
 constants:
   loginUrl: "https://dashboard.self.dinii.jp/signIn"
-  downloadPath: "C:\\Users\\auk1i\\Downloads"
-  fileNameFormat: "{storeName}_{YYYYMMDD}-{YYYYMMDD}_Dinii.csv"
+  downloadPath: "/Users/rikutanaka/aipm_v0/Stock/RestaurantAILab/週報/0_downloads"
+  fileNameFormat: "{startDate}-{endDate}-{storeName}.csv"
 ---
 
 # Dinii注文一覧CSVダウンロード
@@ -49,57 +46,24 @@ constants:
 このSkillは、Playwright MCPを使用してDiniiにログインし、指定された店舗・期間の注文一覧CSVを自動的にダウンロードします。
 
 **機能**:
-- ✅ 複数店舗の一括ダウンロード（CSVファイルから店舗リストを読み込み）
-- ✅ 単一店舗のダウンロード（パラメータ直接指定）
-- ✅ ダウンロード後のファイルリネーム
-- ✅ ログアウト処理
+- 単一店舗の注文データダウンロード
+- ダウンロード後のファイルリネーム
+- ログアウト処理
 
-**出力先**: C:\Users\auk1i\Downloads
-**ファイル名形式**: `{店舗名}_{開始日}-{終了日}_Dinii.csv`（例: `昼からワイン食堂_20260101-20260131_Dinii.csv`）
-
----
-
-## 実行モード
-
-### モード1: 複数店舗一括ダウンロード
-
-店舗アカウントCSVファイルを読み込み、全店舗を順番に処理します。
-
-**必要なパラメータ**:
-- `startDate`: 集計開始日（YYYY-MM-DD形式）
-- `endDate`: 集計終了日（YYYY-MM-DD形式）
-- `accountsFilePath`: 店舗アカウントCSVファイルのパス
-
-### モード2: 単一店舗ダウンロード
-
-1店舗のみをダウンロードします。
-
-**必要なパラメータ**:
-- `startDate`: 集計開始日（YYYY-MM-DD形式）
-- `endDate`: 集計終了日（YYYY-MM-DD形式）
-- `email`: メールアドレス
-- `password`: パスワード
-- `storeName`: 店舗名
+**出力先**: /Users/rikutanaka/aipm_v0/Stock/RestaurantAILab/週報/0_downloads
+**ファイル名形式**: `{開始日}-{終了日}-{店舗名}.csv`（例: `20260101-20260131-昼からワイン食堂.csv`）
 
 ---
 
-## 店舗アカウントファイル形式
+## 必要なパラメータ
 
-**ファイルパス**: `プロンプト/Download/dinii_accounts.csv`
-
-```csv
-storeCode,storeName,email,password
-fd-001,昼からワイン食堂,example1@email.com,password1
-fd-002,レイカフェ,example2@email.com,password2
-fd-003,せんべろ,example3@email.com,password3
-```
-
-| カラム | 説明 |
-|--------|------|
-| `storeCode` | 自社管理用の店舗ID（ログ出力用） |
-| `storeName` | 店舗名（Diniiでの表示名と一致させる、ファイル名に使用） |
-| `email` | Diniiのログインメールアドレス |
-| `password` | Diniiのパスワード |
+| パラメータ | 必須 | 説明 | 例 |
+|-----------|-----|------|-----|
+| `startDate` | ✅ | 集計開始日（YYYYMMDD形式） | `20260101` |
+| `endDate` | ✅ | 集計終了日（YYYYMMDD形式） | `20260131` |
+| `email` | ✅ | メールアドレス | `example@email.com` |
+| `password` | ✅ | パスワード | `********` |
+| `storeName` | ✅ | 店舗名 | `昼からワイン食堂` |
 
 ---
 
@@ -108,34 +72,33 @@ fd-003,せんべろ,example3@email.com,password3
 このSkillを実行する前に、以下を確認してください：
 
 - [ ] Playwright MCPが有効になっているか
-- [ ] 対象期間（開始日・終了日）が指定されているか（指定がない場合はユーザーに確認）
-- [ ] 店舗アカウントCSVファイルに正しい認証情報が入力されているか
-- [ ] ダウンロード先ディレクトリ（C:\Users\auk1i\Downloads）が存在するか
+- [ ] 対象期間（開始日・終了日）が指定されているか
+- [ ] 認証情報が正しいか
+- [ ] ダウンロード先ディレクトリが存在するか
 
 ---
 
-## 実装手順（複数店舗モード）
+## 実装手順
 
 ### 全体フロー
 
 ```
-1. 店舗アカウントCSVファイルを読み込む
-2. 各店舗に対してループ処理:
-   a. ログイン
-   b. 分析メニューを開く
-   c. CSVダウンロードを選択
-   d. 店舗選択（全選択解除 → 対象店舗を選択）
-   e. 期間を設定（開始日・終了日）
-   f. 注文一覧・取引一覧にチェック
-   g. ダウンロード
-   h. ファイルリネーム
-   i. ログアウト
-3. 完了レポートを出力
+1. ログインページへ遷移
+2. メールアドレス、パスワードを入力してログイン
+3. 分析メニューを開く
+4. CSVダウンロードを選択
+5. 店舗選択（全選択解除 → 対象店舗を選択）
+6. 期間を設定（開始日・終了日）
+7. 注文一覧・取引一覧にチェック
+8. ダウンロード
+9. ファイルリネーム
+10. ログアウト
+11. 完了レポートを出力
 ```
 
 ---
 
-## 各店舗の処理手順
+## 各ステップの処理手順
 
 ### Step 1: ブラウザ起動とログインページへ遷移
 
@@ -171,7 +134,7 @@ fd-003,せんべろ,example3@email.com,password3
     - name: "メールアドレス"
       type: "textbox"
       ref: [snapshot から取得した入力欄の ref]
-      value: {store.email}
+      value: {email}
 ```
 
 #### 3-2. パスワードを入力
@@ -183,7 +146,7 @@ fd-003,せんべろ,example3@email.com,password3
     - name: "パスワード"
       type: "textbox"
       ref: [snapshot から取得したパスワード欄の ref]
-      value: {store.password}
+      value: {password}
 ```
 
 **UI要素の特定方法**:
@@ -305,7 +268,6 @@ fd-003,せんべろ,example3@email.com,password3
 
 **UI要素の特定方法**:
 - テキスト: `text="全選択"` または `text="すべて選択"`
-- チェックボックス: 店舗選択エリア内のチェックボックス
 
 **期待される結果**: 全店舗の選択が解除される
 
@@ -338,12 +300,12 @@ fd-003,せんべろ,example3@email.com,password3
 ```
 ツール: mcp__playwright__browser_click
 パラメータ:
-  element: "{store.storeName}"
+  element: "{storeName}"
   ref: [snapshot から取得した店舗名の ref]
 ```
 
 **UI要素の特定方法**:
-- テキスト: `text="{store.storeName}"`
+- テキスト: `text="{storeName}"`
 
 **期待される結果**: 対象店舗が選択される
 
@@ -371,6 +333,8 @@ fd-003,せんべろ,example3@email.com,password3
 
 #### 11-3. 開始日を入力
 
+YYYYMMDD形式をYYYY-MM-DD形式に変換して入力（例: 20260101 → 2026-01-01）
+
 ```
 ツール: mcp__playwright__browser_fill_form
 パラメータ:
@@ -378,10 +342,8 @@ fd-003,せんべろ,example3@email.com,password3
     - name: "開始日"
       type: "textbox"
       ref: [snapshot から取得した開始日フィールドの ref]
-      value: "{startDate}"
+      value: "{startDate formatted as YYYY-MM-DD}"
 ```
-
-**入力形式**: `YYYY-MM-DD`（例: `2026-01-01`）
 
 #### 11-4. 終了日フィールドをクリック
 
@@ -394,6 +356,8 @@ fd-003,せんべろ,example3@email.com,password3
 
 #### 11-5. 終了日を入力
 
+YYYYMMDD形式をYYYY-MM-DD形式に変換して入力（例: 20260131 → 2026-01-31）
+
 ```
 ツール: mcp__playwright__browser_fill_form
 パラメータ:
@@ -401,10 +365,8 @@ fd-003,せんべろ,example3@email.com,password3
     - name: "終了日"
       type: "textbox"
       ref: [snapshot から取得した終了日フィールドの ref]
-      value: "{endDate}"
+      value: "{endDate formatted as YYYY-MM-DD}"
 ```
-
-**入力形式**: `YYYY-MM-DD`（例: `2026-01-31`）
 
 #### 11-6. エリア外をクリック（カレンダーを閉じる）
 
@@ -441,7 +403,6 @@ fd-003,せんべろ,example3@email.com,password3
 
 **UI要素の特定方法**:
 - テキスト: `text="注文一覧"`
-- または近くのラベルを持つチェックボックス
 
 #### 12-3. 「取引一覧」チェックボックスをクリック
 
@@ -454,7 +415,6 @@ fd-003,せんべろ,example3@email.com,password3
 
 **UI要素の特定方法**:
 - テキスト: `text="取引一覧"`
-- または近くのラベルを持つチェックボックス
 
 **注意**: 「注文一覧」と「取引一覧」の両方にチェックが入っている状態にする
 
@@ -465,9 +425,9 @@ fd-003,せんべろ,example3@email.com,password3
 #### 13-1. 下にスクロール
 
 ```
-ツール: mcp__playwright__browser_scroll
+ツール: mcp__playwright__browser_press_key
 パラメータ:
-  direction: "down"
+  key: "PageDown"
 ```
 
 #### 13-2. ページ状態を確認
@@ -512,23 +472,21 @@ fd-003,せんべろ,example3@email.com,password3
 
 ダウンロードされたファイルを以下の形式にリネームします：
 
-**ファイル名形式**: `{store.storeName}_{startDate}-{endDate}_Dinii.csv`
+**ファイル名形式**: `{startDate}-{endDate}-{storeName}.csv`
 
 **例**:
-- `昼からワイン食堂_20260101-20260131_Dinii.csv`
-- `レイカフェ_20260101-20260131_Dinii.csv`
+- `20260101-20260131-昼からワイン食堂.csv`
 
 **処理方法**:
-1. ダウンロード先ディレクトリ（C:\Users\auk1i\Downloads）で最新のCSVファイルを特定
+1. ダウンロード先ディレクトリで最新のCSVファイルを特定
 2. ファイル名を変更
+3. 指定のダウンロードフォルダに移動
 
-```powershell
-# PowerShellでの例
-$latestFile = Get-ChildItem "C:\Users\auk1i\Downloads\*.csv" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
-$startDateFormatted = "{startDate}".Replace("-", "")
-$endDateFormatted = "{endDate}".Replace("-", "")
-$newName = "{store.storeName}_${startDateFormatted}-${endDateFormatted}_Dinii.csv"
-Rename-Item $latestFile.FullName $newName
+```bash
+# macOSでの例
+latestFile=$(ls -t ~/Downloads/*.csv | head -1)
+newName="{startDate}-{endDate}-{storeName}.csv"
+mv "$latestFile" "/Users/rikutanaka/aipm_v0/Stock/RestaurantAILab/週報/0_downloads/$newName"
 ```
 
 ---
@@ -580,12 +538,6 @@ Rename-Item $latestFile.FullName $newName
 
 ---
 
-### Step 18: 次の店舗へ（複数店舗モードの場合）
-
-ループの次のイテレーションへ進み、Step 1 から繰り返す。
-
----
-
 ## UI要素セレクタ一覧
 
 ### ログイン画面
@@ -624,59 +576,32 @@ Rename-Item $latestFile.FullName $newName
 
 | エラーケース | 検出方法 | 対処方法 |
 |-------------|---------|---------|
-| **ログイン失敗** | ログイン後もログインページが表示される | エラーを記録し、次の店舗へスキップ |
-| **分析メニューが見つからない** | スナップショット内にメニューが存在しない | エラーを記録し、次の店舗へスキップ |
-| **店舗が見つからない** | ドロップダウン内に店舗名が存在しない | エラーを記録し、次の店舗へスキップ |
+| **ログイン失敗** | ログイン後もログインページが表示される | エラーを記録し終了 |
+| **分析メニューが見つからない** | スナップショット内にメニューが存在しない | エラーを記録し終了 |
+| **店舗が見つからない** | ドロップダウン内に店舗名が存在しない | エラーを記録し終了 |
 | **期間入力エラー** | 日付形式が正しくない | 形式を確認し、再入力 |
 | **ダウンロードボタンが見つからない** | スナップショット内にボタンが存在しない | スクロールして再検索 |
 | **ダウンロード失敗** | ファイルが保存されない | 1回リトライ |
 | **リネーム失敗** | ファイル名変更エラー | 元ファイル名のまま続行 |
-| **ログアウト失敗** | ログアウトボタンがクリックできない | ブラウザを閉じて次へ |
 
 ---
 
 ## 実行結果の報告
 
-### 複数店舗モードの報告形式
-
-```
-============================================
-Dinii 注文一覧CSV一括ダウンロード 完了レポート
-============================================
-対象期間: 2026-01-01 〜 2026-01-31
-実行日時: 2026-01-05 10:30:00
-
-【成功】3店舗
-  ✅ fd-001 昼からワイン食堂 → 昼からワイン食堂_20260101-20260131_Dinii.csv
-  ✅ fd-002 レイカフェ → レイカフェ_20260101-20260131_Dinii.csv
-  ✅ fd-003 せんべろ → せんべろ_20260101-20260131_Dinii.csv
-
-【失敗】2店舗
-  ❌ fd-004 二階のフレン家
-     原因: ログイン失敗（認証エラー）
-  ❌ fd-005 河本式
-     原因: 店舗が見つからない
-
-保存先: C:\Users\auk1i\Downloads
-============================================
-```
-
-### 単一店舗モードの報告形式
-
-#### ✅ 成功時
+### 成功時
 
 ```
 Dinii注文一覧CSVダウンロード - 成功
 
 対象店舗: 昼からワイン食堂
-対象期間: 2026-01-01 〜 2026-01-31
-ダウンロードファイル: 昼からワイン食堂_20260101-20260131_Dinii.csv
-保存先: C:\Users\auk1i\Downloads
+対象期間: 20260101 〜 20260131
+ダウンロードファイル: 20260101-20260131-昼からワイン食堂.csv
+保存先: /Users/rikutanaka/aipm_v0/Stock/RestaurantAILab/週報/0_downloads
 
 ダウンロードが完了しました。
 ```
 
-#### ❌ 失敗時
+### 失敗時
 
 ```
 Dinii注文一覧CSVダウンロード - 失敗
@@ -698,10 +623,9 @@ Dinii注文一覧CSVダウンロード - 失敗
 
 1. **パスワードの取り扱い**
    - パスワードはログやコンソール出力に表示しないこと
-   - `dinii_accounts.csv` を `.gitignore` に追加すること
 
-2. **アカウントファイルの管理**
-   - CSVファイルにはパスワードが含まれるため、適切なアクセス制限を設定
+2. **認証情報の管理**
+   - 認証情報は安全な場所に保管
 
 ### ベストプラクティス
 
@@ -720,8 +644,9 @@ Dinii注文一覧CSVダウンロード - 失敗
 
 | 日付 | バージョン | 更新内容 |
 |------|-----------|----------|
-| 2026-01-05 | 1.0.0 | 初版作成 - Dinii注文一覧CSVダウンロード機能を実装 |
-| 2026-02-02 | 1.1.0 | 取引一覧(transaction.csv)のチェックボックスも同時に選択するよう追加 |
+| 2026-01-05 | 1.0.0 | 初版作成 |
+| 2026-02-02 | 1.1.0 | 取引一覧のチェックボックスも同時に選択するよう追加 |
+| 2026-02-09 | 2.0.0 | 単一店舗モードに簡素化、ダウンロード先・ファイル名形式を変更 |
 
 ---
 
@@ -735,5 +660,3 @@ Dinii注文一覧CSVダウンロード - 失敗
 
 - [Playwright MCP ドキュメント](https://github.com/anthropics/anthropic-quickstarts/tree/main/mcp-server-playwright)
 - [Dinii ダッシュボード](https://dashboard.self.dinii.jp/)
-- [RestaurantAILab Dashboard - 開発ルール](../../docs/設計書/開発ルール.md)
-

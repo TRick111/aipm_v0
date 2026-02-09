@@ -16,20 +16,86 @@ canonical:
 
 files:
   - path: "README.md"
-    summary: "背景/目的/ゴール/次アクションなど、プロジェクトの入口情報"
+    summary: "背景/目的/ゴール/次アクション/成果物一覧など、プロジェクトの入口情報"
     keywords:
       - 日程管理
       - 日程調整
       - busy
       - ブロック
       - Googleカレンダー
-      - MCP
+      - OAuth
       - 自動化
       - セキュリティ
+      - 運用
   - path: "log.md"
     summary: "変更履歴（作成/編集/削除）を記録するログ"
     keywords:
       - log
       - 変更履歴
       - 作業記録
-
+  - path: "request_format.md"
+    summary: "BUSYブロック登録の依頼テンプレート（YAML形式）"
+    keywords:
+      - 依頼
+      - テンプレート
+      - YAML
+      - busy
+      - ブロック
+      - フォーマット
+      - 入力
+      - 週次
+      - 隔週
+      - 繰り返し
+  - path: "gcal_busy_blocker/README.md"
+    summary: "Google Calendar APIでBUSYブロックを登録するツールの使い方・セットアップ手順"
+    keywords:
+      - Google Calendar API
+      - OAuth
+      - busy
+      - ブロック
+      - 登録
+      - ツール
+      - セットアップ
+      - 使い方
+      - Node.js
+      - 週次
+      - 隔週
+      - 繰り返し
+      - RRULE
+  - path: "gcal_busy_blocker/package.json"
+    summary: "gcal_busy_blockerの依存関係とスクリプト定義"
+    keywords:
+      - Node.js
+      - npm
+      - 依存関係
+      - スクリプト
+  - path: "gcal_busy_blocker/auth.js"
+    summary: "Google Calendar APIのOAuth認証スクリプト"
+    keywords:
+      - OAuth
+      - 認証
+      - Google Calendar API
+      - token
+  - path: "gcal_busy_blocker/block.js"
+    summary: "BUSYブロック登録のメインスクリプト（単発/週次/隔週対応）"
+    keywords:
+      - busy
+      - ブロック
+      - 登録
+      - 週次
+      - 隔週
+      - RRULE
+      - 繰り返し
+  - path: "gcal_busy_blocker/list_calendars.js"
+    summary: "カレンダー一覧を取得するスクリプト"
+    keywords:
+      - カレンダー
+      - 一覧
+      - Google Calendar API
+  - path: "gcal_busy_blocker/lib/authClient.js"
+    summary: "OAuth認証クライアントのライブラリ"
+    keywords:
+      - OAuth
+      - 認証
+      - ライブラリ
+      - Google Calendar API

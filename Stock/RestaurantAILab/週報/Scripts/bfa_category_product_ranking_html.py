@@ -47,6 +47,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--store-code", default=None, help="store_codeで絞り込み（任意）")
     parser.add_argument("--timezone", default="Asia/Tokyo", help="entry_atの変換先TZ（既定: Asia/Tokyo）")
     parser.add_argument("--shift-hour", type=int, default=6, help="0〜(shift-hour-1)は前日営業日扱い（既定: 6）")
+    parser.add_argument("--slide", action="store_true", default=False, help="スライド形式（A4横・ページ分割）で出力")
     return parser.parse_args()
 
 
@@ -475,6 +476,400 @@ def render_html(
     return html
 
 
+def _estimate_card_height(product_count: int, has_top_bottom: bool) -> int:
+    """カードの推定高さ（mm単位の概算）を返す。安全マージン10%込み。"""
+    header_mm = 15  # ヘッダー＋メタ行
+    row_mm = 5      # テーブル1行あたり
+    table_header_mm = 6  # theadの高さ
+    caption_mm = 5  # caption行
+    gap_mm = 4      # カード間余白
+
+    if has_top_bottom:
+        base = header_mm + (table_header_mm + caption_mm + row_mm * 5) * 2 + gap_mm
+    else:
+        base = header_mm + table_header_mm + caption_mm + row_mm * product_count + gap_mm
+
+    return int(base * 1.10)  # 10%安全マージン
+
+
+def render_slide_html(
+    *,
+    start_date: date,
+    end_date: date,
+    store_code: Optional[str],
+    shift_hour: int,
+    category_df: pd.DataFrame,
+    product_df: pd.DataFrame,
+) -> str:
+    """スライド形式（A4横・ページ分割）でHTML出力。"""
+    total_sales = float(category_df["category_sales"].sum())
+
+    palette = [
+        "#ef5350",  # red
+        "#42a5f5",  # blue
+        "#66bb6a",  # green
+        "#ab47bc",  # purple
+        "#ffa726",  # orange
+        "#26c6da",  # cyan
+        "#78909c",  # blue grey
+        "#ffca28",  # amber
+    ]
+
+    def category_color(name: str) -> str:
+        h = hashlib.md5(name.encode("utf-8")).hexdigest()
+        idx = int(h[:8], 16) % len(palette)
+        return palette[idx]
+
+    # カテゴリ（売上順）
+    cat = category_df.copy()
+    cat = cat.sort_values("category_sales", ascending=False)
+
+    # ── カテゴリカードHTML生成 ──
+    card_list: list[dict] = []  # {html, height_mm, category}
+    for _, crow in cat.iterrows():
+        category = str(crow["category1"])
+        cat_sales = float(crow["category_sales"])
+
+        p = product_df.loc[product_df["category1"] == category].copy()
+        p = p.sort_values(["sales", "menu_name"], ascending=[False, True])
+        product_count = len(p)
+        has_top_bottom = product_count >= 10
+
+        header_color = category_color(category)
+        overall_pct = float(crow["overall_share_pct"]) if "overall_share_pct" in crow.index else 0.0
+        header = (
+            f"<div class='cat-header' style='background:{header_color}'>"
+            f"<span class='cat-title'>{category}</span>"
+            f"</div>"
+            f"<div class='cat-meta'>"
+            f"<span><b>カテゴリ売上</b>: {_fmt_currency(cat_sales)}（全体の{overall_pct:.1f}%）</span>"
+            f"<span><b>商品数</b>: {product_count}</span>"
+            f"</div>"
+        )
+
+        if has_top_bottom:
+            top = p.head(5).copy()
+            bottom = p.tail(5).sort_values(["sales", "menu_name"], ascending=[True, True]).copy()
+            top["順位"] = range(1, len(top) + 1)
+            bottom["順位"] = range(1, len(bottom) + 1)
+            top_disp = pd.DataFrame({
+                "順位": top["順位"], "商品名": top["menu_name"],
+                "販売数": top["quantity"].map(_fmt_int),
+                "売上": top["sales"].map(_fmt_currency),
+                "カテゴリ内構成比": top["category_share_pct"].map(_fmt_pct),
+            })
+            bottom_disp = pd.DataFrame({
+                "順位": bottom["順位"], "商品名": bottom["menu_name"],
+                "販売数": bottom["quantity"].map(_fmt_int),
+                "売上": bottom["sales"].map(_fmt_currency),
+                "カテゴリ内構成比": bottom["category_share_pct"].map(_fmt_pct),
+            })
+            body = (
+                _make_table_html(top_disp, caption="Top 5（売上降順）")
+                + _make_table_html(bottom_disp, caption="Bottom 5（売上昇順）")
+            )
+        else:
+            p["順位"] = range(1, len(p) + 1)
+            disp = pd.DataFrame({
+                "順位": p["順位"], "商品名": p["menu_name"],
+                "販売数": p["quantity"].map(_fmt_int),
+                "売上": p["sales"].map(_fmt_currency),
+                "カテゴリ内構成比": p["category_share_pct"].map(_fmt_pct),
+            })
+            body = _make_table_html(disp, caption="ランキング（売上降順）")
+
+        card_html = f"<div class='cat-card'>{header}{body}</div>"
+        est_h = _estimate_card_height(product_count, has_top_bottom)
+        card_list.append({"html": card_html, "height_mm": est_h, "category": category})
+
+    # ── カードをスライド（ページ）にグルーピング ──
+    # CSSグリッド2列: 行ごとに2カードが並び、行高さは高い方に合う
+    # A4横 210mm - topbar 8mm - footer 6mm - body padding 20mm
+    MAX_SLIDE_HEIGHT = 176
+
+    # まずカードを2個ずつ行ペアにまとめる
+    row_pairs: list[dict] = []
+    for i in range(0, len(card_list), 2):
+        pair = card_list[i:i + 2]
+        row_h = max(c["height_mm"] for c in pair)
+        row_pairs.append({"cards": pair, "height_mm": row_h})
+
+    # 行ペアをスライドに詰める
+    slides: list[list[dict]] = []
+    current_rows: list[dict] = []
+    current_h = 0
+    for row in row_pairs:
+        if current_h + row["height_mm"] <= MAX_SLIDE_HEIGHT:
+            current_rows.append(row)
+            current_h += row["height_mm"]
+        else:
+            if current_rows:
+                slides.append([c for r in current_rows for c in r["cards"]])
+            current_rows = [row]
+            current_h = row["height_mm"]
+    if current_rows:
+        slides.append([c for r in current_rows for c in r["cards"]])
+
+    # ── タイトルスライド ──
+    title = "🏆 カテゴリ別 売り上げランキング"
+    subtitle = f"対象期間: {start_date} 〜 {end_date}"
+
+    # カテゴリサマリ表（タイトルスライド用）── 上位12件 + 残りを「その他」に集約
+    MAX_SUMMARY_ROWS = 12
+    cat_summary_rows = ""
+    cat_rows = list(cat.iterrows())
+    shown = cat_rows[:MAX_SUMMARY_ROWS]
+    rest = cat_rows[MAX_SUMMARY_ROWS:]
+
+    for _, crow in shown:
+        cname = str(crow["category1"])
+        csales = float(crow["category_sales"])
+        cpct = float(crow["overall_share_pct"]) if "overall_share_pct" in crow.index else 0.0
+        color = category_color(cname)
+        bar_w = max(cpct * 2.5, 2)
+        cat_summary_rows += (
+            f"<tr>"
+            f"<td><span class='color-dot' style='background:{color}'></span>{cname}</td>"
+            f"<td class='r'>{_fmt_currency(csales)}</td>"
+            f"<td class='r'>{cpct:.1f}%</td>"
+            f"<td><div class='bar' style='width:{bar_w}px;background:{color}'></div></td>"
+            f"</tr>"
+        )
+    if rest:
+        rest_sales = sum(float(crow["category_sales"]) for _, crow in rest)
+        rest_pct = sum(float(crow.get("overall_share_pct", 0.0)) for _, crow in rest)
+        cat_summary_rows += (
+            f"<tr>"
+            f"<td><span class='color-dot' style='background:#bbb'></span>他 {len(rest)}カテゴリ</td>"
+            f"<td class='r'>{_fmt_currency(rest_sales)}</td>"
+            f"<td class='r'>{rest_pct:.1f}%</td>"
+            f"<td><div class='bar' style='width:{max(rest_pct*2.5,2)}px;background:#bbb'></div></td>"
+            f"</tr>"
+        )
+
+    title_slide = f"""
+    <div class="slide title-slide">
+      <div class="slide-header">
+        <h1>{title}</h1>
+        <p class="slide-sub">{subtitle}</p>
+      </div>
+      <div class="title-content">
+        <div class="kpi-row">
+          <div class="kpi"><span class="kpi-label">総売上</span><span class="kpi-value">{_fmt_currency(total_sales)}</span></div>
+          <div class="kpi"><span class="kpi-label">カテゴリ数</span><span class="kpi-value">{len(cat)}</span></div>
+        </div>
+        <table class="summary-tbl">
+          <thead><tr><th>カテゴリ</th><th class="r">売上</th><th class="r">構成比</th><th></th></tr></thead>
+          <tbody>{cat_summary_rows}</tbody>
+        </table>
+      </div>
+      <div class="slide-footer">BAR FIVE Arrows ─ Weekly Sales Report</div>
+    </div>
+    """
+
+    # ── コンテンツスライド ──
+    content_slides_html = ""
+    for i, slide_cards in enumerate(slides):
+        cards_html = "".join(c["html"] for c in slide_cards)
+        page_num = i + 2  # 1はタイトルスライド
+        content_slides_html += f"""
+    <div class="slide">
+      <div class="slide-topbar">
+        <span>{title}</span>
+        <span>{subtitle}</span>
+      </div>
+      <div class="slide-body">
+        <div class="card-grid">
+          {cards_html}
+        </div>
+      </div>
+      <div class="slide-footer">BAR FIVE Arrows ─ Weekly Sales Report　　{page_num} / {len(slides) + 1}</div>
+    </div>
+    """
+
+    css = """
+    @page {
+      size: A4 landscape;
+      margin: 0;
+    }
+    *, *::before, *::after {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    html, body {
+      margin: 0; padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Hiragino Sans', 'Noto Sans JP', Arial, sans-serif;
+      color: #1f2a44;
+      background: #e8ecf2;
+    }
+
+    /* ── スライド共通 ── */
+    .slide {
+      width: 297mm; height: 210mm;
+      background: #ffffff;
+      position: relative;
+      overflow: hidden;
+      page-break-after: always;
+      margin: 0 auto 20px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+      display: flex;
+      flex-direction: column;
+    }
+    .slide:last-child { page-break-after: auto; }
+
+    @media print {
+      body { background: #fff; }
+      .slide {
+        box-shadow: none;
+        margin: 0;
+        page-break-after: always;
+      }
+      .slide:last-child { page-break-after: auto; }
+    }
+
+    /* ── タイトルスライド ── */
+    .title-slide .slide-header {
+      background: linear-gradient(135deg, #1e4fd6 0%, #1943b7 100%);
+      color: #fff;
+      padding: 18mm 32mm 10mm;
+    }
+    .title-slide .slide-header h1 {
+      margin: 0; font-size: 30px; font-weight: 900; letter-spacing: 0.5px;
+    }
+    .title-slide .slide-header .slide-sub {
+      margin: 6px 0 0; font-size: 15px; opacity: 0.92;
+    }
+    .title-content {
+      flex: 1;
+      padding: 6mm 32mm 0;
+      overflow: hidden;
+    }
+    .kpi-row {
+      display: flex; gap: 24px; margin-bottom: 10px;
+    }
+    .kpi {
+      background: #f0f4ff;
+      border: 1px solid #e0e6f5;
+      border-radius: 10px;
+      padding: 8px 24px;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .kpi-label { font-size: 10px; color: #6b7a99; font-weight: 600; }
+    .kpi-value { font-size: 24px; font-weight: 900; color: #1e4fd6; margin-top: 2px; }
+
+    .summary-tbl {
+      width: 100%; border-collapse: collapse; font-size: 11px;
+    }
+    .summary-tbl th {
+      background: #f0f4ff; border-bottom: 2px solid #d0d8ee;
+      padding: 4px 10px; text-align: left; font-weight: 700; font-size: 10px; color: #4a5a80;
+    }
+    .summary-tbl td {
+      padding: 3px 10px; border-bottom: 1px solid #eef1f7;
+    }
+    .summary-tbl .r { text-align: right; }
+    .color-dot {
+      display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: middle;
+    }
+    .bar {
+      height: 10px; border-radius: 4px; min-width: 2px;
+    }
+
+    /* ── コンテンツスライド ── */
+    .slide-topbar {
+      background: linear-gradient(135deg, #1e4fd6, #1943b7);
+      color: #fff;
+      padding: 8px 24px;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 12px; font-weight: 700;
+      flex-shrink: 0;
+    }
+    .slide-body {
+      flex: 1;
+      padding: 10px 20px;
+      overflow: hidden;
+    }
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      height: 100%;
+      align-content: start;
+    }
+    .slide-footer {
+      background: #f4f7fb;
+      border-top: 1px solid #e5eaf3;
+      padding: 5px 24px;
+      font-size: 10px;
+      color: #6b7a99;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    /* ── カテゴリカード ── */
+    .cat-card {
+      background: #fff;
+      border: 1px solid #e5eaf3;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .cat-header {
+      padding: 6px 10px;
+      color: #fff;
+      font-weight: 800;
+      font-size: 13px;
+    }
+    .cat-title { font-size: 13px; }
+    .cat-meta {
+      padding: 5px 10px 0;
+      color: #6b7a99;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 10px;
+    }
+    .cat-meta b { color: #1f2a44; }
+
+    table.tbl {
+      width: 100%; border-collapse: collapse; margin: 4px 0 6px;
+    }
+    table.tbl caption {
+      text-align: left; color: #6b7a99; padding: 0 10px 4px;
+      font-weight: 700; font-size: 10px;
+    }
+    table.tbl thead th {
+      background: #f0f4ff; color: #1f2a44;
+      border-top: 1px solid #e5eaf3; border-bottom: 1px solid #e5eaf3;
+      padding: 4px 8px; font-size: 10px; text-align: left;
+    }
+    table.tbl td {
+      border-bottom: 1px solid #eef1f7; padding: 3px 8px; font-size: 10px;
+    }
+    table.tbl tr:nth-child(even) td { background: #fbfcff; }
+    table.tbl td:nth-child(1) { width: 32px; }
+    table.tbl td:nth-child(3), table.tbl td:nth-child(4), table.tbl td:nth-child(5) { text-align: right; }
+    """
+
+    generated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    html = f"""<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <style>{css}</style>
+</head>
+<body>
+  {title_slide}
+  {content_slides_html}
+</body>
+</html>
+"""
+    return html
+
+
 def main() -> None:
     args = parse_args()
     start = _parse_yyyy_mm_dd(args.start_date)
@@ -505,7 +900,9 @@ def main() -> None:
     )
 
     category_df, product_df = build_rankings(df)
-    html = render_html(
+
+    render_fn = render_slide_html if args.slide else render_html
+    html = render_fn(
         start_date=start,
         end_date=end,
         store_code=args.store_code,

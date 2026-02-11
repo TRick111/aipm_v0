@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BFA W06 週報グラフ — D3.js 装飾レベル比較</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Helvetica Neue', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+    background: #f5f5f5;
+    color: #333;
+    padding: 32px;
+  }
+  h1 {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 8px;
+    color: #1a1a2e;
+  }
+  .subtitle {
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 40px;
+  }
+  .chart-group {
+    margin-bottom: 60px;
+  }
+  .chart-group h2 {
+    font-size: 20px;
+    color: #16213e;
+    border-left: 4px solid #0f3460;
+    padding-left: 12px;
+    margin-bottom: 24px;
+  }
+  .chart-row {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .chart-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    padding: 20px;
+    flex: 1;
+    min-width: 360px;
+    max-width: 420px;
+  }
+  .chart-card h3 {
+    font-size: 13px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .chart-card .chart-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 12px;
+  }
+  svg text { font-family: inherit; }
+
+  /* annotation styles */
+  .annotation-line {
+    stroke: #e63946;
+    stroke-width: 1.5;
+    stroke-dasharray: 4 3;
+  }
+  .annotation-box {
+    fill: #fff3cd;
+    stroke: #ffc107;
+    stroke-width: 1.5;
+    rx: 6;
+  }
+  .annotation-box-danger {
+    fill: #f8d7da;
+    stroke: #e63946;
+    stroke-width: 1.5;
+    rx: 6;
+  }
+  .annotation-box-success {
+    fill: #d4edda;
+    stroke: #28a745;
+    stroke-width: 1.5;
+    rx: 6;
+  }
+  .callout-text {
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .arrow-marker { fill: #e63946; }
+</style>
+</head>
+<body>
+
+<h1>BAR FIVE Arrows W06 週報グラフ — D3.js 装飾レベル比較</h1>
+<p class="subtitle">同じデータを「おとなしめ」「中間」「フル装飾」の3段階で表現し、D3.jsの注釈表現力を検証する</p>
+
+<!-- ============================== -->
+<!-- グラフ1: 売上トレンド（折れ線） -->
+<!-- ============================== -->
+<div class="chart-group">
+  <h2>グラフ1: 売上トレンド（折れ線グラフ — 直近5週）</h2>
+  <div class="chart-row">
+    <div class="chart-card">
+      <h3>Level 1</h3>
+      <div class="chart-title">おとなしめ — データのみ</div>
+      <div id="line1"></div>
+    </div>
+    <div class="chart-card">
+      <h3>Level 2</h3>
+      <div class="chart-title">中間 — 前年比ライン + 色分け</div>
+      <div id="line2"></div>
+    </div>
+    <div class="chart-card">
+      <h3>Level 3</h3>
+      <div class="chart-title">フル装飾 — 矢印 + 吹き出し + ハイライト</div>
+      <div id="line3"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- グラフ2: カテゴリ構成比（円グラフ） -->
+<!-- ============================== -->
+<div class="chart-group">
+  <h2>グラフ2: カテゴリ別売上構成比（円グラフ）</h2>
+  <div class="chart-row">
+    <div class="chart-card">
+      <h3>Level 1</h3>
+      <div class="chart-title">おとなしめ — シンプル円グラフ</div>
+      <div id="pie1"></div>
+    </div>
+    <div class="chart-card">
+      <h3>Level 2</h3>
+      <div class="chart-title">中間 — トップカテゴリ強調</div>
+      <div id="pie2"></div>
+    </div>
+    <div class="chart-card">
+      <h3>Level 3</h3>
+      <div class="chart-title">フル装飾 — 引き出し線 + 吹き出し</div>
+      <div id="pie3"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- グラフ3: 曜日別売上差（棒グラフ） -->
+<!-- ============================== -->
+<div class="chart-group">
+  <h2>グラフ3: 曜日別売上差（対4週平均 — 棒グラフ）</h2>
+  <div class="chart-row">
+    <div class="chart-card">
+      <h3>Level 1</h3>
+      <div class="chart-title">おとなしめ — 正負の棒</div>
+      <div id="bar1"></div>
+    </div>
+    <div class="chart-card">
+      <h3>Level 2</h3>
+      <div class="chart-title">中間 — 色分け + 数値ラベル</div>
+      <div id="bar2"></div>
+    </div>
+    <div class="chart-card">
+      <h3>Level 3</h3>
+      <div class="chart-title">フル装飾 — 要因分解 + 矢印注釈</div>
+      <div id="bar3"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- グラフ4: 時間帯別売上（エリアチャート） -->
+<!-- ============================== -->
+<div class="chart-group">
+  <h2>グラフ4: 時間帯別売上分布（エリアチャート）</h2>
+  <div class="chart-row">
+    <div class="chart-card">
+      <h3>Level 1</h3>
+      <div class="chart-title">おとなしめ — 単色エリア</div>
+      <div id="area1"></div>
+    </div>
+    <div class="chart-card">
+      <h3>Level 2</h3>
+      <div class="chart-title">中間 — ピーク強調 + ゾーン色分け</div>
+      <div id="area2"></div>
+    </div>
+    <div class="chart-card">
+      <h3>Level 3</h3>
+      <div class="chart-title">フル装飾 — ピーク矢印 + 時間帯注記</div>
+      <div id="area3"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// データ定義
+// ============================================================
+const weeklySales = [
+  { week: 'W02', sales: 534580 },
+  { week: 'W03', sales: 815130 },
+  { week: 'W04', sales: 628140 },
+  { week: 'W05', sales: 698000 },
+  { week: 'W06', sales: 547850 },
+];
+const lastYearW06 = 694090;
+
+const categoryData = [
+  { name: 'ジャパニーズカクテル', value: 145100, pct: 28.1 },
+  { name: 'ジャパニーズウイスキー', value: 69300, pct: 13.4 },
+  { name: 'その他', value: 50300, pct: 9.7 },
+  { name: 'ウイスキー', value: 38700, pct: 7.5 },
+  { name: 'オリジナルカクテル', value: 35800, pct: 6.9 },
+  { name: 'スナック', value: 28400, pct: 5.5 },
+  { name: 'コース&セット', value: 19500, pct: 3.8 },
+  { name: 'その他計', value: 160750, pct: 25.1 },
+];
+
+const weekdayData = [
+  { day: '月', diff: 25083, cusF: 48332, priceF: -26097 },
+  { day: '火', diff: -71157, cusF: -46661, priceF: -32134 },
+  { day: '水', diff: -43800, cusF: -67855, priceF: 27307 },
+  { day: '木', diff: 8388, cusF: 10483, priceF: -93 },
+  { day: '金', diff: -22005, cusF: -61326, priceF: 39323 },
+  { day: '土', diff: -92078, cusF: -74018, priceF: -20180 },
+  { day: '日', diff: 5008, cusF: 2328, priceF: 2661 },
+];
+
+const hourlyData = [
+  { hour: 18, sales: 1918520, label: '18時' },
+  { hour: 19, sales: 5712190, label: '19時' },
+  { hour: 20, sales: 14782790, label: '20時' },
+  { hour: 21, sales: 21913420, label: '21時' },
+  { hour: 22, sales: 30743940, label: '22時' },
+  { hour: 23, sales: 33331550, label: '23時' },
+  { hour: 24, sales: 19562600, label: '24時' },
+  { hour: 25, sales: 11210860, label: '25時' },
+];
+
+const fmt = d3.format(',');
+const fmtK = v => '¥' + d3.format(',')(Math.round(v / 1000)) + 'K';
+const fmtM = v => '¥' + d3.format(',.1f')(v / 1000000) + 'M';
+
+// ============================================================
+// グラフ1: 折れ線グラフ — 売上トレンド
+// ============================================================
+function drawLine(containerId, level) {
+  const W = 380, H = 240, m = { t: 30, r: 30, b: 40, l: 60 };
+  const w = W - m.l - m.r, h = H - m.t - m.b;
+
+  const svg = d3.select(containerId).append('svg').attr('viewBox', `0 0 ${W} ${H}`);
+  const g = svg.append('g').attr('transform', `translate(${m.l},${m.t})`);
+
+  const x = d3.scalePoint().domain(weeklySales.map(d => d.week)).range([0, w]).padding(0.3);
+  const yMax = Math.max(d3.max(weeklySales, d => d.sales), lastYearW06) * 1.15;
+  const y = d3.scaleLinear().domain([0, yMax]).range([h, 0]);
+
+  // axes
+  g.append('g').attr('transform', `translate(0,${h})`).call(d3.axisBottom(x)).selectAll('text').style('font-size', '11px');
+  g.append('g').call(d3.axisLeft(y).ticks(5).tickFormat(fmtK)).selectAll('text').style('font-size', '10px');
+
+  // grid
+  g.append('g').attr('class', 'grid').call(d3.axisLeft(y).ticks(5).tickSize(-w).tickFormat('')).selectAll('line').attr('stroke', '#e0e0e0').attr('stroke-dasharray', '2 2');
+  g.selectAll('.grid .domain').remove();
+
+  const line = d3.line().x(d => x(d.week)).y(d => y(d.sales)).curve(d3.curveMonotoneX);
+
+  if (level >= 2) {
+    // 前年同週 reference line
+    g.append('line').attr('x1', 0).attr('x2', w).attr('y1', y(lastYearW06)).attr('y2', y(lastYearW06))
+     .attr('stroke', '#999').attr('stroke-width', 1).attr('stroke-dasharray', '6 4');
+    g.append('text').attr('x', w).attr('y', y(lastYearW06) - 6).attr('text-anchor', 'end')
+     .style('font-size', '10px').style('fill', '#999').text('前年同週 ¥694K');
+  }
+
+  // line + dots
+  const color = level === 1 ? '#4361ee' : '#0f3460';
+  g.append('path').datum(weeklySales).attr('d', line).attr('fill', 'none').attr('stroke', color).attr('stroke-width', 2.5);
+
+  g.selectAll('.dot').data(weeklySales).join('circle')
+    .attr('cx', d => x(d.week)).attr('cy', d => y(d.sales)).attr('r', d => (level >= 2 && d.week === 'W06') ? 6 : 4)
+    .attr('fill', d => {
+      if (level === 1) return '#4361ee';
+      if (d.week === 'W06') return '#e63946';
+      if (d.week === 'W03') return '#28a745';
+      return '#0f3460';
+    });
+
+  // value labels
+  if (level >= 2) {
+    g.selectAll('.val-label').data(weeklySales).join('text')
+      .attr('x', d => x(d.week)).attr('y', d => y(d.sales) - 10).attr('text-anchor', 'middle')
+      .style('font-size', '10px').style('font-weight', d => d.week === 'W06' ? '700' : '400')
+      .style('fill', d => d.week === 'W06' ? '#e63946' : '#555')
+      .text(d => fmtK(d.sales));
+  }
+
+  if (level >= 3) {
+    // W06 danger callout
+    const cx6 = x('W06'), cy6 = y(547850);
+    g.append('rect').attr('x', cx6 - 60).attr('y', cy6 + 14).attr('width', 120).attr('height', 36)
+     .attr('class', 'annotation-box-danger');
+    g.append('text').attr('x', cx6).attr('y', cy6 + 28).attr('text-anchor', 'middle')
+     .attr('class', 'callout-text').style('fill', '#c0392b').text('前週比 -21.5%');
+    g.append('text').attr('x', cx6).attr('y', cy6 + 42).attr('text-anchor', 'middle')
+     .style('font-size', '10px').style('fill', '#c0392b').text('前年比 -21.1%');
+
+    // W03 success callout
+    const cx3 = x('W03'), cy3 = y(815130);
+    g.append('rect').attr('x', cx3 - 48).attr('y', cy3 - 38).attr('width', 96).attr('height', 24)
+     .attr('class', 'annotation-box-success');
+    g.append('text').attr('x', cx3).attr('y', cy3 - 22).attr('text-anchor', 'middle')
+     .attr('class', 'callout-text').style('fill', '#1b7a3d').text('▲ 5週間最高');
+
+    // arrow from W03 to W06
+    svg.append('defs').append('marker').attr('id', 'arrowRed-' + level)
+      .attr('viewBox', '0 0 10 10').attr('refX', 8).attr('refY', 5)
+      .attr('markerWidth', 8).attr('markerHeight', 8).attr('orient', 'auto')
+      .append('path').attr('d', 'M 0 0 L 10 5 L 0 10 z').attr('fill', '#e63946');
+
+    g.append('line')
+      .attr('x1', cx3 + 20).attr('y1', cy3 + 4)
+      .attr('x2', cx6 - 14).attr('y2', cy6 - 4)
+      .attr('stroke', '#e63946').attr('stroke-width', 1.5).attr('stroke-dasharray', '4 3')
+      .attr('marker-end', `url(#arrowRed-${level})`);
+
+    g.append('text').attr('x', (cx3 + cx6) / 2).attr('y', (cy3 + cy6) / 2 - 8).attr('text-anchor', 'middle')
+     .style('font-size', '10px').style('fill', '#e63946').style('font-weight', '600').text('−¥267K 下降');
+  }
+}
+drawLine('#line1', 1);
+drawLine('#line2', 2);
+drawLine('#line3', 3);
+
+// ============================================================
+// グラフ2: 円グラフ — カテゴリ構成比
+// ============================================================
+function drawPie(containerId, level) {
+  const W = 380, H = 280;
+  const radius = 90;
+  const svg = d3.select(containerId).append('svg').attr('viewBox', `0 0 ${W} ${H}`);
+  const g = svg.append('g').attr('transform', `translate(${W / 2},${H / 2 + 10})`);
+
+  const colors = ['#e63946', '#457b9d', '#a8dadc', '#1d3557', '#f4a261', '#2a9d8f', '#e9c46a', '#bbb'];
+  const color = d3.scaleOrdinal().domain(categoryData.map(d => d.name)).range(colors);
+
+  const pie = d3.pie().value(d => d.value).sort(null);
+  const arc = d3.arc().innerRadius(level >= 2 ? 40 : 0).outerRadius(radius);
+  const arcHover = d3.arc().innerRadius(level >= 2 ? 40 : 0).outerRadius(radius + 12);
+
+  const slices = g.selectAll('.slice').data(pie(categoryData)).join('g').attr('class', 'slice');
+
+  slices.append('path')
+    .attr('d', d => {
+      if (level >= 2 && d.data.name === 'ジャパニーズカクテル') return arcHover(d);
+      return arc(d);
+    })
+    .attr('fill', d => color(d.data.name))
+    .attr('stroke', '#fff').attr('stroke-width', 2)
+    .style('opacity', d => {
+      if (level === 1) return 1;
+      if (d.data.name === 'ジャパニーズカクテル') return 1;
+      return level >= 2 ? 0.7 : 1;
+    });
+
+  // labels for level 1
+  if (level === 1) {
+    const labelArc = d3.arc().innerRadius(radius + 16).outerRadius(radius + 16);
+    slices.filter(d => d.data.pct >= 5).append('text')
+      .attr('transform', d => `translate(${labelArc.centroid(d)})`)
+      .attr('text-anchor', 'middle').style('font-size', '9px').style('fill', '#333')
+      .text(d => `${d.data.name} ${d.data.pct}%`);
+  }
+
+  if (level >= 2) {
+    // center label
+    g.append('text').attr('text-anchor', 'middle').attr('dy', '-4').style('font-size', '11px').style('fill', '#666').text('総売上');
+    g.append('text').attr('text-anchor', 'middle').attr('dy', '14').style('font-size', '14px').style('font-weight', '700').style('fill', '#1a1a2e').text('¥547,850');
+
+    // top category callout
+    const topSlice = pie(categoryData)[0];
+    const centroid = arcHover.centroid(topSlice);
+
+    if (level >= 2) {
+      const lx = centroid[0] > 0 ? centroid[0] + 40 : centroid[0] - 40;
+      const ly = centroid[1] - 30;
+      g.append('line').attr('x1', centroid[0]).attr('y1', centroid[1]).attr('x2', lx).attr('y2', ly)
+       .attr('stroke', '#e63946').attr('stroke-width', 1.5);
+      g.append('text').attr('x', lx).attr('y', ly - 8).attr('text-anchor', centroid[0] > 0 ? 'start' : 'end')
+       .style('font-size', '11px').style('font-weight', '700').style('fill', '#e63946').text('Jカクテル 28.1%');
+      g.append('text').attr('x', lx).attr('y', ly + 6).attr('text-anchor', centroid[0] > 0 ? 'start' : 'end')
+       .style('font-size', '10px').style('fill', '#666').text('¥145,100');
+    }
+  }
+
+  if (level >= 3) {
+    // leader lines for all segments
+    const outerArc = d3.arc().innerRadius(radius + 20).outerRadius(radius + 20);
+    slices.filter(d => d.data.pct >= 5 && d.data.name !== 'ジャパニーズカクテル').each(function(d) {
+      const c = arc.centroid(d);
+      const o = outerArc.centroid(d);
+      const endX = o[0] > 0 ? o[0] + 30 : o[0] - 30;
+      d3.select(this).append('polyline')
+        .attr('points', [c, o, [endX, o[1]]].map(p => p.join(',')).join(' '))
+        .attr('fill', 'none').attr('stroke', '#888').attr('stroke-width', 1);
+      d3.select(this).append('text')
+        .attr('x', endX + (o[0] > 0 ? 4 : -4)).attr('y', o[1] + 4)
+        .attr('text-anchor', o[0] > 0 ? 'start' : 'end')
+        .style('font-size', '9px').style('fill', '#555')
+        .text(`${d.data.name} ${d.data.pct}%`);
+    });
+
+    // whiskey highlight
+    const whiskySlice = pie(categoryData)[1];
+    const wc = arcHover.centroid(whiskySlice);
+    g.append('rect').attr('x', wc[0] + 30).attr('y', wc[1] - 12).attr('width', 100).attr('height', 22)
+     .attr('class', 'annotation-box');
+    g.append('text').attr('x', wc[0] + 80).attr('y', wc[1] + 3).attr('text-anchor', 'middle')
+     .style('font-size', '9px').style('font-weight', '600').style('fill', '#856404').text('高単価の柱 13.4%');
+    g.append('line').attr('x1', wc[0] + 4).attr('y1', wc[1]).attr('x2', wc[0] + 30).attr('y2', wc[1])
+     .attr('stroke', '#ffc107').attr('stroke-width', 1.5);
+  }
+
+  // Legend (bottom)
+  const legend = svg.append('g').attr('transform', `translate(20, ${H - 30})`);
+  categoryData.slice(0, 6).forEach((d, i) => {
+    const lx = i * 60;
+    if (lx > W - 40) return;
+    legend.append('rect').attr('x', lx).attr('y', 0).attr('width', 8).attr('height', 8).attr('rx', 2).attr('fill', colors[i]);
+    legend.append('text').attr('x', lx + 11).attr('y', 8).style('font-size', '8px').style('fill', '#666').text(d.name.slice(0, 6));
+  });
+}
+drawPie('#pie1', 1);
+drawPie('#pie2', 2);
+drawPie('#pie3', 3);
+
+// ============================================================
+// グラフ3: 棒グラフ — 曜日別売上差
+// ============================================================
+function drawBar(containerId, level) {
+  const W = 380, H = 260, m = { t: 20, r: 20, b: 40, l: 56 };
+  const w = W - m.l - m.r, h = H - m.t - m.b;
+
+  const svg = d3.select(containerId).append('svg').attr('viewBox', `0 0 ${W} ${H}`);
+  const g = svg.append('g').attr('transform', `translate(${m.l},${m.t})`);
+
+  const x = d3.scaleBand().domain(weekdayData.map(d => d.day)).range([0, w]).padding(level >= 3 ? 0.35 : 0.3);
+  const yExtent = d3.extent(weekdayData, d => d.diff);
+  const yPad = Math.max(Math.abs(yExtent[0]), Math.abs(yExtent[1])) * 0.3;
+  const y = d3.scaleLinear().domain([yExtent[0] - yPad, yExtent[1] + yPad]).range([h, 0]);
+
+  // grid
+  g.append('g').call(d3.axisLeft(y).ticks(5).tickSize(-w).tickFormat('')).selectAll('line').attr('stroke', '#eee');
+  g.selectAll('.domain').remove();
+
+  // zero line
+  g.append('line').attr('x1', 0).attr('x2', w).attr('y1', y(0)).attr('y2', y(0))
+   .attr('stroke', '#333').attr('stroke-width', 1);
+
+  // axes
+  g.append('g').attr('transform', `translate(0,${h})`).call(d3.axisBottom(x)).selectAll('text').style('font-size', '11px');
+  g.append('g').call(d3.axisLeft(y).ticks(5).tickFormat(d => d >= 0 ? '+' + fmtK(d) : fmtK(d))).selectAll('text').style('font-size', '9px');
+
+  if (level <= 2) {
+    // simple bars
+    g.selectAll('.bar').data(weekdayData).join('rect')
+      .attr('x', d => x(d.day)).attr('width', x.bandwidth())
+      .attr('y', d => d.diff >= 0 ? y(d.diff) : y(0))
+      .attr('height', d => Math.abs(y(d.diff) - y(0)))
+      .attr('fill', d => {
+        if (level === 1) return '#4361ee';
+        return d.diff >= 0 ? '#28a745' : '#e63946';
+      })
+      .attr('rx', 3);
+
+    if (level >= 2) {
+      g.selectAll('.bar-label').data(weekdayData).join('text')
+        .attr('x', d => x(d.day) + x.bandwidth() / 2)
+        .attr('y', d => d.diff >= 0 ? y(d.diff) - 6 : y(d.diff) + 14)
+        .attr('text-anchor', 'middle').style('font-size', '9px').style('font-weight', '600')
+        .style('fill', d => d.diff >= 0 ? '#1b7a3d' : '#c0392b')
+        .text(d => (d.diff >= 0 ? '+' : '') + fmtK(d.diff));
+    }
+  }
+
+  if (level >= 3) {
+    // stacked factor bars
+    const bw = x.bandwidth() / 2;
+    weekdayData.forEach(d => {
+      const xPos = x(d.day);
+      // customer factor
+      g.append('rect').attr('x', xPos).attr('width', bw - 1)
+        .attr('y', d.cusF >= 0 ? y(d.cusF) : y(0))
+        .attr('height', Math.abs(y(d.cusF) - y(0)))
+        .attr('fill', d.cusF >= 0 ? '#74b9ff' : '#fd79a8').attr('rx', 2);
+      // price factor
+      g.append('rect').attr('x', xPos + bw + 1).attr('width', bw - 1)
+        .attr('y', d.priceF >= 0 ? y(d.priceF) : y(0))
+        .attr('height', Math.abs(y(d.priceF) - y(0)))
+        .attr('fill', d.priceF >= 0 ? '#00b894' : '#e17055').attr('rx', 2);
+    });
+
+    // legend
+    const lg = g.append('g').attr('transform', `translate(${w - 160}, ${h + 24})`);
+    [['客数要因', '#74b9ff'], ['客単価要因', '#00b894']].forEach(([label, c], i) => {
+      lg.append('rect').attr('x', i * 80).attr('y', 0).attr('width', 10).attr('height', 10).attr('rx', 2).attr('fill', c);
+      lg.append('text').attr('x', i * 80 + 14).attr('y', 9).style('font-size', '9px').style('fill', '#555').text(label);
+    });
+
+    // worst day callout (Saturday)
+    const satX = x('土') + x.bandwidth() / 2;
+    const satY = y(weekdayData[5].diff);
+
+    svg.append('defs').append('marker').attr('id', 'arrowRedBar')
+      .attr('viewBox', '0 0 10 10').attr('refX', 8).attr('refY', 5)
+      .attr('markerWidth', 7).attr('markerHeight', 7).attr('orient', 'auto')
+      .append('path').attr('d', 'M 0 0 L 10 5 L 0 10 z').attr('fill', '#e63946');
+
+    g.append('rect').attr('x', satX - 56).attr('y', satY + 6).attr('width', 112).attr('height', 30)
+     .attr('class', 'annotation-box-danger');
+    g.append('text').attr('x', satX).attr('y', satY + 20).attr('text-anchor', 'middle')
+     .attr('class', 'callout-text').style('fill', '#c0392b').text('▼ 土曜 -¥92K');
+    g.append('text').attr('x', satX).attr('y', satY + 32).attr('text-anchor', 'middle')
+     .style('font-size', '9px').style('fill', '#c0392b').text('客数・単価ともに下落');
+
+    // best day callout (Monday)
+    const monX = x('月') + x.bandwidth() / 2;
+    const monY = y(weekdayData[0].diff);
+    g.append('rect').attr('x', monX - 40).attr('y', monY - 32).attr('width', 80).attr('height', 22)
+     .attr('class', 'annotation-box-success');
+    g.append('text').attr('x', monX).attr('y', monY - 18).attr('text-anchor', 'middle')
+     .attr('class', 'callout-text').style('fill', '#1b7a3d').text('▲ 月曜 +¥25K');
+  }
+}
+drawBar('#bar1', 1);
+drawBar('#bar2', 2);
+drawBar('#bar3', 3);
+
+// ============================================================
+// グラフ4: エリアチャート — 時間帯別売上
+// ============================================================
+function drawArea(containerId, level) {
+  const W = 380, H = 240, m = { t: 30, r: 24, b: 40, l: 50 };
+  const w = W - m.l - m.r, h = H - m.t - m.b;
+
+  const svg = d3.select(containerId).append('svg').attr('viewBox', `0 0 ${W} ${H}`);
+  const g = svg.append('g').attr('transform', `translate(${m.l},${m.t})`);
+
+  const x = d3.scaleLinear().domain([18, 25]).range([0, w]);
+  const y = d3.scaleLinear().domain([0, d3.max(hourlyData, d => d.sales) * 1.15]).range([h, 0]);
+
+  // axes
+  g.append('g').attr('transform', `translate(0,${h})`).call(d3.axisBottom(x).ticks(8).tickFormat(d => d + '時')).selectAll('text').style('font-size', '10px');
+  g.append('g').call(d3.axisLeft(y).ticks(4).tickFormat(fmtM)).selectAll('text').style('font-size', '9px');
+
+  // grid
+  g.append('g').call(d3.axisLeft(y).ticks(4).tickSize(-w).tickFormat('')).selectAll('line').attr('stroke', '#eee');
+  g.selectAll('.domain').remove();
+
+  const area = d3.area().x(d => x(d.hour)).y0(h).y1(d => y(d.sales)).curve(d3.curveMonotoneX);
+  const lineGen = d3.line().x(d => x(d.hour)).y(d => y(d.sales)).curve(d3.curveMonotoneX);
+
+  if (level >= 2) {
+    // time zone backgrounds
+    const zones = [
+      { x1: 18, x2: 20, color: '#e8f5e9', label: '早番' },
+      { x1: 20, x2: 22, color: '#fff8e1', label: 'コア' },
+      { x1: 22, x2: 24, color: '#fce4ec', label: 'ピーク' },
+      { x1: 24, x2: 26, color: '#e3f2fd', label: '深夜' },
+    ];
+    zones.forEach(z => {
+      g.append('rect').attr('x', x(z.x1)).attr('y', 0).attr('width', x(z.x2) - x(z.x1)).attr('height', h)
+       .attr('fill', z.color).attr('opacity', 0.5);
+      if (level >= 2) {
+        g.append('text').attr('x', (x(z.x1) + x(z.x2)) / 2).attr('y', 12).attr('text-anchor', 'middle')
+         .style('font-size', '9px').style('fill', '#888').text(z.label);
+      }
+    });
+  }
+
+  // area fill
+  const gradId = 'areaGrad-' + level;
+  const defs = svg.append('defs');
+  const grad = defs.append('linearGradient').attr('id', gradId).attr('x1', '0%').attr('y1', '0%').attr('x2', '0%').attr('y2', '100%');
+  grad.append('stop').attr('offset', '0%').attr('stop-color', level === 1 ? '#4361ee' : '#0f3460').attr('stop-opacity', 0.4);
+  grad.append('stop').attr('offset', '100%').attr('stop-color', level === 1 ? '#4361ee' : '#0f3460').attr('stop-opacity', 0.05);
+
+  g.append('path').datum(hourlyData).attr('d', area).attr('fill', `url(#${gradId})`);
+  g.append('path').datum(hourlyData).attr('d', lineGen).attr('fill', 'none')
+   .attr('stroke', level === 1 ? '#4361ee' : '#0f3460').attr('stroke-width', 2.5);
+
+  // dots
+  g.selectAll('.dot').data(hourlyData).join('circle')
+    .attr('cx', d => x(d.hour)).attr('cy', d => y(d.sales)).attr('r', 3.5)
+    .attr('fill', d => {
+      if (level >= 2 && d.hour === 23) return '#e63946';
+      return level === 1 ? '#4361ee' : '#0f3460';
+    });
+
+  if (level >= 3) {
+    // peak annotation
+    const peakD = hourlyData.find(d => d.hour === 23);
+    const px = x(23), py = y(peakD.sales);
+
+    // pulsing highlight circle
+    g.append('circle').attr('cx', px).attr('cy', py).attr('r', 14)
+     .attr('fill', 'none').attr('stroke', '#e63946').attr('stroke-width', 2).attr('opacity', 0.5);
+
+    // callout
+    g.append('rect').attr('x', px - 70).attr('y', py - 46).attr('width', 140).attr('height', 34)
+     .attr('class', 'annotation-box-danger');
+    g.append('text').attr('x', px).attr('y', py - 30).attr('text-anchor', 'middle')
+     .attr('class', 'callout-text').style('fill', '#c0392b').text('🔥 ピーク 23時台');
+    g.append('text').attr('x', px).attr('y', py - 17).attr('text-anchor', 'middle')
+     .style('font-size', '10px').style('fill', '#c0392b').text(fmtM(peakD.sales));
+
+    // arrow to peak
+    g.append('line').attr('x1', px).attr('y1', py - 12).attr('x2', px).attr('y2', py - 5)
+     .attr('stroke', '#e63946').attr('stroke-width', 2);
+
+    // late night annotation
+    const lateX = x(24.5), lateY = y(15000000);
+    g.append('rect').attr('x', lateX - 50).attr('y', lateY - 10).attr('width', 100).attr('height', 20)
+     .attr('class', 'annotation-box');
+    g.append('text').attr('x', lateX).attr('y', lateY + 4).attr('text-anchor', 'middle')
+     .style('font-size', '9px').style('font-weight', '600').style('fill', '#856404').text('深夜 22.2%構成');
+
+    // early evening annotation
+    const earlyX = x(18.5), earlyY = y(5000000);
+    g.append('rect').attr('x', earlyX - 44).attr('y', earlyY - 10).attr('width', 88).attr('height', 20)
+     .attr('class', 'annotation-box-success');
+    g.append('text').attr('x', earlyX).attr('y', earlyY + 4).attr('text-anchor', 'middle')
+     .style('font-size', '9px').style('font-weight', '600').style('fill', '#1b7a3d').text('伸びしろ↑');
+  }
+}
+drawArea('#area1', 1);
+drawArea('#area2', 2);
+drawArea('#area3', 3);
+</script>
+
+</body>
+</html>

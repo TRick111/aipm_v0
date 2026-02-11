@@ -275,7 +275,7 @@ function drawLine(containerId, level) {
     g.append('line').attr('x1', 0).attr('x2', w).attr('y1', y(lastYearW06)).attr('y2', y(lastYearW06))
      .attr('stroke', '#999').attr('stroke-width', 1).attr('stroke-dasharray', '6 4');
     g.append('text').attr('x', w).attr('y', y(lastYearW06) - 6).attr('text-anchor', 'end')
-     .style('font-size', '10px').style('fill', '#999').text('前年同週 ¥694K');
+     .style('font-size', '9px').style('fill', '#aaa').style('font-weight', '400').text('前年同週 ¥694K');
   }
 
   // line + dots
@@ -283,39 +283,68 @@ function drawLine(containerId, level) {
   g.append('path').datum(weeklySales).attr('d', line).attr('fill', 'none').attr('stroke', color).attr('stroke-width', 2.5);
 
   g.selectAll('.dot').data(weeklySales).join('circle')
-    .attr('cx', d => x(d.week)).attr('cy', d => y(d.sales)).attr('r', d => (level >= 2 && d.week === 'W06') ? 6 : 4)
+    .attr('cx', d => x(d.week)).attr('cy', d => y(d.sales))
+    .attr('r', d => {
+      if (level >= 3 && d.week === 'W06') return 8;
+      if (level >= 2 && d.week === 'W06') return 6;
+      if (level >= 3 && d.week === 'W03') return 6;
+      return 4;
+    })
     .attr('fill', d => {
       if (level === 1) return '#4361ee';
       if (d.week === 'W06') return '#e63946';
       if (d.week === 'W03') return '#28a745';
       return '#0f3460';
-    });
+    })
+    .attr('stroke', d => {
+      if (level >= 3 && d.week === 'W06') return '#e63946';
+      return 'none';
+    })
+    .attr('stroke-width', d => (level >= 3 && d.week === 'W06') ? 3 : 0)
+    .attr('stroke-opacity', 0.3);
 
-  // value labels
+  // value labels — font hierarchy: current week BIG+BOLD, others small+light
   if (level >= 2) {
     g.selectAll('.val-label').data(weeklySales).join('text')
-      .attr('x', d => x(d.week)).attr('y', d => y(d.sales) - 10).attr('text-anchor', 'middle')
-      .style('font-size', '10px').style('font-weight', d => d.week === 'W06' ? '700' : '400')
-      .style('fill', d => d.week === 'W06' ? '#e63946' : '#555')
+      .attr('x', d => x(d.week))
+      .attr('y', d => d.week === 'W06' ? y(d.sales) - 14 : y(d.sales) - 10)
+      .attr('text-anchor', 'middle')
+      .style('font-size', d => {
+        if (level >= 3 && d.week === 'W06') return '14px';
+        if (level >= 2 && d.week === 'W06') return '12px';
+        return '9px';
+      })
+      .style('font-weight', d => d.week === 'W06' ? '800' : '400')
+      .style('fill', d => {
+        if (d.week === 'W06') return '#e63946';
+        if (d.week === 'W03' && level >= 3) return '#1b7a3d';
+        return '#999';
+      })
       .text(d => fmtK(d.sales));
   }
 
+  // Level 2: x-axis current week emphasis
+  if (level >= 2) {
+    g.selectAll('.tick text').filter(function() { return d3.select(this).text() === 'W06'; })
+      .style('font-size', '13px').style('font-weight', '800').style('fill', '#e63946');
+  }
+
   if (level >= 3) {
-    // W06 danger callout
+    // W06 danger callout — large prominent numbers
     const cx6 = x('W06'), cy6 = y(547850);
-    g.append('rect').attr('x', cx6 - 60).attr('y', cy6 + 14).attr('width', 120).attr('height', 36)
+    g.append('rect').attr('x', cx6 - 64).attr('y', cy6 + 18).attr('width', 128).attr('height', 42)
      .attr('class', 'annotation-box-danger');
-    g.append('text').attr('x', cx6).attr('y', cy6 + 28).attr('text-anchor', 'middle')
-     .attr('class', 'callout-text').style('fill', '#c0392b').text('前週比 -21.5%');
-    g.append('text').attr('x', cx6).attr('y', cy6 + 42).attr('text-anchor', 'middle')
-     .style('font-size', '10px').style('fill', '#c0392b').text('前年比 -21.1%');
+    g.append('text').attr('x', cx6).attr('y', cy6 + 34).attr('text-anchor', 'middle')
+     .style('font-size', '13px').style('font-weight', '800').style('fill', '#c0392b').text('前週比 -21.5%');
+    g.append('text').attr('x', cx6).attr('y', cy6 + 50).attr('text-anchor', 'middle')
+     .style('font-size', '10px').style('font-weight', '500').style('fill', '#c0392b').text('前年比 -21.1%');
 
     // W03 success callout
     const cx3 = x('W03'), cy3 = y(815130);
-    g.append('rect').attr('x', cx3 - 48).attr('y', cy3 - 38).attr('width', 96).attr('height', 24)
+    g.append('rect').attr('x', cx3 - 52).attr('y', cy3 - 40).attr('width', 104).attr('height', 26)
      .attr('class', 'annotation-box-success');
-    g.append('text').attr('x', cx3).attr('y', cy3 - 22).attr('text-anchor', 'middle')
-     .attr('class', 'callout-text').style('fill', '#1b7a3d').text('▲ 5週間最高');
+    g.append('text').attr('x', cx3).attr('y', cy3 - 23).attr('text-anchor', 'middle')
+     .style('font-size', '12px').style('font-weight', '700').style('fill', '#1b7a3d').text('▲ 5週間最高');
 
     // arrow from W03 to W06
     svg.append('defs').append('marker').attr('id', 'arrowRed-' + level)
@@ -326,11 +355,11 @@ function drawLine(containerId, level) {
     g.append('line')
       .attr('x1', cx3 + 20).attr('y1', cy3 + 4)
       .attr('x2', cx6 - 14).attr('y2', cy6 - 4)
-      .attr('stroke', '#e63946').attr('stroke-width', 1.5).attr('stroke-dasharray', '4 3')
+      .attr('stroke', '#e63946').attr('stroke-width', 2).attr('stroke-dasharray', '5 3')
       .attr('marker-end', `url(#arrowRed-${level})`);
 
     g.append('text').attr('x', (cx3 + cx6) / 2).attr('y', (cy3 + cy6) / 2 - 8).attr('text-anchor', 'middle')
-     .style('font-size', '10px').style('fill', '#e63946').style('font-weight', '600').text('−¥267K 下降');
+     .style('font-size', '12px').style('fill', '#e63946').style('font-weight', '800').text('−¥267K 下降');
   }
 }
 drawLine('#line1', 1);
@@ -378,9 +407,11 @@ function drawPie(containerId, level) {
   }
 
   if (level >= 2) {
-    // center label
-    g.append('text').attr('text-anchor', 'middle').attr('dy', '-4').style('font-size', '11px').style('fill', '#666').text('総売上');
-    g.append('text').attr('text-anchor', 'middle').attr('dy', '14').style('font-size', '14px').style('font-weight', '700').style('fill', '#1a1a2e').text('¥547,850');
+    // center label — small caption + large bold number
+    g.append('text').attr('text-anchor', 'middle').attr('dy', '-6')
+     .style('font-size', '9px').style('fill', '#aaa').style('font-weight', '400').style('letter-spacing', '1px').text('総売上');
+    g.append('text').attr('text-anchor', 'middle').attr('dy', '16')
+     .style('font-size', level >= 3 ? '17px' : '15px').style('font-weight', '800').style('fill', '#1a1a2e').text('¥547,850');
 
     // top category callout
     const topSlice = pie(categoryData)[0];
@@ -388,18 +419,23 @@ function drawPie(containerId, level) {
 
     if (level >= 2) {
       const lx = centroid[0] > 0 ? centroid[0] + 40 : centroid[0] - 40;
-      const ly = centroid[1] - 30;
+      const ly = centroid[1] - 34;
       g.append('line').attr('x1', centroid[0]).attr('y1', centroid[1]).attr('x2', lx).attr('y2', ly)
        .attr('stroke', '#e63946').attr('stroke-width', 1.5);
-      g.append('text').attr('x', lx).attr('y', ly - 8).attr('text-anchor', centroid[0] > 0 ? 'start' : 'end')
-       .style('font-size', '11px').style('font-weight', '700').style('fill', '#e63946').text('Jカクテル 28.1%');
-      g.append('text').attr('x', lx).attr('y', ly + 6).attr('text-anchor', centroid[0] > 0 ? 'start' : 'end')
-       .style('font-size', '10px').style('fill', '#666').text('¥145,100');
+      // percentage — BIG
+      g.append('text').attr('x', lx).attr('y', ly - 14).attr('text-anchor', centroid[0] > 0 ? 'start' : 'end')
+       .style('font-size', level >= 3 ? '18px' : '15px').style('font-weight', '900').style('fill', '#e63946').text('28.1%');
+      // name — medium
+      g.append('text').attr('x', lx).attr('y', ly - 0).attr('text-anchor', centroid[0] > 0 ? 'start' : 'end')
+       .style('font-size', '10px').style('font-weight', '600').style('fill', '#e63946').text('Jカクテル');
+      // amount — small subdued
+      g.append('text').attr('x', lx).attr('y', ly + 13).attr('text-anchor', centroid[0] > 0 ? 'start' : 'end')
+       .style('font-size', '9px').style('fill', '#999').style('font-weight', '400').text('¥145,100');
     }
   }
 
   if (level >= 3) {
-    // leader lines for all segments
+    // leader lines for all segments — small labels in lighter color
     const outerArc = d3.arc().innerRadius(radius + 20).outerRadius(radius + 20);
     slices.filter(d => d.data.pct >= 5 && d.data.name !== 'ジャパニーズカクテル').each(function(d) {
       const c = arc.centroid(d);
@@ -407,22 +443,30 @@ function drawPie(containerId, level) {
       const endX = o[0] > 0 ? o[0] + 30 : o[0] - 30;
       d3.select(this).append('polyline')
         .attr('points', [c, o, [endX, o[1]]].map(p => p.join(',')).join(' '))
-        .attr('fill', 'none').attr('stroke', '#888').attr('stroke-width', 1);
+        .attr('fill', 'none').attr('stroke', '#ccc').attr('stroke-width', 1);
+      // percentage bold, name lighter
       d3.select(this).append('text')
-        .attr('x', endX + (o[0] > 0 ? 4 : -4)).attr('y', o[1] + 4)
+        .attr('x', endX + (o[0] > 0 ? 4 : -4)).attr('y', o[1] + 1)
         .attr('text-anchor', o[0] > 0 ? 'start' : 'end')
-        .style('font-size', '9px').style('fill', '#555')
-        .text(`${d.data.name} ${d.data.pct}%`);
+        .style('font-size', '10px').style('font-weight', '700').style('fill', '#444')
+        .text(`${d.data.pct}%`);
+      d3.select(this).append('text')
+        .attr('x', endX + (o[0] > 0 ? 4 : -4)).attr('y', o[1] + 12)
+        .attr('text-anchor', o[0] > 0 ? 'start' : 'end')
+        .style('font-size', '8px').style('font-weight', '400').style('fill', '#888')
+        .text(d.data.name);
     });
 
-    // whiskey highlight
+    // whiskey highlight — bold callout
     const whiskySlice = pie(categoryData)[1];
     const wc = arcHover.centroid(whiskySlice);
-    g.append('rect').attr('x', wc[0] + 30).attr('y', wc[1] - 12).attr('width', 100).attr('height', 22)
+    g.append('rect').attr('x', wc[0] + 26).attr('y', wc[1] - 16).attr('width', 110).attr('height', 30)
      .attr('class', 'annotation-box');
-    g.append('text').attr('x', wc[0] + 80).attr('y', wc[1] + 3).attr('text-anchor', 'middle')
-     .style('font-size', '9px').style('font-weight', '600').style('fill', '#856404').text('高単価の柱 13.4%');
-    g.append('line').attr('x1', wc[0] + 4).attr('y1', wc[1]).attr('x2', wc[0] + 30).attr('y2', wc[1])
+    g.append('text').attr('x', wc[0] + 81).attr('y', wc[1] - 2).attr('text-anchor', 'middle')
+     .style('font-size', '12px').style('font-weight', '800').style('fill', '#856404').text('高単価の柱');
+    g.append('text').attr('x', wc[0] + 81).attr('y', wc[1] + 10).attr('text-anchor', 'middle')
+     .style('font-size', '9px').style('font-weight', '500').style('fill', '#a67c00').text('13.4% — ¥69,300');
+    g.append('line').attr('x1', wc[0] + 4).attr('y1', wc[1]).attr('x2', wc[0] + 26).attr('y2', wc[1])
      .attr('stroke', '#ffc107').attr('stroke-width', 1.5);
   }
 
@@ -479,13 +523,33 @@ function drawBar(containerId, level) {
       .attr('rx', 3);
 
     if (level >= 2) {
+      // worst day (Sat) gets biggest label; best day next; others are small
+      const maxAbsDiff = d3.max(weekdayData, d => Math.abs(d.diff));
       g.selectAll('.bar-label').data(weekdayData).join('text')
         .attr('x', d => x(d.day) + x.bandwidth() / 2)
-        .attr('y', d => d.diff >= 0 ? y(d.diff) - 6 : y(d.diff) + 14)
-        .attr('text-anchor', 'middle').style('font-size', '9px').style('font-weight', '600')
+        .attr('y', d => d.diff >= 0 ? y(d.diff) - 6 : y(d.diff) + 16)
+        .attr('text-anchor', 'middle')
+        .style('font-size', d => {
+          const ratio = Math.abs(d.diff) / maxAbsDiff;
+          if (ratio > 0.8) return '13px';
+          if (ratio > 0.3) return '10px';
+          return '9px';
+        })
+        .style('font-weight', d => {
+          const ratio = Math.abs(d.diff) / maxAbsDiff;
+          return ratio > 0.5 ? '800' : '500';
+        })
         .style('fill', d => d.diff >= 0 ? '#1b7a3d' : '#c0392b')
         .text(d => (d.diff >= 0 ? '+' : '') + fmtK(d.diff));
     }
+  }
+
+  // Level 2: emphasize worst/best day on x-axis
+  if (level === 2) {
+    g.selectAll('.tick text').filter(function() { return d3.select(this).text() === '土'; })
+      .style('font-size', '13px').style('font-weight', '800').style('fill', '#c0392b');
+    g.selectAll('.tick text').filter(function() { return d3.select(this).text() === '月'; })
+      .style('font-size', '12px').style('font-weight', '700').style('fill', '#1b7a3d');
   }
 
   if (level >= 3) {
@@ -521,20 +585,20 @@ function drawBar(containerId, level) {
       .attr('markerWidth', 7).attr('markerHeight', 7).attr('orient', 'auto')
       .append('path').attr('d', 'M 0 0 L 10 5 L 0 10 z').attr('fill', '#e63946');
 
-    g.append('rect').attr('x', satX - 56).attr('y', satY + 6).attr('width', 112).attr('height', 30)
+    g.append('rect').attr('x', satX - 62).attr('y', satY + 4).attr('width', 124).attr('height', 38)
      .attr('class', 'annotation-box-danger');
     g.append('text').attr('x', satX).attr('y', satY + 20).attr('text-anchor', 'middle')
-     .attr('class', 'callout-text').style('fill', '#c0392b').text('▼ 土曜 -¥92K');
-    g.append('text').attr('x', satX).attr('y', satY + 32).attr('text-anchor', 'middle')
-     .style('font-size', '9px').style('fill', '#c0392b').text('客数・単価ともに下落');
+     .style('font-size', '14px').style('font-weight', '900').style('fill', '#c0392b').text('▼ 土曜 -¥92K');
+    g.append('text').attr('x', satX).attr('y', satY + 34).attr('text-anchor', 'middle')
+     .style('font-size', '9px').style('font-weight', '500').style('fill', '#c0392b').text('客数・単価ともに下落');
 
-    // best day callout (Monday)
+    // best day callout (Monday) — slightly smaller than worst
     const monX = x('月') + x.bandwidth() / 2;
     const monY = y(weekdayData[0].diff);
-    g.append('rect').attr('x', monX - 40).attr('y', monY - 32).attr('width', 80).attr('height', 22)
+    g.append('rect').attr('x', monX - 46).attr('y', monY - 34).attr('width', 92).attr('height', 26)
      .attr('class', 'annotation-box-success');
-    g.append('text').attr('x', monX).attr('y', monY - 18).attr('text-anchor', 'middle')
-     .attr('class', 'callout-text').style('fill', '#1b7a3d').text('▲ 月曜 +¥25K');
+    g.append('text').attr('x', monX).attr('y', monY - 16).attr('text-anchor', 'middle')
+     .style('font-size', '12px').style('font-weight', '800').style('fill', '#1b7a3d').text('▲ 月曜 +¥25K');
   }
 }
 drawBar('#bar1', 1);
@@ -577,8 +641,11 @@ function drawArea(containerId, level) {
       g.append('rect').attr('x', x(z.x1)).attr('y', 0).attr('width', x(z.x2) - x(z.x1)).attr('height', h)
        .attr('fill', z.color).attr('opacity', 0.5);
       if (level >= 2) {
+        const isActive = z.label === 'ピーク';
         g.append('text').attr('x', (x(z.x1) + x(z.x2)) / 2).attr('y', 12).attr('text-anchor', 'middle')
-         .style('font-size', '9px').style('fill', '#888').text(z.label);
+         .style('font-size', isActive && level >= 3 ? '11px' : '9px')
+         .style('font-weight', isActive ? '700' : '400')
+         .style('fill', isActive ? '#c0392b' : '#aaa').text(z.label);
       }
     });
   }
@@ -594,13 +661,30 @@ function drawArea(containerId, level) {
   g.append('path').datum(hourlyData).attr('d', lineGen).attr('fill', 'none')
    .attr('stroke', level === 1 ? '#4361ee' : '#0f3460').attr('stroke-width', 2.5);
 
-  // dots
+  // dots — peak dot bigger
   g.selectAll('.dot').data(hourlyData).join('circle')
-    .attr('cx', d => x(d.hour)).attr('cy', d => y(d.sales)).attr('r', 3.5)
+    .attr('cx', d => x(d.hour)).attr('cy', d => y(d.sales))
+    .attr('r', d => {
+      if (level >= 3 && d.hour === 23) return 7;
+      if (level >= 2 && d.hour === 23) return 5.5;
+      return 3.5;
+    })
     .attr('fill', d => {
       if (level >= 2 && d.hour === 23) return '#e63946';
       return level === 1 ? '#4361ee' : '#0f3460';
-    });
+    })
+    .attr('stroke', d => (level >= 3 && d.hour === 23) ? '#e63946' : 'none')
+    .attr('stroke-width', d => (level >= 3 && d.hour === 23) ? 3 : 0)
+    .attr('stroke-opacity', 0.3);
+
+  // Level 2: peak value label
+  if (level === 2) {
+    const peakD2 = hourlyData.find(d => d.hour === 23);
+    g.append('text').attr('x', x(23)).attr('y', y(peakD2.sales) - 12).attr('text-anchor', 'middle')
+     .style('font-size', '12px').style('font-weight', '800').style('fill', '#e63946').text(fmtM(peakD2.sales));
+    g.append('text').attr('x', x(23)).attr('y', y(peakD2.sales) - 1).attr('text-anchor', 'middle')
+     .style('font-size', '8px').style('font-weight', '500').style('fill', '#e63946').text('23時台');
+  }
 
   if (level >= 3) {
     // peak annotation
@@ -611,31 +695,33 @@ function drawArea(containerId, level) {
     g.append('circle').attr('cx', px).attr('cy', py).attr('r', 14)
      .attr('fill', 'none').attr('stroke', '#e63946').attr('stroke-width', 2).attr('opacity', 0.5);
 
-    // callout
-    g.append('rect').attr('x', px - 70).attr('y', py - 46).attr('width', 140).attr('height', 34)
+    // callout — big bold peak label
+    g.append('rect').attr('x', px - 74).attr('y', py - 52).attr('width', 148).attr('height', 40)
      .attr('class', 'annotation-box-danger');
-    g.append('text').attr('x', px).attr('y', py - 30).attr('text-anchor', 'middle')
-     .attr('class', 'callout-text').style('fill', '#c0392b').text('🔥 ピーク 23時台');
-    g.append('text').attr('x', px).attr('y', py - 17).attr('text-anchor', 'middle')
-     .style('font-size', '10px').style('fill', '#c0392b').text(fmtM(peakD.sales));
+    g.append('text').attr('x', px).attr('y', py - 35).attr('text-anchor', 'middle')
+     .style('font-size', '14px').style('font-weight', '900').style('fill', '#c0392b').text('🔥 ピーク 23時台');
+    g.append('text').attr('x', px).attr('y', py - 18).attr('text-anchor', 'middle')
+     .style('font-size', '12px').style('font-weight', '600').style('fill', '#c0392b').text(fmtM(peakD.sales));
 
     // arrow to peak
     g.append('line').attr('x1', px).attr('y1', py - 12).attr('x2', px).attr('y2', py - 5)
      .attr('stroke', '#e63946').attr('stroke-width', 2);
 
-    // late night annotation
+    // late night annotation — medium emphasis
     const lateX = x(24.5), lateY = y(15000000);
-    g.append('rect').attr('x', lateX - 50).attr('y', lateY - 10).attr('width', 100).attr('height', 20)
+    g.append('rect').attr('x', lateX - 54).attr('y', lateY - 14).attr('width', 108).attr('height', 26)
      .attr('class', 'annotation-box');
-    g.append('text').attr('x', lateX).attr('y', lateY + 4).attr('text-anchor', 'middle')
-     .style('font-size', '9px').style('font-weight', '600').style('fill', '#856404').text('深夜 22.2%構成');
+    g.append('text').attr('x', lateX).attr('y', lateY - 0).attr('text-anchor', 'middle')
+     .style('font-size', '11px').style('font-weight', '700').style('fill', '#856404').text('深夜 22.2%');
+    g.append('text').attr('x', lateX).attr('y', lateY + 11).attr('text-anchor', 'middle')
+     .style('font-size', '8px').style('font-weight', '400').style('fill', '#a67c00').text('構成比');
 
-    // early evening annotation
+    // early evening annotation — subtle hint
     const earlyX = x(18.5), earlyY = y(5000000);
-    g.append('rect').attr('x', earlyX - 44).attr('y', earlyY - 10).attr('width', 88).attr('height', 20)
+    g.append('rect').attr('x', earlyX - 48).attr('y', earlyY - 12).attr('width', 96).attr('height', 24)
      .attr('class', 'annotation-box-success');
-    g.append('text').attr('x', earlyX).attr('y', earlyY + 4).attr('text-anchor', 'middle')
-     .style('font-size', '9px').style('font-weight', '600').style('fill', '#1b7a3d').text('伸びしろ↑');
+    g.append('text').attr('x', earlyX).attr('y', earlyY + 5).attr('text-anchor', 'middle')
+     .style('font-size', '11px').style('font-weight', '700').style('fill', '#1b7a3d').text('伸びしろ ↑');
   }
 }
 drawArea('#area1', 1);

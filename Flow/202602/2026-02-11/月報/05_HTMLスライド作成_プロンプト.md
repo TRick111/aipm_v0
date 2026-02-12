@@ -72,19 +72,37 @@
 
 #### 2.2 PDF改ページの実装（最重要）
 
-各スライドが印刷/PDF出力時に1ページとして分離されるよう、以下のCSSを必ず適用する:
+各スライドが印刷/PDF出力時に1ページとして分離され、**背景色・背景画像が正しく印刷される**よう、以下のCSSを必ず適用する:
 
 ```css
+/* ページサイズ指定（スライドと同一サイズ） */
+@page {
+  size: 1280px 720px;
+  margin: 0;
+}
+
 @media print {
+  /* 背景色の印刷を強制（最重要） */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
   body {
     margin: 0;
     padding: 0;
+    background: #fff;
+    width: 1280px;
   }
   .slide {
     page-break-after: always;
     page-break-inside: avoid;
     break-after: page;
     break-inside: avoid;
+    box-shadow: none;
+    margin: 0;
+    width: 1280px;
+    height: 720px;
   }
   .slide:last-child {
     page-break-after: auto;
@@ -99,6 +117,8 @@
   }
 }
 ```
+
+> **注意**: `print-color-adjust: exact` がないと、ブラウザの印刷機能でPDF化した際にヘッダー背景色・表のヘッダー色・カード背景色などが全て白になる。`!important` 付きで全要素に適用すること。
 
 #### 2.3 スライドサイズ
 
@@ -137,21 +157,32 @@
 
 #### 3.2 タイポグラフィ（フォントサイズ階層）
 
+> **重要**: 全体的に **通常の1.5倍** のフォントサイズを使う。プロジェクターや画面共有で見やすくするため。タイトルスライド（スライド1）のみ変更不要。
+
 | 要素 | フォントサイズ | ウェイト | 用途 |
 |:---|:---|:---|:---|
-| スライドタイトル | `28px` | `700` | 各スライドの大見出し |
-| KPI大数字 | `48px` 〜 `64px` | `800` | 売上金額、主要指標の数値 |
-| KPI比較数字 | `24px` 〜 `32px` | `700` | 前月比・前年比のパーセンテージ |
-| サブ見出し | `20px` | `600` | セクション小見出し |
-| 本文テキスト | `16px` | `400` | 説明文、コメント |
-| 表セル | `14px` | `400` | テーブルのデータ |
-| 注釈・キャプション | `12px` | `400` | グラフ軸ラベル、出典 |
-| **アノテーション** | `14px` 〜 `18px` | `700` | グラフ上の吹き出し内テキスト |
+| body（基準） | `20px` | `400` | 本文テキスト全体の基準 |
+| スライドタイトル | `32px` | `700` | 各スライドの大見出し（ヘッダー帯内） |
+| KPI大数字 | `44px` 〜 `48px` | `800` | 売上金額、主要指標の数値 |
+| KPI比較数字 | `22px` 〜 `28px` | `700` | 前月比・前年比のパーセンテージ |
+| セクション見出し | `26px` | `800` | セクション小見出し（左ボーダー付き） |
+| 本文テキスト | `20px` | `400` | 説明文、コメント |
+| 表セル（通常） | `20px` | `400` | テーブルのデータ |
+| 表セル（小） | `17px` | `400` | 密度の高いテーブル（`.dt.sm`） |
+| 表ヘッダー | `19px` | `700` | テーブルヘッダー行 |
+| 箇条書き | `20px` | `400` | リスト項目 |
+| メッセージバー | `21px` | `700` | スライド上部のメッセージ帯 |
+| 注釈・キャプション | `14px` | `400` | グラフ軸ラベル、出典 |
+| **アノテーション（通常）** | `18px` 〜 `22px` | `700`〜`800` | グラフ上の吹き出し内テキスト |
+| **アノテーション（強調）** | `28px` 〜 `32px` | `800` | グラフ上で最も伝えたい主張 |
+| **big-num（特大数字）** | `48px` | `800` | テーブル上部の強調コールアウト |
+| **emphasis（強調）** | `28px` | `800` | スライド内の重要メッセージ |
 
 **強調ルール**:
 - **最も伝えたい数字**はフォントサイズを周囲の **2倍以上** にし、太字 + 色で強調する
 - プラスの変化は `#22C55E`（グリーン）、マイナスは `#EF4444`（レッド）
 - 比較数字の前に `▲`（増加）/ `▼`（減少）を付ける
+- **KPI値の桁数が多い場合**（¥2,751,170 など7桁以上）は、カードからはみ出さないようフォントサイズを `34px` 程度に縮小する
 
 #### 3.3 レイアウトパターン
 
@@ -162,10 +193,48 @@
 | **タイトルスライド** | 中央揃え大見出し + サブタイトル | スライド1 |
 | **KPIカード** | 3〜5個のカードを横並び | スライド2, 6 |
 | **グラフ + コメント** | 左2/3にグラフ、右1/3にコメント | スライド3-5, 7, 17, 19, 21 |
-| **比較表** | ヘッダー付きテーブル | スライド8-15, 23-24 |
-| **箇条書き** | 3〜5点の要点 + アイコン | スライド18, 20, 22, 25-27 |
+| **コールアウト + 比較表** | 表の上に大数字の強調ボックスを配置 | スライド8-15 |
+| **比較表** | ヘッダー付きテーブル | スライド16, 23-24 |
+| **3カラムカード** | 強み/課題/施策案を3列カード形式で配置 | スライド18, 20 |
+| **箇条書き** | 3〜5点の要点 + アイコン | スライド22, 25-27 |
 | **施策一覧** | 2カラム表 | スライド28-30 |
 | **日報引用** | 引用ブロック並べ | 日報スライド |
+
+**コールアウト + 比較表パターン**:
+テーブルの上に、そのスライドで最も伝えたい数字を大きく表示するボックスを配置する。
+```html
+<!-- 例: 不調週の日平均売上を大きく表示 -->
+<div class="warn-box" style="margin-bottom:10px;text-align:center">
+  <span class="big-num neg">¥48,757</span><br>
+  <span class="big-label">日平均売上 — 月平均の<strong class="neg">49%</strong></span>
+</div>
+<!-- この下にテーブルが続く -->
+```
+
+**3カラムカードパターン**:
+強み/課題/施策案を横並びのカードで視覚的に分離する。
+```html
+<div style="display:flex;gap:14px">
+  <div style="flex:1">
+    <div class="card" style="border-left:5px solid #22C55E">
+      <div class="card-title g">強み</div>
+      <ul class="bl g">...</ul>
+    </div>
+  </div>
+  <div style="flex:1">
+    <div class="card" style="border-left:5px solid #EF4444">
+      <div class="card-title r">課題</div>
+      <ul class="bl r">...</ul>
+    </div>
+  </div>
+  <div style="flex:1">
+    <div class="card" style="border-left:5px solid #F97316">
+      <div class="card-title o">施策案</div>
+      <ul class="bl o">...</ul>
+    </div>
+  </div>
+</div>
+```
 
 ---
 
@@ -199,54 +268,33 @@
 
 ```javascript
 // 吹き出しの実装パターン
-function addCallout(svg, x, y, text, options = {}) {
-  const {
-    bgColor = '#FFF7ED',      // 薄いオレンジ背景
-    borderColor = '#F97316',   // オレンジ枠
-    textColor = '#1E293B',     // ダークテキスト
-    fontSize = '14px',
-    fontWeight = '700',
-    arrowTarget = null         // 矢印の先端座標 {x, y}
-  } = options;
-
-  const g = svg.append('g').attr('class', 'callout');
-
-  // 矢印線（データポイントへの引き出し線）
-  if (arrowTarget) {
-    g.append('line')
-      .attr('x1', x).attr('y1', y)
-      .attr('x2', arrowTarget.x).attr('y2', arrowTarget.y)
-      .attr('stroke', borderColor)
-      .attr('stroke-width', 2)
-      .attr('stroke-dasharray', '4,3');
-
-    // 矢印の三角
-    g.append('polygon')
-      .attr('points', arrowHead(x, y, arrowTarget.x, arrowTarget.y))
-      .attr('fill', borderColor);
-  }
-
-  // 背景ボックス
-  const padding = { x: 12, y: 8 };
-  const textEl = g.append('text')
-    .attr('x', x).attr('y', y)
-    .attr('font-size', fontSize)
-    .attr('font-weight', fontWeight)
-    .attr('fill', textColor)
+function addCallout(svg, cx, cy, text, opts) {
+  opts = opts || {};
+  var bg = opts.bg || '#FFF7ED', border = opts.border || '#F97316';
+  var fs = opts.fontSize || '20px';
+  var g = svg.append('g');
+  var t = g.append('text')
+    .attr('x', cx).attr('y', cy)
+    .attr('font-size', fs)
+    .attr('font-weight', '800')
+    .attr('fill', opts.color || '#1E293B')
     .text(text);
-  const bbox = textEl.node().getBBox();
-
+  var bb = t.node().getBBox();
   g.insert('rect', 'text')
-    .attr('x', bbox.x - padding.x)
-    .attr('y', bbox.y - padding.y)
-    .attr('width', bbox.width + padding.x * 2)
-    .attr('height', bbox.height + padding.y * 2)
+    .attr('x', bb.x - 10).attr('y', bb.y - 6)
+    .attr('width', bb.width + 20).attr('height', bb.height + 12)
     .attr('rx', 6)
-    .attr('fill', bgColor)
-    .attr('stroke', borderColor)
-    .attr('stroke-width', 1.5);
+    .attr('fill', bg)
+    .attr('stroke', border)
+    .attr('stroke-width', 2);
 }
 ```
+
+> **⚠ コールアウト配置の注意（はみ出し防止）**:
+> - コールアウトは **SVG領域の右端・下端から十分な余白** を取って配置すること
+> - 特に折れ線グラフの最終月（右端）にコールアウトを付ける場合、データポイントの **左側にオフセット**（`-180px` 程度）して配置する。右に `+20px` 等で配置するとSVG外にはみ出して見切れる
+> - 配置の目安: `x座標 = データポイントのx - 180` とし、テキスト幅分を考慮する
+> - コールアウトがSVG外にはみ出す場合、`overflow: hidden` により描画が途切れるため要注意
 
 ##### c) 増減矢印の表示
 前月比・前年比の数値の横に、SVGの矢印アイコンを付ける:
@@ -298,13 +346,30 @@ svg.append('text')
 グラフ上の数値ラベルで、最大値・最小値・注目値のフォントサイズを大きくする:
 
 ```javascript
-// 通常のデータラベル
+// 通常のデータラベル（1.5倍基準）
 bars.append('text')
   .text(d => `¥${d.value.toLocaleString()}`)
-  .attr('font-size', d => d.isHighlight ? '16px' : '12px')
-  .attr('font-weight', d => d.isHighlight ? '700' : '400')
+  .attr('font-size', d => d.isHighlight ? '22px' : '16px')
+  .attr('font-weight', d => d.isHighlight ? '800' : '500')
   .attr('fill', d => d.isHighlight ? '#1E293B' : '#64748B');
 ```
+
+##### f) 主張の優先度による差別化（重要）
+1つのグラフに複数のアノテーションを付ける場合、**最も伝えたい主張（Primary）と補足（Secondary）でフォントサイズに明確な差** をつける:
+
+```javascript
+// Primary（最も伝えたい主張）: 28px、目立つ色
+addCallout(svg, x1, y1, '成長余地が大きい（11.5%）', {
+  fontSize: '28px', bg: '#FFF7ED', border: '#F97316', color: '#C2410C'
+});
+
+// Secondary（補足情報）: 16px、控えめ
+addCallout(svg, x2, y2, 'ピーク構成比40.1%', {
+  fontSize: '16px', bg: '#EFF6FF', border: '#3B82F6'
+});
+```
+
+> Primaryの主張が28px、Secondaryが16pxのように **1.75倍以上の差** をつけることで、何を伝えたいスライドなのかが一目で分かるようにする。
 
 #### 4.3 グラフ共通設定
 
@@ -316,9 +381,10 @@ const margin = { top: 40, right: 40, bottom: 40, left: 60 };
 // グラフ+コメントパターンの場合: 幅800px前後
 // フルワイドの場合: 幅1100px前後
 
-// 軸ラベルのフォント
+// 軸ラベルのフォント（1.5倍基準）
 const axisStyle = {
-  fontSize: '12px',
+  fontSize: '14px',           // 軸目盛り
+  axisFontSize: '18px',       // 軸カテゴリラベル（曜日名、週名等）
   fontFamily: "'Helvetica Neue', 'Hiragino Kaku Gothic ProN', sans-serif",
   color: '#64748B'
 };
@@ -397,7 +463,8 @@ CSSイメージ:
 - 好調週/好調曜日は `#22C55E`、不調は `#EF4444`、その他は `#3B82F6`
 - 月平均の基準線を破線で表示
 - 好調/不調の棒にのみ **吹き出しアノテーション** を配置
-- 好調/不調の棒のデータラベルは **フォントサイズ16px・太字**、その他は **12px・通常**
+- 好調/不調の棒のデータラベルは **フォントサイズ22px・太字800**、その他は **16px・ウェイト500**
+- 軸ラベルは **18px・太字700**、サブラベル（日付範囲等）は **13px**
 
 #### 5.5 ドーナツチャート（カテゴリ別構成比）
 
@@ -406,13 +473,15 @@ CSSイメージ:
 - 最大カテゴリのセグメントを `outerRadius + 10` で少し外に突き出す
 - 中央に「合計金額」を大きく表示
 
-#### 5.6 表スライド（商品TOP15、深掘り比較表）
+#### 5.6 表スライド（商品上位10、深掘り比較表）
 
 - HTML `<table>` でスタイリング
 - ヘッダー行は `#1E3A5F` 背景 + 白文字
 - 交互行に薄い背景色（`#F8FAFC`）
 - 最大値のセルは **太字 + 色変更** で強調
 - 増減列はプラス/マイナスで色分け
+- **商品ランキングは上位10件に絞る**（15件だとスライド内に収まらない）
+- 深掘り比較表（不調週/好調週の概要スライド）では、テーブルの上に **big-num コールアウトボックス** を配置し、最も重要な数字を48pxで大きく表示する
 
 #### 5.7 日報引用スライド
 
@@ -507,6 +576,18 @@ CSSイメージ:
    - Chrome / Edge / Firefox の最新版で正しく表示されること
    - PDF出力時に全グラフが正しく描画されること
 
+8. **コンテンツのはみ出し防止（最重要）**
+   - 各スライドは `1280×720px` + `overflow: hidden` のため、はみ出したコンテンツは見えなくなる
+   - **テーブル行数**: 商品ランキングは上位10件まで。深掘り比較表は6〜8行が上限
+   - **引用ブロック**: 1スライドに入る引用は最大5〜6件。はみ出す場合は優先度の低いものを削除
+   - **箇条書き**: 1スライド最大5項目。フォント17〜20pxで収まる量に調整
+   - **KPIカードの数値**: 桁数が多い場合（7桁以上の金額等）はフォントサイズを縮小してカード内に収める
+   - **グラフのコールアウト**: SVG領域の端に配置しない（右端のデータポイントにはx座標を左にオフセット）
+
+9. **週別概況スライドの指標明示**
+   - 週別概況（スライド7）では、グラフが **日平均売上** を表していることをタイトルに明記する（例:「週別概況 ─ 1日あたり売上（日平均）」）
+   - 週別データの表には **営業日数** の列を必ず含める
+
 ---
 
 ## セルフチェック（作成後に必ず実行）
@@ -521,6 +602,12 @@ CSSイメージ:
 - [ ] **好調/不調の色分けが正しく適用されているか**（グリーン/レッド）
 - [ ] **最大値・最小値のフォントサイズが周囲より大きいか**
 - [ ] **基準線（月平均・前年値）が破線で表示されているか**
+- [ ] **コールアウトがSVG領域からはみ出していないか**（特にグラフ右端のデータポイント）
+- [ ] **全スライドのコンテンツが720px内に収まっているか**（テーブル・引用・箇条書きが下端で見切れていないか）
+- [ ] **KPI値がカードからはみ出していないか**（桁数の多い金額のフォントサイズは縮小済みか）
+- [ ] **テーブルスライドの上に強調コールアウト（big-num）が配置されているか**（深掘り分析スライド）
+- [ ] **print-color-adjust: exact が @media print に含まれているか**（PDF背景色の印刷用）
+- [ ] **@page { size: 1280px 720px; margin: 0 } が定義されているか**
 - [ ] PDFで改ページが各スライドの境界で正しく発生するか
 - [ ] D3.jsのグラフがブラウザで正しく描画されるか
 - [ ] HTMLファイルが単体で開けるか（外部ファイル依存なし、D3.js CDN除く）
@@ -532,4 +619,7 @@ CSSイメージ:
 - ブラウザで開いてすべてのスライドが正しく表示される
 - D3.jsグラフがすべて描画されている
 - PDF出力時に1スライド=1ページで分離される
+- PDF出力時に背景色（ヘッダー帯、テーブルヘッダー、カード背景等）が正しく印刷される
 - アノテーション・色分け・フォント強調が全グラフに適用されている
+- 全スライドのコンテンツが1280×720px内に収まり、見切れがない
+- コールアウトがSVG領域外にはみ出していない

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BAR FIVE Arrows 月次営業報告 — 2026年1月</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Helvetica Neue', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif; background: #E2E8F0; color: #334155; }
+    @media print {
+      body { margin: 0; padding: 0; background: #fff; }
+      .slide { page-break-after: always; page-break-inside: avoid; break-after: page; break-inside: avoid; box-shadow: none !important; margin: 0 !important; }
+      .slide:last-child { page-break-after: auto; }
+    }
+    @media screen { .slide { margin: 0 auto 40px auto; box-shadow: 0 4px 20px rgba(0,0,0,0.12); } }
+    .slide { width: 1280px; height: 720px; position: relative; overflow: hidden; background: #F8FAFC; }
+    .slide-title { background: linear-gradient(135deg, #1E3A5F 0%, #0F172A 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; color: #fff; }
+    .slide-title .main-title { font-size: 52px; font-weight: 800; letter-spacing: 2px; }
+    .slide-title .sub-title { font-size: 28px; font-weight: 400; margin-top: 16px; opacity: 0.9; }
+    .slide-title .period { font-size: 18px; margin-top: 28px; opacity: 0.7; }
+    .slide-title .deco-line { width: 80px; height: 3px; background: #3B82F6; margin-top: 32px; border-radius: 2px; }
+    .slide-header { background: #1E3A5F; color: #fff; padding: 16px 40px; display: flex; align-items: center; justify-content: space-between; }
+    .slide-header h2 { font-size: 24px; font-weight: 700; }
+    .slide-header .slide-num { font-size: 14px; opacity: 0.7; }
+    .msg-bar { background: #FFF7ED; border-left: 4px solid #F97316; padding: 10px 40px; font-size: 15px; font-weight: 600; color: #1E293B; }
+    .slide-body { padding: 16px 40px; }
+    .kpi-grid { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-top: 12px; }
+    .kpi-card { background: #fff; border-radius: 12px; padding: 18px 20px; text-align: center; flex: 1; min-width: 190px; max-width: 220px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid #E2E8F0; }
+    .kpi-label { font-size: 13px; color: #64748B; font-weight: 600; display: block; margin-bottom: 6px; }
+    .kpi-value { font-size: 34px; font-weight: 800; color: #1E293B; display: block; }
+    .kpi-value.sm { font-size: 26px; }
+    .kpi-change { font-size: 14px; font-weight: 700; display: block; margin-top: 4px; }
+    .kpi-sub { font-size: 12px; display: block; margin-top: 2px; }
+    .pos { color: #22C55E; } .neg { color: #EF4444; } .neu { color: #94A3B8; }
+    .dt { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .dt th { background: #1E3A5F; color: #fff; padding: 9px 12px; text-align: left; font-weight: 600; font-size: 13px; }
+    .dt td { padding: 8px 12px; border-bottom: 1px solid #E2E8F0; }
+    .dt tr:nth-child(even) td { background: #F8FAFC; }
+    .dt .r { text-align: right; font-variant-numeric: tabular-nums; }
+    .dt .b { font-weight: 700; }
+    .dt.sm { font-size: 12px; } .dt.sm th { padding: 6px 10px; font-size: 11px; } .dt.sm td { padding: 5px 10px; }
+    .two-col { display: flex; gap: 20px; }
+    .col { flex: 1; } .col-2 { flex: 2; } .col-1 { flex: 1; }
+    .sec-title { font-size: 15px; font-weight: 700; color: #1E293B; margin-bottom: 8px; padding-bottom: 5px; border-bottom: 2px solid #3B82F6; }
+    .sec-title.g { border-bottom-color: #22C55E; } .sec-title.r { border-bottom-color: #EF4444; } .sec-title.o { border-bottom-color: #F97316; }
+    .bl { list-style: none; padding: 0; }
+    .bl li { padding: 5px 0 5px 18px; position: relative; font-size: 13px; line-height: 1.55; }
+    .bl li::before { content: ''; position: absolute; left: 0; top: 12px; width: 7px; height: 7px; border-radius: 50%; background: #3B82F6; }
+    .bl.g li::before { background: #22C55E; } .bl.r li::before { background: #EF4444; } .bl.o li::before { background: #F97316; }
+    .bl li strong { color: #1E293B; }
+    .nl { list-style: none; padding: 0; counter-reset: item; }
+    .nl li { padding: 6px 0 6px 32px; position: relative; font-size: 13px; line-height: 1.55; counter-increment: item; }
+    .nl li::before { content: counter(item); position: absolute; left: 0; top: 6px; width: 22px; height: 22px; border-radius: 50%; background: #3B82F6; color: #fff; font-size: 11px; font-weight: 700; text-align: center; line-height: 22px; }
+    .nl.g li::before { background: #22C55E; } .nl.r li::before { background: #EF4444; }
+    .qb { border-left: 3px solid #3B82F6; background: #F1F5F9; padding: 8px 14px; margin-bottom: 8px; border-radius: 0 6px 6px 0; font-size: 12px; line-height: 1.55; }
+    .qb .qd { font-weight: 700; color: #1E293B; font-size: 11px; margin-bottom: 2px; }
+    .qb p { color: #475569; }
+    .fb { background: #FFF7ED; border: 1px solid #FDBA74; border-radius: 8px; padding: 10px 14px; margin-top: 10px; }
+    .fb .ft { font-size: 13px; font-weight: 700; color: #F97316; margin-bottom: 5px; }
+    .fb.green { background: #F0FDF4; border-color: #86EFAC; } .fb.green .ft { color: #22C55E; }
+    .note { font-size: 12px; color: #64748B; margin-top: 8px; padding: 8px 12px; background: #F1F5F9; border-radius: 6px; line-height: 1.5; }
+    .at { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+    .at th { background: #1E3A5F; color: #fff; padding: 6px 8px; text-align: left; font-weight: 600; font-size: 11px; }
+    .at td { padding: 5px 8px; border-bottom: 1px solid #E2E8F0; }
+    .at tr:nth-child(even) td { background: #F8FAFC; }
+    .at .no { width: 28px; text-align: center; font-weight: 700; color: #3B82F6; }
+    svg text { font-family: 'Helvetica Neue', 'Hiragino Kaku Gothic ProN', sans-serif; }
+  </style>
+</head>
+<body>
+
+<!-- ===== SLIDE 1: 表紙 ===== -->
+<div class="slide slide-title" id="slide-1">
+  <div class="main-title">BAR FIVE Arrows</div>
+  <div class="sub-title">月次営業報告</div>
+  <div class="deco-line"></div>
+  <div class="period">2026年1月（2026-01-01 〜 2026-01-31）</div>
+</div>
+
+<!-- ===== SLIDE 2: 月間サマリー ===== -->
+<div class="slide" id="slide-2">
+  <div class="slide-header"><h2>月間サマリー</h2><span class="slide-num">2 / 35</span></div>
+  <div class="msg-bar">前年同月比+4.4%と堅調も、12月からの反動減が大きく日平均売上は-27.0%</div>
+  <div class="slide-body" style="display:flex;flex-direction:column;justify-content:center;height:580px;">
+    <div class="kpi-grid">
+      <div class="kpi-card"><span class="kpi-label">売上</span><span class="kpi-value" style="font-size:30px;">¥2,751,170</span><span class="kpi-change neg">▼ 前月比 -36.4%</span><span class="kpi-sub pos">▲ 前年比 +4.4%</span></div>
+      <div class="kpi-card"><span class="kpi-label">客数</span><span class="kpi-value">493<small style="font-size:18px">人</small></span><span class="kpi-change neg">▼ 前月比 -35.6%</span><span class="kpi-sub neg">▼ 前年比 -1.0%</span></div>
+      <div class="kpi-card"><span class="kpi-label">客単価</span><span class="kpi-value">¥5,580</span><span class="kpi-change neg">▼ 前月比 -1.3%</span><span class="kpi-sub pos">▲ 前年比 +5.5%</span></div>
+      <div class="kpi-card"><span class="kpi-label">営業日数</span><span class="kpi-value">27<small style="font-size:18px">日</small></span><span class="kpi-change neu">—</span><span class="kpi-sub neu">—</span></div>
+      <div class="kpi-card"><span class="kpi-label">日平均売上</span><span class="kpi-value sm">¥101,895</span><span class="kpi-change neg">▼ 前月比 -27.0%</span><span class="kpi-sub pos">▲ 前年比 +0.6%</span></div>
+    </div>
+    <div class="note" style="max-width:900px;margin:16px auto 0;">前年同月と比較すると売上+4.4%・客単価+5.5%と成長基調を維持。12月（忘年会シーズン）からの反動は構造的要因であり、1月単月としては良好な水準</div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 3: 売上推移 ===== -->
+<div class="slide" id="slide-3">
+  <div class="slide-header"><h2>売上推移（月次推移）</h2><span class="slide-num">3 / 35</span></div>
+  <div class="msg-bar">9月の底から11-12月で回復した売上が、1月は再び¥275万円台に</div>
+  <div class="slide-body">
+    <div class="two-col">
+      <div class="col-2"><div id="chart-sales"></div></div>
+      <div class="col-1" style="padding-top:20px;">
+        <div class="sec-title">前年同月比較</div>
+        <div style="margin-bottom:12px;"><div style="font-size:12px;color:#64748B;">今月</div><div style="font-size:28px;font-weight:800;color:#3B82F6;">¥2,751,170</div></div>
+        <div style="margin-bottom:12px;"><div style="font-size:12px;color:#64748B;">前年同月</div><div style="font-size:20px;font-weight:700;color:#94A3B8;">¥2,634,590</div></div>
+        <div style="background:#F0FDF4;padding:12px;border-radius:8px;text-align:center;"><div style="font-size:13px;color:#64748B;">前年比</div><div style="font-size:30px;font-weight:800;color:#22C55E;">▲ +4.4%</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 4: 客数推移 ===== -->
+<div class="slide" id="slide-4">
+  <div class="slide-header"><h2>客数推移（月次推移）</h2><span class="slide-num">4 / 35</span></div>
+  <div class="msg-bar">客数493人は直近6ヶ月で2番目に少なく、前年同月比でも-1.0%と微減</div>
+  <div class="slide-body">
+    <div class="two-col">
+      <div class="col-2"><div id="chart-customers"></div></div>
+      <div class="col-1" style="padding-top:20px;">
+        <div class="sec-title">前年同月比較</div>
+        <div style="margin-bottom:12px;"><div style="font-size:12px;color:#64748B;">今月</div><div style="font-size:28px;font-weight:800;color:#3B82F6;">493<span style="font-size:16px">人</span></div></div>
+        <div style="margin-bottom:12px;"><div style="font-size:12px;color:#64748B;">前年同月</div><div style="font-size:20px;font-weight:700;color:#94A3B8;">498<span style="font-size:14px">人</span></div></div>
+        <div style="background:#FEF2F2;padding:12px;border-radius:8px;text-align:center;"><div style="font-size:13px;color:#64748B;">前年比</div><div style="font-size:30px;font-weight:800;color:#EF4444;">▼ -1.0%</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 5: 客単価推移 ===== -->
+<div class="slide" id="slide-5">
+  <div class="slide-header"><h2>客単価推移（月次推移）</h2><span class="slide-num">5 / 35</span></div>
+  <div class="msg-bar">客単価¥5,580は前年同月比+5.5%と改善傾向。コース利用増が寄与</div>
+  <div class="slide-body">
+    <div class="two-col">
+      <div class="col-2"><div id="chart-spend"></div></div>
+      <div class="col-1" style="padding-top:20px;">
+        <div class="sec-title">前年同月比較</div>
+        <div style="margin-bottom:12px;"><div style="font-size:12px;color:#64748B;">今月</div><div style="font-size:28px;font-weight:800;color:#3B82F6;">¥5,580</div></div>
+        <div style="margin-bottom:12px;"><div style="font-size:12px;color:#64748B;">前年同月</div><div style="font-size:20px;font-weight:700;color:#94A3B8;">¥5,290</div></div>
+        <div style="background:#F0FDF4;padding:12px;border-radius:8px;text-align:center;"><div style="font-size:13px;color:#64748B;">前年比</div><div style="font-size:30px;font-weight:800;color:#22C55E;">▲ +5.5%</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 6: 前年同月比 ===== -->
+<div class="slide" id="slide-6">
+  <div class="slide-header"><h2>前年同月比</h2><span class="slide-num">6 / 35</span></div>
+  <div class="msg-bar">売上・客単価・日平均売上はいずれも前年超え。客数のみ微減で、単価主導の成長構造</div>
+  <div class="slide-body"><div id="chart-yoy" style="display:flex;justify-content:center;"></div></div>
+</div>
+
+<!-- ===== SLIDE 7: 週別概況 ===== -->
+<div class="slide" id="slide-7">
+  <div class="slide-header"><h2>週別概況</h2><span class="slide-num">7 / 35</span></div>
+  <div class="msg-bar">月前半（W02・W03）が好調で月を牽引。W01は正月三が日で大幅低迷</div>
+  <div class="slide-body">
+    <div class="two-col">
+      <div class="col-2"><div id="chart-weekly"></div></div>
+      <div class="col-1" style="padding-top:8px;">
+        <table class="dt sm"><thead><tr><th>週</th><th>期間</th><th>売上</th><th>客数</th><th>日平均</th></tr></thead><tbody>
+          <tr><td><b>W01</b></td><td>1/1〜1/3</td><td class="r">¥146,270</td><td class="r">27人</td><td class="r neg">¥48,757</td></tr>
+          <tr><td><b>W02</b></td><td>1/5〜1/10</td><td class="r">¥534,580</td><td class="r">89人</td><td class="r pos">¥133,645</td></tr>
+          <tr><td><b>W03</b></td><td>1/12〜1/18</td><td class="r">¥815,130</td><td class="r">132人</td><td class="r pos">¥116,447</td></tr>
+          <tr><td><b>W04</b></td><td>1/19〜1/25</td><td class="r">¥628,140</td><td class="r">116人</td><td class="r">¥89,734</td></tr>
+          <tr><td><b>W05</b></td><td>1/26〜1/31</td><td class="r">¥627,050</td><td class="r">129人</td><td class="r">¥104,508</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ###NEXT### -->
+
+<script>
+
+<!-- ========== Slide 16: 週別評価まとめ ========== -->
+<div class="slide" id="slide-16">
+  <div class="slide-header"><h2>週別評価まとめ</h2><span class="slide-num">16 / 35</span></div>
+  <div class="slide-body">
+    <div class="message-bar">正月休み（W01）vs 新年会（W02）で日平均売上に2.7倍の差。コース利用が好調の鍵</div>
+    <table class="data-table" style="margin-bottom:16px;">
+      <thead><tr><th>観点</th><th style="background:#EF4444;">不調週（W01）</th><th style="background:#22C55E;">好調週（W02）</th></tr></thead>
+      <tbody>
+        <tr><td>外部要因</td><td>正月三が日。来店動機が弱い</td><td>仕事始め後の新年会需要</td></tr>
+        <tr><td>客数（日平均）</td><td class="negative">9.0人</td><td class="positive">22.3人</td></tr>
+        <tr><td>客単価</td><td>¥5,417</td><td class="positive">¥6,007</td></tr>
+        <tr><td>高額会計（2万円以上）</td><td class="negative">0件</td><td class="positive">5件（19.2%）</td></tr>
+        <tr><td>コース利用</td><td class="negative">なし</td><td class="positive">¥214,500（40.1%）</td></tr>
+        <tr><td>ピーク時間帯</td><td class="negative">分散（ピークなし）</td><td class="positive">20-22時に集中（73.9%）</td></tr>
+      </tbody>
+    </table>
+    <h4 class="section-title">月全体の評価</h4>
+    <ul class="factor-list">
+      <li class="green">5週中2週（W02・W03）が日平均売上¥10万超で好調、W05も回復基調</li>
+      <li class="red">W04は通常営業にもかかわらず日平均¥89,734と低迷。前年同週比-29.1%が課題</li>
+      <li>月トータルでは前年同月比+4.4%を確保し、1月としては及第点</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ========== Slide 17: 曜日別日平均売上 ========== -->
+<div class="slide" id="slide-17">
+  <div class="slide-header"><h2>曜日別日平均売上</h2><span class="slide-num">17 / 35</span></div>
+  <div class="slide-body">
+    <div class="message-bar">金曜¥151,108が突出。木曜・日曜の底上げが月全体の売上改善に直結</div>
+    <svg id="chart-weekday" width="1200" height="460"></svg>
+  </div>
+</div>
+
+<!-- ========== Slide 18: 曜日別の強み・課題 ========== -->
+<div class="slide" id="slide-18">
+  <div class="slide-header"><h2>曜日別の強み・課題</h2><span class="slide-num">18 / 35</span></div>
+  <div class="slide-body">
+    <div class="message-bar">金曜の集客力が圧倒的な一方、木曜は客数不足、日曜は客単価不足と課題が異なる</div>
+    <div class="two-col">
+      <div>
+        <h4 class="section-title" style="color:#22C55E;">強み</h4>
+        <div class="strength-item"><strong>金曜:</strong> 日平均売上¥151,108で月平均の1.48倍。客数27.8人/日と最多で、仕事終わりの飲み需要を確実に取り込んでいる</div>
+        <div class="strength-item"><strong>月曜:</strong> 前月比+3.3%と唯一改善。客数16.7人と安定しており、月曜固定の常連層が存在する可能性</div>
+        <div class="strength-item"><strong>火曜:</strong> 客単価¥5,950で金曜を上回る。少人数だが高単価の来店が特徴</div>
+        <h4 class="section-title" style="color:#F97316;margin-top:16px;">施策案</h4>
+        <div class="action-item"><strong>木曜:</strong> 集客イベント（テイスティングナイト等）で来店動機を創出</div>
+        <div class="action-item"><strong>日曜:</strong> フード+ドリンクのセット提案で客単価向上</div>
+        <div class="action-item"><strong>水曜:</strong> 高単価メニューの推薦強化（ジャパニーズカクテルの訴求等）</div>
+      </div>
+      <div>
+        <h4 class="section-title" style="color:#EF4444;">課題</h4>
+        <div class="challenge-item"><strong>木曜:</strong> 客数12.0人/日で最少。客単価¥6,765は高いが集客が追いつかず、前月比-46.3%の最大下落</div>
+        <div class="challenge-item"><strong>日曜:</strong> 客単価¥4,274で最低。客数13.7人も少なく、週末の締めくくりとして活かせていない</div>
+        <div class="challenge-item"><strong>水曜:</strong> 客単価¥4,846と低め。客数17.7人は確保しているが、追加注文が少ない</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== Slide 19: 時間帯別月間売上 ========== -->
+<div class="slide" id="slide-19">
+  <div class="slide-header"><h2>時間帯別月間売上</h2><span class="slide-num">19 / 35</span></div>
+  <div class="slide-body">
+    <div class="message-bar">20-22時が構成比40.1%で最大。18-20時は11.5%と活用余地が大きい</div>
+    <svg id="chart-hourly" width="1200" height="460"></svg>
+  </div>
+</div>
+
+<!-- ========== Slide 20: 時間帯別の強み・課題 ========== -->
+<div class="slide" id="slide-20">
+  <div class="slide-header"><h2>時間帯別の強み・課題</h2><span class="slide-num">20 / 35</span></div>
+  <div class="slide-body">
+    <div class="message-bar">20-24時のコアタイムで売上の72.5%を稼ぐ。18-20時の集客強化が成長余地</div>
+    <div class="two-col">
+      <div>
+        <h4 class="section-title" style="color:#22C55E;">強み</h4>
+        <div class="strength-item"><strong>20-22時:</strong> 売上¥1,102,020（構成比40.1%）がピーク。客数195人で客あたり売上¥5,651。1次会後〜メインの来店時間帯として安定</div>
+        <div class="strength-item"><strong>22-24時:</strong> 売上¥891,880（構成比32.4%）で2番手。2次会需要が厚く、客数179人を集客</div>
+        <div class="strength-item"><strong>24-26時:</strong> 売上¥440,250（構成比16.0%）。深夜帯として一定の貢献。客あたり売上¥5,949と高め</div>
+      </div>
+      <div>
+        <h4 class="section-title" style="color:#EF4444;">課題</h4>
+        <div class="challenge-item"><strong>18-20時:</strong> 構成比11.5%（¥317,020）にとどまる。月間45人（客数全体の9.1%）しか取り込めておらず、営業開始直後の空白時間帯が発生</div>
+        <div class="challenge-item">早い時間帯は近隣レストランでのディナー前後の需要があるはずだが、来店動機の訴求が不足</div>
+        <h4 class="section-title" style="color:#F97316;margin-top:20px;">施策案</h4>
+        <div class="action-item"><strong>18-20時のハッピーアワー導入:</strong> 1杯目割引や早期来店特典で18時台の来店を促す</div>
+        <div class="action-item"><strong>ディナー前のアペリティフ提案:</strong> 食前酒+軽食のセットで新たな利用シーンを開拓</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== Slide 21: カテゴリ別売上構成比 ========== -->
+<div class="slide" id="slide-21">
+  <div class="slide-header"><h2>カテゴリ別売上構成比</h2><span class="slide-num">21 / 35</span></div>
+  <div class="slide-body">
+    <div class="message-bar">コース&amp;セットが構成比19.1%で最大（前月比+9.1pt）。飲み放題は-14.3ptと大幅減</div>
+    <div class="two-col">
+      <div style="flex:1.2;"><svg id="chart-donut" width="520" height="440"></svg></div>
+      <div style="flex:1;">
+        <table class="data-table" style="font-size:12px;">
+          <thead><tr><th>カテゴリ</th><th>売上</th><th>構成比</th><th>前月比</th></tr></thead>
+          <tbody>
+            <tr><td><strong>コース&amp;セット</strong></td><td>¥504,300</td><td><strong>19.1%</strong></td><td class="positive">+9.1pt</td></tr>
+            <tr><td>未設定（飲み放題等）</td><td>¥280,000</td><td>10.6%</td><td class="negative">-14.3pt</td></tr>
+            <tr><td>ジャパニーズカクテル</td><td>¥265,200</td><td>10.0%</td><td class="positive">+1.4pt</td></tr>
+            <tr><td>オリジナルカクテル</td><td>¥172,500</td><td>6.5%</td><td class="positive">+0.3pt</td></tr>
+            <tr><td>その他</td><td>¥171,700</td><td>6.5%</td><td class="negative">-0.1pt</td></tr>
+            <tr><td>ワイン（グラス）</td><td>¥162,600</td><td>6.1%</td><td class="positive">+3.4pt</td></tr>
+            <tr><td>スナック</td><td>¥138,000</td><td>5.2%</td><td class="positive">+1.4pt</td></tr>
+            <tr><td>ウイスキー</td><td>¥126,100</td><td>4.8%</td><td class="positive">+0.9pt</td></tr>
+            <tr><td>アラカルト</td><td>¥102,000</td><td>3.9%</td><td class="positive">+1.0pt</td></tr>
+            <tr><td>その他カテゴリ計</td><td>¥778,770</td><td>29.4%</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

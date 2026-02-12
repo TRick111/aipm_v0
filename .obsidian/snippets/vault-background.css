@@ -1,6 +1,8 @@
-/* Vault背景色カスタマイズ */
+/* Vault背景色カスタマイズ — ライト / ダーク両対応 */
+/* このワークスペースを他Vaultと区別するための独自背景色 */
 
-:root {
+/* ===== ライトモード ===== */
+.theme-light {
   --background-primary: #f7f3ea !important;
   --background-primary-alt: #f7f3ea !important;
   --background-secondary: #f7f3ea !important;
@@ -11,52 +13,71 @@
   --tab-container-background: #f7f3ea !important;
 }
 
+/* ===== ダークモード ===== */
+/* 標準ダーク (#1e1e1e) より少し暖色寄りにして識別しやすくする */
+.theme-dark {
+  --background-primary: #1e1b16 !important;
+  --background-primary-alt: #1e1b16 !important;
+  --background-secondary: #1e1b16 !important;
+  --background-secondary-alt: #252118 !important;
+  --titlebar-background: #1e1b16 !important;
+  --titlebar-background-focused: #1e1b16 !important;
+  --tab-background-active: #1e1b16 !important;
+  --tab-container-background: #1e1b16 !important;
+
+  /* テキスト色を少し温かく */
+  --text-normal: #dcd5c8 !important;
+  --text-muted: #9e9685 !important;
+  --text-faint: #736b5e !important;
+}
+
+/* ===== 共通セレクタ (ライト/ダーク両方に適用) ===== */
 body {
-  background-color: #f7f3ea !important;
+  background-color: var(--background-primary) !important;
 }
 
 .app-container {
-  background-color: #f7f3ea !important;
+  background-color: var(--background-primary) !important;
 }
 
 .workspace {
-  background-color: #f7f3ea !important;
+  background-color: var(--background-primary) !important;
 }
 
 .workspace-leaf-content {
-  background-color: #f7f3ea !important;
+  background-color: var(--background-primary) !important;
 }
 
 .markdown-source-view,
 .markdown-preview-view {
-  background-color: #f7f3ea !important;
+  background-color: var(--background-primary) !important;
 }
 
 /* タブ（ヘッダー・個別タブ・アクティブタブ） */
 .workspace-tab-header-container {
-  background-color: #f7f3ea !important;
+  background-color: var(--background-primary) !important;
 }
 
 .workspace-tab-header {
-  background-color: #f7f3ea !important;
+  background-color: var(--background-primary) !important;
 }
 
 .workspace-tab-header.is-active {
-  background-color: #f7f3ea !important;
+  background-color: var(--background-primary) !important;
 }
 
 .workspace-tab-header-inner {
-  background-color: #f7f3ea !important;
+  background-color: var(--background-primary) !important;
 }
 
 /* タイトルバー */
 .titlebar,
 .titlebar-inner {
-  background-color: #f7f3ea !important;
+  background-color: var(--background-primary) !important;
 }
 
 .mod-top .workspace-tab-header-container {
-  background-color: #f7f3ea !important;
+  background-color: var(--background-primary) !important;
 }
 
 /* サイドバー */
@@ -66,16 +87,16 @@ body {
 .workspace-leaf-content[data-type="starred"],
 .workspace-leaf-content[data-type="backlink"],
 .workspace-leaf-content[data-type="outline"] {
-  background-color: #f7f3ea !important;
+  background-color: var(--background-primary) !important;
 }
 
 /* サイドドック */
 .workspace-sidedock,
 .workspace-ribbon {
-  background-color: #f7f3ea !important;
+  background-color: var(--background-primary) !important;
 }
 
 /* ステータスバー */
 .status-bar {
-  background-color: #f7f3ea !important;
+  background-color: var(--background-primary) !important;
 }

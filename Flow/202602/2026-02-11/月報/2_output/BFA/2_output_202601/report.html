@@ -10,7 +10,8 @@
 body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;color:#334155;font-size:20px}
 .slide{width:1280px;height:720px;position:relative;overflow:hidden;background:#fff;margin:0 auto}
 @media screen{.slide{margin:0 auto 40px;box-shadow:0 4px 20px rgba(0,0,0,.12)}}
-@media print{body{margin:0;padding:0;background:#fff}.slide{page-break-after:always;page-break-inside:avoid;break-after:page;break-inside:avoid;box-shadow:none;margin:0}.slide:last-child{page-break-after:auto}}
+@page{size:1280px 720px;margin:0}
+@media print{*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important}body{margin:0;padding:0;background:#fff;width:1280px}.slide{page-break-after:always;page-break-inside:avoid;break-after:page;break-inside:avoid;box-shadow:none;margin:0;width:1280px;height:720px}.slide:last-child{page-break-after:auto}}
 .slide-title{background:linear-gradient(135deg,#1E3A5F 0%,#0F172A 100%);display:flex;flex-direction:column;justify-content:center;align-items:center;color:#fff}
 .slide-title h1{font-size:48px;font-weight:800;letter-spacing:2px}
 .slide-title h2{font-size:28px;font-weight:400;margin-top:12px;opacity:.9}
@@ -82,7 +83,7 @@ strong{font-weight:700}
 <div class="msg-bar">前年同月比+4.4%と堅調も、12月からの反動減が大きく日平均売上は-27.0%</div>
 <div class="slide-body">
 <div class="kpi-grid">
-<div class="kpi-card"><span class="kpi-label">売上</span><span class="kpi-value">¥2,751,170</span><span class="kpi-change neg">▼ 前月比 -36.4%</span><span class="kpi-sub pos">▲ 前年比 +4.4%</span></div>
+<div class="kpi-card"><span class="kpi-label">売上</span><span class="kpi-value" style="font-size:34px">¥2,751,170</span><span class="kpi-change neg">▼ 前月比 -36.4%</span><span class="kpi-sub pos">▲ 前年比 +4.4%</span></div>
 <div class="kpi-card"><span class="kpi-label">客数</span><span class="kpi-value">493<small style="font-size:28px">人</small></span><span class="kpi-change neg">▼ 前月比 -35.6%</span><span class="kpi-sub neg">▼ 前年比 -1.0%</span></div>
 <div class="kpi-card"><span class="kpi-label">客単価</span><span class="kpi-value">¥5,580</span><span class="kpi-change neg">▼ 前月比 -1.3%</span><span class="kpi-sub pos">▲ 前年比 +5.5%</span></div>
 <div class="kpi-card"><span class="kpi-label">営業日数</span><span class="kpi-value">27<small style="font-size:28px">日</small></span><span class="kpi-change neu">—</span></div>
@@ -173,20 +174,20 @@ strong{font-weight:700}
 
 <!-- Slide 7: 週別概況 -->
 <div class="slide" id="slide-7">
-<div class="slide-header"><h2>週別概況</h2><span class="pn">7 / 35</span></div>
+<div class="slide-header"><h2>週別概況 ─ 1日あたり売上（日平均）</h2><span class="pn">7 / 35</span></div>
 <div class="msg-bar">月前半（W02・W03）が好調で月を牽引。W01は正月三が日で大幅低迷</div>
 <div class="slide-body">
 <div class="two-col">
 <div class="col-chart"><div id="chart-7" style="width:720px;height:460px"></div></div>
 <div class="col-text">
-<div class="sec-title">週別データ</div>
+<div class="sec-title">週別データ（日平均売上）</div>
 <table class="dt sm" style="margin-top:8px">
-<tr><th>週</th><th class="r">日平均</th><th class="r">前年比</th></tr>
-<tr class="worst"><td><strong>W01</strong> 1/1〜1/3</td><td class="r b neg">¥48,757</td><td class="r neg">-65.5%</td></tr>
-<tr class="best"><td><strong>W02</strong> 1/5〜1/10</td><td class="r b pos">¥133,645</td><td class="r neg">-12.9%</td></tr>
-<tr class="best"><td><strong>W03</strong> 1/12〜1/18</td><td class="r b pos">¥116,447</td><td class="r pos">+22.0%</td></tr>
-<tr><td><strong>W04</strong> 1/19〜1/25</td><td class="r b">¥89,734</td><td class="r neg">-29.1%</td></tr>
-<tr><td><strong>W05</strong> 1/26〜1/31</td><td class="r b">¥104,508</td><td class="r neg">-10.2%</td></tr>
+<tr><th>週</th><th class="r">営業日</th><th class="r">日平均</th><th class="r">前年比</th></tr>
+<tr class="worst"><td><strong>W01</strong> 1/1〜1/3</td><td class="r">3日</td><td class="r b neg">¥48,757</td><td class="r neg">-65.5%</td></tr>
+<tr class="best"><td><strong>W02</strong> 1/5〜1/10</td><td class="r">4日</td><td class="r b pos">¥133,645</td><td class="r neg">-12.9%</td></tr>
+<tr class="best"><td><strong>W03</strong> 1/12〜1/18</td><td class="r">7日</td><td class="r b pos">¥116,447</td><td class="r pos">+22.0%</td></tr>
+<tr><td><strong>W04</strong> 1/19〜1/25</td><td class="r">7日</td><td class="r b">¥89,734</td><td class="r neg">-29.1%</td></tr>
+<tr><td><strong>W05</strong> 1/26〜1/31</td><td class="r">6日</td><td class="r b">¥104,508</td><td class="r neg">-10.2%</td></tr>
 </table>
 </div></div>
 </div>
@@ -417,7 +418,7 @@ strong{font-weight:700}
 <div class="msg-bar">正月休み（W01）vs 新年会（W02）で日平均売上に2.7倍の差。コース利用が好調の鍵</div>
 <div class="slide-body">
 <div class="sec-title o">好調週 vs 不調週 対比</div>
-<table class="dt" style="margin-top:8px">
+<table class="dt sm" style="margin-top:4px">
 <tr><th>観点</th><th>不調週（W01）</th><th>好調週（W02）</th></tr>
 <tr><td>外部要因</td><td>正月三が日。来店動機が弱い</td><td>仕事始め後の新年会需要</td></tr>
 <tr><td>客数（日平均）</td><td class="neg">9.0人</td><td class="pos">22.3人</td></tr>
@@ -426,8 +427,8 @@ strong{font-weight:700}
 <tr><td>コース利用</td><td class="neg">なし</td><td class="pos b">¥214,500（40.1%）</td></tr>
 <tr><td>ピーク時間帯</td><td class="neg">分散（ピークなし）</td><td class="pos">20-22時に集中（73.9%）</td></tr>
 </table>
-<div class="sec-title" style="margin-top:14px">月全体の評価</div>
-<ul class="bl" style="margin-top:6px">
+<div class="sec-title" style="margin-top:8px">月全体の評価</div>
+<ul class="bl" style="margin-top:4px;font-size:17px">
 <li>5週中2週（W02・W03）が日平均売上¥10万超で好調、W05も回復基調</li>
 <li>W04は通常営業にもかかわらず日平均¥89,734と低迷。前年同週比-29.1%が課題</li>
 <li>月トータルでは前年同月比+4.4%を確保し、1月としては及第点</li>
@@ -613,10 +614,10 @@ strong{font-weight:700}
 
 <!-- Slide 23: 商品別売上上位15 -->
 <div class="slide" id="slide-23">
-<div class="slide-header"><h2>商品別売上 上位15</h2><span class="pn">23 / 35</span></div>
+<div class="slide-header"><h2>商品別売上 上位10</h2><span class="pn">23 / 35</span></div>
 <div class="msg-bar">CLPコースが構成比15.5%で1位に躍進。飲み放題は10.6%に縮小</div>
 <div class="slide-body">
-<table class="dt sm">
+<table class="dt">
 <tr><th>順位</th><th>商品名</th><th class="r">月間売上</th><th class="r">構成比</th><th class="r">前月比</th></tr>
 <tr><td class="b">1</td><td>その他CLPコース</td><td class="r b">¥409,800</td><td class="r b">15.5%</td><td class="r pos">+9.15pt</td></tr>
 <tr><td class="b">2</td><td>7000円飲み放題付（2時間制）</td><td class="r">¥280,000</td><td class="r">10.6%</td><td class="r neg">-14.27pt</td></tr>
@@ -628,11 +629,6 @@ strong{font-weight:700}
 <tr><td>8</td><td>本わさびジンソニック</td><td class="r">¥54,000</td><td class="r">2.0%</td><td class="r pos">+0.34pt</td></tr>
 <tr><td>9</td><td>Hojicha Negroni</td><td class="r">¥40,800</td><td class="r">1.5%</td><td class="r pos">+0.27pt</td></tr>
 <tr><td>10</td><td>サングリア赤</td><td class="r">¥37,800</td><td class="r">1.4%</td><td class="r pos">+0.78pt</td></tr>
-<tr><td>11</td><td>チーズ盛り合わせ</td><td class="r">¥37,400</td><td class="r">1.4%</td><td class="r pos">+0.35pt</td></tr>
-<tr><td>12</td><td>Niu Japonica</td><td class="r">¥36,800</td><td class="r">1.4%</td><td class="r pos">+0.15pt</td></tr>
-<tr><td>13</td><td>クラシックカクテル</td><td class="r">¥35,500</td><td class="r">1.3%</td><td class="r pos">+0.08pt</td></tr>
-<tr><td>14</td><td>Japanese High Tea</td><td class="r">¥34,200</td><td class="r">1.3%</td><td class="r pos">+0.42pt</td></tr>
-<tr><td>15</td><td>6500円飲み放題付（2時間制）</td><td class="r">¥32,500</td><td class="r">1.2%</td><td class="r neg">-1.84pt</td></tr>
 </table>
 </div>
 </div>
@@ -727,7 +723,6 @@ strong{font-weight:700}
 <li><strong>木曜の客数不足（12.0人/日）</strong>: 前月比-46.3%と最大の下落。客単価¥6,765は高いが、来店者数が絶対的に不足</li>
 <li><strong>日曜の客単価低迷（¥4,274）</strong>: 月内最低の客単価。客数13.7人も少なく、週末の最終日としてのポテンシャルを活かせていない</li>
 <li><strong>18-20時の空白（構成比11.5%）</strong>: 月間45人しか取り込めておらず、営業開始直後の集客に課題。ハッピーアワー等の施策が必要</li>
-<li><strong>口コミ投稿ゼロ</strong>: 1月は新規口コミがゼロ。顧客とのエンゲージメント強化が必要</li>
 </ol>
 </div>
 </div>
@@ -773,7 +768,6 @@ strong{font-weight:700}
 <div class="sec-title" style="margin-top:10px">仕事終わり・2次会としての利用</div>
 <div class="qb"><div class="qd">1月19日（月）橋本さん:</div>「30代の女性と50代の男性の2名のグループが、会社の反省会後に来店し、再来店の意向を示してくれた。」</div>
 <div class="qb"><div class="qd">1月24日（土）橋本さん:</div>「30代〜40代の男性3名が飲みの締めとして来店し、カクテル数種、生チョコレート、パテドカンパーニュを注文した。」</div>
-<div class="qb"><div class="qd">1月30日（金）橋本さん:</div>「会社の飲み会後の2軒目として、30代くらいの男女5名の予約が入った。」</div>
 </div>
 </div>
 
@@ -787,7 +781,6 @@ strong{font-weight:700}
 <div class="qb"><div class="qd">1月31日（土）大泉さん:</div>「保坂さんにドリンクを作る際にスピードアップの意識を持ってもらうよう伝えた。どのドリンクから作るか、どの順番で計量するかをお伝えしながら作成することで、保坂さんのスピードが少しずつ速くなってきていると感じている。」</div>
 <div class="sec-title" style="margin-top:10px">キッチン・ホールスキルの習得</div>
 <div class="qb"><div class="qd">1月11日（日）大泉さん:</div>「新しいスタッフの保坂が2日目にもかかわらず、ホールの動きをほぼ任せられるくらいよく動いている。お客様のご案内に際して、どの席に通すかの細かい点を少しずつ実行してもらっている。」</div>
-<div class="qb"><div class="qd">1月9日（金）橋本さん:</div>「新規従業員にドリンク作成を今月中に覚えてもらい、来月からは新規従業員がメインでドリンクを作成し、管理者がサブに入る予定である。」</div>
 <div class="qb"><div class="qd">1月25日（日）橋本さん:</div>「新人の従業員がフード作成の際に手順を丁寧に踏まず、途中で突っ走ってしまう傾向が見られた。原因は、新人の従業員がレシピをまだしっかりと理解できていないことによるものである。」</div>
 </div>
 </div>
@@ -802,7 +795,6 @@ strong{font-weight:700}
 <div class="sec-title" style="margin-top:10px">多様な来店経路と顧客の声</div>
 <div class="qb"><div class="qd">1月16日（金）大泉さん:</div>「カウンター席の20代女性2名はインスタを見て来店し、ジャスミンが好きだという情報を基にサングリアを勧め、喜んでもらえた。カウンター席の40代男女2名は兵庫からの出張で、新幹線の中で検索して来店した。」</div>
 <div class="qb"><div class="qd">1月24日（土）大泉さん:</div>「男女6名様のグループの中の1名が、2〜3年前から5〜6回来店したことがあると話した。フルーツカクテルがとても美味しかったので復活して欲しいと要望を受けた。」</div>
-<div class="qb"><div class="qd">1月27日（火）大泉さん:</div>「40〜50代の男女3名がHPから予約し、ウイスキーを楽しむために来店し、オススメを聞きながら会話を楽しんだ。口コミを記載していただいた。」</div>
 </div>
 </div>
 
@@ -942,7 +934,7 @@ function addCallout(svg, cx, cy, text, opts) {
   g.selectAll('.lb').data(data).join('text').attr('x',function(d){return x(d.l)}).attr('y',function(d){return y(d.v)-18}).attr('text-anchor','middle').attr('font-size',function(d,i){return i===5?'22px':'15px'}).attr('font-weight',function(d,i){return i===5?'800':'400'}).attr('fill',function(d,i){return i===5?'#1E293B':'#64748B'}).text(function(d){return '¥'+(d.v/10000).toFixed(0)+'万'});
   g.append('g').attr('transform','translate(0,'+h+')').call(d3.axisBottom(x)).selectAll('text').attr('font-size','16px');
   g.append('g').call(d3.axisLeft(y).ticks(5).tickFormat(function(d){return '¥'+(d/10000)+'万'})).selectAll('text').attr('font-size','14px');
-  addCallout(svg,m.l+x('1月')+20,m.t+y(2751170)-45,'¥275万 前年比+4.4%',{fontSize:'22px'});
+  addCallout(svg,m.l+x('1月')-190,m.t+y(2751170)-45,'¥275万 前年比+4.4%',{fontSize:'22px'});
 })();
 
 // Chart 4: Customer Trend
@@ -965,7 +957,7 @@ function addCallout(svg, cx, cy, text, opts) {
   g.selectAll('.lb').data(data).join('text').attr('x',function(d){return x(d.l)}).attr('y',function(d){return y(d.v)-18}).attr('text-anchor','middle').attr('font-size',function(d,i){return i===5?'22px':'15px'}).attr('font-weight',function(d,i){return i===5?'800':'400'}).attr('fill',function(d,i){return i===5?'#1E293B':'#64748B'}).text(function(d){return d.v+'人'});
   g.append('g').attr('transform','translate(0,'+h+')').call(d3.axisBottom(x)).selectAll('text').attr('font-size','16px');
   g.append('g').call(d3.axisLeft(y).ticks(5).tickFormat(function(d){return d+'人'})).selectAll('text').attr('font-size','14px');
-  addCallout(svg,m.l+x('1月')+20,m.t+y(493)-45,'493人 前年比-1.0%',{fontSize:'22px',bg:'#FEF2F2',border:'#EF4444'});
+  addCallout(svg,m.l+x('1月')-180,m.t+y(493)-45,'493人 前年比-1.0%',{fontSize:'22px',bg:'#FEF2F2',border:'#EF4444'});
 })();
 
 // Chart 5: Unit Price Trend
@@ -988,7 +980,7 @@ function addCallout(svg, cx, cy, text, opts) {
   g.selectAll('.lb').data(data).join('text').attr('x',function(d){return x(d.l)}).attr('y',function(d){return y(d.v)-18}).attr('text-anchor','middle').attr('font-size',function(d,i){return i===5?'22px':'15px'}).attr('font-weight',function(d,i){return i===5?'800':'400'}).attr('fill',function(d,i){return i===5?'#1E293B':'#64748B'}).text(function(d){return '¥'+d.v.toLocaleString()});
   g.append('g').attr('transform','translate(0,'+h+')').call(d3.axisBottom(x)).selectAll('text').attr('font-size','16px');
   g.append('g').call(d3.axisLeft(y).ticks(5).tickFormat(function(d){return '¥'+d.toLocaleString()})).selectAll('text').attr('font-size','14px');
-  addCallout(svg,m.l+x('1月')+20,m.t+y(5580)-45,'¥5,580 前年比+5.5%',{fontSize:'22px',bg:'#F0FDF4',border:'#22C55E'});
+  addCallout(svg,m.l+x('1月')-180,m.t+y(5580)-45,'¥5,580 前年比+5.5%',{fontSize:'22px',bg:'#F0FDF4',border:'#22C55E'});
 })();
 
 // Chart 6: YoY Comparison (prev year = 100% baseline)

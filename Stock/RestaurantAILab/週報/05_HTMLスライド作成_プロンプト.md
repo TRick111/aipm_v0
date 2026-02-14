@@ -77,11 +77,12 @@
 各スライドのヘッダーは以下の形式で統一すること:
 
 ```html
-<div class="slide-header"><h2>スライドタイトル</h2><span class="pn">N / 総枚数</span></div>
+<div class="slide-header"><h2>スライドタイトル</h2><span class="pn">N / 総枚数</span><div class="progress-bar" style="width:X%"></div></div>
 ```
 
 - `<h2>` タグでタイトルを囲む（font-size: 32px, font-weight: 700）
 - ページ番号 `<span class="pn">` を右端に配置（font-size: 16px, opacity: 0.7）
+- **プログレスバー**: `<div class="progress-bar" style="width:X%">` をヘッダー末尾に配置。X = `(スライド番号 - 1) / (総枚数 - 1) * 100`（%）
 - セクションタグが必要な場合は `<h2>` 内に含める: `<h2><span class="section-tag">第1部</span> タイトル</h2>`
 
 ```css
@@ -92,9 +93,19 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: relative;           /* プログレスバーの基準 */
 }
 .slide-header h2 { font-size: 32px; font-weight: 700; }
 .slide-header .pn { font-size: 16px; opacity: 0.7; }
+/* プログレスバー: ヘッダー下部に細い白半透明バーで進捗を表示 */
+.progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: rgba(255,255,255,0.4);
+  border-radius: 0 2px 2px 0;
+}
 .slide-header .section-tag {
   background: rgba(255,255,255,0.2);
   padding: 4px 12px;
@@ -182,7 +193,7 @@
 | 要素 | フォントサイズ | ウェイト | 用途 |
 |:---|:---|:---|:---|
 | スライドタイトル（ヘッダー帯） | `32px` | `700` | 各スライドのヘッダー帯に表示 |
-| **主張バー（msg-bar）** | `24px` 〜 `27px` | `700` | **各スライドの核心メッセージ（1文）。ヘッダー直下に配置** |
+| **主張バー（msg-bar）** | `28px` 〜 `30px` | `800` | **各スライドの核心メッセージ（1文）。ヘッダー直下に配置** |
 | KPI大数字 | `44px` 〜 `48px` | `800` | 売上金額、主要指標の数値 |
 | KPI比較数字 | `22px` 〜 `24px` | `700` | 前週比・前年比のパーセンテージ |
 | KPIラベル | `17px` | `600` | KPIカードの指標名 |
@@ -201,6 +212,7 @@
 
 **強調ルール**:
 - **最も伝えたい数字**はフォントサイズを周囲の **2倍以上** にし、太字 + 色で強調する
+- 見出し → 本文 → 補足のサイズ比は **1.5〜2 : 1 : 0.85** を目安にする
 - プラスの変化は `#22C55E`（グリーン）、マイナスは `#EF4444`（レッド）
 - 比較数字の前に `▲`（増加）/ `▼`（減少）を付ける
 
@@ -218,8 +230,8 @@
   background: #FFF7ED;        /* 薄いオレンジ背景 */
   border-left: 5px solid #F97316;  /* オレンジ左ボーダー */
   padding: 12px 40px;
-  font-size: 24px;            /* 主張テキストは大きく（24px以上） */
-  font-weight: 700;
+  font-size: 28px;            /* 主張テキストは大きく（28px以上） */
+  font-weight: 800;
   color: #1E293B;
   line-height: 1.4;
 }
@@ -240,7 +252,7 @@
 - スライド構成案に「メッセージ」欄がないスライドでも、そのスライドの最も重要なポイントを1文で要約して主張バーに入れること
 - タイトルスライド（スライド1）のみ主張バー不要
 - **主張バーとは別に、スライド下部に `message-box` 等の要素を追加しない**（主張バーが唯一のメッセージ表示エリア）
-- 主張バーのフォントサイズは **`24px` 以上** を維持する（小さくしない）
+- 主張バーのフォントサイズは **`28px` 以上** を維持する（小さくしない）
 
 #### 3.4 レイアウトパターン
 
@@ -255,6 +267,19 @@
 | **箇条書き** | 3〜5点の要点 + アイコン | スライド12, 17, 18, 20, 23-25 |
 | **施策一覧** | 2カラム表 | スライド26-28 |
 | **日報引用** | 引用ブロック並べ | 日報スライド |
+
+#### 3.5 カードスタイル統一ガイド
+
+カード型UIは以下の2タイプに統一し、スライド全体の統一感を保つ:
+
+| タイプ | border-radius | padding | box-shadow | 用途 |
+|:---|:---|:---|:---|:---|
+| **コンテンツカード** | `12px` | `16px 20px` | `0 2px 8px rgba(0,0,0,0.06)` | gauge-card, metric-card, pillar-card, chart-container |
+| **リストアイテム** | `10px` | `14px 18px` | `0 1px 4px rgba(0,0,0,0.05)` | bullet-list li, success/challenge-item, インラインカード |
+
+- `border-radius` は `12px`（カード）と `10px`（リストアイテム）の2種類のみ使用する
+- `8px` や `16px` など中途半端な値を混在させない
+- box-shadow の opacity は `0.05`〜`0.06` の範囲に統一する
 
 ---
 
@@ -484,16 +509,25 @@ function addBadge(g, cx, cy, text, color, bgColor) {
 - 割合棒グラフ: 130%以上の指標に **`★ 好調`** バッジ
 - 時間帯別: 最大時間帯に **`売上の○○%`** バッジ
 
-**⑥ ドーナツチャートの突出（Explode）**
+**⑥ ドーナツチャートの突出（Explode）+ リーダーライン**
 
-最大セグメントを中心から10px程度外側に引き出す:
+最大セグメントを中心から18px外側に引き出し、リーダーライン（引き出し線）でカテゴリ名を表示する:
 
 ```javascript
+// Explode（18px）
 arcs.filter((d, i) => i === 0).attr('transform', d => {
   const [cx, cy] = arc.centroid(d);
   const dist = Math.sqrt(cx * cx + cy * cy);
-  return `translate(${cx / dist * 10}, ${cy / dist * 10})`;
+  return `translate(${cx / dist * 18}, ${cy / dist * 18})`;
 });
+
+// Leader line for the largest segment
+const maxSlice = pie(data)[0];
+const midAngle = (maxSlice.startAngle + maxSlice.endAngle) / 2;
+const outerPt = [Math.sin(midAngle) * (radius + 22), -Math.cos(midAngle) * (radius + 22)];
+const labelPt = [Math.sin(midAngle) * (radius + 50), -Math.cos(midAngle) * (radius + 50)];
+const endPt = [labelPt[0] + (labelPt[0] > 0 ? 30 : -30), labelPt[1]];
+// polyline: outerPt → labelPt → endPt, then text at endPt
 ```
 
 **⑦ 割合棒グラフ（複数指標の比較用）**
@@ -517,15 +551,17 @@ function drawRatioBar(svgId, labels, thisW, avg4, fmtFns, color) {
 
 **強調手法の適用ルール（まとめ）:**
 
-| グラフ種別 | 必須の強調手法 |
+**重要: 1つのグラフに適用する強調手法は最大2つまでに絞ること。** 手法を重ねすぎると視覚ノイズになり、かえって注目ポイントが不明瞭になる。
+
+| グラフ種別 | 必須の強調手法（最大2つ） |
 |:---|:---|
 | 折れ線グラフ | ①トレンド矢印 + 吹き出し（最終データポイント） |
-| 曜日別棒グラフ | 吹き出し（最高/最低） + ②丸囲み（最高） + ③背景帯（最低） |
-| 割合棒グラフ | ④太枠 + ③背景帯 + ⑤バッジ |
-| 時間帯別棒グラフ | ③背景帯 + ④太枠 + ⑤バッジ（最大時間帯） |
+| 曜日別棒グラフ | 吹き出し（最高/最低） + ③背景帯（最低） |
+| 割合棒グラフ | ④太枠 + ⑤バッジ |
+| 時間帯別棒グラフ | ④太枠 + ⑤バッジ（最大時間帯） |
 | グループサイズ棒グラフ | ④太枠 + ⑤バッジ（MAX） |
 | 商品別棒グラフ | ④太枠（トップ） + 非最大バーの透明度を下げる |
-| ドーナツチャート | ⑥突出（最大セグメント） |
+| ドーナツチャート | ⑥突出 + リーダーライン（最大セグメント） |
 
 ##### c) 増減矢印の表示
 前週比・前年比・4週平均比の数値の横に、SVGの矢印アイコンを付ける:
@@ -689,10 +725,12 @@ svg.append('g')
 #### 5.5 ドーナツチャート（カテゴリ別構成比）
 
 - D3.jsの `d3.arc()` で描画
-- 上位3カテゴリは個別色、残りは `#E2E8F0`（ライトグレー）でまとめる
-- **最大カテゴリのセグメントを中心から10px外側に引き出す**（explode効果）
+- **セグメント数は上位5カテゴリ + 「その他」の6セグメント以内に統合する**（セグメントが多すぎると読みにくくなるため）
+- 上位5カテゴリは個別色、残りは `#CBD5E1`（ライトグレー）で「その他」にまとめる
+- **最大カテゴリのセグメントを中心から18px外側に引き出す**（explode効果）
+- **最大セグメントにリーダーライン（引き出し線）を追加する**: セグメント外周からポリラインでカテゴリ名+構成比%を表示
 - 中央に「合計金額」を大きく表示（`24px` 以上）
-- セグメント上のラベル（構成比%）は **`14px` 以上**
+- セグメント上のラベル（構成比%）は **`16px` 以上**
 - 中央テキストのラベルは `18px`、金額は `24px` 以上
 
 #### 5.6 表スライド（商品TOP10、深掘り比較表）

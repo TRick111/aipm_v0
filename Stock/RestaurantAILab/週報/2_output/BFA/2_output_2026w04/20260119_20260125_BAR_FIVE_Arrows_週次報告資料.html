@@ -16,11 +16,12 @@ body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN'
 .slide-title h1{font-size:48px;font-weight:800;letter-spacing:2px}
 .slide-title h2{font-size:28px;font-weight:400;margin-top:12px;opacity:.9}
 .slide-title p{font-size:18px;margin-top:24px;opacity:.7}
-.slide-header{background:#1E3A5F;color:#fff;padding:14px 40px;display:flex;align-items:center;justify-content:space-between}
+.slide-header{background:#1E3A5F;color:#fff;padding:14px 40px;display:flex;align-items:center;justify-content:space-between;position:relative}
+.progress-bar{position:absolute;bottom:0;left:0;height:3px;background:rgba(255,255,255,0.4);border-radius:0 2px 2px 0;transition:width 0.3s}
 .slide-header h2{font-size:32px;font-weight:700}
 .slide-header .section-tag{background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:4px;font-size:20px;font-weight:500}
 .slide-header .pn{font-size:16px;opacity:.7}
-.msg-bar{background:#FFF7ED;border-left:5px solid #F97316;padding:12px 40px;font-size:24px;font-weight:700;color:#1E293B;line-height:1.4}
+.msg-bar{background:#FFF7ED;border-left:5px solid #F97316;padding:12px 40px;font-size:28px;font-weight:800;color:#1E293B;line-height:1.4}
 .slide-body{padding:16px 40px;overflow:hidden}
 .kpi-cards{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:8px}
 .kpi-card{background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:14px 16px;text-align:center;flex:1;min-width:170px;max-width:260px;border-top:4px solid #3B82F6}
@@ -55,7 +56,7 @@ h3.section-title{font-size:24px;color:#1E293B;margin-bottom:12px;font-weight:800
 .compare-col.fri{background:linear-gradient(135deg,#F0FDF4,#F5FFF5);border-radius:0 12px 12px 0}
 .compare-col h4{font-size:22px;margin-bottom:12px;font-weight:700}
 .bullet-list{list-style:none;padding:0}
-.bullet-list li{padding:10px 14px;margin-bottom:8px;background:white;border-radius:8px;font-size:18px;line-height:1.6;box-shadow:0 1px 4px rgba(0,0,0,0.04);display:flex;gap:10px}
+.bullet-list li{padding:14px 18px;margin-bottom:8px;background:white;border-radius:10px;font-size:18px;line-height:1.6;box-shadow:0 1px 4px rgba(0,0,0,0.05);display:flex;gap:10px}
 .bullet-list li .icon{font-size:22px;flex-shrink:0}
 .bullet-list li .text{flex:1}
 .bullet-list li strong{color:#1E293B}
@@ -64,24 +65,24 @@ h3.section-title{font-size:24px;color:#1E293B;margin-bottom:12px;font-weight:800
 .metric-card .label{font-size:17px;color:#64748B;font-weight:600;margin-bottom:4px}
 .metric-card .value{font-size:40px;font-weight:800;color:#1E293B}
 .metric-card .sub{font-size:18px;margin-top:4px}
-.gauge-card{background:white;border-radius:16px;padding:24px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.06);flex:1}
+.gauge-card{background:white;border-radius:12px;padding:16px 20px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.06);flex:1}
 .gauge-card .gauge-label{font-size:17px;color:#64748B;font-weight:600;margin-bottom:8px}
 .gauge-card .gauge-value{font-size:48px;font-weight:900}
-.gauge-card .gauge-eval{font-size:18px;margin-top:6px;padding:4px 12px;border-radius:20px;display:inline-block}
+.gauge-card .gauge-eval{font-size:22px;margin-top:6px;padding:4px 12px;border-radius:20px;display:inline-block}
 .action-table{width:100%;border-collapse:collapse;font-size:16px}
 .action-table th{background:#1E3A5F;color:white;padding:8px 10px;text-align:left;font-weight:700;font-size:15px}
 .action-table td{padding:7px 10px;border-bottom:1px solid #E2E8F0}
 .action-table tr:nth-child(even){background:#F8FAFC}
 .action-cat-title{font-size:20px;font-weight:700;color:#1E293B;margin-bottom:8px;padding:6px 12px;background:linear-gradient(90deg,#1E3A5F15,transparent);border-radius:4px}
 .pillar-card{background:white;border-radius:12px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);margin-bottom:12px}
-.pillar-card h4{font-size:20px;color:#1E3A5F;font-weight:700;margin-bottom:8px}
+.pillar-card h4{font-size:22px;color:#1E3A5F;font-weight:700;margin-bottom:8px}
 .share-item{display:flex;align-items:center;gap:8px;padding:8px 12px;margin-bottom:6px;border-radius:6px;font-size:18px}
 .share-item.up{background:#F0FDF4}
 .share-item.down{background:#FEF2F2}
 .share-item .arrow{font-weight:700;font-size:20px}
 .success-item{background:white;border-radius:10px;padding:14px 18px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,0.05);border-left:5px solid #22C55E}
 .challenge-item{background:white;border-radius:10px;padding:14px 18px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,0.05);border-left:5px solid #EF4444}
-.success-item h4,.challenge-item h4{font-size:20px;font-weight:700;margin-bottom:4px}
+.success-item h4,.challenge-item h4{font-size:22px;font-weight:700;margin-bottom:4px}
 .success-item p,.challenge-item p{font-size:17px;line-height:1.5;color:#334155}
 .note-box{background:#F0FDF4;border-radius:10px;border-left:5px solid #22C55E;padding:14px 20px;margin-top:10px;font-size:20px;line-height:1.6;font-weight:600}
 .warn-box{background:#FEF2F2;border-radius:10px;border-left:5px solid #EF4444;padding:14px 20px;margin-top:10px;font-size:20px;line-height:1.6;font-weight:600}
@@ -110,7 +111,7 @@ svg text{font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP'
 
 <!-- Slide 2: Executive Summary -->
 <div class="slide" id="slide2">
-  <div class="slide-header"><h2><span class="section-tag">第1部</span> エグゼクティブサマリー</h2><span class="pn">2 / 28</span></div>
+  <div class="slide-header"><h2><span class="section-tag">第1部</span> エグゼクティブサマリー</h2><span class="pn">2 / 28</span><div class="progress-bar" style="width:3.7%"></div></div>
   <div class="msg-bar">全指標が前週比・前年比で下落。金曜の好調（+¥91,528）でも水曜の不振（-¥99,620）を補えず</div>
   <div class="slide-body">
     <div class="kpi-cards">
@@ -152,7 +153,7 @@ svg text{font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP'
 
 <!-- Slide 3: Sales Trend -->
 <div class="slide" id="slide3">
-  <div class="slide-header"><h2><span class="section-tag">第1部</span> 売上トレンド（直近5週間）</h2><span class="pn">3 / 28</span></div>
+  <div class="slide-header"><h2><span class="section-tag">第1部</span> 売上トレンド（直近5週間）</h2><span class="pn">3 / 28</span><div class="progress-bar" style="width:7.4%"></div></div>
   <div class="msg-bar">W03で回復基調に乗ったがW04で再下落。前年同週比-29.1%と3割近い減少</div>
   <div class="slide-body">
     <div class="two-col">
@@ -173,7 +174,7 @@ svg text{font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP'
 
 <!-- Slide 4: Customer Trend -->
 <div class="slide" id="slide4">
-  <div class="slide-header"><h2><span class="section-tag">第1部</span> 客数トレンド（直近5週間）</h2><span class="pn">4 / 28</span></div>
+  <div class="slide-header"><h2><span class="section-tag">第1部</span> 客数トレンド（直近5週間）</h2><span class="pn">4 / 28</span><div class="progress-bar" style="width:11.1%"></div></div>
   <div class="msg-bar">W03の132人から16人減少。水曜11人・火曜6人が全体を大きく押し下げた</div>
   <div class="slide-body">
     <div class="two-col">
@@ -194,7 +195,7 @@ svg text{font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP'
 
 <!-- Slide 5: Unit Price Trend -->
 <div class="slide" id="slide5">
-  <div class="slide-header"><h2><span class="section-tag">第1部</span> 客単価トレンド（直近5週間）</h2><span class="pn">5 / 28</span></div>
+  <div class="slide-header"><h2><span class="section-tag">第1部</span> 客単価トレンド（直近5週間）</h2><span class="pn">5 / 28</span><div class="progress-bar" style="width:14.8%"></div></div>
   <div class="msg-bar">W01〜W03の上昇傾向がW04で急落。前年比-10.1%、低単価利用客の増加が要因</div>
   <div class="slide-body">
     <div class="two-col">
@@ -215,7 +216,7 @@ svg text{font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP'
 
 <!-- Slide 6: YoY Summary -->
 <div class="slide" id="slide6">
-  <div class="slide-header"><h2><span class="section-tag">第1部</span> 前年同週比サマリー</h2><span class="pn">6 / 28</span></div>
+  <div class="slide-header"><h2><span class="section-tag">第1部</span> 前年同週比サマリー</h2><span class="pn">6 / 28</span><div class="progress-bar" style="width:18.5%"></div></div>
   <div class="msg-bar">売上-29.1%は客数減と客単価減の複合要因。集客力と単価向上の双方に課題</div>
   <div class="slide-body">
     <div class="kpi-cards" style="margin-top:16px">
@@ -251,7 +252,7 @@ svg text{font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP'
 
 <!-- Slide 7: Day-of-Week Overview -->
 <div class="slide" id="slide7">
-  <div class="slide-header"><h2><span class="section-tag">第2部</span> 曜日別概況</h2><span class="pn">7 / 28</span></div>
+  <div class="slide-header"><h2><span class="section-tag">第2部</span> 曜日別概況</h2><span class="pn">7 / 28</span><div class="progress-bar" style="width:22.2%"></div></div>
   <div class="msg-bar">7日中6日が4週平均を下回り、金曜日のみプラス。水曜日の客数要因が最大の不振原因</div>
   <div class="slide-body">
     <div class="chart-container" style="height:480px">
@@ -262,7 +263,7 @@ svg text{font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP'
 
 <!-- Slide 8: Wednesday Basic Numbers -->
 <div class="slide" id="slide8">
-  <div class="slide-header"><h2><span class="section-tag">第2部</span> 水曜日（不調）：基本数字</h2><span class="pn">8 / 28</span></div>
+  <div class="slide-header"><h2><span class="section-tag">第2部</span> 水曜日（不調）：基本数字</h2><span class="pn">8 / 28</span><div class="progress-bar" style="width:25.9%"></div></div>
   <div class="msg-bar">売上は4週平均のわずか30.1%。客数11人と3分の1以下に激減、会計3件で営業不成立</div>
   <div class="slide-body">
     <div class="metric-cards">
@@ -295,7 +296,7 @@ svg text{font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP'
 
 <!-- Slide 9: Wednesday Group Size -->
 <div class="slide" id="slide9">
-  <div class="slide-header"><h2><span class="section-tag">第2部</span> 水曜日（不調）：グループ人数</h2><span class="pn">9 / 28</span></div>
+  <div class="slide-header"><h2><span class="section-tag">第2部</span> 水曜日（不調）：グループ人数</h2><span class="pn">9 / 28</span><div class="progress-bar" style="width:29.6%"></div></div>
   <div class="msg-bar">3組のみの来店。大口グループの不在が売上差の大部分を説明する</div>
   <div class="slide-body">
     <div class="chart-container" style="height:480px">
@@ -306,7 +307,7 @@ svg text{font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP'
 
 <!-- Slide 10: Wednesday Time Bucket -->
 <div class="slide" id="slide10">
-  <div class="slide-header"><h2><span class="section-tag">第2部</span> 水曜日（不調）：時間帯別売上</h2><span class="pn">10 / 28</span></div>
+  <div class="slide-header"><h2><span class="section-tag">第2部</span> 水曜日（不調）：時間帯別売上</h2><span class="pn">10 / 28</span><div class="progress-bar" style="width:33.3%"></div></div>
   <div class="msg-bar">売上の81.8%が深夜帯に集中。プライムタイムは1組のみで営業不成立</div>
   <div class="slide-body">
     <div class="chart-container" style="height:480px">
@@ -317,7 +318,7 @@ svg text{font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP'
 
 <!-- Slide 11: Wednesday Product Mix -->
 <div class="slide" id="slide11">
-  <div class="slide-header"><h2><span class="section-tag">第2部</span> 水曜日（不調）：商品別売上</h2><span class="pn">11 / 28</span></div>
+  <div class="slide-header"><h2><span class="section-tag">第2部</span> 水曜日（不調）：商品別売上</h2><span class="pn">11 / 28</span><div class="progress-bar" style="width:37.0%"></div></div>
   <div class="msg-bar">コース・イベント利用ゼロ。すべてアラカルト注文で客単価向上に至らず</div>
   <div class="slide-body">
     <div class="two-col">
@@ -343,7 +344,7 @@ svg text{font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP'
 
 <!-- Slide 12: Wednesday Summary -->
 <div class="slide" id="slide12">
-  <div class="slide-header"><h2><span class="section-tag">第2部</span> 水曜日（不調）：まとめ</h2><span class="pn">12 / 28</span></div>
+  <div class="slide-header"><h2><span class="section-tag">第2部</span> 水曜日（不調）：まとめ</h2><span class="pn">12 / 28</span><div class="progress-bar" style="width:40.7%"></div></div>
   <div class="msg-bar">不調の根本原因は来店客の不在。予約獲得とプライムタイムの集客が回復の鍵</div>
   <div class="slide-body">
     <h3 class="section-title" style="color:#EF4444;border-color:#EF4444">不調の主要因（3点）</h3>
@@ -354,16 +355,16 @@ svg text{font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP'
     </ul>
     <h3 class="section-title" style="margin-top:12px">来週に向けた課題</h3>
     <div style="display:flex;gap:10px">
-      <div style="flex:1;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:12px 16px;font-size:17px">📋 水曜日のグループ予約獲得（平日限定コースプラン、近隣企業への営業）</div>
-      <div style="flex:1;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:12px 16px;font-size:17px">⏰ プライムタイム（20-24時）の集客強化（水曜限定ハッピーアワー、SNS告知）</div>
-      <div style="flex:1;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:12px 16px;font-size:17px">🍽️ コース提案の徹底（ウォークイン客にもショートコースを提案）</div>
+      <div style="flex:1;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:14px 18px;font-size:17px">📋 水曜日のグループ予約獲得（平日限定コースプラン、近隣企業への営業）</div>
+      <div style="flex:1;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:14px 18px;font-size:17px">⏰ プライムタイム（20-24時）の集客強化（水曜限定ハッピーアワー、SNS告知）</div>
+      <div style="flex:1;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:14px 18px;font-size:17px">🍽️ コース提案の徹底（ウォークイン客にもショートコースを提案）</div>
     </div>
   </div>
 </div>
 
 <!-- Slide 13: Friday Basic Numbers -->
 <div class="slide" id="slide13">
-  <div class="slide-header"><h2><span class="section-tag">第2部</span> 金曜日（好調）：基本数字</h2><span class="pn">13 / 28</span></div>
+  <div class="slide-header"><h2><span class="section-tag">第2部</span> 金曜日（好調）：基本数字</h2><span class="pn">13 / 28</span><div class="progress-bar" style="width:44.4%"></div></div>
   <div class="msg-bar">3指標すべてが4週平均を大幅に上回る。売上+65.4%で週唯一のプラス曜日</div>
   <div class="slide-body">
     <div class="metric-cards">
@@ -396,7 +397,7 @@ svg text{font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP'
 
 <!-- Slide 14: Friday Group Size -->
 <div class="slide" id="slide14">
-  <div class="slide-header"><h2><span class="section-tag">第2部</span> 金曜日（好調）：グループ人数</h2><span class="pn">14 / 28</span></div>
+  <div class="slide-header"><h2><span class="section-tag">第2部</span> 金曜日（好調）：グループ人数</h2><span class="pn">14 / 28</span><div class="progress-bar" style="width:48.1%"></div></div>
   <div class="msg-bar">5名以上グループ2組（計27人）が売上の78.3%。大口グループ獲得が最大要因</div>
   <div class="slide-body">
     <div class="chart-container" style="height:480px">
@@ -407,7 +408,7 @@ svg text{font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP'
 
 <!-- Slide 15: Friday Time Bucket -->
 <div class="slide" id="slide15">
-  <div class="slide-header"><h2><span class="section-tag">第2部</span> 金曜日（好調）：時間帯別売上</h2><span class="pn">15 / 28</span></div>
+  <div class="slide-header"><h2><span class="section-tag">第2部</span> 金曜日（好調）：時間帯別売上</h2><span class="pn">15 / 28</span><div class="progress-bar" style="width:51.9%"></div></div>
   <div class="msg-bar">19時台の20名イベント利用が売上の71.3%。早い時間帯と深夜前の2つの山で売上積上げ</div>
   <div class="slide-body">
     <div class="chart-container" style="height:480px">
@@ -418,7 +419,7 @@ svg text{font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP'
 
 <!-- Slide 16: Friday Product Mix -->
 <div class="slide" id="slide16">
-  <div class="slide-header"><h2><span class="section-tag">第2部</span> 金曜日（好調）：商品別売上</h2><span class="pn">16 / 28</span></div>
+  <div class="slide-header"><h2><span class="section-tag">第2部</span> 金曜日（好調）：商品別売上</h2><span class="pn">16 / 28</span><div class="progress-bar" style="width:55.6%"></div></div>
   <div class="msg-bar">イベント費用が構成比48.2%で最大。カクテル系も24.8%を占めドリンク注文も活発</div>
   <div class="slide-body">
     <div class="two-col">
@@ -444,7 +445,7 @@ svg text{font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP'
 
 <!-- Slide 17: Friday Summary -->
 <div class="slide" id="slide17">
-  <div class="slide-header"><h2><span class="section-tag">第2部</span> 金曜日（好調）：まとめ</h2><span class="pn">17 / 28</span></div>
+  <div class="slide-header"><h2><span class="section-tag">第2部</span> 金曜日（好調）：まとめ</h2><span class="pn">17 / 28</span><div class="progress-bar" style="width:59.3%"></div></div>
   <div class="msg-bar">成功パターンは「大口グループ × イベント × 高単価カクテル」。他曜日への横展開が鍵</div>
   <div class="slide-body">
     <h3 class="section-title" style="color:#22C55E;border-color:#22C55E">好調の主要因（3点）</h3>
@@ -455,16 +456,16 @@ svg text{font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP'
     </ul>
     <h3 class="section-title" style="margin-top:12px">成功パターンの再現性</h3>
     <div style="display:flex;gap:10px">
-      <div style="flex:1;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:12px 16px;font-size:17px">🏢 イベント・貸切予約の獲得を平日にも展開（法人向け営業強化）</div>
-      <div style="flex:1;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:12px 16px;font-size:17px">🥂 グループ客への積極的なコース・飲み放題提案</div>
-      <div style="flex:1;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:12px 16px;font-size:17px">📅 「花金」需要を活かした金曜日の予約促進を継続</div>
+      <div style="flex:1;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:14px 18px;font-size:17px">🏢 イベント・貸切予約の獲得を平日にも展開（法人向け営業強化）</div>
+      <div style="flex:1;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:14px 18px;font-size:17px">🥂 グループ客への積極的なコース・飲み放題提案</div>
+      <div style="flex:1;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:14px 18px;font-size:17px">📅 「花金」需要を活かした金曜日の予約促進を継続</div>
     </div>
   </div>
 </div>
 
 <!-- Slide 18: Day Comparison -->
 <div class="slide" id="slide18">
-  <div class="slide-header"><h2><span class="section-tag">第2部</span> 曜日別評価まとめ</h2><span class="pn">18 / 28</span></div>
+  <div class="slide-header"><h2><span class="section-tag">第2部</span> 曜日別評価まとめ</h2><span class="pn">18 / 28</span><div class="progress-bar" style="width:63.0%"></div></div>
   <div class="msg-bar">好調日と不調日の差はグループ客の有無。金曜の+¥91,528は全体のマイナスの約3分の1</div>
   <div class="slide-body">
     <div class="compare-table">
@@ -510,7 +511,7 @@ svg text{font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP'
 
 <!-- Slide 19: Category Donut -->
 <div class="slide" id="slide19">
-  <div class="slide-header"><h2><span class="section-tag">第3部</span> カテゴリ別売上構成比</h2><span class="pn">19 / 28</span></div>
+  <div class="slide-header"><h2><span class="section-tag">第3部</span> カテゴリ別売上構成比</h2><span class="pn">19 / 28</span><div class="progress-bar" style="width:66.7%"></div></div>
   <div class="msg-bar">コース&amp;セットが23.0%で最大カテゴリ。イベント（+8.9pt）が金曜のイベント利用で急伸</div>
   <div class="slide-body">
     <div class="two-col">
@@ -544,7 +545,7 @@ svg text{font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP'
 
 <!-- Slide 20: Strong Categories -->
 <div class="slide" id="slide20">
-  <div class="slide-header"><h2><span class="section-tag">第3部</span> 好調カテゴリの深掘り</h2><span class="pn">20 / 28</span></div>
+  <div class="slide-header"><h2><span class="section-tag">第3部</span> 好調カテゴリの深掘り</h2><span class="pn">20 / 28</span><div class="progress-bar" style="width:70.4%"></div></div>
   <div class="msg-bar">コース系とイベントで合計32.0%。予約・団体需要を着実に獲得できた週</div>
   <div class="slide-body">
     <div class="two-col" style="gap:20px;">
@@ -584,7 +585,7 @@ svg text{font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP'
 
 <!-- Slide 21: Product TOP10 -->
 <div class="slide" id="slide21">
-  <div class="slide-header"><h2><span class="section-tag">第3部</span> 商品別売上上位10商品</h2><span class="pn">21 / 28</span></div>
+  <div class="slide-header"><h2><span class="section-tag">第3部</span> 商品別売上上位10商品</h2><span class="pn">21 / 28</span><div class="progress-bar" style="width:74.1%"></div></div>
   <div class="msg-bar">上位3商品（コース+飲み放題+イベント）で売上の40.9%を占める</div>
   <div class="slide-body">
     <table class="data-table" style="font-size:17px;">
@@ -607,7 +608,7 @@ svg text{font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP'
 
 <!-- Slide 22: Product Share Changes -->
 <div class="slide" id="slide22">
-  <div class="slide-header"><h2><span class="section-tag">第3部</span> 商品構成比の変化</h2><span class="pn">22 / 28</span></div>
+  <div class="slide-header"><h2><span class="section-tag">第3部</span> 商品構成比の変化</h2><span class="pn">22 / 28</span><div class="progress-bar" style="width:77.8%"></div></div>
   <div class="msg-bar">飲み放題（+6.66pt）とCLPコース（+1.37pt）が大幅増。ジャパニーズカクテルが軒並み減少</div>
   <div class="slide-body">
     <div class="two-col" style="gap:20px;">
@@ -633,7 +634,7 @@ svg text{font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP'
 
 <!-- Slide 23: Product Analysis Summary -->
 <div class="slide" id="slide23">
-  <div class="slide-header"><h2><span class="section-tag">第3部</span> 商品分析まとめ</h2><span class="pn">23 / 28</span></div>
+  <div class="slide-header"><h2><span class="section-tag">第3部</span> 商品分析まとめ</h2><span class="pn">23 / 28</span><div class="progress-bar" style="width:81.5%"></div></div>
   <div class="msg-bar">コース系が構成比36.8%で安定基盤。看板のジャパニーズカクテル弱含みが課題</div>
   <div class="slide-body">
     <h3 class="section-title">商品戦略の2本柱</h3>
@@ -660,16 +661,16 @@ svg text{font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP'
     <div style="text-align:center; font-size:20px; font-weight:700; color:#1E293B; margin:8px 0;">2本柱合計：構成比 <span style="color:#3B82F6;">49.9%</span> / 売上 <span style="color:#3B82F6;">¥303,600</span></div>
     <h3 class="section-title" style="margin-top:12px;">今後の方向性</h3>
     <div style="display:flex; gap:8px;">
-      <div style="flex:1; background:white; border-radius:8px; padding:10px 14px; font-size:17px; box-shadow:0 1px 4px rgba(0,0,0,0.04);">📈 コース予約の継続促進（効率性維持、平日への横展開）</div>
-      <div style="flex:1; background:white; border-radius:8px; padding:10px 14px; font-size:17px; box-shadow:0 1px 4px rgba(0,0,0,0.04);">🎨 ジャパニーズカクテルの再訴求（季節限定メニュー投入、SNS映えビジュアルの発信）</div>
-      <div style="flex:1; background:white; border-radius:8px; padding:10px 14px; font-size:17px; box-shadow:0 1px 4px rgba(0,0,0,0.04);">🥤 ノンアルコールカクテルの成長（シャーリーテンプル+176.9%）を活かした多様な顧客対応</div>
+      <div style="flex:1; background:white; border-radius:10px; padding:14px 18px; font-size:17px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">📈 コース予約の継続促進（効率性維持、平日への横展開）</div>
+      <div style="flex:1; background:white; border-radius:10px; padding:14px 18px; font-size:17px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">🎨 ジャパニーズカクテルの再訴求（季節限定メニュー投入、SNS映えビジュアルの発信）</div>
+      <div style="flex:1; background:white; border-radius:10px; padding:14px 18px; font-size:17px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">🥤 ノンアルコールカクテルの成長（シャーリーテンプル+176.9%）を活かした多様な顧客対応</div>
     </div>
   </div>
 </div>
 
 <!-- Slide 24: Weekly Strengths -->
 <div class="slide" id="slide24">
-  <div class="slide-header"><h2><span class="section-tag">第4部</span> 今週の総括：強み</h2><span class="pn">24 / 28</span></div>
+  <div class="slide-header"><h2><span class="section-tag">第4部</span> 今週の総括：強み</h2><span class="pn">24 / 28</span><div class="progress-bar" style="width:85.2%"></div></div>
   <div class="msg-bar">金曜の成功パターン確立、コース利用の定着、ノンアルコール需要の取り込みが強み</div>
   <div class="slide-body">
     <div class="success-item">
@@ -689,7 +690,7 @@ svg text{font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP'
 
 <!-- Slide 25: Weekly Challenges -->
 <div class="slide" id="slide25">
-  <div class="slide-header"><h2><span class="section-tag">第4部</span> 今週の総括：課題</h2><span class="pn">25 / 28</span></div>
+  <div class="slide-header"><h2><span class="section-tag">第4部</span> 今週の総括：課題</h2><span class="pn">25 / 28</span><div class="progress-bar" style="width:88.9%"></div></div>
   <div class="msg-bar">平日（特に火・水）の集客力低下が最大の課題。予約獲得の仕組みづくりが急務</div>
   <div class="slide-body">
     <div class="challenge-item">
@@ -709,7 +710,7 @@ svg text{font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP'
 
 <!-- Slide 26: Action Plans 1 -->
 <div class="slide" id="slide26">
-  <div class="slide-header"><h2><span class="section-tag">第5部</span> 施策一覧（1）：メニュー・集客</h2><span class="pn">26 / 28</span></div>
+  <div class="slide-header"><h2><span class="section-tag">第5部</span> 施策一覧（1）：メニュー・集客</h2><span class="pn">26 / 28</span><div class="progress-bar" style="width:92.6%"></div></div>
   <div class="msg-bar">メニュー開発と集客施策の両輪で平日の底上げを図る</div>
   <div class="slide-body" style="padding:16px 30px;">
     <div class="two-col" style="gap:16px;">
@@ -755,7 +756,7 @@ svg text{font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP'
 
 <!-- Slide 27: Action Plans 2 -->
 <div class="slide" id="slide27">
-  <div class="slide-header"><h2><span class="section-tag">第5部</span> 施策一覧（2）：顧客・運営</h2><span class="pn">27 / 28</span></div>
+  <div class="slide-header"><h2><span class="section-tag">第5部</span> 施策一覧（2）：顧客・運営</h2><span class="pn">27 / 28</span><div class="progress-bar" style="width:96.3%"></div></div>
   <div class="msg-bar">顧客育成とオペレーション改善で持続的な成長基盤を構築する</div>
   <div class="slide-body" style="padding:16px 30px;">
     <div class="two-col" style="gap:16px;">
@@ -801,7 +802,7 @@ svg text{font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP'
 
 <!-- Slide 28: Action Plans 3 -->
 <div class="slide" id="slide28">
-  <div class="slide-header"><h2><span class="section-tag">第5部</span> 施策一覧（3）：スタッフ育成</h2><span class="pn">28 / 28</span></div>
+  <div class="slide-header"><h2><span class="section-tag">第5部</span> 施策一覧（3）：スタッフ育成</h2><span class="pn">28 / 28</span><div class="progress-bar" style="width:100.0%"></div></div>
   <div class="msg-bar">看板商品の提案力回復と高単価商品の推薦スキル強化がスタッフ育成の柱</div>
   <div class="slide-body" style="padding:16px 30px;">
     <div style="max-width:800px; margin:0 auto;">
@@ -938,7 +939,7 @@ function drawLineChart(svgId, data, yLabel, yFormat, avgValue, avgLabel) {
       .attr('stroke', trendColor).attr('stroke-width', 3.5)
       .attr('marker-end', 'url(#' + markerId + ')');
     ag.append('text')
-      .attr('x', (ax1 + ax2) / 2 + 20).attr('y', (ay1 + ay2) / 2 - 8)
+      .attr('x', (ax1 + ax2) / 2 - 10).attr('y', (ay1 + ay2) / 2 - 20)
       .attr('font-size', '15px').attr('font-weight', '700').attr('fill', trendColor)
       .text((pctChg > 0 ? '+' : '') + pctChg.toFixed(1) + '%');
   }
@@ -1022,8 +1023,6 @@ drawLineChart('chart-price-trend',
   addBarCallout(g, x0('金') + x0.bandwidth()/2, y(thisWeek[4]), '+¥91,528', COLORS.positive, '#F0FDF4');
   addBarCallout(g, x0('水') + x0.bandwidth()/2, y(thisWeek[2]), '-¥99,620', COLORS.negative, '#FEF2F2');
 
-  // Circle emphasis on best day (Friday)
-  addCircleEmphasis(g, x0('金') + x0.bandwidth()/2, y(thisWeek[4]) + (ih - y(thisWeek[4]))/2, x0.bandwidth()/2 + 8, (ih - y(thisWeek[4]))/2 + 8, COLORS.positive);
   // Background band on worst day (Wednesday)
   addHighlightBand(g, x0('水') - 4, 0, x0.bandwidth() + 8, ih, '#FEF2F2');
 
@@ -1161,7 +1160,7 @@ function drawGroupChart(svgId, data, color) {
   const maxGrp = data.reduce((a, b) => a.sales > b.sales ? a : b);
   if (maxGrp.sales > 0) {
     addBarOutline(g, 0, y(maxGrp.label), x(maxGrp.sales), y.bandwidth(), color);
-    addBadge(g, x(maxGrp.sales) / 2, y(maxGrp.label) - 10, 'MAX', color,
+    addBadge(g, x(maxGrp.sales) + 10, y(maxGrp.label) + y.bandwidth() / 2, 'MAX', color,
       color === COLORS.positive ? '#F0FDF4' : '#FEF2F2');
   }
 
@@ -1214,9 +1213,6 @@ function drawTimeChart(svgId, data, color) {
   const maxItem = data.reduce((a,b) => a.sales > b.sales ? a : b);
   if (maxItem.sales > 0) {
     const pct = ((maxItem.sales / data.reduce((s,d)=>s+d.sales,0))*100).toFixed(1);
-    // Background band for max
-    addHighlightBand(g, -12, y(maxItem.label) - 6, iw + 24, y.bandwidth() + 12,
-      color === COLORS.negative ? '#FEF2F2' : '#F0FDF4');
     // Bold outline
     addBarOutline(g, 0, y(maxItem.label), x(maxItem.sales), y.bandwidth(), color);
     // Badge with percentage
@@ -1293,47 +1289,72 @@ drawProductChart('chart-fri-product', [
   {name:'その他', sales:13520, share:'11.9%'}
 ], COLORS.positive);
 
-// --- Slide 19: Donut chart ---
+// --- Slide 19: Donut chart (improved: 6 segments, 18px explode, leader line) ---
 (function() {
   const svg = d3.select('#chart-category-donut');
   const w = +svg.attr('width'), h = +svg.attr('height');
   const radius = Math.min(w, h) / 2 - 20;
   const g = svg.append('g').attr('transform', `translate(${w/2},${h/2})`);
 
+  // Consolidated to 6 segments: top 5 + others
   const data = [
     {name:'コース&セット', value:140000, color:'#3B82F6'},
     {name:'未設定', value:84000, color:'#64748B'},
     {name:'イベント', value:55000, color:'#F97316'},
     {name:'ウイスキー', value:41100, color:'#8B5CF6'},
-    {name:'その他', value:38800, color:'#94A3B8'},
     {name:'ジャパニーズカクテル', value:38500, color:'#06B6D4'},
-    {name:'スナック', value:35000, color:'#10B981'},
-    {name:'オリジナルカクテル', value:30000, color:'#EC4899'},
-    {name:'ワイン（グラス）', value:29600, color:'#F43F5E'},
-    {name:'アラカルト', value:24800, color:'#EAB308'},
-    {name:'その他カテゴリ', value:111340, color:'#CBD5E1'}
+    {name:'その他', value:269540, color:'#CBD5E1'}
   ];
 
   const pie = d3.pie().value(d => d.value).sort(null);
   const arc = d3.arc().innerRadius(radius * 0.5).outerRadius(radius);
-  const arcLabel = d3.arc().innerRadius(radius * 0.75).outerRadius(radius * 0.75);
+  const arcLabel = d3.arc().innerRadius(radius * 0.78).outerRadius(radius * 0.78);
 
   const arcs = g.selectAll('.arc').data(pie(data)).join('g').attr('class','arc');
   arcs.append('path').attr('d', arc).attr('fill', d => d.data.color).attr('stroke','white').attr('stroke-width',2);
 
-  // Explode the largest slice (first item)
+  // Explode the largest slice (first item) with 18px distance
   arcs.filter((d, i) => i === 0).attr('transform', d => {
     const [cx, cy] = arc.centroid(d);
     const dist = Math.sqrt(cx * cx + cy * cy);
-    return `translate(${cx / dist * 10}, ${cy / dist * 10})`;
+    return `translate(${cx / dist * 18}, ${cy / dist * 18})`;
   });
 
-  // Labels for slices > 5%
+  // Labels for slices > 5% (16px font)
   const total = d3.sum(data, d => d.value);
   arcs.filter(d => d.data.value / total > 0.05).append('text')
     .attr('transform', d => `translate(${arcLabel.centroid(d)})`)
-    .attr('text-anchor','middle').attr('font-size','14px').attr('fill','white').attr('font-weight','700')
+    .attr('text-anchor','middle').attr('font-size','16px').attr('fill','white').attr('font-weight','700')
     .text(d => `${(d.data.value / total * 100).toFixed(1)}%`);
+
+  // Leader line for the largest segment (コース&セット)
+  const maxSlice = pie(data)[0];
+  const midAngle = (maxSlice.startAngle + maxSlice.endAngle) / 2;
+  const outerPt = [Math.sin(midAngle) * (radius + 22), -Math.cos(midAngle) * (radius + 22)];
+  const labelPt = [Math.sin(midAngle) * (radius + 50), -Math.cos(midAngle) * (radius + 50)];
+  const endPt = [labelPt[0] + (labelPt[0] > 0 ? 30 : -30), labelPt[1]];
+
+  // Offset for explode
+  const [ecx, ecy] = arc.centroid(maxSlice);
+  const edist = Math.sqrt(ecx * ecx + ecy * ecy);
+  const eOff = [ecx / edist * 18, ecy / edist * 18];
+
+  const lg = g.append('g');
+  lg.append('polyline')
+    .attr('points', [
+      [outerPt[0] + eOff[0], outerPt[1] + eOff[1]],
+      [labelPt[0] + eOff[0], labelPt[1] + eOff[1]],
+      [endPt[0] + eOff[0], endPt[1] + eOff[1]]
+    ].map(p => p.join(',')).join(' '))
+    .attr('fill', 'none').attr('stroke', '#3B82F6').attr('stroke-width', 1.5);
+
+  const anchor = endPt[0] + eOff[0] > 0 ? 'start' : 'end';
+  lg.append('text')
+    .attr('x', endPt[0] + eOff[0] + (anchor === 'start' ? 6 : -6))
+    .attr('y', endPt[1] + eOff[1] + 5)
+    .attr('text-anchor', anchor)
+    .attr('font-size', '16px').attr('font-weight', '800').attr('fill', '#3B82F6')
+    .text('コース&セット 23.0%');
 
   // Center text
   g.append('text').attr('text-anchor','middle').attr('y',-10).attr('font-size','18px').attr('fill', COLORS.heading).attr('font-weight','700').text('総売上');

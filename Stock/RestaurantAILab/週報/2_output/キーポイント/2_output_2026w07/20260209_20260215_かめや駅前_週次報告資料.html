@@ -409,26 +409,26 @@ body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN'
 <div class="slide" id="slide-20">
 <div class="slide-header"><h2>好調カテゴリの深掘り</h2><span class="pn">20 / 28</span><div class="progress-bar" style="width:70.4%"></div></div>
 <div class="msg-bar">コースは安定の23.0%で主力を維持。アルコール（+0.6pt）とソフトドリンク（+1.5pt）が構成比を伸ばす</div>
-<div class="slide-body">
-<div class="pillar-card"><h4>🏆 1. コース（23.0%、前週比+1.0pt）</h4>
-<ul class="note-list">
-<li>💰 売上: ¥322,300（62個）</li>
-<li>📋 内訳: 串大亀コース【6000】¥144,000 + 鍋かめやコース【5000】¥100,000 + 串かめやコース【5000】¥65,000 他</li>
-<li>📊 W04（32.6%）から低下したが、20%超を安定的に維持</li>
+<div class="slide-body" style="padding:14px 40px;">
+<div class="pillar-card" style="padding:12px 20px;margin-bottom:8px;"><h4 style="margin-bottom:3px;">🏆 1. コース（23.0%、前週比+1.0pt）</h4>
+<ul class="note-list" style="margin:0;">
+<li style="padding:4px 0;">💰 売上: ¥322,300（62個）</li>
+<li style="padding:4px 0;">📋 内訳: 串大亀コース【6000】¥144,000 + 鍋かめやコース【5000】¥100,000 + 串かめやコース【5000】¥65,000 他</li>
+<li style="padding:4px 0;">📊 W04（32.6%）から低下したが、20%超を安定的に維持</li>
 </ul>
 </div>
-<div class="pillar-card"><h4>📈 2. アルコール（12.0%、前週比+0.6pt）</h4>
-<ul class="note-list">
-<li>💰 売上: ¥168,270（246個）</li>
-<li>🥃 角ハイボール¥68,390 + かめやハイボール¥32,340が柱</li>
-<li>🎯 かめやハイボールは4週平均比+34.8%の好調</li>
+<div class="pillar-card" style="padding:12px 20px;margin-bottom:8px;"><h4 style="margin-bottom:3px;">📈 2. アルコール（12.0%、前週比+0.6pt）</h4>
+<ul class="note-list" style="margin:0;">
+<li style="padding:4px 0;">💰 売上: ¥168,270（246個）</li>
+<li style="padding:4px 0;">🥃 角ハイボール¥68,390 + かめやハイボール¥32,340が柱</li>
+<li style="padding:4px 0;">🎯 かめやハイボールは4週平均比+34.8%の好調</li>
 </ul>
 </div>
-<div class="pillar-card"><h4>🌱 3. ソフトドリンク（2.5%、前週比+1.5pt）</h4>
-<ul class="note-list">
-<li>💰 売上: ¥35,475（113個）</li>
-<li>📈 前週の1.0%から2.5倍に増加</li>
-<li>🥤 ノンアル需要・ドライバー客の増加を示唆</li>
+<div class="pillar-card" style="padding:12px 20px;margin-bottom:8px;"><h4 style="margin-bottom:3px;">🌱 3. ソフトドリンク（2.5%、前週比+1.5pt）</h4>
+<ul class="note-list" style="margin:0;">
+<li style="padding:4px 0;">💰 売上: ¥35,475（113個）</li>
+<li style="padding:4px 0;">📈 前週の1.0%から2.5倍に増加</li>
+<li style="padding:4px 0;">🥤 ノンアル需要・ドライバー客の増加を示唆</li>
 </ul>
 </div>
 </div>
@@ -682,7 +682,7 @@ function addBadge(g,cx,cy,text,color,bgColor){
 // =========================================================
 // 折れ線グラフ共通関数
 // =========================================================
-function drawLineChart(svgId,data,yLabel,fmtFn,avg4wVal){
+function drawLineChart(svgId,data,yLabel,fmtFn,avg4wVal,trendLabelOffsetY){
   var w=780,h=440,m={top:50,right:80,bottom:50,left:90};
   var iw=w-m.left-m.right, ih=h-m.top-m.bottom;
   var svg=d3.select('#'+svgId).attr('viewBox','0 0 '+w+' '+h);
@@ -744,31 +744,26 @@ function drawLineChart(svgId,data,yLabel,fmtFn,avg4wVal){
   var ag=svg.append('g').attr('opacity',0.65);
   ag.append('line').attr('x1',px).attr('y1',py).attr('x2',cx2).attr('y2',cy2)
     .attr('stroke',trendColor).attr('stroke-width',3.5).attr('marker-end','url(#'+markerId+')');
-  var midX2=(px+cx2)/2+20, midY2=(py+cy2)/2-8;
+  var trendOffY=trendLabelOffsetY||0;
+  var midX2=(px+cx2)/2+20, midY2=(py+cy2)/2-8+trendOffY;
   ag.append('text').attr('x',midX2).attr('y',midY2).attr('font-size','16px').attr('font-weight','700')
     .attr('fill',trendColor).text((last.value>=prev.value?'+':'')+pct+'%');
-
-  // 当週吹き出し（右端補正）
-  var lastX=x(last.label), callX=lastX>iw*0.85?lastX-50:lastX;
-  var anch=lastX>iw*0.85?'end':'middle';
-  addCallout(g,callX,y(last.value)-40,fmtFn(last.value),
-    {anchor:anch, at:lastX>iw*0.85?{x:lastX,y:y(last.value)-12}:null});
 }
 
-// === 売上トレンド ===
+// === 売上トレンド === (成長率ラベルをちょっと下)
 drawLineChart('chart-sales',
   [{label:'W03',value:1354111},{label:'W04',value:1706700},{label:'W05',value:1398540},{label:'W06',value:1203335},{label:'W07',value:1402474}],
-  '売上',fmtYen,1413032);
+  '売上',fmtYen,1413032,20);
 
-// === 客数トレンド ===
+// === 客数トレンド === (成長率ラベルをちょっと下)
 drawLineChart('chart-customers',
   [{label:'W03',value:279},{label:'W04',value:360},{label:'W05',value:307},{label:'W06',value:246},{label:'W07',value:309}],
-  '客数',d=>d+'人',null);
+  '客数',d=>d+'人',null,20);
 
-// === 客単価トレンド ===
+// === 客単価トレンド === (成長率ラベルをちょっと上)
 drawLineChart('chart-unit',
   [{label:'W03',value:4853},{label:'W04',value:4741},{label:'W05',value:4556},{label:'W06',value:4892},{label:'W07',value:4539}],
-  '客単価',fmtYen,null);
+  '客単価',fmtYen,null,-20);
 </script>
 
 <script>
@@ -909,12 +904,12 @@ function drawRatioBar(svgId,labels,thisW,avg4,fmtFns,titleText){
   g.append('g').call(d3.axisLeft(y).tickSize(0)).select('.domain').remove();
   g.selectAll('.tick text').attr('font-size','18px').attr('font-weight','700');
 
-  // バッジ
+  // バッジ（位置を右上にずらして数値と重ならないようにする）
   var minIdx=ratios.indexOf(d3.min(ratios));
   var maxIdx=ratios.indexOf(d3.max(ratios));
-  addBadge(g,x(Math.min(ratios[minIdx],maxR))+100,y(labels[minIdx])+y.bandwidth()/2+4,'▼ 要改善',C.negative,'#FEF2F2');
+  addBadge(g,x(Math.min(ratios[minIdx],maxR))+130,y(labels[minIdx])-6,'▼ 要改善',C.negative,'#FEF2F2');
   if(d3.max(ratios)>120){
-    addBadge(g,x(Math.min(ratios[maxIdx],maxR))+100,y(labels[maxIdx])+y.bandwidth()/2+4,'★ 好調',C.positive,'#F0FDF4');
+    addBadge(g,x(Math.min(ratios[maxIdx],maxR))+130,y(labels[maxIdx])-6,'★ 好調',C.positive,'#F0FDF4');
   }
 }
 
@@ -971,10 +966,10 @@ function drawHBar(svgId,data,valueKey,labelKey,fmtFn,highlightIdx){
   g.append('g').call(d3.axisLeft(y).tickSize(0)).select('.domain').remove();
   g.selectAll('.tick text').attr('font-size','16px').attr('font-weight','600');
 
-  // MAXバッジ
+  // MAXバッジ（数値と重ならないよう下にオフセット）
   if(highlightIdx!==undefined){
     var hd=data[highlightIdx];
-    addBadge(g,x(hd[valueKey])+80,y(hd[labelKey])+y.bandwidth()/2+5,'MAX',C.accent,'#FFF7ED');
+    addBadge(g,x(hd[valueKey])+80,y(hd[labelKey])+y.bandwidth()+14,'MAX',C.accent,'#FFF7ED');
   }
 }
 

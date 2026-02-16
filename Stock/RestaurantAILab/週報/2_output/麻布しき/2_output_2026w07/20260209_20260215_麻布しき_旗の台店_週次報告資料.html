@@ -590,12 +590,7 @@ function drawLineChart(svgId, data, yLabel, fmt, yoyThis, yoyPrev, yoyLabel){
   // Callout on last point
   var callX=cx2-40, callY=cy2-35;
   addCallout(g,callX,callY,fmt(c.value),{anchor:'end',ax:cx2,ay:cy2-10});
-  // YoY comparison (small bars)
-  if(yoyThis!==undefined){
-    var bw=30,bx=iw-120;
-    g.append('rect').attr('x',bx).attr('y',y(Math.max(yoyThis,yoyPrev))).attr('width',bw).attr('height',Math.abs(y(yoyPrev)-y(yoyThis))||2).attr('fill',C.pos).attr('opacity',0.3).attr('rx',4);
-    g.append('text').attr('x',bx+bw+8).attr('y',y(yoyThis)-4).attr('font-size','14px').attr('fill',C.pos).attr('font-weight','700').text(yoyLabel);
-  }
+  // (YoY comparison removed)
 }
 // Slide 3: Sales trend
 drawLineChart('chart-3',
@@ -714,7 +709,7 @@ function drawHBar(svgId, labels, thisW, avg4, title, fmtFn){
   // Bold outline on max
   var maxI=thisW.indexOf(d3.max(thisW));
   g.append('rect').attr('x',-1.5).attr('y',y(labels[maxI])-1.5).attr('width',x(thisW[maxI])+3).attr('height',barH+3).attr('fill','none').attr('stroke',C.pos).attr('stroke-width',3).attr('rx',5);
-  addBadge(g,x(thisW[maxI])+50,y(labels[maxI])+barH/2+5,'MAX',C.pos,'#F0FDF4');
+  addBadge(g,x(thisW[maxI])+90,y(labels[maxI])-8,'MAX',C.pos,'#F0FDF4');
 }
 // Slide 9: Monday group size
 drawHBar('chart-9',['1名','2名','3-4名','5名以上'],[5,6,10,2],[7,9,12,3],'組数',function(v){return v+'組';});

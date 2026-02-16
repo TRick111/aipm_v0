@@ -577,7 +577,7 @@ slides.append(f'''{header("店舗の様子① — コース利用の反応と客
 
 # Slide 27: Daily Report 2
 slides.append(f'''{header("店舗の様子② — 単品メニューへの要望とオペレーション課題", 27)}
-{msg("おつまみ・単品メニューの不足が顧客から指摘。すき焼きコースのオペレーション改善が急務")}
+{msg("単品メニューの充実とすき焼きコースの見た目・オペレーション改善がスタッフからの共通課題")}
 <div class="slide-body">
 <div class="sub-heading">🍽️ おつまみ・単品メニューの不足</div>
 <div class="blockquote"><div class="bq-date">📅 2月10日（月）財田さん:</div>「単品料理の数が少ないため、もう少し増やし、お酒が進むような料理を追加する必要がある。」</div>
@@ -778,7 +778,7 @@ function drawLineChart(svgId, data, yLabel, fmt, avg4w) {
     g.append('line').attr('x1',0).attr('x2',iW).attr('y1',y(avg4w)).attr('y2',y(avg4w))
       .attr('stroke','#F97316').attr('stroke-width',1.5).attr('stroke-dasharray','6,4');
     g.append('text').attr('x',iW+4).attr('y',y(avg4w)+4)
-      .attr('font-size','14px').attr('fill','#F97316').attr('font-weight','600').text('4週平均');
+      .attr('font-size','14px').attr('fill','#F97316').attr('font-weight','600').text('1月平均');
   }
 
   // Line
@@ -1002,7 +1002,7 @@ function drawHBar(svgId, data, valueKey, labelKey, fmt) {
       g.append('rect').attr('x', -1.5).attr('y', y(d[labelKey])-1.5)
         .attr('width', x(d[valueKey])+3).attr('height', y.bandwidth()+3)
         .attr('fill','none').attr('stroke', color).attr('stroke-width', 3).attr('rx', 5);
-      addBadge(g, x(d[valueKey])+60, y(d[labelKey])+y.bandwidth()/2, 'MAX', COLORS.attention, '#FFF7ED');
+      addBadge(g, x(d[valueKey])+60, y(d[labelKey])-8, 'MAX', COLORS.attention, '#FFF7ED');
     }
     g.append('text').attr('x', x(d[valueKey])+8).attr('y', y(d[labelKey])+y.bandwidth()/2+5)
       .attr('font-size', isMax?'18px':'16px').attr('font-weight', isMax?'800':'500')
@@ -1104,26 +1104,25 @@ drawHBar('chart-tue-time',
   g.append('text').attr('y', 20).attr('text-anchor','middle')
     .attr('font-size','26px').attr('font-weight','800').attr('fill',COLORS.darkText).text('¥234,340');
 
-  // Leader line for largest segment
+  // Leader line for largest segment — force label to upper-right area to avoid clipping
   const maxSlice = arcs[0];
-  const midAngle = (maxSlice.startAngle + maxSlice.endAngle) / 2 - Math.PI/2;
-  const outerR = radius + 30;
-  const outerPt = [Math.cos(midAngle)*outerR, Math.sin(midAngle)*outerR];
-  const labelR = radius + 60;
-  const labelPt = [Math.cos(midAngle)*labelR, Math.sin(midAngle)*labelR];
-  const endX = labelPt[0] + (labelPt[0]>0 ? 40 : -40);
-  // Offset for explode
   const centroid0 = arc.centroid(maxSlice);
   const dist0 = Math.sqrt(centroid0[0]*centroid0[0]+centroid0[1]*centroid0[1]) || 1;
   const explodeOff = [centroid0[0]/dist0*18, centroid0[1]/dist0*18];
+  // Start point on outer edge of exploded segment
+  const midAngle = (maxSlice.startAngle + maxSlice.endAngle) / 2 - Math.PI/2;
+  const outerR = radius + 30;
+  const outerPt = [Math.cos(midAngle)*outerR + explodeOff[0], Math.sin(midAngle)*outerR + explodeOff[1]];
+  // Fixed label position: upper-right, safely inside SVG
+  const labelEndX = 160, labelEndY = -radius - 20;
+  const labelTextX = labelEndX + 6;
 
   g.append('polyline')
-    .attr('points', `${outerPt[0]+explodeOff[0]},${outerPt[1]+explodeOff[1]} ${labelPt[0]+explodeOff[0]},${labelPt[1]+explodeOff[1]} ${endX+explodeOff[0]},${labelPt[1]+explodeOff[1]}`)
+    .attr('points', `${outerPt[0]},${outerPt[1]} ${labelEndX},${labelEndY}`)
     .attr('fill','none').attr('stroke','#F97316').attr('stroke-width',2);
   g.append('text')
-    .attr('x', endX+explodeOff[0]+(labelPt[0]>0?6:-6))
-    .attr('y', labelPt[1]+explodeOff[1]+5)
-    .attr('text-anchor', labelPt[0]>0?'start':'end')
+    .attr('x', labelTextX).attr('y', labelEndY+5)
+    .attr('text-anchor', 'start')
     .attr('font-size','17px').attr('font-weight','800').attr('fill','#F97316')
     .text('別天地一推し 45.6%');
 })();

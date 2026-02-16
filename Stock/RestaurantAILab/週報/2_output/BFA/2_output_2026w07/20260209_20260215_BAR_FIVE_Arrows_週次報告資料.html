@@ -496,7 +496,7 @@ blockquote strong{font-size:17px;color:#1E293B;}
 <div class="msg-bar">コース&amp;セット（30.1%）が最大カテゴリに復活。ジャパニーズカクテル（13.7%）とオリジナルカクテル（12.6%）が続き、上位3カテゴリで56.4%を占める</div>
 <div class="slide-body">
 <div class="two-col">
-<div class="chart-container" style="flex:1;"><svg id="chart-19" width="520" height="440"></svg></div>
+<div class="chart-container" style="flex:1;"><svg id="chart-19" width="660" height="440"></svg></div>
 <div style="flex:1;">
 <table class="dt" style="font-size:16px;">
 <tr><th>カテゴリ</th><th>売上</th><th>構成比</th><th>販売数</th></tr>
@@ -843,7 +843,7 @@ function addTrendArrow(svg, x1, y1, x2, y2, pctLabel, color, svgId) {
   const ox = y2 < y1 ? -4 : 4;
   ag.append('line').attr('x1', x1 + 14).attr('y1', y1 + ox).attr('x2', x2 - 14).attr('y2', y2 - ox)
     .attr('stroke', color).attr('stroke-width', 3.5).attr('marker-end', 'url(#' + mid + ')');
-  ag.append('text').attr('x', (x1+x2)/2 + 20).attr('y', (y1+y2)/2 - 8)
+  ag.append('text').attr('x', (x1+x2)/2 - 30).attr('y', (y1+y2)/2 - 20)
     .attr('font-size', '16px').attr('font-weight', '700').attr('fill', color).text(pctLabel);
 }
 
@@ -862,7 +862,7 @@ function addBadge(svg, cx, cy, text, color, bgColor) {
   const data = [{w:'W03',v:815130},{w:'W04',v:628140},{w:'W05',v:698000},{w:'W06',v:547850},{w:'W07',v:595450}];
   const yoy = 955820;
   const svg = d3.select('#chart-3');
-  const m = {top:40,right:50,bottom:50,left:80}, w=760-m.left-m.right, h=440-m.top-m.bottom;
+  const m = {top:40,right:80,bottom:50,left:80}, w=760-m.left-m.right, h=440-m.top-m.bottom;
   const g = svg.append('g').attr('transform',`translate(${m.left},${m.top})`);
   const x = d3.scalePoint().domain(data.map(d=>d.w)).range([0,w]).padding(0.3);
   const y = d3.scaleLinear().domain([400000,1000000]).range([h,0]);
@@ -873,11 +873,11 @@ function addBadge(svg, cx, cy, text, color, bgColor) {
   g.append('g').call(d3.axisLeft(y).ticks(5).tickFormat(d=>'¥'+Math.round(d/10000)+'万')).selectAll('text').attr('font-size','14px');
   // YoY dashed line
   g.append('line').attr('x1',0).attr('x2',w).attr('y1',y(yoy)).attr('y2',y(yoy)).attr('stroke',COLORS.gray).attr('stroke-width',1.5).attr('stroke-dasharray','6,4');
-  g.append('text').attr('x',w+4).attr('y',y(yoy)+4).attr('font-size','14px').attr('fill',COLORS.gray).text('前年同週');
+  g.append('text').attr('x',5).attr('y',y(yoy)-8).attr('font-size','14px').attr('fill',COLORS.gray).text('前年同週');
   // 4w avg line
   const avg = data.slice(0,4).reduce((s,d)=>s+d.v,0)/4;
   g.append('line').attr('x1',0).attr('x2',w).attr('y1',y(avg)).attr('y2',y(avg)).attr('stroke',COLORS.accent).attr('stroke-width',1.5).attr('stroke-dasharray','6,4');
-  g.append('text').attr('x',w+4).attr('y',y(avg)+4).attr('font-size','14px').attr('fill',COLORS.accent).text('4週平均');
+  g.append('text').attr('x',5).attr('y',y(avg)-8).attr('font-size','14px').attr('fill',COLORS.accent).text('4週平均');
   // Line
   const line = d3.line().x(d=>x(d.w)).y(d=>y(d.v)).curve(d3.curveMonotoneX);
   g.append('path').datum(data).attr('d',line).attr('fill','none').attr('stroke',COLORS.blue).attr('stroke-width',3);
@@ -890,7 +890,7 @@ function addBadge(svg, cx, cy, text, color, bgColor) {
   const prevX = x('W06'), prevY = y(547850), currX = x('W07'), currY = y(595450);
   addTrendArrow(g, prevX, prevY, currX, currY, '+8.7%', COLORS.positive, 'chart3');
   // Callout on W07
-  addCallout(g, currX, currY - 30, '¥595,450', { target: {x:currX, y:currY-10} });
+  addCallout(g, currX-80, currY - 30, '¥595,450', { target: {x:currX, y:currY-10} });
 })();
 
 // === Chart 4: Customer Line Chart ===
@@ -898,7 +898,7 @@ function addBadge(svg, cx, cy, text, color, bgColor) {
   const data = [{w:'W03',v:132},{w:'W04',v:116},{w:'W05',v:142},{w:'W06',v:101},{w:'W07',v:119}];
   const yoy = 198;
   const svg = d3.select('#chart-4');
-  const m = {top:40,right:50,bottom:50,left:60}, w=760-m.left-m.right, h=440-m.top-m.bottom;
+  const m = {top:40,right:80,bottom:50,left:60}, w=760-m.left-m.right, h=440-m.top-m.bottom;
   const g = svg.append('g').attr('transform',`translate(${m.left},${m.top})`);
   const x = d3.scalePoint().domain(data.map(d=>d.w)).range([0,w]).padding(0.3);
   const y = d3.scaleLinear().domain([80,220]).range([h,0]);
@@ -906,10 +906,10 @@ function addBadge(svg, cx, cy, text, color, bgColor) {
   g.append('g').attr('transform',`translate(0,${h})`).call(d3.axisBottom(x)).selectAll('text').attr('font-size','16px');
   g.append('g').call(d3.axisLeft(y).ticks(5).tickFormat(d=>d+'人')).selectAll('text').attr('font-size','14px');
   g.append('line').attr('x1',0).attr('x2',w).attr('y1',y(yoy)).attr('y2',y(yoy)).attr('stroke',COLORS.gray).attr('stroke-width',1.5).attr('stroke-dasharray','6,4');
-  g.append('text').attr('x',w+4).attr('y',y(yoy)+4).attr('font-size','14px').attr('fill',COLORS.gray).text('前年同週');
+  g.append('text').attr('x',5).attr('y',y(yoy)-8).attr('font-size','14px').attr('fill',COLORS.gray).text('前年同週');
   const avg = data.slice(0,4).reduce((s,d)=>s+d.v,0)/4;
   g.append('line').attr('x1',0).attr('x2',w).attr('y1',y(avg)).attr('y2',y(avg)).attr('stroke',COLORS.accent).attr('stroke-width',1.5).attr('stroke-dasharray','6,4');
-  g.append('text').attr('x',w+4).attr('y',y(avg)+4).attr('font-size','14px').attr('fill',COLORS.accent).text('4週平均');
+  g.append('text').attr('x',5).attr('y',y(avg)-8).attr('font-size','14px').attr('fill',COLORS.accent).text('4週平均');
   const line = d3.line().x(d=>x(d.w)).y(d=>y(d.v)).curve(d3.curveMonotoneX);
   g.append('path').datum(data).attr('d',line).attr('fill','none').attr('stroke',COLORS.blue).attr('stroke-width',3);
   data.forEach((d,i)=>{
@@ -917,7 +917,7 @@ function addBadge(svg, cx, cy, text, color, bgColor) {
     g.append('circle').attr('cx',x(d.w)).attr('cy',y(d.v)).attr('r',r).attr('fill',i===data.length-1?COLORS.blue:'#fff').attr('stroke',COLORS.blue).attr('stroke-width',2);
   });
   addTrendArrow(g, x('W06'), y(101), x('W07'), y(119), '+17.8%', COLORS.positive, 'chart4');
-  addCallout(g, x('W07'), y(119) - 30, '119人', { target: {x:x('W07'), y:y(119)-10} });
+  addCallout(g, x('W07')-80, y(119) - 30, '119人', { target: {x:x('W07'), y:y(119)-10} });
 })();
 
 // === Chart 5: Avg Spend Line Chart ===
@@ -925,7 +925,7 @@ function addBadge(svg, cx, cy, text, color, bgColor) {
   const data = [{w:'W03',v:6175},{w:'W04',v:5415},{w:'W05',v:4915},{w:'W06',v:5424},{w:'W07',v:5004}];
   const yoy = 4827;
   const svg = d3.select('#chart-5');
-  const m = {top:40,right:50,bottom:50,left:70}, w=760-m.left-m.right, h=440-m.top-m.bottom;
+  const m = {top:40,right:80,bottom:50,left:70}, w=760-m.left-m.right, h=440-m.top-m.bottom;
   const g = svg.append('g').attr('transform',`translate(${m.left},${m.top})`);
   const x = d3.scalePoint().domain(data.map(d=>d.w)).range([0,w]).padding(0.3);
   const y = d3.scaleLinear().domain([4000,7000]).range([h,0]);
@@ -933,10 +933,10 @@ function addBadge(svg, cx, cy, text, color, bgColor) {
   g.append('g').attr('transform',`translate(0,${h})`).call(d3.axisBottom(x)).selectAll('text').attr('font-size','16px');
   g.append('g').call(d3.axisLeft(y).ticks(5).tickFormat(d=>'¥'+d.toLocaleString())).selectAll('text').attr('font-size','14px');
   g.append('line').attr('x1',0).attr('x2',w).attr('y1',y(yoy)).attr('y2',y(yoy)).attr('stroke',COLORS.gray).attr('stroke-width',1.5).attr('stroke-dasharray','6,4');
-  g.append('text').attr('x',w+4).attr('y',y(yoy)+4).attr('font-size','14px').attr('fill',COLORS.gray).text('前年同週');
+  g.append('text').attr('x',5).attr('y',y(yoy)-8).attr('font-size','14px').attr('fill',COLORS.gray).text('前年同週');
   const avg = data.slice(0,4).reduce((s,d)=>s+d.v,0)/4;
   g.append('line').attr('x1',0).attr('x2',w).attr('y1',y(avg)).attr('y2',y(avg)).attr('stroke',COLORS.accent).attr('stroke-width',1.5).attr('stroke-dasharray','6,4');
-  g.append('text').attr('x',w+4).attr('y',y(avg)+4).attr('font-size','14px').attr('fill',COLORS.accent).text('4週平均');
+  g.append('text').attr('x',5).attr('y',y(avg)-8).attr('font-size','14px').attr('fill',COLORS.accent).text('4週平均');
   const line = d3.line().x(d=>x(d.w)).y(d=>y(d.v)).curve(d3.curveMonotoneX);
   g.append('path').datum(data).attr('d',line).attr('fill','none').attr('stroke',COLORS.blue).attr('stroke-width',3);
   data.forEach((d,i)=>{
@@ -944,7 +944,7 @@ function addBadge(svg, cx, cy, text, color, bgColor) {
     g.append('circle').attr('cx',x(d.w)).attr('cy',y(d.v)).attr('r',r).attr('fill',i===data.length-1?COLORS.blue:'#fff').attr('stroke',COLORS.blue).attr('stroke-width',2);
   });
   addTrendArrow(g, x('W06'), y(5424), x('W07'), y(5004), '-7.8%', COLORS.negative, 'chart5');
-  addCallout(g, x('W07')-40, y(5004) - 30, '¥5,004', { target: {x:x('W07'), y:y(5004)-10} });
+  addCallout(g, x('W07')-80, y(5004) - 30, '¥5,004', { target: {x:x('W07'), y:y(5004)-10} });
 })();
 
 // === Chart 6: YoY Gauge Bars ===
@@ -1072,7 +1072,7 @@ function addBadge(svg, cx, cy, text, color, bgColor) {
 (function() {
   const data = [{t:'20時台',v:5940},{t:'22時台',v:8140},{t:'23時台',v:17820},{t:'00時台',v:19800}];
   const svg = d3.select('#chart-10');
-  const m = {top:30,right:30,bottom:50,left:80}, w=700-m.left-m.right, h=420-m.top-m.bottom;
+  const m = {top:30,right:150,bottom:50,left:80}, w=700-m.left-m.right, h=420-m.top-m.bottom;
   const g = svg.append('g').attr('transform',`translate(${m.left},${m.top})`);
   const y = d3.scaleBand().domain(data.map(d=>d.t)).range([0,h]).padding(0.3);
   const x = d3.scaleLinear().domain([0,22000]).range([0,w]);
@@ -1082,7 +1082,7 @@ function addBadge(svg, cx, cy, text, color, bgColor) {
     g.append('rect').attr('x',0).attr('y',y(d.t)).attr('width',x(d.v)).attr('height',y.bandwidth()).attr('fill',color).attr('rx',4);
     if (i===data.length-1) {
       g.append('rect').attr('x',-1.5).attr('y',y(d.t)-1.5).attr('width',x(d.v)+3).attr('height',y.bandwidth()+3).attr('fill','none').attr('stroke',COLORS.accent).attr('stroke-width',3).attr('rx',5);
-      addBadge(g, x(d.v)+80, y(d.t)+y.bandwidth()/2+5, '全体の38.3%', COLORS.accent, COLORS.calloutBg);
+      addBadge(g, x(d.v)+50, y(d.t)+y.bandwidth()/2+25, '全体の38.3%', COLORS.accent, COLORS.calloutBg);
     }
     g.append('text').attr('x',x(d.v)+8).attr('y',y(d.t)+y.bandwidth()/2+5).attr('font-size','17px').attr('font-weight',i===data.length-1?'800':'500').attr('fill',COLORS.heading).text(fmtYen(d.v));
   });
@@ -1143,7 +1143,7 @@ function addBadge(svg, cx, cy, text, color, bgColor) {
 (function() {
   const data = [{t:'22時台',v:145640},{t:'23時台',v:9020}];
   const svg = d3.select('#chart-15');
-  const m = {top:30,right:30,bottom:50,left:80}, w=700-m.left-m.right, h=420-m.top-m.bottom;
+  const m = {top:30,right:150,bottom:50,left:80}, w=700-m.left-m.right, h=420-m.top-m.bottom;
   const g = svg.append('g').attr('transform',`translate(${m.left},${m.top})`);
   const y = d3.scaleBand().domain(data.map(d=>d.t)).range([0,h]).padding(0.3);
   const x = d3.scaleLinear().domain([0,160000]).range([0,w]);
@@ -1153,7 +1153,7 @@ function addBadge(svg, cx, cy, text, color, bgColor) {
     g.append('rect').attr('x',0).attr('y',y(d.t)).attr('width',x(d.v)).attr('height',y.bandwidth()).attr('fill',color).attr('rx',4);
     if (i===0) {
       g.append('rect').attr('x',-1.5).attr('y',y(d.t)-1.5).attr('width',x(d.v)+3).attr('height',y.bandwidth()+3).attr('fill','none').attr('stroke',COLORS.positive).attr('stroke-width',3).attr('rx',5);
-      addBadge(g, x(d.v)+90, y(d.t)+y.bandwidth()/2+5, '売上の94.2%', COLORS.positive, '#F0FDF4');
+      addBadge(g, x(d.v)+50, y(d.t)+y.bandwidth()/2+25, '売上の94.2%', COLORS.positive, '#F0FDF4');
     }
     g.append('text').attr('x',x(d.v)+8).attr('y',y(d.t)+y.bandwidth()/2+5).attr('font-size','17px').attr('font-weight',i===0?'800':'500').attr('fill',COLORS.heading).text(fmtYen(d.v));
   });
@@ -1170,8 +1170,8 @@ function addBadge(svg, cx, cy, text, color, bgColor) {
     {label:'その他カテゴリ',value:191600}
   ];
   const svg = d3.select('#chart-19');
-  const w=520, h=440, radius=160;
-  const g = svg.append('g').attr('transform',`translate(${w/2},${h/2})`);
+  const w=660, h=440, radius=160;
+  const g = svg.append('g').attr('transform',`translate(${w*0.42},${h/2})`);
   const colors = [COLORS.blue,'#F97316','#22C55E','#94A3B8','#8B5CF6','#CBD5E1'];
   const pie = d3.pie().value(d=>d.value).sort(null);
   const arc = d3.arc().innerRadius(70).outerRadius(radius);
@@ -1189,7 +1189,7 @@ function addBadge(svg, cx, cy, text, color, bgColor) {
   const maxS = pie(data)[0];
   const midA = (maxS.startAngle + maxS.endAngle)/2;
   const ox = Math.sin(midA)*(radius+30), oy = -Math.cos(midA)*(radius+30);
-  const ex = ox + (ox>0?50:-50);
+  const ex = ox + (ox>0?25:-25);
   g.append('polyline').attr('points',`${Math.sin(midA)*(radius+18)},${-Math.cos(midA)*(radius+18)} ${ox},${oy} ${ex},${oy}`).attr('fill','none').attr('stroke',COLORS.blue).attr('stroke-width',2);
   g.append('text').attr('x',ex+(ox>0?4:-4)).attr('y',oy-8).attr('text-anchor',ox>0?'start':'end').attr('font-size','16px').attr('font-weight','800').attr('fill',COLORS.blue).text('コース&セット');
   g.append('text').attr('x',ex+(ox>0?4:-4)).attr('y',oy+12).attr('text-anchor',ox>0?'start':'end').attr('font-size','16px').attr('font-weight','700').attr('fill',COLORS.blue).text('¥180,500 (30.1%)');

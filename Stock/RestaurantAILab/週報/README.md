@@ -1,8 +1,9 @@
 # 週報作成システム - 分析フロー詳細ドキュメント
 
 **作成日**: 2025年12月28日
-**対象店舗**: Five Arrows
-**目的**: 売上データと口コミデータから週報作成基礎資料を自動生成するシステムの完全な運用ガイド
+**最終更新**: 2026年2月16日
+**対象店舗**: BFA（BAR FIVE Arrows）/ BBC（別天地 銀座）/ 麻布しき 旗の台店 / キーポイント（かめや駅前店）
+**目的**: 売上データ・日報データから週報を自動生成するシステムの運用ガイド
 
 ---
 
@@ -132,39 +133,39 @@
 Stock/RestaurantAILab/週報/
 │
 ├── README.md                          # 本ドキュメント
+├── ProjectIndex.yaml                  # AI専用インデックス
+├── log.md                             # 変更ログ
 ├── 分析観点.md                         # AI分析時の判断基準ドキュメント
 │
-├── 1_input/                           # 入力データディレクトリ
-│   ├── rawdata.csv                    # 売上トランザクションデータ
-│   └── reviews.csv                    # 口コミデータ
+├── 00_週報作成_統合プロンプト.md        # メタプロンプト（Phase 1〜5の統合管理）
+├── 01_週報作成プロンプトテンプレート.md  # Phase 1: 基礎資料作成
+├── 02_曜日深堀分析_プロンプト.md        # Phase 2: 曜日深掘り分析
+├── 03_スライド構成案作成_プロンプト.md   # Phase 3: スライド構成案
+├── 04_日報スライド作成_プロンプト.md     # Phase 4: 日報スライド追加
+├── 05_HTMLスライド作成_プロンプト.md     # Phase 5: D3.js HTMLスライド生成
 │
-├── 2_output/                          # 最新週（Week 43）の出力
-│   ├── analysis_results.json          # 全分析結果（構造化データ）
-│   ├── weekly_sales.csv               # 週次集計データ
-│   ├── category_latest.csv            # カテゴリ別最新週データ
-│   ├── product_latest.csv             # 商品別最新週データ
-│   ├── category_composition_trend.csv # カテゴリ構成比推移 NEW!
-│   ├── product_composition_trend.csv  # 商品構成比推移 NEW!
-│   ├── weekly_sales_trend.png         # 週次推移グラフ
-│   ├── weekday_sales.png              # 曜日別売上グラフ
-│   ├── hourly_sales.png               # 時間帯別売上グラフ
-│   ├── category_composition.png       # カテゴリ構成比（円グラフ）
-│   ├── category_trend.png             # カテゴリ推移（積み上げ棒グラフ）
-│   ├── product_ranking.png            # 商品売上TOP20
-│   ├── product_trend.png              # 商品売上構成比推移
-│   ├── 週報作成基礎資料.md             # Markdownレポート
-│   └── 週報作成基礎資料.docx           # Wordレポート（最終成果物）
+├── skills/                            # エージェント向けスキル定義
+│   └── 週報監査スキル.mdc              # 監査の標準スキル（7カテゴリ25項目）
 │
-├── 2_output_week42/                   # Week 42の出力（同様の構成）
-│   ├── analysis_results_W42.json
-│   ├── ...
-│   └── 週報作成基礎資料_W42.docx
+├── Scripts/                           # Pythonスクリプト群
+│   ├── analysis_script.py             # メイン分析スクリプト
+│   ├── deep_dive_weekday_analysis.py  # 曜日深掘り分析
+│   └── bfa_category_product_ranking_html.py  # BFAカテゴリ別売上ランキングHTML生成
 │
-├── analysis_script.py                 # メイン分析スクリプト（Week 43用）
-├── analysis_script_week42.py          # Week 42用分析スクリプト
-├── generate_docx.py                   # Word変換スクリプト（Week 43用）
-├── generate_docx_week42.py            # Word変換スクリプト（Week 42用）
-└── fix_markdown_bullets.py            # Markdown箇条書き修正スクリプト
+├── 1_input/                           # 入力データ（4店舗）
+│   ├── BFA/                           # rawdata.csv, DailyReport.csv, reviews.csv
+│   ├── BBC/                           # rawdata.csv, dailyreport.csv, reviews.csv
+│   ├── 麻布しき/                       # rawdata.csv, dailyreport.csv, reviews.csv
+│   ├── キーポイント/                    # rawdata.csv, reviews.csv（日報なし）
+│   └── pos_store_accounts.yaml        # POSアカウント一覧（認証情報）
+│
+├── 2_output/                          # 週次アウトプット（店舗別・週別）
+│   ├── BFA/2_output_2026wXX/          # HTMLスライド, 中間ファイル, 監査レポート, ランキング
+│   ├── BBC/2_output_2026wXX/          # HTMLスライド, 中間ファイル, 監査レポート
+│   ├── 麻布しき/2_output_2026wXX/      # HTMLスライド, 中間ファイル, 監査レポート
+│   └── キーポイント/2_output_2026wXX/   # HTMLスライド, 中間ファイル, 監査レポート
+│
+└── 3.template/                        # スライド構成テンプレート
 ```
 
 ---
@@ -670,6 +671,23 @@ print(f"対象週: {target_week}")
   - 商品別分析機能を追加
   - 構成比時系列データ出力機能を追加
   - Week 43スクリプトと同じ機能セットに統一
+
+### v2.0 (2026-02-16)
+- **4店舗対応**: BFA / BBC / 麻布しき / キーポイントの4店舗に対応
+- **5段階パイプライン**: Phase 1（基礎資料）→ Phase 2（曜日深掘り）→ Phase 3（スライド構成案）→ Phase 4（日報スライド）→ Phase 5（D3.js HTMLスライド）
+  - キーポイント（かめや駅前店）は日報未導入のためPhase 4をスキップ
+  - 口コミデータは全店舗で分析対象外
+- **監査システムの導入**: 各店舗の週報に対して7カテゴリ25項目の標準監査を実施
+  - 監査レポート（`監査レポート_*.md`）と監査チェックリスト（`監査チェックリスト_*.md`）を出力
+  - 評価基準: A（優良）/B（良好）/C（要改善）/D（大幅改善要）の4段階
+- **スキルディレクトリの新設**: `skills/` にエージェント向けスキル定義ファイル(.mdc)を格納
+  - `skills/週報監査スキル.mdc` — 監査手法の標準スキル
+- **入力ディレクトリ構成の整理**:
+  - `1_input/BFA/` — rawdata.csv, DailyReport.csv, reviews.csv
+  - `1_input/BBC/` — rawdata.csv, dailyreport.csv, reviews.csv
+  - `1_input/麻布しき/` — rawdata.csv, dailyreport.csv, reviews.csv
+  - `1_input/キーポイント/` — rawdata.csv, reviews.csv（日報なし）
+- **出力ディレクトリ**: `2_output/{店舗名}/2_output_{対象週}/` に統一
 
 ### v1.5 (2026-02-09)
 - **入力管理（POSアカウント一覧）の追加**

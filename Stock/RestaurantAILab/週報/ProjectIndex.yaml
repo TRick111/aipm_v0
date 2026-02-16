@@ -95,12 +95,42 @@ files:
       - 売上
       - Python
 
+  - path: "skills/"
+    summary: "エージェント向けスキル定義ファイル(.mdc)。監査スキル等を格納"
+    keywords:
+      - スキル
+      - skill
+      - mdc
+      - 監査
+      - エージェント
+
+  - path: "skills/週報監査スキル.mdc"
+    summary: "週報監査の標準化スキル。7カテゴリ25項目の監査基準、判定ルール、レポート/チェックリストのテンプレートを定義"
+    keywords:
+      - 監査
+      - チェックリスト
+      - 品質管理
+      - スキル
+      - テンプレート
+
+  - path: "分析観点.md"
+    summary: "AI分析時の判断基準ドキュメント。数値変化の表現基準（大幅/やや/微増等）、トーン、ミッドポイント法、深掘り対象曜日の選定ルールなど"
+    keywords:
+      - 分析観点
+      - ガイドライン
+      - 表現基準
+      - トーン
+      - ミッドポイント法
+      - 深掘り
+
   - path: "1_input/"
-    summary: "入力データ（BFA/BBCのrawdata.csv、reviews.csvなど）"
+    summary: "入力データ（BFA/BBC/麻布しき/キーポイントの4店舗分のrawdata.csv、DailyReport.csv、reviews.csvなど）"
     keywords:
       - input
       - rawdata
       - reviews
+      - DailyReport
+      - 日報
       - CSV
 
   - path: "1_input/pos_store_accounts.yaml"
@@ -113,13 +143,17 @@ files:
       - YAML
 
   - path: "2_output/"
-    summary: "週次アウトプット（BFA/BBC別に週フォルダ。分析結果JSON/CSV、グラフPNG、週報基礎資料など）"
+    summary: "週次アウトプット（BFA/BBC/麻布しき/キーポイントの4店舗別に週フォルダ。HTMLスライド、中間ファイル、監査レポート、カテゴリ別売上ランキング等）"
     keywords:
       - output
       - 週次
+      - HTML
+      - D3.js
+      - スライド
+      - 監査
+      - ランキング
       - CSV
       - JSON
-      - PNG
       - レポート
 
   - path: "04_日報スライド作成_プロンプト.md"

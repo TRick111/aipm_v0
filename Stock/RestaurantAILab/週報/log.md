@@ -11,7 +11,14 @@
 - edit: `Stock/RestaurantAILab/週報/03_スライド構成案作成_プロンプト.md`
 - edit: `Stock/RestaurantAILab/週報/ProjectIndex.yaml`
 
-## 2026-02-16
+## 2026-02-16 (データパイプライン自動化)
+- create: `Scripts/dashboard_data_pipeline.py` — Dashboard APIを使ったPOS CSVアップロード＆rawdata.csvエクスポートのCLIスクリプト（upload/export/syncサブコマンド、全4店舗対応）
+- create: `skills/週報データ準備スキル.mdc` — POS DL→Dashboard upload→rawdata.csv exportの全工程オーケストレーションスキル
+- create: `Dashboard/.claude/skills/dashboard-data-pipeline/skill.md` — Pythonスクリプトを使ったパイプラインのClaudeスキル定義
+- edit: `ProjectIndex.yaml` — dashboard_data_pipeline.py、週報データ準備スキル追加
+- edit: `log.md` — 本エントリ
+
+## 2026-02-16 (W07週報)
 - create: 全4店舗のW07週報（Phase 1〜5）を一括生成
   - BFA: `2_output/BFA/2_output_2026w07/` — 31枚HTMLスライド + 中間ファイル一式
   - BBC: `2_output/BBC/2_output_2026w07/` — 31枚HTMLスライド + 中間ファイル一式

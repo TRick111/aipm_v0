@@ -95,13 +95,26 @@ files:
       - 売上
       - Python
 
+  - path: "Scripts/dashboard_data_pipeline.py"
+    summary: "Dashboard APIを使ったPOS CSVアップロード＆rawdata.csvエクスポートのCLIスクリプト（upload/export/syncサブコマンド）"
+    keywords:
+      - Python
+      - Dashboard
+      - API
+      - アップロード
+      - エクスポート
+      - rawdata
+      - パイプライン
+      - POS
+
   - path: "skills/"
-    summary: "エージェント向けスキル定義ファイル(.mdc)。監査スキル等を格納"
+    summary: "エージェント向けスキル定義ファイル(.mdc)。監査スキル、データ準備スキル等を格納"
     keywords:
       - スキル
       - skill
       - mdc
       - 監査
+      - データ準備
       - エージェント
 
   - path: "skills/週報監査スキル.mdc"
@@ -112,6 +125,16 @@ files:
       - 品質管理
       - スキル
       - テンプレート
+
+  - path: "skills/週報データ準備スキル.mdc"
+    summary: "POS CSVダウンロードからrawdata.csv生成までの全工程オーケストレーションスキル（POS DL→Dashboard upload→export）"
+    keywords:
+      - データ準備
+      - パイプライン
+      - POS
+      - rawdata
+      - オーケストレーション
+      - スキル
 
   - path: "分析観点.md"
     summary: "AI分析時の判断基準ドキュメント。数値変化の表現基準（大幅/やや/微増等）、トーン、ミッドポイント法、深掘り対象曜日の選定ルールなど"

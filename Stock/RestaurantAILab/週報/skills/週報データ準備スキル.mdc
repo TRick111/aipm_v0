@@ -1,0 +1,97 @@
+---
+description: "POS CSVダウンロードからrawdata.csv生成までの全工程を自動実行する"
+alwaysApply: false
+---
+
+# 週報データ準備スキル
+
+週報作成の入力データ（rawdata.csv）を準備するパイプライン。POS CSVダウンロード → Dashboardアップロード → rawdata.csvエクスポートの3ステップを実行する。
+
+---
+
+## パラメータ
+
+| パラメータ | 必須 | 説明 | 例 |
+|-----------|------|------|-----|
+| startDate | Yes | 対象期間の開始日 | 2026-02-09 |
+| endDate | Yes | 対象期間の終了日 | 2026-02-15 |
+| baseUrl | No | Dashboard URL（デフォルト: ローカル） | https://dashboard-three-beta-90.vercel.app |
+
+## 対象店舗
+
+| 通称 | storeCode | POS種別 | ダウンロードスキル |
+|------|-----------|---------|-------------------|
+| BFA | test-003 | AirRegi | AirRegi日別売上CSVダウンロード |
+| BBC | bbc-001 | Dinii | Dinii売上CSVダウンロード |
+| 麻布しき | shiki-001 | USENレジ | （USENレジ手動DLまたは専用スキル） |
+| キーポイント | kp-001 | AirRegi | AirRegi日別売上CSVダウンロード |
+
+---
+
+## 実行手順
+
+### Step 1: POSダウンロード（既存Playwrightスキル）
+
+各POS管理画面からCSVをダウンロードし、`週報/0_downloads/` に配置する。
+
+#### AirRegi（BFA + キーポイント）
+AirRegi日別売上CSVダウンロードスキルを使用。
+- 出力先: `0_downloads/{YYYYMMDD}-{YYYYMMDD}-BAR FIVE Arrows.csv`
+- 出力先: `0_downloads/{YYYYMMDD}-{YYYYMMDD}-かめや駅前店.csv`
+
+#### Dinii（BBC）
+Dinii売上CSVダウンロードスキルを使用。
+- 出力先: `0_downloads/{YYYYMMDD}-{YYYYMMDD}-別天地 銀座-orders.csv`
+- 出力先: `0_downloads/{YYYYMMDD}-{YYYYMMDD}-別天地 銀座-transactions.csv`
+
+#### USENレジ（麻布しき）
+USENレジ管理画面から手動でダウンロード、または専用スキルを使用。
+- 出力先: `0_downloads/{YYYYMMDD}-{YYYYMMDD}-麻布しき.csv`
+- CSVの先頭にメタデータ行あり（スクリプトが自動検出）
+
+### Step 2: Dashboard sync（Pythonスクリプト）
+
+```bash
+cd /Users/rikutanaka/aipm_v0/Stock/RestaurantAILab/週報
+
+python3 Scripts/dashboard_data_pipeline.py sync \
+  --start-date {startDate} --end-date {endDate} \
+  --downloads-dir 0_downloads \
+  --base-url {baseUrl}
+```
+
+このコマンドは以下を自動実行:
+1. admin認証でログイン
+2. 各店舗のPOS CSVをDashboard APIにアップロード
+3. 指定期間のデータをエクスポートし `1_input/{店舗}/rawdata.csv` に保存
+
+### Step 3: 検証
+
+```bash
+# レコード数確認
+wc -l 1_input/*/rawdata.csv
+
+# 各店舗のヘッダー確認（18カラム構造の一致）
+head -1 1_input/BFA/rawdata.csv
+head -1 1_input/BBC/rawdata.csv
+head -1 1_input/麻布しき/rawdata.csv
+head -1 1_input/キーポイント/rawdata.csv
+```
+
+確認事項:
+- 全4店舗のrawdata.csvが生成されていること
+- レコード数が0でないこと
+- カラム構造が18カラム（store_code〜cost_rate）であること
+- 日付範囲が指定期間に収まっていること
+
+---
+
+## トラブルシューティング
+
+| 症状 | 原因 | 対処 |
+|------|------|------|
+| `Store not found` | DBに店舗未登録 | Dashboard管理画面で店舗を追加 |
+| `ダウンロードファイルが見つかりません` | ファイル名不一致 | 0_downloadsのファイル名を確認。`upload` サブコマンドで直接指定 |
+| `USENレジ ヘッダー行が見つかりません` | CSVフォーマット変更 | CSVを開いてヘッダー行を確認 |
+| `HTTP 401` | セッション切れ | スクリプトが自動的にログインするので通常発生しない |
+| `inserted=0, skipped=N` | 既にアップロード済みデータ | 正常動作。エクスポートは可能 |

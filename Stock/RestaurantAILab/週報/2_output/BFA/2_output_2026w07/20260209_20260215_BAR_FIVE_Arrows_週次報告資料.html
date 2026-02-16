@@ -990,6 +990,13 @@ function addBadge(svg, cx, cy, text, color, bgColor) {
   const x = d3.scaleBand().domain(data.map(d=>d.day)).range([0,w]).padding(0.2);
   const yMax = 80000;
   const y = d3.scaleLinear().domain([-150000,yMax]).range([h,0]);
+  // Zebra striping (alternating background bands for each weekday)
+  const halfGap = (x.step() - x.bandwidth()) / 2;
+  data.forEach((d, i) => {
+    if (i % 2 === 0) {
+      g.append('rect').attr('x',x(d.day)-halfGap).attr('y',0).attr('width',x.step()).attr('height',h).attr('fill','#f5f5f5');
+    }
+  });
   // Grid
   y.ticks(6).forEach(t => g.append('line').attr('x1',0).attr('x2',w).attr('y1',y(t)).attr('y2',y(t)).attr('stroke','#E2E8F0').attr('stroke-dasharray','3,3'));
   // Zero line
@@ -1000,27 +1007,25 @@ function addBadge(svg, cx, cy, text, color, bgColor) {
   const bw = x.bandwidth()/2;
   data.forEach(d => {
     const cx = x(d.day);
-    // Customer factor bar
+    // Customer factor bar (filled solid)
     const cy = d.cust >= 0 ? y(d.cust) : y(0);
     const ch = Math.abs(y(0) - y(d.cust));
-    g.append('rect').attr('x',cx).attr('y',cy).attr('width',bw-2).attr('height',ch).attr('fill',d.cust>=0?COLORS.positive:COLORS.negative).attr('rx',3).attr('opacity',0.8);
-    // Price factor bar
+    g.append('rect').attr('x',cx).attr('y',cy).attr('width',bw-2).attr('height',ch).attr('fill',d.cust>=0?COLORS.positive:COLORS.negative).attr('rx',3).attr('opacity',0.85);
+    // Price factor bar (white fill + dotted border)
     const py = d.price >= 0 ? y(d.price) : y(0);
     const ph = Math.abs(y(0) - y(d.price));
-    g.append('rect').attr('x',cx+bw).attr('y',py).attr('width',bw-2).attr('height',ph).attr('fill',d.price>=0?'#86EFAC':'#FCA5A5').attr('rx',3).attr('opacity',0.8);
+    g.append('rect').attr('x',cx+bw).attr('y',py).attr('width',bw-2).attr('height',ph).attr('fill','#ffffff').attr('stroke',d.price>=0?COLORS.positive:COLORS.negative).attr('stroke-width',2).attr('stroke-dasharray','4,3').attr('rx',3);
   });
-  // Highlight band for Friday
-  const friX = x('金');
-  g.insert('rect',':first-child').attr('x',friX-4).attr('y',0).attr('width',x.bandwidth()+8).attr('height',h).attr('fill','#FEF2F2').attr('rx',6).attr('opacity',0.5);
   // Callout on Friday
+  const friX = x('金');
   addCallout(g, friX+bw, y(-135710)-20, '-¥135,710', {target:{x:friX+bw, y:y(-135710)}});
   // Callout on Tuesday
   addCallout(g, x('火')+bw, y(65342)-20, '+¥65,342', {target:{x:x('火')+bw, y:y(65342)}});
-  // Legend
-  g.append('rect').attr('x',w-180).attr('y',-20).attr('width',14).attr('height',14).attr('fill',COLORS.positive).attr('rx',2);
-  g.append('text').attr('x',w-162).attr('y',-9).attr('font-size','14px').attr('fill',COLORS.text).text('客数要因');
-  g.append('rect').attr('x',w-90).attr('y',-20).attr('width',14).attr('height',14).attr('fill','#86EFAC').attr('rx',2);
-  g.append('text').attr('x',w-72).attr('y',-9).attr('font-size','14px').attr('fill',COLORS.text).text('客単価要因');
+  // Legend - 客数要因: filled square, 客単価要因: dotted-border square
+  g.append('rect').attr('x',w-200).attr('y',-20).attr('width',14).attr('height',14).attr('fill',COLORS.positive).attr('rx',2);
+  g.append('text').attr('x',w-182).attr('y',-9).attr('font-size','14px').attr('fill',COLORS.text).text('客数要因');
+  g.append('rect').attr('x',w-100).attr('y',-20).attr('width',14).attr('height',14).attr('fill','#ffffff').attr('stroke',COLORS.positive).attr('stroke-width',2).attr('stroke-dasharray','4,3').attr('rx',2);
+  g.append('text').attr('x',w-82).attr('y',-9).attr('font-size','14px').attr('fill',COLORS.text).text('客単価要因');
 })();
 
 // === Chart 8: Friday Ratio Bars ===

@@ -1,0 +1,47 @@
+version: 1
+
+# ProjectIndex.yaml（AI専用）
+# 目的:
+# - ユーザー入力に対してAIが「このプロジェクト内のどのファイルを参照すべきか」を判断するためのプロジェクト内インデックス。
+# ルール:
+# - Stockにファイルを追加/更新したら、AIが files を更新する。
+
+project: "Albert"
+root: "Stock/RestaurantAILab/Albert"
+
+canonical:
+  readme: "README.md"
+  log: "log.md"
+
+files:
+  - path: "README.md"
+    summary: "Albertプロジェクトの概要・目的・ゴール・関係者・現状・ネクストアクション"
+    keywords:
+      - Albert
+      - AIエージェント
+      - LINE Bot
+      - 概要
+      - 関係者
+      - ネクストアクション
+  - path: "log.md"
+    summary: "プロジェクトの変更履歴"
+    keywords:
+      - ログ
+      - 変更履歴
+  - path: "albert_plan_and_spec_v1.md"
+    summary: "Albert v1 計画・仕様書。アーキテクチャ、技術スタック、機能仕様、ディレクトリ構成、セットアップ手順、ロードマップを記載"
+    keywords:
+      - 計画
+      - 仕様書
+      - アーキテクチャ
+      - 技術スタック
+      - LINE Messaging API
+      - Claude API
+      - Google Calendar API
+      - Next.js
+      - Vercel
+      - 日程調整
+      - LLMチャット
+      - Webhook
+      - FreeBusy
+      - サービスアカウント

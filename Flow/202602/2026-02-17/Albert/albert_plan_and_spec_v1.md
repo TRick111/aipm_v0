@@ -82,7 +82,7 @@ LINEグループでのメンション or キーワードでAlbertを起動する
 | メッセージング | LINE Messaging API | Bot + グループ参加 |
 | カレンダー | Google Calendar API | サービスアカウント方式 |
 | DB | Vercel Postgres (Neon) | 会話履歴・ユーザー管理・日程調整ステート |
-| ORM | Drizzle ORM | 軽量・型安全。Vercel Postgres と相性良好 |
+| ORM | Prisma (v7) | 型安全。Driver Adapter で Vercel Postgres 接続 |
 | 環境変数管理 | Vercel Environment Variables | シークレット管理 |
 
 ---

@@ -12,3 +12,4 @@
 | 2026-02-17 | create | `ProjectIndex.yaml` | プロジェクト初期化 | |
 | 2026-02-17 | create | `log.md` | プロジェクト初期化 | |
 | 2026-02-17 | create | `albert_plan_and_spec_v1.md` | 計画・仕様書 v1 策定 | Phase 1 MVP の設計 |
+| 2026-02-17 | edit | `albert_plan_and_spec_v1.md` | DB設計追加（Vercel Postgres + Drizzle ORM、4テーブル） | |

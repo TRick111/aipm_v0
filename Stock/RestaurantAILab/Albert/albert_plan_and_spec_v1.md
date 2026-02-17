@@ -80,8 +80,9 @@ LINEグループでのメンション or キーワードでAlbertを起動する
 | 言語 | TypeScript | |
 | LLM | Anthropic Claude API (claude-sonnet-4-5-20250929) | コスト効率重視。必要に応じてモデル変更可 |
 | メッセージング | LINE Messaging API | Bot + グループ参加 |
-| カレンダー | Google Calendar API | サービスアカウント or OAuth 2.0 |
-| DB（任意） | Vercel KV (Redis) | 会話履歴・セッション管理用。Phase 1では最小限 |
+| カレンダー | Google Calendar API | サービスアカウント方式 |
+| DB | Vercel Postgres (Neon) | 会話履歴・ユーザー管理・日程調整ステート |
+| ORM | Drizzle ORM | 軽量・型安全。Vercel Postgres と相性良好 |
 | 環境変数管理 | Vercel Environment Variables | シークレット管理 |
 
 ---
@@ -192,7 +193,144 @@ Albert:
 
 ---
 
-## 7. プロジェクト構成（ディレクトリ）
+## 7. データベース設計
+
+### 7.1 概要
+
+| 項目 | 内容 |
+|---|---|
+| DB | Vercel Postgres (Neon) |
+| ORM | Drizzle ORM |
+| マイグレーション | Drizzle Kit (`drizzle-kit push` / `drizzle-kit generate`) |
+
+### 7.2 ER図
+
+```
+┌──────────┐     ┌──────────────┐     ┌─────────────────────┐
+│  users   │────<│  messages    │     │ schedule_requests    │
+└──────────┘     └──────────────┘     └─────────────────────┘
+     │                                         │
+     │           ┌──────────────────────┐      │
+     └──────────<│ schedule_request_    │>─────┘
+                 │ members             │
+                 └──────────────────────┘
+```
+
+### 7.3 テーブル定義
+
+#### users
+
+メンバー情報。LINE UserID と Google カレンダーID の紐付けを管理。
+
+| カラム | 型 | 制約 | 説明 |
+|---|---|---|---|
+| `id` | `uuid` | PK, default gen | |
+| `name` | `text` | NOT NULL | 表示名（吉田、町田、田中） |
+| `line_user_id` | `text` | UNIQUE, NOT NULL | LINE の userId |
+| `calendar_id` | `text` | | GoogleカレンダーID（メールアドレス） |
+| `created_at` | `timestamptz` | NOT NULL, default now | |
+
+#### messages
+
+LLMに渡す会話コンテキスト用。グループ単位で直近N件を保持。
+
+| カラム | 型 | 制約 | 説明 |
+|---|---|---|---|
+| `id` | `uuid` | PK, default gen | |
+| `group_id` | `text` | NOT NULL | LINE グループID |
+| `user_id` | `uuid` | FK → users, NULL可 | 発言者（Albertの応答はNULL） |
+| `role` | `text` | NOT NULL | `user` / `assistant` |
+| `content` | `text` | NOT NULL | メッセージ本文 |
+| `created_at` | `timestamptz` | NOT NULL, default now | |
+
+- インデックス: `(group_id, created_at DESC)` → 直近N件取得用
+
+#### schedule_requests
+
+日程調整の「候補提示 → 選択 → 確定」のステート管理。
+
+| カラム | 型 | 制約 | 説明 |
+|---|---|---|---|
+| `id` | `uuid` | PK, default gen | |
+| `group_id` | `text` | NOT NULL | LINE グループID |
+| `requester_id` | `uuid` | FK → users, NOT NULL | 調整を依頼した人 |
+| `status` | `text` | NOT NULL, default 'pending' | `pending` / `confirmed` / `cancelled` |
+| `duration_minutes` | `integer` | NOT NULL, default 60 | ミーティング時間（30/60/90） |
+| `date_from` | `date` | NOT NULL | 検索開始日 |
+| `date_to` | `date` | NOT NULL | 検索終了日 |
+| `time_from` | `time` | NOT NULL, default '10:00' | 検索開始時刻 |
+| `time_to` | `time` | NOT NULL, default '19:00' | 検索終了時刻 |
+| `candidates` | `jsonb` | | 算出された候補スロット配列 |
+| `selected_slot` | `jsonb` | | 確定されたスロット |
+| `created_at` | `timestamptz` | NOT NULL, default now | |
+
+`candidates` の例:
+```json
+[
+  {"start": "2026-02-23T14:00:00+09:00", "end": "2026-02-23T14:30:00+09:00"},
+  {"start": "2026-02-24T10:00:00+09:00", "end": "2026-02-24T10:30:00+09:00"}
+]
+```
+
+#### schedule_request_members
+
+日程調整の対象メンバー（基本3人全員。将来2人だけの調整にも対応可）。
+
+| カラム | 型 | 制約 | 説明 |
+|---|---|---|---|
+| `request_id` | `uuid` | FK → schedule_requests | |
+| `user_id` | `uuid` | FK → users | |
+| | | PK: `(request_id, user_id)` | 複合主キー |
+
+### 7.4 Drizzle スキーマ（実装イメージ）
+
+```typescript
+// src/db/schema.ts
+import { pgTable, uuid, text, timestamp, integer, time, date, jsonb, primaryKey } from "drizzle-orm/pg-core";
+
+export const users = pgTable("users", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: text("name").notNull(),
+  lineUserId: text("line_user_id").notNull().unique(),
+  calendarId: text("calendar_id"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export const messages = pgTable("messages", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  groupId: text("group_id").notNull(),
+  userId: uuid("user_id").references(() => users.id),
+  role: text("role").notNull(), // "user" | "assistant"
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export const scheduleRequests = pgTable("schedule_requests", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  groupId: text("group_id").notNull(),
+  requesterId: uuid("requester_id").references(() => users.id).notNull(),
+  status: text("status").notNull().default("pending"),
+  durationMinutes: integer("duration_minutes").notNull().default(60),
+  dateFrom: date("date_from").notNull(),
+  dateTo: date("date_to").notNull(),
+  timeFrom: time("time_from").notNull().default("10:00"),
+  timeTo: time("time_to").notNull().default("19:00"),
+  candidates: jsonb("candidates"),
+  selectedSlot: jsonb("selected_slot"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export const scheduleRequestMembers = pgTable("schedule_request_members", {
+  requestId: uuid("request_id").references(() => scheduleRequests.id).notNull(),
+  userId: uuid("user_id").references(() => users.id).notNull(),
+}, (table) => ({
+  pk: primaryKey({ columns: [table.requestId, table.userId] }),
+}));
+```
+
+---
+
+## 8. プロジェクト構成（ディレクトリ）
 
 ```
 albert/                        ← Next.js プロジェクトルート
@@ -202,6 +340,10 @@ albert/                        ← Next.js プロジェクトルート
 │   │   │   └── webhook/
 │   │   │       └── route.ts   ← LINE Webhook エンドポイント
 │   │   └── page.tsx           ← 管理画面（将来用。最初は最小）
+│   ├── db/
+│   │   ├── schema.ts          ← Drizzle テーブル定義
+│   │   ├── index.ts           ← DB接続・クライアント
+│   │   └── queries.ts         ← 共通クエリ関数
 │   ├── lib/
 │   │   ├── line/
 │   │   │   ├── client.ts      ← LINE Messaging API クライアント
@@ -217,6 +359,8 @@ albert/                        ← Next.js プロジェクトルート
 │   │   └── config.ts          ← 環境変数・定数
 │   └── types/
 │       └── index.ts           ← 共通型定義
+├── drizzle/                   ← マイグレーションファイル（自動生成）
+├── drizzle.config.ts          ← Drizzle Kit 設定
 ├── .env.local                 ← ローカル開発用環境変数
 ├── .env.example               ← 環境変数テンプレート
 ├── next.config.ts
@@ -227,21 +371,21 @@ albert/                        ← Next.js プロジェクトルート
 
 ---
 
-## 8. 環境変数
+## 9. 環境変数
 
 | 変数名 | 説明 | 取得元 |
 |---|---|---|
+| `POSTGRES_URL` | Vercel Postgres 接続文字列 | Vercel Storage ダッシュボード |
 | `LINE_CHANNEL_SECRET` | LINEチャネルシークレット | LINE Developers Console |
 | `LINE_CHANNEL_ACCESS_TOKEN` | LINEチャネルアクセストークン | LINE Developers Console |
 | `ANTHROPIC_API_KEY` | Claude API キー | Anthropic Console |
 | `GOOGLE_SERVICE_ACCOUNT_KEY` | GCPサービスアカウント鍵(JSON, base64) | GCP Console |
-| `CALENDAR_IDS` | 3名のカレンダーID（カンマ区切り） | 各自のGoogleカレンダー設定 |
 
 ---
 
-## 9. セットアップ手順（初期構築）
+## 10. セットアップ手順（初期構築）
 
-### 9.1 外部サービス準備
+### 10.1 外部サービス準備
 
 1. **LINE Developers Console**
    - Messaging API チャネルを作成
@@ -260,43 +404,46 @@ albert/                        ← Next.js プロジェクトルート
 
 4. **Vercel**
    - プロジェクトを作成
-   - 環境変数を設定
+   - Vercel Storage → Postgres を追加（Neon）
+   - 環境変数を設定（`POSTGRES_URL` は自動設定される）
    - GitHubリポジトリと連携（自動デプロイ）
 
-### 9.2 開発環境
+### 10.2 開発環境
 
 ```bash
 npx create-next-app@latest albert --typescript --app --tailwind
 cd albert
 npm install @line/bot-sdk @anthropic-ai/sdk googleapis
+npm install drizzle-orm @vercel/postgres
+npm install -D drizzle-kit
 ```
 
 ---
 
-## 10. 開発ロードマップ
+## 11. 開発ロードマップ
 
-### Phase 1: MVP（目標: 2週間）
+### Phase 1: MVP
 
-| # | タスク | 見積 |
-|---|---|---|
-| 1 | Next.js プロジェクト作成・Vercelデプロイ | 0.5日 |
-| 2 | LINE Webhook 受信・応答の疎通 | 1日 |
-| 3 | Claude API 連結・LLMチャット機能 | 1日 |
-| 4 | Google Calendar API 連携・FreeBusy取得 | 1日 |
-| 5 | 日程調整ロジック実装 | 1〜2日 |
-| 6 | メッセージルーティング（チャット/日程調整の振り分け） | 0.5日 |
-| 7 | テスト・デバッグ・調整 | 2〜3日 |
+| # | タスク |
+|---|---|
+| 1 | Next.js プロジェクト作成・Vercelデプロイ・Postgres接続 |
+| 2 | DBスキーマ作成（Drizzle）・マイグレーション |
+| 3 | LINE Webhook 受信・署名検証・応答の疎通 |
+| 4 | Claude API 連結・LLMチャット機能・メッセージ履歴保存 |
+| 5 | Google Calendar API 連携・FreeBusy取得 |
+| 6 | 日程調整ロジック実装（候補提示・選択・確定） |
+| 7 | メッセージルーティング（チャット/日程調整の振り分け） |
+| 8 | テスト・デバッグ・調整 |
 
 ### Phase 2: 改善（Phase 1完了後）
 
-- 会話履歴の永続化（Vercel KV）
 - 日程調整の確定 → Googleカレンダーに予定作成
 - Flex Message（リッチUI）対応
 - エラーハンドリング強化
 
 ---
 
-## 11. セキュリティ考慮
+## 12. セキュリティ考慮
 
 | 項目 | 対策 |
 |---|---|
@@ -307,7 +454,7 @@ npm install @line/bot-sdk @anthropic-ai/sdk googleapis
 
 ---
 
-## 12. 制約・前提条件
+## 13. 制約・前提条件
 
 - Vercel Hobby プランの場合、Serverless Function の実行時間は最大60秒
 - LINE Messaging API の応答は、Webhook受信から一定時間以内に返す必要あり（Reply APIは即時、Push APIは任意タイミング）

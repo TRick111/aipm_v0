@@ -96,7 +96,7 @@ files:
       - Python
 
   - path: "Scripts/dashboard_data_pipeline.py"
-    summary: "Dashboard APIを使ったPOS CSVアップロード＆rawdata.csvエクスポートのCLIスクリプト（upload/export/syncサブコマンド）"
+    summary: "Dashboard APIを使ったPOS CSVアップロード＆rawdata.csvエクスポートのCLIスクリプト（upload/export/syncサブコマンド）。v1 Python版"
     keywords:
       - Python
       - Dashboard
@@ -106,6 +106,16 @@ files:
       - rawdata
       - パイプライン
       - POS
+
+  - path: "Dashboard/scripts/export-rawdata.mjs"
+    summary: "Dashboard APIからrawdata.csvをエクスポートするNode.jsスクリプト。v2で既存bulk-upload-*.mjsと統一されたJS版エクスポーター"
+    keywords:
+      - Node.js
+      - Dashboard
+      - API
+      - エクスポート
+      - rawdata
+      - export-rawdata
 
   - path: "skills/"
     summary: "エージェント向けスキル定義ファイル(.mdc)。監査スキル、データ準備スキル等を格納"

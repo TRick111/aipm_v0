@@ -1,5 +1,12 @@
 # log（週報）
 
+## 2026-02-22 (データパイプライン v2: Node.js化)
+- create: `Dashboard/scripts/export-rawdata.mjs` — Dashboard APIからrawdata.csvをエクスポートするNode.jsスクリプト（既存bulk-upload-*.mjsと同じlib/env.mjs利用、--env dev|prod対応）
+- edit: `Dashboard/.claude/skills/dashboard-data-pipeline/skill.md` — v2.0.0へ更新。Node.jsエクスポートスクリプトに対応、アップロードは既存bulk-upload-*.mjsを使用
+- edit: `skills/週報データ準備スキル.mdc` — Step 2をNode.js既存スクリプト、Step 3をexport-rawdata.mjsに変更
+- edit: `ProjectIndex.yaml` — export-rawdata.mjs追加
+- edit: `log.md` — 本エントリ
+
 ## 2026-01-28
 - create: `Stock/RestaurantAILab/週報/ProjectIndex.yaml`
 - create: `Stock/RestaurantAILab/週報/log.md`

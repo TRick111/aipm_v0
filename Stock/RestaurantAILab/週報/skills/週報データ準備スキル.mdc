@@ -15,7 +15,7 @@ alwaysApply: false
 |-----------|------|------|-----|
 | startDate | Yes | 対象期間の開始日 | 2026-02-09 |
 | endDate | Yes | 対象期間の終了日 | 2026-02-15 |
-| baseUrl | No | Dashboard URL（デフォルト: ローカル） | https://dashboard-three-beta-90.vercel.app |
+| env | No | 環境指定（dev=ローカル, prod=本番） | dev |
 
 ## 対象店舗
 
@@ -49,25 +49,57 @@ USENレジ管理画面から手動でダウンロード、または専用スキ�
 - 出力先: `0_downloads/{YYYYMMDD}-{YYYYMMDD}-麻布しき.csv`
 - CSVの先頭にメタデータ行あり（スクリプトが自動検出）
 
-### Step 2: Dashboard sync（Pythonスクリプト）
+### Step 2: Dashboardアップロード（既存Node.jsスクリプト）
+
+```bash
+cd /Users/rikutanaka/RestaurantAILab/Dashboard
+
+# BFA（AirRegi）
+node scripts/bulk-upload-airregi.mjs --store test-003 --env {env}
+
+# BBC（Dinii）
+node scripts/bulk-upload-dinii.mjs --store bbc-001 --env {env}
+
+# 麻布しき（USENレジ）
+node scripts/bulk-upload-usenregi.mjs --store shiki-001 --file <csv-path> --env {env}
+
+# キーポイント（AirRegi）
+node scripts/bulk-upload-airregi.mjs --store kp-001 --env {env}
+```
+
+各スクリプトは `.local/bulkupload/{storeCode}/` からCSVファイルを自動検出する（USENレジは `--file` で直接指定）。
+
+### Step 3: データエクスポート（export-rawdata.mjs）
+
+```bash
+cd /Users/rikutanaka/RestaurantAILab/Dashboard
+
+# BFA
+node scripts/export-rawdata.mjs --store test-003 \
+  --start-date {startDate} --end-date {endDate} \
+  --output ../週報/1_input/BFA/rawdata.csv --env {env}
+
+# BBC
+node scripts/export-rawdata.mjs --store bbc-001 \
+  --start-date {startDate} --end-date {endDate} \
+  --output ../週報/1_input/BBC/rawdata.csv --env {env}
+
+# 麻布しき
+node scripts/export-rawdata.mjs --store shiki-001 \
+  --start-date {startDate} --end-date {endDate} \
+  --output ../週報/1_input/麻布しき/rawdata.csv --env {env}
+
+# キーポイント
+node scripts/export-rawdata.mjs --store kp-001 \
+  --start-date {startDate} --end-date {endDate} \
+  --output ../週報/1_input/キーポイント/rawdata.csv --env {env}
+```
+
+### Step 4: 検証
 
 ```bash
 cd /Users/rikutanaka/aipm_v0/Stock/RestaurantAILab/週報
 
-python3 Scripts/dashboard_data_pipeline.py sync \
-  --start-date {startDate} --end-date {endDate} \
-  --downloads-dir 0_downloads \
-  --base-url {baseUrl}
-```
-
-このコマンドは以下を自動実行:
-1. admin認証でログイン
-2. 各店舗のPOS CSVをDashboard APIにアップロード
-3. 指定期間のデータをエクスポートし `1_input/{店舗}/rawdata.csv` に保存
-
-### Step 3: 検証
-
-```bash
 # レコード数確認
 wc -l 1_input/*/rawdata.csv
 
@@ -91,7 +123,7 @@ head -1 1_input/キーポイント/rawdata.csv
 | 症状 | 原因 | 対処 |
 |------|------|------|
 | `Store not found` | DBに店舗未登録 | Dashboard管理画面で店舗を追加 |
-| `ダウンロードファイルが見つかりません` | ファイル名不一致 | 0_downloadsのファイル名を確認。`upload` サブコマンドで直接指定 |
-| `USENレジ ヘッダー行が見つかりません` | CSVフォーマット変更 | CSVを開いてヘッダー行を確認 |
-| `HTTP 401` | セッション切れ | スクリプトが自動的にログインするので通常発生しない |
+| `Login failed` | パスワード不一致 | `.env.development` の ADMIN_PASSWORD を確認 |
+| `No data found` | 指定期間にデータなし | 日付範囲を確認。アップロードが完了しているか確認 |
 | `inserted=0, skipped=N` | 既にアップロード済みデータ | 正常動作。エクスポートは可能 |
+| `ECONNREFUSED` | Dashboardが起動していない | `cd Dashboard && npm run dev` で起動 |

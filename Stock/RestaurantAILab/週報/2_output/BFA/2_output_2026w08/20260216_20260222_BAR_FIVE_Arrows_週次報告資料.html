@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BAR FIVE Arrows 週次営業報告 — 2026-W08</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;font-size:20px;color:#334155;}
+.slide{width:1280px;height:720px;position:relative;overflow:hidden;background:#fff;font-family:inherit;}
+@media screen{.slide{margin:0 auto 40px auto;box-shadow:0 4px 20px rgba(0,0,0,.12);}}
+@media print{body{margin:0;padding:0;background:#fff;}.slide{page-break-after:always;page-break-inside:avoid;break-after:page;break-inside:avoid;box-shadow:none;margin:0;}.slide:last-child{page-break-after:auto;}}
+.slide-header{background:#1E3A5F;color:#fff;padding:14px 40px;display:flex;align-items:center;justify-content:space-between;position:relative;}
+.slide-header h2{font-size:32px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:85%;}
+.slide-header .pn{font-size:16px;opacity:.7;flex-shrink:0;}
+.progress-bar{position:absolute;bottom:0;left:0;height:3px;background:rgba(255,255,255,.4);border-radius:0 2px 2px 0;}
+.slide-header .section-tag{background:rgba(255,255,255,.2);padding:4px 12px;border-radius:4px;font-size:14px;font-weight:500;}
+.msg-bar{background:#FFF7ED;border-left:5px solid #F97316;padding:12px 40px;font-size:24px;font-weight:800;color:#1E293B;line-height:1.4;}
+.slide-body{padding:18px 40px 14px 40px;overflow:hidden;}
+/* title slide */
+.slide-title{background:linear-gradient(135deg,#1E3A5F 0%,#0F172A 100%);display:flex;flex-direction:column;justify-content:center;align-items:center;color:#fff;text-align:center;}
+.main-title{font-size:46px;font-weight:800;line-height:1.3;}
+.sub-title{font-size:26px;font-weight:400;margin-top:12px;opacity:.9;}
+.period{font-size:18px;margin-top:20px;opacity:.7;}
+.note{font-size:17px;margin-top:18px;opacity:.6;max-width:800px;}
+/* KPI cards */
+.kpi-row{display:flex;gap:18px;margin-top:10px;flex-wrap:wrap;justify-content:center;}
+.kpi-card{flex:1;min-width:200px;max-width:280px;background:#F8FAFC;border-radius:12px;padding:16px 20px;box-shadow:0 2px 8px rgba(0,0,0,.06);text-align:center;}
+.kpi-label{display:block;font-size:17px;font-weight:600;color:#64748B;}
+.kpi-value{display:block;font-size:40px;font-weight:800;color:#1E293B;margin:4px 0;}
+.kpi-change{display:block;font-size:20px;font-weight:700;}
+.kpi-change-sub{display:block;font-size:17px;color:#64748B;margin-top:2px;}
+.positive{color:#22C55E;} .negative{color:#EF4444;}
+/* tables */
+.dt{width:100%;border-collapse:collapse;font-size:18px;}
+.dt th{background:#1E3A5F;color:#fff;padding:10px 14px;text-align:left;font-size:17px;font-weight:700;}
+.dt td{padding:9px 14px;border-bottom:1px solid #E2E8F0;}
+.dt tr:nth-child(even){background:#F8FAFC;}
+.dt .highlight-row{background:#FFF7ED;border-left:4px solid #F97316;}
+.dt .highlight-row td{font-weight:800;color:#C2410C;}
+/* action table */
+.action-table{width:100%;border-collapse:collapse;font-size:15px;}
+.action-table th{background:#1E3A5F;color:#fff;padding:8px 10px;font-size:15px;font-weight:700;text-align:left;}
+.action-table td{padding:7px 10px;border-bottom:1px solid #E2E8F0;vertical-align:top;}
+.action-table tr:nth-child(even){background:#F8FAFC;}
+.action-table .highlight-row{background:#FFF7ED;border-left:4px solid #F97316;}
+.action-table .highlight-row td{font-weight:700;color:#C2410C;}
+/* bullet list */
+.bullet-list{list-style:none;padding:0;}
+.bullet-list li{display:flex;align-items:flex-start;gap:12px;background:#F8FAFC;border-radius:10px;padding:12px 18px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.05);font-size:17px;line-height:1.5;}
+.bullet-list .icon{font-size:26px;flex-shrink:0;margin-top:2px;}
+.bullet-list .text{flex:1;}
+.bullet-list .text strong{color:#1E293B;}
+/* cards */
+.card-row{display:flex;gap:16px;flex-wrap:wrap;}
+.info-card{flex:1;min-width:220px;background:#F8FAFC;border-radius:12px;padding:16px 20px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.info-card h4{font-size:20px;font-weight:700;margin-bottom:6px;}
+.info-card p,.info-card li{font-size:17px;line-height:1.5;}
+.success-item{background:#F0FDF4;border-radius:10px;padding:12px 18px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.success-item h4{font-size:19px;font-weight:700;color:#22C55E;margin-bottom:4px;}
+.success-item p{font-size:17px;line-height:1.5;}
+.challenge-item{background:#FEF2F2;border-radius:10px;padding:12px 18px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.challenge-item h4{font-size:19px;font-weight:700;color:#EF4444;margin-bottom:4px;}
+.challenge-item p{font-size:17px;line-height:1.5;}
+/* chart container */
+.chart-comment{display:flex;gap:20px;}
+.chart-area{flex:2;}
+.comment-area{flex:1;font-size:17px;line-height:1.6;}
+.comment-area h4{font-size:20px;font-weight:700;margin-bottom:8px;color:#1E293B;}
+.comment-area li{margin-bottom:6px;}
+/* blockquote */
+blockquote{border-left:3px solid #3B82F6;padding:10px 18px;margin:10px 0;background:#F8FAFC;border-radius:0 10px 10px 0;font-size:17px;line-height:1.5;}
+blockquote strong{color:#1E293B;}
+.two-col{display:flex;gap:24px;}
+.two-col>div{flex:1;}
+h3.sec{font-size:22px;font-weight:800;color:#1E293B;margin:10px 0 8px 0;}
+.small-note{font-size:16px;color:#64748B;margin-top:6px;}
+</style>
+</head>
+<body>
+<div class="slide slide-title" id="slide-1">
+  <div class="main-title">BAR FIVE Arrows<br>週次営業報告</div>
+  <div class="sub-title">2026-W08</div>
+  <div class="period">2026年2月16日（月）〜 2月22日（日）</div>
+  <div class="note">本週はデータ取得が月曜1日分のみのため、週次合計値は暫定値</div>
+  <div class="period">作成日: 2026年2月24日</div>
+</div><div class="slide" id="slide-2">
+<div class="slide-header"><h2><span class="section-tag">第1部</span> 今週のハイライト（3行サマリー）</h2><span class="pn">2 / 31</span><div class="progress-bar" style="width:3.3%"></div></div>
+<div class="msg-bar">W08は月曜1日分のデータのみであり、週次数値の前週比・前年比は参考値にとどまるが、月曜単日の客単価は4週平均比+19.5%と好調であった。</div>
+<div class="slide-body">
+ <div class="kpi-row" style="margin-bottom:14px;">
+  <div class="kpi-card"><span class="kpi-label">売上（月曜のみ）</span><span class="kpi-value" style="font-size:36px;">&#165;21,960</span><span class="kpi-change negative">&#9660; 前週比 -96.6%</span><span class="kpi-change-sub">&#8251; 1日分vs7日分</span></div>
+  <div class="kpi-card"><span class="kpi-label">客数（月曜のみ）</span><span class="kpi-value" style="font-size:36px;">4人</span><span class="kpi-change negative">&#9660; 前週比 -96.9%</span><span class="kpi-change-sub">&#8251; 1日分vs7日分</span></div>
+  <div class="kpi-card" style="border:2px solid #22C55E;"><span class="kpi-label">&#127919; 客単価（月曜のみ）</span><span class="kpi-value" style="font-size:36px;color:#22C55E;">&#165;5,490</span><span class="kpi-change positive">&#9650; 4週平均比 +19.5%</span><span class="kpi-change-sub">4週平均 &#165;4,593</span></div>
+ </div>
+ <ul class="bullet-list">
+  <li><div class="icon">&#9888;&#65039;</div><div class="text"><strong>データ制約</strong>: W08はrawdataが月曜1日分のみ。火曜〜日曜のデータは未取得のため、週次合計は月曜単日の数値</div></li>
+  <li><div class="icon">&#127867;</div><div class="text"><strong>商品傾向</strong>: ジャパニーズカクテルが売上構成比42.0%を占め、Tommy's Verde Margaritaが構成比15.6%で最上位</div></li>
+  <li><div class="icon">&#128200;</div><div class="text"><strong>客数課題</strong>: 月曜の客数4人は4週平均15.2人に対し-73.7%と大幅減。来店数の回復が次週以降の課題</div></li>
+ </ul>
+</div></div><div class="slide" id="slide-3">
+<div class="slide-header"><h2>週次売上推移（直近5週）</h2><span class="pn">3 / 31</span><div class="progress-bar" style="width:6.7%"></div></div>
+<div class="msg-bar">W08は月曜1日分のみのため売上&#165;21,960にとどまるが、W04〜W07の4週間は&#165;55万〜&#165;65万圏で安定推移していた。</div>
+<div class="slide-body">
+ <div class="chart-comment">
+  <div class="chart-area"><svg id="chart3" width="780" height="420"></svg></div>
+  <div class="comment-area">
+   <h4>&#128202; トレンド読み取り</h4>
+   <ul style="list-style:none;padding:0;">
+    <li style="margin-bottom:8px;">&#128313; W04〜W07の4週平均売上は約&#165;622,208</li>
+    <li style="margin-bottom:8px;">&#128313; W06のみ&#165;548,290とやや低調だが、W07で&#165;640,040に回復</li>
+    <li style="margin-bottom:8px;">&#9888;&#65039; W08は月曜1日分のデータのみ、週次比較は不適切</li>
+    <li>&#128313; 参考: 前年同週売上&#165;741,000</li>
+   </ul>
+  </div>
+ </div>
+</div></div><div class="slide" id="slide-4">
+<div class="slide-header"><h2>週次客数・客単価推移（直近5週）</h2><span class="pn">4 / 31</span><div class="progress-bar" style="width:10.0%"></div></div>
+<div class="msg-bar">客数はW04〜W07で98〜139人の幅があるが、W08月曜単日の客単価&#165;5,490はW04〜W07のどの週よりも高く、単日としては高単価営業を実現した。</div>
+<div class="slide-body">
+ <div class="chart-comment">
+  <div class="chart-area"><svg id="chart4" width="780" height="420"></svg></div>
+  <div class="comment-area">
+   <h4>&#128202; 読み取り</h4>
+   <ul style="list-style:none;padding:0;">
+    <li style="margin-bottom:8px;">&#128313; 客数が多い週（W05: 139人）は客単価が低い（&#165;4,705）</li>
+    <li style="margin-bottom:8px;">&#128313; W08月曜の客単価&#165;5,490はW06に次ぐ水準</li>
+    <li>&#9888;&#65039; W08客数4人は月曜1日分、週次比較は参考値</li>
+   </ul>
+  </div>
+ </div>
+</div></div><div class="slide" id="slide-5">
+<div class="slide-header"><h2>前年同週比較（2026-W08 vs 2025-W08）</h2><span class="pn">5 / 31</span><div class="progress-bar" style="width:13.3%"></div></div>
+<div class="msg-bar">前年同週比は売上-97.0%・客数-97.5%だが、これは月曜1日分vs7日分の比較であり、唯一有効な指標は客単価の前年比+19.3%である。</div>
+<div class="slide-body">
+ <div class="chart-comment">
+  <div class="chart-area"><svg id="chart5" width="780" height="400"></svg></div>
+  <div class="comment-area">
+   <h4>&#128202; 読み取り</h4>
+   <ul style="list-style:none;padding:0;">
+    <li style="margin-bottom:8px;">&#128308; 売上・客数の前年比マイナスはデータ日数差（1日vs7日）によるもの</li>
+    <li style="margin-bottom:8px;">&#127919; 客単価&#165;5,490 vs &#165;4,602で前年比+19.3%</li>
+    <li>&#9888;&#65039; 正確な前年比評価はW08全日データ揃い後に再検証が必要</li>
+   </ul>
+  </div>
+ </div>
+</div></div><div class="slide" id="slide-6">
+<div class="slide-header"><h2>KPIサマリー</h2><span class="pn">6 / 31</span><div class="progress-bar" style="width:16.7%"></div></div>
+<div class="msg-bar">週次KPIは月曜1日分のデータに基づく暫定値であり、客単価の前週比+10.7%・前年比+19.3%のみが有意な評価指標となる。</div>
+<div class="slide-body">
+ <div class="kpi-row" style="margin-bottom:16px;">
+  <div class="kpi-card"><span class="kpi-label">&#128176; 売上</span><span class="kpi-value" style="font-size:38px;">&#165;21,960</span><span class="kpi-change negative">&#9660; 前週比 -96.6%</span><span class="kpi-change-sub">前年比 -97.0%</span></div>
+  <div class="kpi-card"><span class="kpi-label">&#128101; 客数</span><span class="kpi-value" style="font-size:38px;">4人</span><span class="kpi-change negative">&#9660; 前週比 -96.9%</span><span class="kpi-change-sub">前年比 -97.5%</span></div>
+  <div class="kpi-card" style="border:2px solid #22C55E;"><span class="kpi-label">&#127919; 客単価</span><span class="kpi-value" style="font-size:38px;color:#22C55E;">&#165;5,490</span><span class="kpi-change positive">&#9650; 前週比 +10.7%</span><span class="kpi-change-sub">前年比 +19.3%</span></div>
+ </div>
+ <ul class="bullet-list">
+  <li><div class="icon">&#9888;&#65039;</div><div class="text"><strong>前週比・前年比の大幅マイナス（-96%超）</strong>はデータ不完全が原因であり、店舗業績の悪化ではない</div></li>
+  <li><div class="icon">&#127919;</div><div class="text"><strong>客単価&#165;5,490</strong>は前週比+10.7%、前年比+19.3%と両指標ともプラス</div></li>
+  <li><div class="icon">&#128313;</div><div class="text"><strong>組数は3組</strong>（前週44組）。1組あたり売上&#165;7,320は健全な水準</div></li>
+ </ul>
+</div></div><div class="slide" id="slide-7">
+<div class="slide-header"><h2><span class="section-tag">第2部</span> 曜日別概況</h2><span class="pn">7 / 31</span><div class="progress-bar" style="width:20.0%"></div></div>
+<div class="msg-bar">W08は月曜のみデータあり。月曜売上&#165;21,960は4週平均&#165;70,030を&#165;48,070下回ったが、客単価は4週平均を+19.5%上回った。</div>
+<div class="slide-body">
+ <div class="chart-comment">
+  <div class="chart-area"><svg id="chart7" width="780" height="390"></svg></div>
+  <div class="comment-area">
+   <h4>&#128202; 要因分解</h4>
+   <ul style="list-style:none;padding:0;">
+    <li style="margin-bottom:8px;">&#128308; 売上差額&#165;-48,070</li>
+    <li style="margin-bottom:8px;">&#128101; 客数要因 &#165;-56,716</li>
+    <li style="margin-bottom:8px;">&#128176; 客単価要因 &#165;+8,635</li>
+    <li>&#9888;&#65039; 火〜日はデータ未取得</li>
+   </ul>
+  </div>
+ </div>
+</div></div><div class="slide" id="slide-8">
+<div class="slide-header"><h2>月曜日 売上分析</h2><span class="pn">8 / 31</span><div class="progress-bar" style="width:23.3%"></div></div>
+<div class="msg-bar">月曜の売上&#165;21,960は4週平均&#165;70,030の約3分の1にとどまり、客数の大幅減（4人 vs 4週平均15.2人）が主因である。</div>
+<div class="slide-body">
+ <div class="chart-comment">
+  <div class="chart-area"><svg id="chart8" width="750" height="380"></svg></div>
+  <div class="comment-area">
+   <h4>&#128202; 構造分解</h4>
+   <ul style="list-style:none;padding:0;">
+    <li style="margin-bottom:8px;">&#128308; 売上 -68.6%（&#165;48,070減）</li>
+    <li style="margin-bottom:8px;">&#128101; 客数 -73.7%（11.2人減）</li>
+    <li style="margin-bottom:8px;">&#128994; 客単価 +19.5%（&#165;897増）</li>
+    <li>&#128161; 客数要因&#165;-56,716が主で客単価要因&#165;+8,635では補えず</li>
+   </ul>
+  </div>
+ </div>
+</div></div><div class="slide" id="slide-9">
+<div class="slide-header"><h2>月曜日 客数減少の要因分析</h2><span class="pn">9 / 31</span><div class="progress-bar" style="width:26.7%"></div></div>
+<div class="msg-bar">月曜の来店は3組・4人にとどまり、4週平均に対し組数ベースで大幅減となったことが客数減の直接要因である。</div>
+<div class="slide-body">
+ <ul class="bullet-list">
+  <li><div class="icon">&#128101;</div><div class="text"><strong>来店組数: 3組</strong>（4週平均との差が大きい）</div></li>
+  <li><div class="icon">&#128100;</div><div class="text"><strong>来店客数: 4人</strong>（4週平均15.2人の約4分の1）</div></li>
+  <li><div class="icon">&#128313;</div><div class="text"><strong>1組あたり平均人数: 約1.3人</strong>（2名会計2件、3-4名会計1件）</div></li>
+  <li><div class="icon">&#128176;</div><div class="text"><strong>客数要因による売上押し下げ額: &#165;-56,716</strong></div></li>
+  <li><div class="icon">&#9888;&#65039;</div><div class="text">月曜は元来平日の中でも来店が少ない傾向があるが、今回は特に低水準</div></li>
+  <li><div class="icon">&#128270;</div><div class="text">天候・祝日振替・周辺イベント等の外部要因が影響した可能性を検討すべき</div></li>
+ </ul>
+</div></div><div class="slide" id="slide-10">
+<div class="slide-header"><h2>月曜日 パーティサイズ分析</h2><span class="pn">10 / 31</span><div class="progress-bar" style="width:30.0%"></div></div>
+<div class="msg-bar">月曜の来店は2名組が2件（66.7%）、3-4名組が1件（33.3%）で、少人数利用が中心であった。</div>
+<div class="slide-body">
+ <div class="chart-comment">
+  <div class="chart-area"><svg id="chart10" width="700" height="350"></svg></div>
+  <div class="comment-area">
+   <h4>&#128202; 詳細</h4>
+   <table class="dt" style="font-size:16px;">
+    <tr><th>人数区分</th><th>会計数</th><th>売上</th><th>構成比</th></tr>
+    <tr class="highlight-row"><td>&#127942; 2名</td><td>2件</td><td>&#165;17,820</td><td>66.7%</td></tr>
+    <tr><td>3-4名</td><td>1件</td><td>&#165;4,140</td><td>33.3%</td></tr>
+   </table>
+   <p class="small-note">2名組の1件あたり平均売上&#165;8,910はバーとして適正水準</p>
+  </div>
+ </div>
+</div></div><div class="slide" id="slide-11">
+<div class="slide-header"><h2>月曜日 会計金額分布</h2><span class="pn">11 / 31</span><div class="progress-bar" style="width:33.3%"></div></div>
+<div class="msg-bar">会計金額は&#165;4,140〜&#165;13,640と幅があり、中央値&#165;4,180に対し平均&#165;7,320と上振れしていることから、高額会計が平均を押し上げている。</div>
+<div class="slide-body">
+ <div class="chart-comment">
+  <div class="chart-area"><svg id="chart11" width="700" height="340"></svg></div>
+  <div class="comment-area">
+   <h4>&#128202; 統計値</h4>
+   <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px;">
+    <div class="kpi-card" style="min-width:140px;max-width:160px;padding:10px 14px;"><span class="kpi-label" style="font-size:15px;">最大</span><span class="kpi-value" style="font-size:28px;">&#165;13,640</span></div>
+    <div class="kpi-card" style="min-width:140px;max-width:160px;padding:10px 14px;"><span class="kpi-label" style="font-size:15px;">最小</span><span class="kpi-value" style="font-size:28px;">&#165;4,140</span></div>
+    <div class="kpi-card" style="min-width:140px;max-width:160px;padding:10px 14px;"><span class="kpi-label" style="font-size:15px;">中央値</span><span class="kpi-value" style="font-size:28px;">&#165;4,180</span></div>
+    <div class="kpi-card" style="min-width:140px;max-width:160px;padding:10px 14px;"><span class="kpi-label" style="font-size:15px;">平均</span><span class="kpi-value" style="font-size:28px;">&#165;7,320</span></div>
+   </div>
+   <p class="small-note">&#9888;&#65039; 3件のサンプル数のため傾向の一般化には注意が必要</p>
+  </div>
+ </div>
+</div></div><div class="slide" id="slide-12">
+<div class="slide-header"><h2>月曜日 客数減少のまとめ</h2><span class="pn">12 / 31</span><div class="progress-bar" style="width:36.7%"></div></div>
+<div class="msg-bar">月曜の客数4人（4週平均比-73.7%）は来店組数の減少が主因であり、次週以降は月曜の集客施策の検討が望ましい。</div>
+<div class="slide-body">
+ <div class="challenge-item"><h4>&#9888;&#65039; 客数は4週平均15.2人に対し4人（-73.7%）</h4><p>来店3組はいずれも少人数（2名中心）で、団体利用なし</p></div>
+ <div class="challenge-item"><h4>&#128176; 客数減少による売上インパクト: &#165;-56,716</h4><p>売上差額&#165;-48,070の主要因</p></div>
+ <div class="info-card" style="margin-top:10px;">
+  <h4>&#128161; 月曜特有の集客課題</h4>
+  <ul style="list-style:none;padding:0;font-size:17px;">
+   <li style="margin-bottom:6px;">&#128313; 週初めのバー需要は限定的</li>
+   <li style="margin-bottom:6px;">&#128313; SNS告知やハッピーアワー等の月曜向け施策を検討する余地あり</li>
+   <li>&#9888;&#65039; ただし1日分のデータでの判断であり、継続的なモニタリングが必要</li>
+  </ul>
+ </div>
+</div></div><div class="slide" id="slide-13">
+<div class="slide-header"><h2>月曜日 客単価好調の分析</h2><span class="pn">13 / 31</span><div class="progress-bar" style="width:40.0%"></div></div>
+<div class="msg-bar">月曜の客単価&#165;5,490は4週平均&#165;4,593を+19.5%上回り、少数の来店客に対して高単価の提供が実現できた。</div>
+<div class="slide-body">
+ <div class="kpi-row" style="margin-bottom:14px;">
+  <div class="kpi-card" style="border:2px solid #22C55E;"><span class="kpi-label">&#127919; 客単価（月曜）</span><span class="kpi-value" style="font-size:44px;color:#22C55E;">&#165;5,490</span><span class="kpi-change positive">&#9650; 4週平均比 +19.5%（+&#165;897）</span></div>
+  <div class="kpi-card"><span class="kpi-label">4週平均（月曜）</span><span class="kpi-value" style="font-size:36px;">&#165;4,593</span></div>
+  <div class="kpi-card"><span class="kpi-label">&#128176; 客単価プラス寄与</span><span class="kpi-value" style="font-size:36px;color:#22C55E;">+&#165;8,635</span></div>
+ </div>
+ <ul class="bullet-list">
+  <li><div class="icon">&#127942;</div><div class="text"><strong>&#165;13,640の高額会計1件</strong>が客単価を押し上げた主要因</div></li>
+  <li><div class="icon">&#127867;</div><div class="text"><strong>前年同週比+19.3%</strong>と好調。客単価向上の傾向が読み取れる</div></li>
+  <li><div class="icon">&#128161;</div><div class="text">少数来店時の丁寧な接客・提案が高単価につながった可能性</div></li>
+ </ul>
+</div></div><div class="slide" id="slide-14">
+<div class="slide-header"><h2>月曜日 商品ミックス分析</h2><span class="pn">14 / 31</span><div class="progress-bar" style="width:43.3%"></div></div>
+<div class="msg-bar">月曜のカテゴリ別ではジャパニーズカクテルが売上&#165;8,300（構成比40.1%）で最大であり、オリジナルカクテルとの合計でドリンク売上の57.5%を占めた。</div>
+<div class="slide-body">
+ <div class="chart-comment">
+  <div class="chart-area"><svg id="chart14" width="700" height="370"></svg></div>
+  <div class="comment-area">
+   <h4>&#128202; カテゴリ内訳</h4>
+   <table class="dt" style="font-size:16px;">
+    <tr><th>カテゴリ</th><th>売上</th><th>構成比</th></tr>
+    <tr class="highlight-row"><td>&#127942; ジャパニーズカクテル</td><td style="text-align:right;">&#165;8,300</td><td style="text-align:right;">40.1%</td></tr>
+    <tr><td>オリジナルカクテル</td><td style="text-align:right;">&#165;3,600</td><td style="text-align:right;">17.4%</td></tr>
+    <tr><td>スナック</td><td style="text-align:right;">&#165;2,600</td><td style="text-align:right;">12.6%</td></tr>
+    <tr><td>アラカルト</td><td style="text-align:right;">&#165;1,800</td><td style="text-align:right;">8.7%</td></tr>
+    <tr><td>ワイン（グラス）</td><td style="text-align:right;">&#165;1,800</td><td style="text-align:right;">8.7%</td></tr>
+    <tr><td>ご飯もの</td><td style="text-align:right;">&#165;1,600</td><td style="text-align:right;">7.7%</td></tr>
+    <tr><td>その他</td><td style="text-align:right;">&#165;1,000</td><td style="text-align:right;">4.8%</td></tr>
+   </table>
+  </div>
+ </div>
+</div></div><div class="slide" id="slide-15">
+<div class="slide-header"><h2>月曜日 人気商品の傾向</h2><span class="pn">15 / 31</span><div class="progress-bar" style="width:46.7%"></div></div>
+<div class="msg-bar">Tommy's Verde Margaritaが売上&#165;3,600で月曜トップ、焙じ茶ジンソーダ&#165;2,800が続き、和素材を活かしたカクテルが好評であった。</div>
+<div class="slide-body">
+ <div class="chart-comment">
+  <div class="chart-area"><svg id="chart15" width="700" height="400"></svg></div>
+  <div class="comment-area">
+   <h4>&#128202; 注目</h4>
+   <ul style="list-style:none;padding:0;">
+    <li style="margin-bottom:8px;">&#127867; 和素材カクテルが上位に複数</li>
+    <li style="margin-bottom:8px;">&#127860; フード: 鶏もものソテー&#165;1,800、ラザニア&#165;1,600</li>
+    <li>&#128179; tablecharge&#165;2,000は3組分</li>
+   </ul>
+  </div>
+ </div>
+</div></div><div class="slide" id="slide-16">
+<div class="slide-header"><h2>月曜日 構成比変動分析</h2><span class="pn">16 / 31</span><div class="progress-bar" style="width:50.0%"></div></div>
+<div class="msg-bar">Tommy's Verde Margaritaの構成比が前週比+13.61ptと最大の上昇を示し、月曜の売上を牽引した。</div>
+<div class="slide-body">
+ <table class="dt">
+  <tr><th>商品名</th><th style="text-align:right;">今週構成比</th><th style="text-align:right;">前週構成比</th><th style="text-align:right;">変化（pt）</th></tr>
+  <tr class="highlight-row"><td>&#127942; Tommy's Verde Margarita</td><td style="text-align:right;">15.58%</td><td style="text-align:right;">1.98%</td><td style="text-align:right;font-size:20px;color:#22C55E;">+13.61</td></tr>
+  <tr><td>&#128313; 焙じ茶ジンソーダ</td><td style="text-align:right;">12.12%</td><td style="text-align:right;">2.20%</td><td style="text-align:right;color:#22C55E;">+9.92</td></tr>
+  <tr><td>&#128313; 鶏もものソテー</td><td style="text-align:right;">7.79%</td><td style="text-align:right;">0.57%</td><td style="text-align:right;color:#22C55E;">+7.23</td></tr>
+  <tr><td>&#128313; 生ハム盛り</td><td style="text-align:right;">6.93%</td><td style="text-align:right;">0.25%</td><td style="text-align:right;color:#22C55E;">+6.68</td></tr>
+  <tr><td>&#128313; サングリア赤 1,800円</td><td style="text-align:right;">7.79%</td><td style="text-align:right;">1.13%</td><td style="text-align:right;color:#22C55E;">+6.66</td></tr>
+ </table>
+ <p class="small-note" style="margin-top:10px;">&#9888;&#65039; W08は月曜1日分・3組のデータであり、少数注文による構成比変動が大きいことに留意</p>
+</div></div><div class="slide" id="slide-17">
+<div class="slide-header"><h2>月曜日 客単価好調のまとめ</h2><span class="pn">17 / 31</span><div class="progress-bar" style="width:53.3%"></div></div>
+<div class="msg-bar">月曜の客単価&#165;5,490は和素材カクテルの高単価商品が複数注文されたことで4週平均を+19.5%上回り、少数来店時の単価向上モデルを示した。</div>
+<div class="slide-body">
+ <div class="success-item"><h4>&#127867; 客単価&#165;5,490の構成要素</h4>
+  <ul style="list-style:none;padding:0;font-size:17px;">
+   <li>&#128313; ジャパニーズカクテル中心のドリンク注文（1人あたり約2.3杯）</li>
+   <li>&#128313; &#165;1,600〜&#165;1,800帯のフード注文（鶏もものソテー、ラザニア等）</li>
+   <li>&#128313; 高額会計&#165;13,640が平均を押し上げ</li>
+  </ul>
+ </div>
+ <div class="success-item"><h4>&#127919; 客単価プラス寄与: +&#165;8,635</h4><p>和素材カクテル（焙じ茶、本わさび等）が高単価の原動力</p></div>
+ <div class="info-card" style="margin-top:8px;"><h4>&#128161; 示唆</h4>
+  <ul style="list-style:none;padding:0;font-size:17px;">
+   <li>&#128313; 少人数来店時にこそ丁寧な提案で単価を高められる好事例</li>
+   <li>&#128313; 次週以降も客単価&#165;5,000超の維持を目指しつつ、客数回復との両立が課題</li>
+  </ul>
+ </div>
+</div></div><div class="slide" id="slide-18">
+<div class="slide-header"><h2>曜日別評価まとめ</h2><span class="pn">18 / 31</span><div class="progress-bar" style="width:56.7%"></div></div>
+<div class="msg-bar">W08は月曜1日分のデータのみであり、曜日別評価は暫定だが、月曜の「客数減・客単価増」という構造は把握できた。</div>
+<div class="slide-body">
+ <table class="dt">
+  <tr><th>曜日</th><th style="text-align:right;">売上</th><th style="text-align:right;">客数</th><th style="text-align:right;">客単価</th><th>評価</th></tr>
+  <tr class="highlight-row"><td>月</td><td style="text-align:right;">&#165;21,960</td><td style="text-align:right;">4人</td><td style="text-align:right;">&#165;5,490</td><td>&#127919; 客単価好調、客数課題</td></tr>
+  <tr><td>火</td><td style="text-align:center;">&#8212;</td><td style="text-align:center;">&#8212;</td><td style="text-align:center;">&#8212;</td><td style="color:#94A3B8;">データなし</td></tr>
+  <tr><td>水</td><td style="text-align:center;">&#8212;</td><td style="text-align:center;">&#8212;</td><td style="text-align:center;">&#8212;</td><td style="color:#94A3B8;">データなし</td></tr>
+  <tr><td>木</td><td style="text-align:center;">&#8212;</td><td style="text-align:center;">&#8212;</td><td style="text-align:center;">&#8212;</td><td style="color:#94A3B8;">データなし</td></tr>
+  <tr><td>金</td><td style="text-align:center;">&#8212;</td><td style="text-align:center;">&#8212;</td><td style="text-align:center;">&#8212;</td><td style="color:#94A3B8;">データなし</td></tr>
+  <tr><td>土</td><td style="text-align:center;">&#8212;</td><td style="text-align:center;">&#8212;</td><td style="text-align:center;">&#8212;</td><td style="color:#94A3B8;">データなし</td></tr>
+  <tr><td>日</td><td style="text-align:center;">&#8212;</td><td style="text-align:center;">&#8212;</td><td style="text-align:center;">&#8212;</td><td style="color:#94A3B8;">データなし</td></tr>
+ </table>
+ <div style="margin-top:14px;">
+  <div class="success-item"><h4>&#128200; 客単価: &#165;5,490（4週平均比+19.5%）</h4><p>高単価を実現し好調</p></div>
+  <div class="challenge-item"><h4>&#128101; 客数: 4人（4週平均比-73.7%）</h4><p>大幅な来店減。集客が最優先課題</p></div>
+ </div>
+</div></div><div class="slide" id="slide-19">
+<div class="slide-header"><h2><span class="section-tag">第3部</span> カテゴリ別売上構成</h2><span class="pn">19 / 31</span><div class="progress-bar" style="width:60.0%"></div></div>
+<div class="msg-bar">ジャパニーズカクテルが売上構成比42.0%で圧倒的な主力であり、オリジナルカクテルとの合算で全体の57.6%をカクテル系が占めた。</div>
+<div class="slide-body">
+ <div class="chart-comment">
+  <div class="chart-area"><svg id="chart19" width="520" height="400"></svg></div>
+  <div class="comment-area">
+   <h4>&#128202; カテゴリ構成</h4>
+   <table class="dt" style="font-size:16px;">
+    <tr><th>カテゴリ</th><th>売上</th><th>構成比</th></tr>
+    <tr class="highlight-row"><td>&#127942; ジャパニーズカクテル</td><td style="text-align:right;">&#165;9,700</td><td style="text-align:right;font-size:20px;">42.0%</td></tr>
+    <tr><td>オリジナルカクテル</td><td style="text-align:right;">&#165;3,600</td><td style="text-align:right;">15.6%</td></tr>
+    <tr><td>スナック</td><td style="text-align:right;">&#165;2,600</td><td style="text-align:right;">11.3%</td></tr>
+    <tr><td>その他</td><td style="text-align:right;">&#165;2,000</td><td style="text-align:right;">8.7%</td></tr>
+    <tr><td>アラカルト</td><td style="text-align:right;">&#165;1,800</td><td style="text-align:right;">7.8%</td></tr>
+    <tr><td>ワイン（グラス）</td><td style="text-align:right;">&#165;1,800</td><td style="text-align:right;">7.8%</td></tr>
+    <tr><td>ご飯もの</td><td style="text-align:right;">&#165;1,600</td><td style="text-align:right;">6.9%</td></tr>
+   </table>
+  </div>
+ </div>
+</div></div><div class="slide" id="slide-20">
+<div class="slide-header"><h2>商品別売上上位10商品</h2><span class="pn">20 / 31</span><div class="progress-bar" style="width:63.3%"></div></div>
+<div class="msg-bar">上位10商品で売上の約93%を占め、Tommy's Verde Margarita（&#165;3,600）と焙じ茶ジンソーダ（&#165;2,800）がツートップであった。</div>
+<div class="slide-body">
+ <div class="chart-comment">
+  <div class="chart-area"><svg id="chart20" width="700" height="420"></svg></div>
+  <div class="comment-area">
+   <h4>&#128202; 注目ポイント</h4>
+   <ul style="list-style:none;padding:0;">
+    <li style="margin-bottom:6px;">&#127867; ドリンク7/10商品</li>
+    <li style="margin-bottom:6px;">&#127860; フード2品ランクイン</li>
+    <li style="margin-bottom:6px;">&#127942; 上位10商品合計&#165;20,500（93.4%）</li>
+    <li>&#9888;&#65039; 3組のみのデータ</li>
+   </ul>
+  </div>
+ </div>
+</div></div><div class="slide" id="slide-21">
+<div class="slide-header"><h2>商品別 4週平均比較</h2><span class="pn">21 / 31</span><div class="progress-bar" style="width:66.7%"></div></div>
+<div class="msg-bar">全商品が4週平均比マイナスだが月曜1日分vs4週合計の比較であり、鶏もものソテー（-40.0%）が最も減少幅が小さく月曜に底堅い需要がある。</div>
+<div class="slide-body">
+ <table class="dt" style="font-size:17px;">
+  <tr><th>商品名</th><th style="text-align:right;">対象週売上</th><th style="text-align:right;">4週平均売上</th><th style="text-align:right;">成長率</th></tr>
+  <tr class="highlight-row"><td>&#127942; 鶏もものソテー</td><td style="text-align:right;">&#165;1,800</td><td style="text-align:right;">&#165;3,000</td><td style="text-align:right;color:#22C55E;font-size:19px;">-40.0%</td></tr>
+  <tr><td>Tommy's Verde Margarita</td><td style="text-align:right;">&#165;3,600</td><td style="text-align:right;">&#165;8,550</td><td style="text-align:right;color:#EF4444;">-57.9%</td></tr>
+  <tr><td>焙じ茶ジンソーダ</td><td style="text-align:right;">&#165;2,800</td><td style="text-align:right;">&#165;8,400</td><td style="text-align:right;color:#EF4444;">-66.7%</td></tr>
+  <tr><td>Niu Japonica</td><td style="text-align:right;">&#165;1,600</td><td style="text-align:right;">&#165;6,800</td><td style="text-align:right;color:#EF4444;">-76.5%</td></tr>
+  <tr><td>ラザニア</td><td style="text-align:right;">&#165;1,600</td><td style="text-align:right;">&#165;8,000</td><td style="text-align:right;color:#EF4444;">-80.0%</td></tr>
+  <tr><td>サングリア赤 1,800円</td><td style="text-align:right;">&#165;1,800</td><td style="text-align:right;">&#165;9,450</td><td style="text-align:right;color:#EF4444;">-81.0%</td></tr>
+  <tr><td>Japanese High Tea</td><td style="text-align:right;">&#165;1,800</td><td style="text-align:right;">&#165;12,600</td><td style="text-align:right;color:#EF4444;">-85.7%</td></tr>
+  <tr><td>Hojicha Negroni</td><td style="text-align:right;">&#165;1,700</td><td style="text-align:right;">&#165;14,450</td><td style="text-align:right;color:#EF4444;">-88.2%</td></tr>
+  <tr><td>本わさびジンソニック</td><td style="text-align:right;">&#165;1,800</td><td style="text-align:right;">&#165;35,025</td><td style="text-align:right;color:#EF4444;">-94.9%</td></tr>
+  <tr><td>tablecharge</td><td style="text-align:right;">&#165;2,000</td><td style="text-align:right;">&#165;44,250</td><td style="text-align:right;color:#EF4444;">-95.5%</td></tr>
+ </table>
+</div></div><div class="slide" id="slide-22">
+<div class="slide-header"><h2>構成比変動上位商品（前週比）</h2><span class="pn">22 / 31</span><div class="progress-bar" style="width:70.0%"></div></div>
+<div class="msg-bar">構成比変動はサンプル数が極めて少ない（3組）ため統計的意味は限定的だが、Tommy's Verde Margaritaの+13.61ptが最も顕著であった。</div>
+<div class="slide-body">
+ <div class="chart-comment">
+  <div class="chart-area"><svg id="chart22" width="700" height="370"></svg></div>
+  <div class="comment-area">
+   <h4>&#128202; 補足</h4>
+   <ul style="list-style:none;padding:0;">
+    <li style="margin-bottom:8px;">&#128313; 全商品が構成比上昇はデータ範囲縮小による</li>
+    <li style="margin-bottom:8px;">&#127867; Tommy's Verde Margarita: 前週1.98% &#8594; 15.58%</li>
+    <li style="margin-bottom:8px;">&#127860; フード系も構成比上昇</li>
+    <li>&#9888;&#65039; サンプル3組のため変動幅は過大評価</li>
+   </ul>
+  </div>
+ </div>
+</div></div><div class="slide" id="slide-23">
+<div class="slide-header"><h2>商品・カテゴリ分析まとめ</h2><span class="pn">23 / 31</span><div class="progress-bar" style="width:73.3%"></div></div>
+<div class="msg-bar">W08月曜のデータからは「和素材カクテル中心の高単価ドリンク構成」が読み取れ、これが客単価&#165;5,490の好調を支えた。</div>
+<div class="slide-body">
+ <div class="card-row" style="margin-bottom:12px;">
+  <div class="info-card"><h4>&#127867; カテゴリの特徴</h4><p>ジャパニーズカクテルが42.0%で最大、カクテル系全体で57.6%</p></div>
+  <div class="info-card"><h4>&#127942; 商品の特徴</h4><p>Tommy's Verde Margaritaと焙じ茶ジンソーダがツートップで合計構成比27.7%</p></div>
+ </div>
+ <div class="card-row" style="margin-bottom:12px;">
+  <div class="info-card"><h4>&#127807; 和素材カクテルの強さ</h4><p>焙じ茶、本わさび、Japanese High Tea、Hojicha Negroniなど日本素材を活かしたカクテルが多数上位に</p></div>
+  <div class="info-card"><h4>&#127860; フードの役割</h4><p>鶏もものソテー・ラザニア等が月曜の食事需要に応え、客単価の底上げに寄与</p></div>
+ </div>
+ <div class="info-card"><h4>&#128161; 示唆</h4><p>和素材カクテルの推しメニュー化やペアリング提案を強化することで、客単価の維持・向上が期待できる。&#9888;&#65039; 3組・4人のデータに基づくため一般化には次週以降の検証が必要</p></div>
+</div></div><div class="slide" id="slide-24">
+<div class="slide-header"><h2><span class="section-tag">第4部</span> W08総括</h2><span class="pn">24 / 31</span><div class="progress-bar" style="width:76.7%"></div></div>
+<div class="msg-bar">W08は月曜1日分のデータのみの暫定報告であるが、「客数減・客単価増」の月曜傾向と和素材カクテルの好調という2つの示唆を得た。</div>
+<div class="slide-body">
+ <div class="challenge-item"><h4>&#9888;&#65039; データ制約の再確認</h4><p>W08のrawdataは2026-02-16（月曜）のみ。火〜日のデータは未取得であり、前週比・前年比の大幅マイナスはデータ不完全が原因</p></div>
+ <h3 class="sec">&#128202; 読み取れた傾向</h3>
+ <ul class="bullet-list">
+  <li><div class="icon">&#128101;</div><div class="text"><strong>客数4人</strong>（4週平均比-73.7%）と低調。集客が最大の課題</div></li>
+  <li><div class="icon">&#128176;</div><div class="text"><strong>客単価&#165;5,490</strong>（4週平均比+19.5%）と好調。丁寧な接客・提案の成果</div></li>
+  <li><div class="icon">&#127867;</div><div class="text"><strong>ジャパニーズカクテルが売上の42%</strong>を占め、和素材カクテルが高単価の原動力</div></li>
+  <li><div class="icon">&#128313;</div><div class="text"><strong>少人数（2名中心）</strong>の来店パターンで、1組あたり&#165;7,320の売上を実現</div></li>
+ </ul>
+</div></div><div class="slide" id="slide-25">
+<div class="slide-header"><h2>次週に向けた注力ポイント</h2><span class="pn">25 / 31</span><div class="progress-bar" style="width:80.0%"></div></div>
+<div class="msg-bar">次週（W09）はフルデータでの検証を前提に、客数回復と客単価維持の両立を目指す3つの注力ポイントを提案する。</div>
+<div class="slide-body">
+ <div class="card-row">
+  <div class="info-card" style="border-top:4px solid #3B82F6;">
+   <h4>&#128101; 注力1: 月曜の集客強化</h4>
+   <ul style="list-style:none;padding:0;font-size:17px;">
+    <li>&#128313; W08月曜の客数4人は4週平均の約4分の1</li>
+    <li>&#128313; 月曜限定ウェルカムドリンクや早期来店特典の検討</li>
+    <li>&#128313; SNSでの月曜営業の発信強化</li>
+   </ul>
+  </div>
+  <div class="info-card" style="border-top:4px solid #22C55E;">
+   <h4>&#128176; 注力2: 客単価&#165;5,000超の維持</h4>
+   <ul style="list-style:none;padding:0;font-size:17px;">
+    <li>&#128313; 月曜の&#165;5,490は好水準。全曜日で目指す</li>
+    <li>&#128313; 和素材カクテルの積極提案</li>
+    <li>&#128313; フードとのペアリング提案で追加注文を促進</li>
+   </ul>
+  </div>
+  <div class="info-card" style="border-top:4px solid #F97316;">
+   <h4>&#128202; 注力3: データの完全取得</h4>
+   <ul style="list-style:none;padding:0;font-size:17px;">
+    <li>&#128313; W08は月曜のみで正確な分析が困難</li>
+    <li>&#128313; W09は全曜日のデータ取得を確実に</li>
+    <li>&#128313; データ欠損の原因特定と再発防止策の実行</li>
+   </ul>
+  </div>
+ </div>
+</div></div><div class="slide" id="slide-26">
+<div class="slide-header"><h2><span class="section-tag">第5部</span> 日報サマリー（2026-02-16 月曜日）</h2><span class="pn">26 / 31</span><div class="progress-bar" style="width:83.3%"></div></div>
+<div class="msg-bar">W08は月曜1日分の日報のみだが、ダイナースクラブ経由と海外ゲストの2組が来店し、ウイスキー需要と料理評価の高さが確認された。</div>
+<div class="slide-body">
+ <div class="kpi-row" style="margin-bottom:12px;">
+  <div class="kpi-card"><span class="kpi-label">&#128221; 報告者</span><span class="kpi-value" style="font-size:28px;">大泉 瞳</span></div>
+  <div class="kpi-card"><span class="kpi-label">&#128197; 営業日</span><span class="kpi-value" style="font-size:24px;">2026/2/16（月）</span></div>
+  <div class="kpi-card"><span class="kpi-label">&#128101; 来店</span><span class="kpi-value" style="font-size:28px;">2組</span></div>
+ </div>
+ <blockquote><strong>&#128179; 来店概況</strong><br>50代男女ダイナースクラブ（招待日和）経由 + 海外ゲスト30代男女2名</blockquote>
+ <div class="success-item"><h4>&#128077; ポジティブな声</h4><p>海外ゲストから料理の美味しさについて評価あり（特に唐揚げが好評）</p></div>
+ <div class="challenge-item"><h4>&#9888;&#65039; 改善事項</h4><p>洗い物が溜まる問題が発生（作業優先順位の課題）</p></div>
+</div></div><div class="slide" id="slide-27">
+<div class="slide-header"><h2>来客の声・特徴</h2><span class="pn">27 / 31</span><div class="progress-bar" style="width:86.7%"></div></div>
+<div class="msg-bar">ダイナースクラブ経由の50代客はウイスキー嗜好、中国出身の海外ゲストはGoogle検索来店で唐揚げを高評価と、異なるセグメントからの来店があった。</div>
+<div class="slide-body">
+ <div class="two-col">
+  <div>
+   <div class="info-card" style="margin-bottom:12px;border-left:4px solid #3B82F6;">
+    <h4>&#128179; 客層1: ダイナースクラブ経由の50代男女</h4>
+    <ul style="list-style:none;padding:0;font-size:17px;line-height:1.6;">
+     <li>&#128313; 来店チャネル: ダイナースクラブ（招待日和）</li>
+     <li>&#127867; 嗜好: ウイスキー（アードベッグ、ハーパー）</li>
+     <li>&#128161; 高級カード会員向けチャネルが機能</li>
+     <li>&#128313; 過去にも実績あり（1/24, 1/31, 2/12等）</li>
+    </ul>
+   </div>
+  </div>
+  <div>
+   <div class="info-card" style="margin-bottom:12px;border-left:4px solid #22C55E;">
+    <h4>&#127758; 客層2: 海外ゲスト30代男女2名（中国出身）</h4>
+    <ul style="list-style:none;padding:0;font-size:17px;line-height:1.6;">
+     <li>&#128313; 来店チャネル: Google検索</li>
+     <li>&#127860; 好評メニュー: 唐揚げが特に好評</li>
+     <li>&#128161; 英語対応の維持が重要</li>
+    </ul>
+   </div>
+  </div>
+ </div>
+ <div class="success-item"><h4>&#128313; 共通点</h4><p>いずれの組も料理・ドリンクへの満足度が高く、客単価&#165;5,490の好調を裏付ける</p></div>
+</div></div><div class="slide" id="slide-28">
+<div class="slide-header"><h2>改善ポイントと現場の気づき</h2><span class="pn">28 / 31</span><div class="progress-bar" style="width:90.0%"></div></div>
+<div class="msg-bar">月曜の改善課題は「洗い物の滞留」であり、シフト人数に対する作業優先順位の見直しが必要である。</div>
+<div class="slide-body">
+ <div class="challenge-item"><h4>&#9888;&#65039; 課題: 洗い物が溜まる</h4><p>シフトの人数がいた割に洗い物が溜まることが多かった</p></div>
+ <div class="info-card" style="margin:10px 0;">
+  <h4>&#128270; 背景</h4>
+  <ul style="list-style:none;padding:0;font-size:17px;line-height:1.6;">
+   <li>&#128313; 過去の日報でも同様の課題が複数回報告（12/9, 1/10等）</li>
+   <li>&#128313; 特に貸切後やオーダー集中時に洗い物が溜まる傾向</li>
+   <li>&#128313; 新人スタッフの作業効率・優先順位判断が追いついていない可能性</li>
+  </ul>
+ </div>
+ <div class="info-card" style="border-left:4px solid #22C55E;">
+  <h4>&#128161; 改善の方向性</h4>
+  <ul style="list-style:none;padding:0;font-size:17px;line-height:1.6;">
+   <li>&#128313; ドリンク提供・フード提供の合間に洗い物を挟むオペレーションルール明確化</li>
+   <li>&#128313; 繁忙タイミングでの役割分担の事前取り決め</li>
+   <li>&#128313; 新人スタッフへの作業優先順位の教育強化</li>
+  </ul>
+ </div>
+ <p class="small-note">&#9888;&#65039; 月曜の来客が少なかった（3組4人）にもかかわらず洗い物が溜まった点は、作業手順の改善余地を示唆</p>
+</div></div><div class="slide" id="slide-29">
+<div class="slide-header"><h2><span class="section-tag">第6部</span> 短期施策（今週〜来週実施）</h2><span class="pn">29 / 31</span><div class="progress-bar" style="width:93.3%"></div></div>
+<div class="msg-bar">データ不完全なW08の状況を踏まえ、来週（W09）に即実行可能な施策を3点提案する。</div>
+<div class="slide-body">
+ <div class="card-row">
+  <div class="info-card" style="border-top:4px solid #EF4444;">
+   <h4>&#128203; 施策1: データ取得の確実化</h4>
+   <ul style="list-style:none;padding:0;font-size:17px;line-height:1.6;">
+    <li>&#128313; 対象: W09全営業日</li>
+    <li>&#128313; rawdata取得プロセスを確認し全曜日データを担保</li>
+    <li>&#128313; 期限: W09営業開始前まで</li>
+   </ul>
+  </div>
+  <div class="info-card" style="border-top:4px solid #3B82F6;">
+   <h4>&#128101; 施策2: 月曜集客の底上げ</h4>
+   <ul style="list-style:none;padding:0;font-size:17px;line-height:1.6;">
+    <li>&#128313; 月曜限定SNS投稿（和素材カクテルの写真）</li>
+    <li>&#128313; 月曜の来店客数を4週平均15.2人近くまで回復</li>
+    <li>&#128313; 期限: W09月曜日</li>
+   </ul>
+  </div>
+  <div class="info-card" style="border-top:4px solid #22C55E;">
+   <h4>&#127867; 施策3: 和素材カクテルの推し強化</h4>
+   <ul style="list-style:none;padding:0;font-size:17px;line-height:1.6;">
+    <li>&#128313; Tommy's Verde Margarita、焙じ茶ジンソーダを最初の一杯として提案</li>
+    <li>&#128313; 客単価&#165;5,000超の維持</li>
+    <li>&#128313; 期限: W09全営業日</li>
+   </ul>
+  </div>
+ </div>
+</div></div><div class="slide" id="slide-30">
+<div class="slide-header"><h2>中期施策（1〜2週間以内）</h2><span class="pn">30 / 31</span><div class="progress-bar" style="width:96.7%"></div></div>
+<div class="msg-bar">W08で示された「和素材カクテルの高単価ポテンシャル」を活かし、メニュー戦略と集客施策を中期的に強化する。</div>
+<div class="slide-body">
+ <div class="card-row">
+  <div class="info-card" style="border-top:4px solid #F97316;">
+   <h4>&#127860; 施策4: 和素材カクテルのペアリングメニュー開発</h4>
+   <ul style="list-style:none;padding:0;font-size:17px;line-height:1.5;">
+    <li>&#128313; ジャパニーズカクテルとフードのペアリングセットを開発</li>
+    <li>&#128313; フード注文率の向上と客単価の底上げ</li>
+    <li>&#128313; 期限: W10までに試験導入</li>
+   </ul>
+  </div>
+  <div class="info-card" style="border-top:4px solid #3B82F6;">
+   <h4>&#127881; 施策5: 平日来店促進キャンペーン</h4>
+   <ul style="list-style:none;padding:0;font-size:17px;line-height:1.5;">
+    <li>&#128313; 月〜木曜の平日限定特典（2杯目割引、SNSフォロー特典等）</li>
+    <li>&#128313; 平日の客数底上げ（特に月曜の来店組数増加）</li>
+    <li>&#128313; 期限: W10開始</li>
+   </ul>
+  </div>
+  <div class="info-card" style="border-top:4px solid #22C55E;">
+   <h4>&#11088; 施策6: 口コミ・レビュー獲得の促進</h4>
+   <ul style="list-style:none;padding:0;font-size:17px;line-height:1.5;">
+    <li>&#128313; W08は口コミ0件。レビュー依頼（カード設置、QRコード等）</li>
+    <li>&#128313; 新規来店のきっかけとなる口コミの蓄積</li>
+    <li>&#128313; 期限: W09準備・W10実施</li>
+   </ul>
+  </div>
+ </div>
+</div></div><div class="slide" id="slide-31">
+<div class="slide-header"><h2>施策一覧と優先順位</h2><span class="pn">31 / 31</span><div class="progress-bar" style="width:100.0%"></div></div>
+<div class="msg-bar">全6施策のうち、データ取得の確実化（施策1）を最優先とし、和素材カクテルの推し強化（施策3）で客単価を維持しつつ、月曜集客（施策2）で売上回復を図る。</div>
+<div class="slide-body">
+ <table class="action-table">
+  <tr><th>優先</th><th>施策</th><th>区分</th><th>期限</th><th>期待効果</th></tr>
+  <tr class="highlight-row"><td style="text-align:center;font-size:20px;">1</td><td>&#128203; データ取得の確実化</td><td>短期</td><td>W09営業前</td><td>正確な分析基盤</td></tr>
+  <tr class="highlight-row"><td style="text-align:center;font-size:20px;">2</td><td>&#127867; 和素材カクテルの推し強化</td><td>短期</td><td>W09全営業日</td><td>客単価&#165;5,000超維持</td></tr>
+  <tr class="highlight-row"><td style="text-align:center;font-size:20px;">3</td><td>&#128101; 月曜集客の底上げ</td><td>短期</td><td>W09月曜</td><td>月曜客数の回復</td></tr>
+  <tr><td style="text-align:center;">4</td><td>&#127860; 和素材カクテルのペアリング開発</td><td>中期</td><td>W10まで</td><td>フード注文率向上</td></tr>
+  <tr><td style="text-align:center;">5</td><td>&#127881; 平日来店促進キャンペーン</td><td>中期</td><td>W10開始</td><td>平日客数の底上げ</td></tr>
+  <tr><td style="text-align:center;">6</td><td>&#11088; 口コミ獲得の促進</td><td>中期</td><td>W09準備・W10実施</td><td>新規来店の促進</td></tr>
+ </table>
+ <div style="margin-top:14px;">
+  <div class="success-item"><h4>&#127919; 成功指標</h4><p>W09の売上&#165;600,000超（W04-W07平均水準）、客単価&#165;5,000超の維持、全曜日データ取得の完了</p></div>
+ </div>
+</div></div>
+
+<script>
+(function(){
+const C = {header:'#1E3A5F',pos:'#22C55E',neg:'#EF4444',orange:'#F97316',blue:'#3B82F6',gray:'#94A3B8',text:'#334155',heading:'#1E293B'};
+const fmt = v => '¥'+v.toLocaleString();
+
+// ── SLIDE 3: Weekly Sales Line ──
+(function(){
+  const data=[{w:'W04',v:646470},{w:'W05',v:654030},{w:'W06',v:548290},{w:'W07',v:640040},{w:'W08',v:21960}];
+  const svg=d3.select('#chart3'),W=+svg.attr('width'),H=+svg.attr('height');
+  const m={t:50,r:60,b:50,l:80},iw=W-m.l-m.r,ih=H-m.t-m.b;
+  const g=svg.append('g').attr('transform',`translate(${m.l},${m.t})`);
+  const x=d3.scalePoint().domain(data.map(d=>d.w)).range([0,iw]).padding(0.3);
+  const y=d3.scaleLinear().domain([0,700000]).range([ih,0]);
+  // grid
+  y.ticks(5).forEach(t=>{g.append('line').attr('x1',0).attr('x2',iw).attr('y1',y(t)).attr('y2',y(t)).attr('stroke','#E2E8F0').attr('stroke-dasharray','3,3');});
+  // axes
+  g.append('g').attr('transform',`translate(0,${ih})`).call(d3.axisBottom(x)).selectAll('text').attr('font-size','16px');
+  g.append('g').call(d3.axisLeft(y).ticks(5).tickFormat(d=>'¥'+(d/10000).toFixed(0)+'万')).selectAll('text').attr('font-size','14px');
+  // 4w avg line
+  const avg=622208;
+  g.append('line').attr('x1',0).attr('x2',iw).attr('y1',y(avg)).attr('y2',y(avg)).attr('stroke',C.orange).attr('stroke-width',1.5).attr('stroke-dasharray','6,4');
+  g.append('text').attr('x',iw+4).attr('y',y(avg)+4).attr('font-size','14px').attr('fill',C.orange).attr('font-weight','600').text('4週平均');
+  // line
+  const line=d3.line().x(d=>x(d.w)).y(d=>y(d.v));
+  g.append('path').datum(data).attr('d',line).attr('fill','none').attr('stroke',C.blue).attr('stroke-width',3);
+  // dots
+  g.selectAll('.dot').data(data).join('circle').attr('cx',d=>x(d.w)).attr('cy',d=>y(d.v)).attr('r',(d,i)=>i===4?8:4).attr('fill',(d,i)=>i===4?C.neg:C.blue);
+  // labels
+  data.forEach((d,i)=>{if(i<4){g.append('text').attr('x',x(d.w)).attr('y',y(d.v)-14).attr('text-anchor','middle').attr('font-size','16px').attr('font-weight','600').attr('fill',C.text).text(fmt(d.v));}});
+  // trend arrow W07->W08
+  const px=x('W07'),py=y(640040),cx2=x('W08'),cy2=y(21960);
+  const mid={x:(px+cx2)/2,y:(py+cy2)/2};
+  const mkId='s3arr';
+  svg.append('defs').append('marker').attr('id',mkId).attr('viewBox','0 0 10 10').attr('refX',8).attr('refY',5).attr('markerWidth',8).attr('markerHeight',8).attr('orient','auto-start-reverse').append('path').attr('d','M 0 0 L 10 5 L 0 10 z').attr('fill',C.neg);
+  const ag=g.append('g').attr('opacity',0.7);
+  ag.append('line').attr('x1',px+10).attr('y1',py+10).attr('x2',cx2-10).attr('y2',cy2-10).attr('stroke',C.neg).attr('stroke-width',3.5).attr('marker-end','url(#'+mkId+')');
+  ag.append('text').attr('x',mid.x+20).attr('y',mid.y-8).attr('font-size','15px').attr('font-weight','700').attr('fill',C.neg).text('-96.6%');
+  // callout on W08 - shifted left
+  const cg=g.append('g');
+  const ct=cg.append('text').attr('x',cx2-40).attr('y',cy2-40).attr('text-anchor','end').attr('font-size','18px').attr('font-weight','800').attr('fill',C.heading).text('¥21,960（月曜のみ）');
+  const bb=ct.node().getBBox();
+  cg.insert('rect','text').attr('x',bb.x-12).attr('y',bb.y-8).attr('width',bb.width+24).attr('height',bb.height+16).attr('rx',6).attr('fill','#FFF7ED').attr('stroke',C.orange).attr('stroke-width',1.5);
+  cg.append('line').attr('x1',cx2-20).attr('y1',bb.y+bb.height+8).attr('x2',cx2).attr('y2',cy2-10).attr('stroke',C.orange).attr('stroke-width',1.5).attr('stroke-dasharray','4,3');
+})();
+
+// ── SLIDE 4: Dual axis ──
+(function(){
+  const data=[{w:'W04',c:118,u:5479},{w:'W05',c:139,u:4705},{w:'W06',c:98,u:5595},{w:'W07',c:129,u:4962},{w:'W08',c:4,u:5490}];
+  const svg=d3.select('#chart4'),W=+svg.attr('width'),H=+svg.attr('height');
+  const m={t:50,r:80,b:50,l:70},iw=W-m.l-m.r,ih=H-m.t-m.b;
+  const g=svg.append('g').attr('transform',`translate(${m.l},${m.t})`);
+  const x=d3.scalePoint().domain(data.map(d=>d.w)).range([0,iw]).padding(0.3);
+  const yC=d3.scaleLinear().domain([0,160]).range([ih,0]);
+  const yU=d3.scaleLinear().domain([0,7000]).range([ih,0]);
+  y2t=v=>'¥'+(v/1000).toFixed(0)+'K';
+  // grid
+  yC.ticks(5).forEach(t=>{g.append('line').attr('x1',0).attr('x2',iw).attr('y1',yC(t)).attr('y2',yC(t)).attr('stroke','#E2E8F0').attr('stroke-dasharray','3,3');});
+  g.append('g').attr('transform',`translate(0,${ih})`).call(d3.axisBottom(x)).selectAll('text').attr('font-size','16px');
+  g.append('g').call(d3.axisLeft(yC).ticks(5)).selectAll('text').attr('font-size','14px');
+  g.append('text').attr('transform','rotate(-90)').attr('x',-ih/2).attr('y',-50).attr('text-anchor','middle').attr('font-size','14px').attr('fill',C.blue).text('客数（人）');
+  const gR=g.append('g').attr('transform',`translate(${iw},0)`);
+  gR.call(d3.axisRight(yU).ticks(5).tickFormat(d=>'¥'+d.toLocaleString())).selectAll('text').attr('font-size','14px');
+  g.append('text').attr('transform','rotate(-90)').attr('x',-ih/2).attr('y',iw+65).attr('text-anchor','middle').attr('font-size','14px').attr('fill',C.pos).text('客単価（円）');
+  // customer line
+  const lineC=d3.line().x(d=>x(d.w)).y(d=>yC(d.c));
+  g.append('path').datum(data).attr('d',lineC).attr('fill','none').attr('stroke',C.blue).attr('stroke-width',3);
+  g.selectAll('.dc').data(data).join('circle').attr('cx',d=>x(d.w)).attr('cy',d=>yC(d.c)).attr('r',(d,i)=>i===4?8:4).attr('fill',(d,i)=>i===4?C.neg:C.blue);
+  // unit price line
+  const lineU=d3.line().x(d=>x(d.w)).y(d=>yU(d.u));
+  g.append('path').datum(data).attr('d',lineU).attr('fill','none').attr('stroke',C.pos).attr('stroke-width',3).attr('stroke-dasharray','8,4');
+  g.selectAll('.du').data(data).join('circle').attr('cx',d=>x(d.w)).attr('cy',d=>yU(d.u)).attr('r',(d,i)=>i===4?8:4).attr('fill',(d,i)=>i===4?C.pos:C.pos).attr('stroke','#fff').attr('stroke-width',2);
+  // labels on W08
+  const cg=g.append('g');
+  cg.append('text').attr('x',x('W08')-50).attr('y',yU(5490)-16).attr('text-anchor','end').attr('font-size','17px').attr('font-weight','800').attr('fill',C.pos).text('¥5,490');
+  cg.append('text').attr('x',x('W08')-50).attr('y',yC(4)-20).attr('text-anchor','end').attr('font-size','17px').attr('font-weight','800').attr('fill',C.neg).text('4人');
+  // legend
+  const lg=g.append('g').attr('transform',`translate(${iw/2-80},-20)`);
+  lg.append('line').attr('x1',0).attr('x2',30).attr('y1',0).attr('y2',0).attr('stroke',C.blue).attr('stroke-width',3);
+  lg.append('text').attr('x',35).attr('y',5).attr('font-size','16px').attr('fill',C.blue).text('客数');
+  lg.append('line').attr('x1',90).attr('x2',120).attr('y1',0).attr('y2',0).attr('stroke',C.pos).attr('stroke-width',3).attr('stroke-dasharray','8,4');
+  lg.append('text').attr('x',125).attr('y',5).attr('font-size','16px').attr('fill',C.pos).text('客単価');
+})();
+
+// ── SLIDE 5: YoY grouped bar ──
+(function(){
+  const data=[{label:'売上',tw:21960,ly:741000,rate:'-97.0%'},{label:'客数',tw:4,ly:161,rate:'-97.5%'},{label:'客単価',tw:5490,ly:4602,rate:'+19.3%'}];
+  const svg=d3.select('#chart5'),W=+svg.attr('width'),H=+svg.attr('height');
+  const m={t:50,r:40,b:60,l:60},iw=W-m.l-m.r,ih=H-m.t-m.b;
+  const g=svg.append('g').attr('transform',`translate(${m.l},${m.t})`);
+  // For each metric, draw ratio bars (this week / last year * 100%)
+  const ratios=data.map(d=>({label:d.label,ratio:d.tw/d.ly*100,tw:d.tw,ly:d.ly,rate:d.rate}));
+  const y=d3.scaleBand().domain(ratios.map(d=>d.label)).range([0,ih]).padding(0.35);
+  const x=d3.scaleLinear().domain([0,130]).range([0,iw]);
+  // grid
+  [25,50,75,100,125].forEach(t=>{g.append('line').attr('x1',x(t)).attr('x2',x(t)).attr('y1',0).attr('y2',ih).attr('stroke','#E2E8F0').attr('stroke-dasharray','3,3');});
+  // 100% line
+  g.append('line').attr('x1',x(100)).attr('x2',x(100)).attr('y1',-10).attr('y2',ih+10).attr('stroke',C.heading).attr('stroke-width',2);
+  g.append('text').attr('x',x(100)).attr('y',-14).attr('text-anchor','middle').attr('font-size','14px').attr('fill',C.heading).attr('font-weight','700').text('前年=100%');
+  // bars
+  ratios.forEach(d=>{
+    const bw=Math.min(d.ratio,130);
+    const col=d.ratio>=100?C.pos:C.neg;
+    g.append('rect').attr('x',0).attr('y',y(d.label)).attr('width',x(bw)).attr('height',y.bandwidth()).attr('fill',col).attr('rx',4).attr('opacity',0.85);
+    // outline on best
+    if(d.label==='客単価'){
+      g.append('rect').attr('x',-1.5).attr('y',y(d.label)-1.5).attr('width',x(bw)+3).attr('height',y.bandwidth()+3).attr('fill','none').attr('stroke',C.pos).attr('stroke-width',3).attr('rx',5);
+    }
+    // label
+    g.append('text').attr('x',x(bw)+8).attr('y',y(d.label)+y.bandwidth()/2+6).attr('font-size','18px').attr('font-weight','700').attr('fill',col).text(d.rate);
+  });
+  g.append('g').call(d3.axisLeft(y)).selectAll('text').attr('font-size','18px').attr('font-weight','700');
+  // badge on 客単価
+  const bg=g.append('g');
+  const bt=bg.append('text').attr('x',x(119.3)+30).attr('y',y('客単価')+y.bandwidth()/2+6).attr('text-anchor','middle').attr('font-size','16px').attr('font-weight','800').attr('fill',C.pos).text('★ 好調');
+  const bbb=bt.node().getBBox();
+  bg.insert('rect','text').attr('x',bbb.x-6).attr('y',bbb.y-3).attr('width',bbb.width+12).attr('height',bbb.height+6).attr('rx',4).attr('fill','#F0FDF4').attr('stroke',C.pos).attr('stroke-width',1.5);
+})();
+
+// ── SLIDE 7: Weekday bar ──
+(function(){
+  const svg=d3.select('#chart7'),W=+svg.attr('width'),H=+svg.attr('height');
+  const m={t:50,r:40,b:50,l:80},iw=W-m.l-m.r,ih=H-m.t-m.b;
+  const g=svg.append('g').attr('transform',`translate(${m.l},${m.t})`);
+  const days=['月','火','水','木','金','土','日'];
+  const tw=[21960,0,0,0,0,0,0];
+  const avg=[70030,0,0,0,0,0,0];
+  const x0=d3.scaleBand().domain(days).range([0,iw]).padding(0.25);
+  const x1=d3.scaleBand().domain(['tw','avg']).range([0,x0.bandwidth()]).padding(0.08);
+  const y=d3.scaleLinear().domain([0,80000]).range([ih,0]);
+  y.ticks(4).forEach(t=>{g.append('line').attr('x1',0).attr('x2',iw).attr('y1',y(t)).attr('y2',y(t)).attr('stroke','#E2E8F0').attr('stroke-dasharray','3,3');});
+  g.append('g').attr('transform',`translate(0,${ih})`).call(d3.axisBottom(x0)).selectAll('text').attr('font-size','16px');
+  g.append('g').call(d3.axisLeft(y).ticks(4).tickFormat(d=>'¥'+(d/10000).toFixed(0)+'万')).selectAll('text').attr('font-size','14px');
+  // Monday bars
+  g.append('rect').attr('x',x0('月')+x1('tw')).attr('y',y(21960)).attr('width',x1.bandwidth()).attr('height',ih-y(21960)).attr('fill',C.neg).attr('rx',3);
+  g.append('rect').attr('x',x0('月')+x1('avg')).attr('y',y(70030)).attr('width',x1.bandwidth()).attr('height',ih-y(70030)).attr('fill',C.gray).attr('rx',3);
+  // labels
+  g.append('text').attr('x',x0('月')+x1('tw')+x1.bandwidth()/2).attr('y',y(21960)-8).attr('text-anchor','middle').attr('font-size','16px').attr('font-weight','700').attr('fill',C.neg).text('¥21,960');
+  g.append('text').attr('x',x0('月')+x1('avg')+x1.bandwidth()/2).attr('y',y(70030)-8).attr('text-anchor','middle').attr('font-size','16px').attr('font-weight','600').attr('fill',C.gray).text('¥70,030');
+  // no data labels
+  ['火','水','木','金','土','日'].forEach(d=>{g.append('text').attr('x',x0(d)+x0.bandwidth()/2).attr('y',ih/2).attr('text-anchor','middle').attr('font-size','16px').attr('fill','#94A3B8').text('データなし');});
+  // legend
+  const lg=g.append('g').attr('transform',`translate(${iw/2-60},-24)`);
+  lg.append('rect').attr('width',16).attr('height',16).attr('fill',C.blue).attr('rx',3);
+  lg.append('text').attr('x',20).attr('y',13).attr('font-size','16px').text('対象週');
+  lg.append('rect').attr('x',90).attr('width',16).attr('height',16).attr('fill',C.gray).attr('rx',3);
+  lg.append('text').attr('x',110).attr('y',13).attr('font-size','16px').text('4週平均');
+})();
+
+// ── SLIDE 8: Ratio bar ──
+(function(){
+  const data=[{label:'売上',tw:21960,avg:70030,rate:'-68.6%'},{label:'客数',tw:4,avg:15.2,rate:'-73.7%'},{label:'客単価',tw:5490,avg:4593,rate:'+19.5%'}];
+  const svg=d3.select('#chart8'),W=+svg.attr('width'),H=+svg.attr('height');
+  const m={t:50,r:80,b:40,l:80},iw=W-m.l-m.r,ih=H-m.t-m.b;
+  const g=svg.append('g').attr('transform',`translate(${m.l},${m.t})`);
+  const ratios=data.map(d=>({...d,ratio:d.tw/d.avg*100}));
+  const y=d3.scaleBand().domain(ratios.map(d=>d.label)).range([0,ih]).padding(0.35);
+  const x=d3.scaleLinear().domain([0,130]).range([0,iw]);
+  [25,50,75,100,125].forEach(t=>{g.append('line').attr('x1',x(t)).attr('x2',x(t)).attr('y1',0).attr('y2',ih).attr('stroke','#E2E8F0').attr('stroke-dasharray','3,3');});
+  g.append('line').attr('x1',x(100)).attr('x2',x(100)).attr('y1',-10).attr('y2',ih+10).attr('stroke',C.heading).attr('stroke-width',2);
+  g.append('text').attr('x',x(100)).attr('y',-14).attr('text-anchor','middle').attr('font-size','14px').attr('fill',C.heading).attr('font-weight','700').text('4週平均=100%');
+  ratios.forEach(d=>{
+    const bw=Math.min(d.ratio,130);
+    const col=d.ratio>=100?C.pos:C.neg;
+    g.append('rect').attr('x',0).attr('y',y(d.label)).attr('width',x(bw)).attr('height',y.bandwidth()).attr('fill',col).attr('rx',4).attr('opacity',0.85);
+    if(d.label==='客単価'){
+      g.append('rect').attr('x',-1.5).attr('y',y(d.label)-1.5).attr('width',x(bw)+3).attr('height',y.bandwidth()+3).attr('fill','none').attr('stroke',C.pos).attr('stroke-width',3).attr('rx',5);
+      const bg2=g.append('g');
+      const bt2=bg2.append('text').attr('x',x(bw)+50).attr('y',y(d.label)+y.bandwidth()/2+6).attr('text-anchor','middle').attr('font-size','16px').attr('font-weight','800').attr('fill',C.pos).text('★ 好調');
+      const bb2=bt2.node().getBBox();
+      bg2.insert('rect','text').attr('x',bb2.x-6).attr('y',bb2.y-3).attr('width',bb2.width+12).attr('height',bb2.height+6).attr('rx',4).attr('fill','#F0FDF4').attr('stroke',C.pos).attr('stroke-width',1.5);
+    }
+    if(d.label==='客数'){
+      // highlight band
+      g.insert('rect',':first-child').attr('x',-m.l+10).attr('y',y(d.label)-6).attr('width',iw+m.l+m.r-20).attr('height',y.bandwidth()+12).attr('fill','#FEF2F2').attr('rx',6).attr('opacity',0.5);
+      const bg3=g.append('g');
+      const bt3=bg3.append('text').attr('x',x(bw)+50).attr('y',y(d.label)+y.bandwidth()/2+6).attr('text-anchor','middle').attr('font-size','16px').attr('font-weight','800').attr('fill',C.neg).text('▼ 要改善');
+      const bb3=bt3.node().getBBox();
+      bg3.insert('rect','text').attr('x',bb3.x-6).attr('y',bb3.y-3).attr('width',bb3.width+12).attr('height',bb3.height+6).attr('rx',4).attr('fill','#FEF2F2').attr('stroke',C.neg).attr('stroke-width',1.5);
+    }
+    g.append('text').attr('x',x(bw)+8).attr('y',y(d.label)+y.bandwidth()/2+6).attr('font-size','17px').attr('font-weight','700').attr('fill',col).text(d.rate);
+  });
+  g.append('g').call(d3.axisLeft(y)).selectAll('text').attr('font-size','18px').attr('font-weight','700');
+})();
+
+// ── SLIDE 10: Party size horizontal bar ──
+(function(){
+  const data=[{label:'2名',pct:66.7,sales:17820},{label:'3-4名',pct:33.3,sales:4140}];
+  const svg=d3.select('#chart10'),W=+svg.attr('width'),H=+svg.attr('height');
+  const m={t:40,r:100,b:40,l:80},iw=W-m.l-m.r,ih=H-m.t-m.b;
+  const g=svg.append('g').attr('transform',`translate(${m.l},${m.t})`);
+  const y=d3.scaleBand().domain(data.map(d=>d.label)).range([0,ih]).padding(0.4);
+  const x=d3.scaleLinear().domain([0,100]).range([0,iw]);
+  data.forEach((d,i)=>{
+    const col=i===0?C.blue:'#64748B';
+    g.append('rect').attr('x',0).attr('y',y(d.label)).attr('width',x(d.pct)).attr('height',y.bandwidth()).attr('fill',col).attr('rx',4);
+    if(i===0){g.append('rect').attr('x',-1.5).attr('y',y(d.label)-1.5).attr('width',x(d.pct)+3).attr('height',y.bandwidth()+3).attr('fill','none').attr('stroke',C.blue).attr('stroke-width',3).attr('rx',5);}
+    g.append('text').attr('x',x(d.pct)+8).attr('y',y(d.label)+y.bandwidth()/2+6).attr('font-size','18px').attr('font-weight','700').attr('fill',col).text(d.pct+'% / ¥'+d.sales.toLocaleString());
+  });
+  g.append('g').call(d3.axisLeft(y)).selectAll('text').attr('font-size','18px').attr('font-weight','700');
+  // badge
+  const bg=g.append('g');
+  const bt=bg.append('text').attr('x',x(66.7)/2).attr('y',y('2名')-14).attr('text-anchor','middle').attr('font-size','16px').attr('font-weight','800').attr('fill',C.blue).text('MAX');
+  const bb=bt.node().getBBox();
+  bg.insert('rect','text').attr('x',bb.x-6).attr('y',bb.y-3).attr('width',bb.width+12).attr('height',bb.height+6).attr('rx',4).attr('fill','#EFF6FF').attr('stroke',C.blue).attr('stroke-width',1.5);
+})();
+
+// ── SLIDE 11: Billing distribution ──
+(function(){
+  const data=[{label:'〜5千円',cnt:2,pct:66.7},{label:'1万〜1.5万円',cnt:1,pct:33.3}];
+  const svg=d3.select('#chart11'),W=+svg.attr('width'),H=+svg.attr('height');
+  const m={t:40,r:100,b:40,l:120},iw=W-m.l-m.r,ih=H-m.t-m.b;
+  const g=svg.append('g').attr('transform',`translate(${m.l},${m.t})`);
+  const y=d3.scaleBand().domain(data.map(d=>d.label)).range([0,ih]).padding(0.4);
+  const x=d3.scaleLinear().domain([0,100]).range([0,iw]);
+  data.forEach((d,i)=>{
+    const col=i===0?C.blue:C.pos;
+    g.append('rect').attr('x',0).attr('y',y(d.label)).attr('width',x(d.pct)).attr('height',y.bandwidth()).attr('fill',col).attr('rx',4);
+    g.append('text').attr('x',x(d.pct)+8).attr('y',y(d.label)+y.bandwidth()/2+6).attr('font-size','18px').attr('font-weight','700').attr('fill',col).text(d.cnt+'件（'+d.pct+'%）');
+  });
+  g.append('g').call(d3.axisLeft(y)).selectAll('text').attr('font-size','17px').attr('font-weight','700');
+})();
+
+// ── SLIDE 14: Category mix horizontal bar ──
+(function(){
+  const data=[{label:'ジャパニーズカクテル',v:8300,pct:'40.1%'},{label:'オリジナルカクテル',v:3600,pct:'17.4%'},{label:'スナック',v:2600,pct:'12.6%'},{label:'アラカルト',v:1800,pct:'8.7%'},{label:'ワイン（グラス）',v:1800,pct:'8.7%'},{label:'ご飯もの',v:1600,pct:'7.7%'},{label:'その他',v:1000,pct:'4.8%'}];
+  const svg=d3.select('#chart14'),W=+svg.attr('width'),H=+svg.attr('height');
+  const m={t:30,r:120,b:30,l:160},iw=W-m.l-m.r,ih=H-m.t-m.b;
+  const g=svg.append('g').attr('transform',`translate(${m.l},${m.t})`);
+  const y=d3.scaleBand().domain(data.map(d=>d.label)).range([0,ih]).padding(0.2);
+  const x=d3.scaleLinear().domain([0,9000]).range([0,iw]);
+  const colors=[C.blue,C.blue,'#64748B','#64748B','#64748B','#64748B','#94A3B8'];
+  data.forEach((d,i)=>{
+    g.append('rect').attr('x',0).attr('y',y(d.label)).attr('width',x(d.v)).attr('height',y.bandwidth()).attr('fill',colors[i]).attr('rx',3).attr('opacity',i===0?1:0.7);
+    if(i===0){g.append('rect').attr('x',-1.5).attr('y',y(d.label)-1.5).attr('width',x(d.v)+3).attr('height',y.bandwidth()+3).attr('fill','none').attr('stroke',C.blue).attr('stroke-width',3).attr('rx',5);}
+    g.append('text').attr('x',x(d.v)+6).attr('y',y(d.label)+y.bandwidth()/2+5).attr('font-size',i===0?'18px':'16px').attr('font-weight',i===0?'800':'600').attr('fill',colors[i]).text('¥'+d.v.toLocaleString()+' ('+d.pct+')');
+  });
+  g.append('g').call(d3.axisLeft(y)).selectAll('text').attr('font-size','15px').attr('font-weight','600');
+})();
+
+// ── SLIDE 15: Product ranking horizontal bar ──
+(function(){
+  const data=[{label:"Tommy's Verde Margarita",v:3600},{label:'焙じ茶ジンソーダ',v:2800},{label:'tablecharge',v:2000},{label:'Japanese High Tea',v:1800},{label:'サングリア赤 1,800円',v:1800},{label:'本わさびジンソニック',v:1800},{label:'鶏もものソテー',v:1800},{label:'Hojicha Negroni',v:1700},{label:'Niu Japonica',v:1600},{label:'ラザニア',v:1600}];
+  const svg=d3.select('#chart15'),W=+svg.attr('width'),H=+svg.attr('height');
+  const m={t:20,r:110,b:20,l:200},iw=W-m.l-m.r,ih=H-m.t-m.b;
+  const g=svg.append('g').attr('transform',`translate(${m.l},${m.t})`);
+  const y=d3.scaleBand().domain(data.map(d=>d.label)).range([0,ih]).padding(0.15);
+  const x=d3.scaleLinear().domain([0,4000]).range([0,iw]);
+  data.forEach((d,i)=>{
+    const col=i<2?C.blue:'#64748B';
+    const op=i<2?1:0.6;
+    g.append('rect').attr('x',0).attr('y',y(d.label)).attr('width',x(d.v)).attr('height',y.bandwidth()).attr('fill',col).attr('rx',3).attr('opacity',op);
+    if(i===0){g.append('rect').attr('x',-1.5).attr('y',y(d.label)-1.5).attr('width',x(d.v)+3).attr('height',y.bandwidth()+3).attr('fill','none').attr('stroke',C.blue).attr('stroke-width',3).attr('rx',5);}
+    g.append('text').attr('x',x(d.v)+6).attr('y',y(d.label)+y.bandwidth()/2+5).attr('font-size',i<2?'17px':'15px').attr('font-weight',i<2?'800':'500').attr('fill',col).text('¥'+d.v.toLocaleString());
+  });
+  g.append('g').call(d3.axisLeft(y)).selectAll('text').attr('font-size','14px').attr('font-weight','600');
+})();
+
+// ── SLIDE 19: Donut chart ──
+(function(){
+  const data=[{label:'ジャパニーズカクテル',v:9700},{label:'オリジナルカクテル',v:3600},{label:'スナック',v:2600},{label:'その他',v:2000},{label:'アラカルト',v:1800},{label:'ワイン（グラス）',v:1800},{label:'ご飯もの',v:1600}];
+  const svg=d3.select('#chart19'),W=+svg.attr('width'),H=+svg.attr('height');
+  const radius=Math.min(W,H)/2-40, innerR=radius*0.5;
+  const g=svg.append('g').attr('transform',`translate(${W/2},${H/2})`);
+  const color=d3.scaleOrdinal().domain(data.map(d=>d.label)).range([C.blue,'#60A5FA','#F97316','#94A3B8','#A78BFA','#FBBF24','#34D399']);
+  const pie=d3.pie().value(d=>d.v).sort(null);
+  const arc=d3.arc().innerRadius(innerR).outerRadius(radius);
+  const arcs=g.selectAll('.arc').data(pie(data)).join('g').attr('class','arc');
+  arcs.append('path').attr('d',arc).attr('fill',(d,i)=>color(data[i].label)).attr('stroke','#fff').attr('stroke-width',2);
+  // explode first
+  arcs.filter((d,i)=>i===0).attr('transform',d=>{const[cx,cy]=arc.centroid(d);const dist=Math.sqrt(cx*cx+cy*cy);return `translate(${cx/dist*18},${cy/dist*18})`;});
+  // center text
+  g.append('text').attr('text-anchor','middle').attr('y',-8).attr('font-size','18px').attr('fill','#64748B').text('合計売上');
+  g.append('text').attr('text-anchor','middle').attr('y',22).attr('font-size','26px').attr('font-weight','800').attr('fill',C.heading).text('¥23,100');
+  // leader line for largest
+  const maxSlice=pie(data)[0];
+  const midA=(maxSlice.startAngle+maxSlice.endAngle)/2;
+  const outerPt=[Math.sin(midA)*(radius+22),-Math.cos(midA)*(radius+22)];
+  const labelPt=[Math.sin(midA)*(radius+50),-Math.cos(midA)*(radius+50)];
+  const endPt=[labelPt[0]+(labelPt[0]>0?40:-40),labelPt[1]];
+  g.append('polyline').attr('points',[outerPt,labelPt,endPt].map(p=>p.join(',')).join(' ')).attr('fill','none').attr('stroke',C.blue).attr('stroke-width',1.5);
+  g.append('text').attr('x',endPt[0]+(endPt[0]>0?4:-4)).attr('y',endPt[1]+5).attr('text-anchor',endPt[0]>0?'start':'end').attr('font-size','16px').attr('font-weight','800').attr('fill',C.blue).text('ジャパニーズカクテル 42.0%');
+  // pct labels on bigger slices
+  pie(data).forEach((d,i)=>{
+    if(data[i].v>=2000){
+      const [cx,cy]=arc.centroid(d);
+      const pct=(data[i].v/23100*100).toFixed(1)+'%';
+      g.append('text').attr('x',cx).attr('y',cy+5).attr('text-anchor','middle').attr('font-size','16px').attr('font-weight','700').attr('fill','#fff').text(pct);
+    }
+  });
+})();
+
+// ── SLIDE 20: Product top 10 horizontal bar ──
+(function(){
+  const data=[{label:"Tommy's Verde Margarita",v:3600,pct:'15.6%'},{label:'焙じ茶ジンソーダ',v:2800,pct:'12.1%'},{label:'tablecharge',v:2000,pct:'8.7%'},{label:'Japanese High Tea',v:1800,pct:'7.8%'},{label:'サングリア赤 1,800円',v:1800,pct:'7.8%'},{label:'本わさびジンソニック',v:1800,pct:'7.8%'},{label:'鶏もものソテー',v:1800,pct:'7.8%'},{label:'Hojicha Negroni',v:1700,pct:'7.4%'},{label:'Niu Japonica',v:1600,pct:'6.9%'},{label:'ラザニア',v:1600,pct:'6.9%'}];
+  const svg=d3.select('#chart20'),W=+svg.attr('width'),H=+svg.attr('height');
+  const m={t:20,r:130,b:20,l:200},iw=W-m.l-m.r,ih=H-m.t-m.b;
+  const g=svg.append('g').attr('transform',`translate(${m.l},${m.t})`);
+  const y=d3.scaleBand().domain(data.map(d=>d.label)).range([0,ih]).padding(0.12);
+  const x=d3.scaleLinear().domain([0,4000]).range([0,iw]);
+  data.forEach((d,i)=>{
+    const col=i<2?C.blue:'#64748B';
+    const op=i<2?1:0.6;
+    g.append('rect').attr('x',0).attr('y',y(d.label)).attr('width',x(d.v)).attr('height',y.bandwidth()).attr('fill',col).attr('rx',3).attr('opacity',op);
+    if(i===0){g.append('rect').attr('x',-1.5).attr('y',y(d.label)-1.5).attr('width',x(d.v)+3).attr('height',y.bandwidth()+3).attr('fill','none').attr('stroke',C.blue).attr('stroke-width',3).attr('rx',5);}
+    g.append('text').attr('x',x(d.v)+6).attr('y',y(d.label)+y.bandwidth()/2+5).attr('font-size',i<2?'16px':'14px').attr('font-weight',i<2?'800':'500').attr('fill',col).text('¥'+d.v.toLocaleString()+' ('+d.pct+')');
+  });
+  g.append('g').call(d3.axisLeft(y)).selectAll('text').attr('font-size','14px').attr('font-weight','600');
+})();
+
+// ── SLIDE 22: Composition change horizontal bar ──
+(function(){
+  const data=[{label:"Tommy's Verde Margarita",v:13.61},{label:'焙じ茶ジンソーダ',v:9.92},{label:'鶏もものソテー',v:7.23},{label:'生ハム盛り',v:6.68},{label:'サングリア赤 1,800円',v:6.66}];
+  const svg=d3.select('#chart22'),W=+svg.attr('width'),H=+svg.attr('height');
+  const m={t:30,r:100,b:30,l:200},iw=W-m.l-m.r,ih=H-m.t-m.b;
+  const g=svg.append('g').attr('transform',`translate(${m.l},${m.t})`);
+  const y=d3.scaleBand().domain(data.map(d=>d.label)).range([0,ih]).padding(0.25);
+  const x=d3.scaleLinear().domain([0,16]).range([0,iw]);
+  data.forEach((d,i)=>{
+    const col=C.pos;
+    g.append('rect').attr('x',0).attr('y',y(d.label)).attr('width',x(d.v)).attr('height',y.bandwidth()).attr('fill',col).attr('rx',3).attr('opacity',i===0?1:0.7);
+    if(i===0){g.append('rect').attr('x',-1.5).attr('y',y(d.label)-1.5).attr('width',x(d.v)+3).attr('height',y.bandwidth()+3).attr('fill','none').attr('stroke',C.pos).attr('stroke-width',3).attr('rx',5);}
+    g.append('text').attr('x',x(d.v)+6).attr('y',y(d.label)+y.bandwidth()/2+5).attr('font-size',i===0?'18px':'16px').attr('font-weight',i===0?'800':'600').attr('fill',C.pos).text('+'+d.v.toFixed(2)+'pt');
+  });
+  g.append('g').call(d3.axisLeft(y)).selectAll('text').attr('font-size','14px').attr('font-weight','600');
+})();
+
+})();
+</script>
+
+</body>
+</html>

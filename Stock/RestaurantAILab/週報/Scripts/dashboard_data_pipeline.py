@@ -8,6 +8,8 @@ Usage:
   python dashboard_data_pipeline.py upload  --store BFA --file "0_downloads/20260209-20260215-BAR FIVE Arrows.csv"
   python dashboard_data_pipeline.py export  --store BFA --start-date 2026-02-09 --end-date 2026-02-15
   python dashboard_data_pipeline.py sync    --start-date 2026-02-09 --end-date 2026-02-15 --downloads-dir 0_downloads
+  python dashboard_data_pipeline.py incremental-export --store BFA --end-date 2026-02-22
+  python dashboard_data_pipeline.py incremental-export --end-date 2026-02-22   # 全店舗
 """
 
 import argparse
@@ -17,7 +19,8 @@ import json
 import os
 import re
 import sys
-from datetime import datetime
+from calendar import monthrange
+from datetime import datetime, timedelta
 
 import requests
 
@@ -71,6 +74,9 @@ USEN_MAPPING = {
 DEFAULT_BASE_URL = "http://127.0.0.1:3000"
 ADMIN_STORE_CODE = "admin"
 ADMIN_PASSWORD = "admin2024"
+
+# rawdata.csv が存在しない場合のデフォルト開始日（開業以来の全データ取得用）
+DEFAULT_START_DATE = "2024-01-01"
 
 RAWDATA_COLUMNS = [
     "store_code", "store_name", "account_id", "entry_at", "exit_at",
@@ -410,6 +416,134 @@ def cmd_sync(args):
 
 
 # ──────────────────────────────────────────────
+# incremental-export 用ヘルパー
+# ──────────────────────────────────────────────
+
+def get_latest_date_in_rawdata(csv_path: str) -> str | None:
+    """既存 rawdata.csv の entry_at カラムから最新日付(YYYY-MM-DD)を返す。ファイルがなければ None。"""
+    if not os.path.exists(csv_path):
+        return None
+    max_date = None
+    with open(csv_path, "r", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            entry_at = row.get("entry_at", "")
+            if len(entry_at) >= 10:
+                date_str = entry_at[:10]  # YYYY-MM-DD
+                if max_date is None or date_str > max_date:
+                    max_date = date_str
+    return max_date
+
+
+def generate_month_range(start_date: str, end_date: str) -> list[str]:
+    """start_date〜end_date に含まれる全月を YYYY-MM のリストで返す。"""
+    start = datetime.strptime(start_date, "%Y-%m-%d").replace(day=1)
+    end = datetime.strptime(end_date, "%Y-%m-%d").replace(day=1)
+    months = []
+    current = start
+    while current <= end:
+        months.append(current.strftime("%Y-%m"))
+        if current.month == 12:
+            current = current.replace(year=current.year + 1, month=1)
+        else:
+            current = current.replace(month=current.month + 1)
+    return months
+
+
+def fetch_all_months(client: DashboardClient, store_code: str, start_date: str, end_date: str) -> list[dict]:
+    """start_date〜end_date の全月を順番に API 呼び出しし、salesData を結合して返す。"""
+    months = generate_month_range(start_date, end_date)
+    all_sales = []
+    for month in months:
+        year, mon = map(int, month.split("-"))
+        _, last_day = monthrange(year, mon)
+        month_first = f"{month}-01"
+        month_last = f"{month}-{last_day:02d}"
+        fetch_start = max(start_date, month_first)
+        fetch_end = min(end_date, month_last)
+        try:
+            result = client.export_data(store_code, month, fetch_start, fetch_end)
+            if result.get("success"):
+                sales = result.get("data", {}).get("salesData", [])
+                if sales:
+                    print(f"    {month}: {len(sales)} records")
+                    all_sales.extend(sales)
+            # success=false は月データなしとして静かにスキップ
+        except RuntimeError as e:
+            # HTTP 404 はデータなしなのでスキップ（ログ不要）
+            if "404" not in str(e):
+                print(f"    {month}: Error - {e}")
+        except Exception as e:
+            print(f"    {month}: Error - {e}")
+    return all_sales
+
+
+def append_rawdata_csv(rows: list[dict], output_path: str):
+    """既存 rawdata.csv にヘッダーなしで追記する。"""
+    with open(output_path, "a", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=RAWDATA_COLUMNS, quoting=csv.QUOTE_ALL)
+        writer.writerows(rows)
+    print(f"  Appended {len(rows)} rows → {output_path}")
+
+
+# ──────────────────────────────────────────────
+# サブコマンド: incremental-export
+# ──────────────────────────────────────────────
+
+def cmd_incremental_export(args):
+    """既存 rawdata.csv の続きからデータを取得してマージする。ファイルがなければ全期間を取得。"""
+    stores_to_process = list(STORES.keys()) if not args.store else [args.store]
+    client = DashboardClient(args.base_url)
+    client.login()
+
+    for store_key in stores_to_process:
+        cfg = STORES[store_key]
+        output_dir = args.output_dir or f"1_input/{store_key}"
+        output_path = os.path.join(output_dir, "rawdata.csv")
+
+        print(f"\n{'='*50}")
+        print(f"  [{store_key}] {cfg['store_name']} ({cfg['store_code']})")
+        print(f"{'='*50}")
+
+        # Step 1: 既存データの最終日付を確認
+        latest_date = get_latest_date_in_rawdata(output_path)
+
+        if latest_date:
+            next_date = (datetime.strptime(latest_date, "%Y-%m-%d") + timedelta(days=1)).strftime("%Y-%m-%d")
+            print(f"  Existing data up to: {latest_date}")
+            print(f"  Fetching from: {next_date}")
+        else:
+            next_date = args.start_date or DEFAULT_START_DATE
+            print(f"  No existing data. Fetching from: {next_date}")
+
+        if next_date > args.end_date:
+            print(f"  Already up to date (latest: {latest_date}, target: {args.end_date})")
+            continue
+
+        # Step 2: 月ごとにAPIからデータ取得
+        print(f"  Period: {next_date} ~ {args.end_date}")
+        all_sales = fetch_all_months(client, cfg["store_code"], next_date, args.end_date)
+
+        if not all_sales:
+            print(f"  No new data found")
+            continue
+
+        rows = sales_data_to_rawdata(all_sales, cfg["store_code"], cfg["store_name"])
+
+        # Step 3: 既存ファイルに追記 or 新規作成
+        if latest_date and os.path.exists(output_path):
+            append_rawdata_csv(rows, output_path)
+        else:
+            write_rawdata_csv(rows, output_path)
+
+        print(f"  Total new records: {len(rows)}")
+
+    print(f"\n{'='*50}")
+    print("  Incremental export complete")
+    print(f"{'='*50}")
+
+
+# ──────────────────────────────────────────────
 # CLI
 # ──────────────────────────────────────────────
 
@@ -443,6 +577,18 @@ def main():
     p_sync.add_argument("--end-date", required=True, help="End date (YYYY-MM-DD)")
     p_sync.add_argument("--downloads-dir", default="0_downloads", help="Downloads directory")
 
+    # incremental-export
+    p_incr = subparsers.add_parser("incremental-export",
+                                   help="Incrementally export rawdata.csv (append new data)")
+    p_incr.add_argument("--base-url", **base_url_kwargs)
+    p_incr.add_argument("--store", choices=STORES.keys(),
+                        help="Single store (default: all stores)")
+    p_incr.add_argument("--end-date", required=True, help="End date (YYYY-MM-DD)")
+    p_incr.add_argument("--start-date",
+                        help=f"Start date when no existing data (default: {DEFAULT_START_DATE})")
+    p_incr.add_argument("--output-dir",
+                        help="Output directory (default: 1_input/<store>)")
+
     args = parser.parse_args()
 
     if args.command == "upload":
@@ -451,6 +597,8 @@ def main():
         cmd_export(args)
     elif args.command == "sync":
         cmd_sync(args)
+    elif args.command == "incremental-export":
+        cmd_incremental_export(args)
 
 
 if __name__ == "__main__":

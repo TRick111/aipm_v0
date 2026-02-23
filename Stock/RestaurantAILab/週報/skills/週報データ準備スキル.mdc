@@ -69,31 +69,26 @@ node scripts/bulk-upload-airregi.mjs --store kp-001 --env {env}
 
 各スクリプトは `.local/bulkupload/{storeCode}/` からCSVファイルを自動検出する（USENレジは `--file` で直接指定）。
 
-### Step 3: データエクスポート（export-rawdata.mjs）
+### Step 3: データエクスポート（incremental-export）
+
+rawdata.csv は**開業以来の全データを蓄積**するファイル。既存データの続きだけを差分取得してマージする。
 
 ```bash
-cd /Users/rikutanaka/RestaurantAILab/Dashboard
+cd /Users/rikutanaka/aipm_v0/Stock/RestaurantAILab/週報
 
-# BFA
-node scripts/export-rawdata.mjs --store test-003 \
-  --start-date {startDate} --end-date {endDate} \
-  --output ../週報/1_input/BFA/rawdata.csv --env {env}
+# 全店舗を一括で差分エクスポート
+python Scripts/dashboard_data_pipeline.py incremental-export \
+  --end-date {endDate}
 
-# BBC
-node scripts/export-rawdata.mjs --store bbc-001 \
-  --start-date {startDate} --end-date {endDate} \
-  --output ../週報/1_input/BBC/rawdata.csv --env {env}
-
-# 麻布しき
-node scripts/export-rawdata.mjs --store shiki-001 \
-  --start-date {startDate} --end-date {endDate} \
-  --output ../週報/1_input/麻布しき/rawdata.csv --env {env}
-
-# キーポイント
-node scripts/export-rawdata.mjs --store kp-001 \
-  --start-date {startDate} --end-date {endDate} \
-  --output ../週報/1_input/キーポイント/rawdata.csv --env {env}
+# 特定店舗のみ
+python Scripts/dashboard_data_pipeline.py incremental-export \
+  --store BFA --end-date {endDate}
 ```
+
+**動作:**
+1. 各店舗の `1_input/{store}/rawdata.csv` を読み、最終日付を確認
+2. 最終日付の翌日〜`{endDate}` のデータだけを Dashboard API から月ごとに取得
+3. 既存ファイルに追記（ファイルがなければ全期間を新規取得）
 
 ### Step 4: 検証
 
@@ -108,13 +103,21 @@ head -1 1_input/BFA/rawdata.csv
 head -1 1_input/BBC/rawdata.csv
 head -1 1_input/麻布しき/rawdata.csv
 head -1 1_input/キーポイント/rawdata.csv
+
+# データ期間の確認（開業以来の全データが含まれること）
+# entry_at の最小・最大日付を確認
+for store in BFA BBC 麻布しき キーポイント; do
+  echo "=== $store ==="
+  awk -F',' 'NR>1{print $4}' "1_input/$store/rawdata.csv" | sort | head -1
+  awk -F',' 'NR>1{print $4}' "1_input/$store/rawdata.csv" | sort | tail -1
+done
 ```
 
 確認事項:
 - 全4店舗のrawdata.csvが生成されていること
 - レコード数が0でないこと
 - カラム構造が18カラム（store_code〜cost_rate）であること
-- 日付範囲が指定期間に収まっていること
+- **開業以来の全データが含まれていること**（昨年比等の分析に必要）
 
 ---
 

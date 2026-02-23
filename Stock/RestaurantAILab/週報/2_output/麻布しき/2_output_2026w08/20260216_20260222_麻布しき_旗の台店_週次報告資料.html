@@ -549,3 +549,447 @@ svg text{font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP'
 </div>
 </div>
 
+
+<script>
+// === Color Constants ===
+const C = {pos:'#22C55E',neg:'#EF4444',accent:'#F97316',blue:'#3B82F6',gray:'#94A3B8',dark:'#1E293B',navy:'#1E3A5F'};
+const fmt = v => '¥'+v.toLocaleString();
+
+// === Helper: addBadge ===
+function addBadge(g,cx,cy,text,color,bgColor){
+  const bg=g.append('g');
+  const bt=bg.append('text').attr('x',cx).attr('y',cy).attr('text-anchor','middle').attr('font-size','16px').attr('font-weight','800').attr('fill',color).text(text);
+  const bb=bt.node().getBBox();
+  bg.insert('rect','text').attr('x',bb.x-6).attr('y',bb.y-3).attr('width',bb.width+12).attr('height',bb.height+6).attr('rx',4).attr('fill',bgColor).attr('stroke',color).attr('stroke-width',1.5);
+}
+
+// === Helper: addCallout ===
+function addCallout(g,x,y,text,opts={}){
+  const{bgColor='#FFF7ED',borderColor='#F97316',textColor='#1E293B',fontSize='18px',fontWeight='800'}=opts;
+  const cg=g.append('g');
+  const t=cg.append('text').attr('x',x).attr('y',y).attr('text-anchor','middle').attr('font-size',fontSize).attr('font-weight',fontWeight).attr('fill',textColor).text(text);
+  const bb=t.node().getBBox();
+  cg.insert('rect','text').attr('x',bb.x-10).attr('y',bb.y-6).attr('width',bb.width+20).attr('height',bb.height+12).attr('rx',6).attr('fill',bgColor).attr('stroke',borderColor).attr('stroke-width',1.5);
+}
+
+// === Chart 3: Sales Trend (single bar) ===
+(function(){
+  const svg=d3.select('#chart-3'),w=760,h=430,m={top:50,right:40,bottom:60,left:80};
+  const iw=w-m.left-m.right, ih=h-m.top-m.bottom;
+  const g=svg.append('g').attr('transform',`translate(${m.left},${m.top})`);
+  const x=d3.scaleBand().domain(['W08']).range([0,iw]).padding(0.5);
+  const y=d3.scaleLinear().domain([0,2000000]).range([ih,0]);
+  // Grid
+  y.ticks(5).forEach(t=>{g.append('line').attr('x1',0).attr('x2',iw).attr('y1',y(t)).attr('y2',y(t)).attr('stroke','#E2E8F0').attr('stroke-dasharray','3,3')});
+  // Axis
+  g.append('g').attr('transform',`translate(0,${ih})`).call(d3.axisBottom(x)).selectAll('text').attr('font-size','16px').attr('font-weight','700');
+  g.append('g').call(d3.axisLeft(y).ticks(5).tickFormat(d=>fmt(d))).selectAll('text').attr('font-size','14px');
+  // Bar
+  const bw=x.bandwidth();
+  g.append('rect').attr('x',x('W08')).attr('y',y(1628490)).attr('width',bw).attr('height',ih-y(1628490)).attr('fill',C.blue).attr('rx',6);
+  g.append('rect').attr('x',x('W08')-2).attr('y',y(1628490)-2).attr('width',bw+4).attr('height',ih-y(1628490)+4).attr('fill','none').attr('stroke',C.accent).attr('stroke-width',3).attr('rx',7);
+  // Value label
+  g.append('text').attr('x',x('W08')+bw/2).attr('y',y(1628490)-30).attr('text-anchor','middle').attr('font-size','24px').attr('font-weight','800').attr('fill',C.dark).text('¥1,628,490');
+  addBadge(g,x('W08')+bw/2,y(1628490)-8,'BASELINE',C.blue,'#EFF6FF');
+  // Title
+  svg.append('text').attr('x',w/2).attr('y',28).attr('text-anchor','middle').attr('font-size','20px').attr('font-weight','700').attr('fill',C.dark).text('週間売上推移');
+  // Note
+  g.append('text').attr('x',iw/2).attr('y',ih+45).attr('text-anchor','middle').attr('font-size','16px').attr('fill','#64748B').text('※ W04〜W07はデータなし。来週以降、5週間推移を表示予定');
+})();
+
+// === Chart 4: Customer Count (single bar) ===
+(function(){
+  const svg=d3.select('#chart-4'),w=760,h=430,m={top:50,right:40,bottom:60,left:60};
+  const iw=w-m.left-m.right, ih=h-m.top-m.bottom;
+  const g=svg.append('g').attr('transform',`translate(${m.left},${m.top})`);
+  const x=d3.scaleBand().domain(['W08']).range([0,iw]).padding(0.5);
+  const y=d3.scaleLinear().domain([0,350]).range([ih,0]);
+  y.ticks(5).forEach(t=>{g.append('line').attr('x1',0).attr('x2',iw).attr('y1',y(t)).attr('y2',y(t)).attr('stroke','#E2E8F0').attr('stroke-dasharray','3,3')});
+  g.append('g').attr('transform',`translate(0,${ih})`).call(d3.axisBottom(x)).selectAll('text').attr('font-size','16px').attr('font-weight','700');
+  g.append('g').call(d3.axisLeft(y).ticks(5).tickFormat(d=>d+'人')).selectAll('text').attr('font-size','14px');
+  const bw=x.bandwidth();
+  g.append('rect').attr('x',x('W08')).attr('y',y(264)).attr('width',bw).attr('height',ih-y(264)).attr('fill',C.blue).attr('rx',6);
+  g.append('rect').attr('x',x('W08')-2).attr('y',y(264)-2).attr('width',bw+4).attr('height',ih-y(264)+4).attr('fill','none').attr('stroke',C.accent).attr('stroke-width',3).attr('rx',7);
+  g.append('text').attr('x',x('W08')+bw/2).attr('y',y(264)-30).attr('text-anchor','middle').attr('font-size','24px').attr('font-weight','800').attr('fill',C.dark).text('264人');
+  addBadge(g,x('W08')+bw/2,y(264)-8,'BASELINE',C.blue,'#EFF6FF');
+  svg.append('text').attr('x',w/2).attr('y',28).attr('text-anchor','middle').attr('font-size','20px').attr('font-weight','700').attr('fill',C.dark).text('週間客数推移');
+  g.append('text').attr('x',iw/2).attr('y',ih+45).attr('text-anchor','middle').attr('font-size','16px').attr('fill','#64748B').text('※ 195組・264人（1組平均1.35人）');
+})();
+
+// === Chart 5: Avg Spend (single bar) ===
+(function(){
+  const svg=d3.select('#chart-5'),w=760,h=430,m={top:50,right:40,bottom:60,left:70};
+  const iw=w-m.left-m.right, ih=h-m.top-m.bottom;
+  const g=svg.append('g').attr('transform',`translate(${m.left},${m.top})`);
+  const x=d3.scaleBand().domain(['W08']).range([0,iw]).padding(0.5);
+  const y=d3.scaleLinear().domain([0,8000]).range([ih,0]);
+  y.ticks(5).forEach(t=>{g.append('line').attr('x1',0).attr('x2',iw).attr('y1',y(t)).attr('y2',y(t)).attr('stroke','#E2E8F0').attr('stroke-dasharray','3,3')});
+  g.append('g').attr('transform',`translate(0,${ih})`).call(d3.axisBottom(x)).selectAll('text').attr('font-size','16px').attr('font-weight','700');
+  g.append('g').call(d3.axisLeft(y).ticks(5).tickFormat(d=>fmt(d))).selectAll('text').attr('font-size','14px');
+  const bw=x.bandwidth();
+  g.append('rect').attr('x',x('W08')).attr('y',y(6169)).attr('width',bw).attr('height',ih-y(6169)).attr('fill',C.blue).attr('rx',6);
+  g.append('rect').attr('x',x('W08')-2).attr('y',y(6169)-2).attr('width',bw+4).attr('height',ih-y(6169)+4).attr('fill','none').attr('stroke',C.accent).attr('stroke-width',3).attr('rx',7);
+  g.append('text').attr('x',x('W08')+bw/2).attr('y',y(6169)-30).attr('text-anchor','middle').attr('font-size','24px').attr('font-weight','800').attr('fill',C.dark).text('¥6,169');
+  addBadge(g,x('W08')+bw/2,y(6169)-8,'BASELINE',C.blue,'#EFF6FF');
+  svg.append('text').attr('x',w/2).attr('y',28).attr('text-anchor','middle').attr('font-size','20px').attr('font-weight','700').attr('fill',C.dark).text('週間客単価推移');
+  g.append('text').attr('x',iw/2).attr('y',ih+45).attr('text-anchor','middle').attr('font-size','16px').attr('fill','#64748B').text('※ コース利用（¥369,000, 構成比21.5%）による底上げ');
+})();
+
+// === Chart 7: Weekday Grouped Bar ===
+(function(){
+  const svg=d3.select('#chart-7'),w=1200,h=500,m={top:50,right:40,bottom:50,left:80};
+  const iw=w-m.left-m.right, ih=h-m.top-m.bottom;
+  const g=svg.append('g').attr('transform',`translate(${m.left},${m.top})`);
+  const days=['月','火','水','木','金','土','日'];
+  const thisW=[208870,211620,246560,110140,124980,330270,396050];
+  const avg4=[186565,168313,191720,143403,196243,255333,267868];
+  const diff=[22305,43308,54840,-33263,-71263,74938,128183];
+  const x0=d3.scaleBand().domain(days).range([0,iw]).padding(0.2);
+  const x1=d3.scaleBand().domain(['今週','4週平均']).range([0,x0.bandwidth()]).padding(0.08);
+  const y=d3.scaleLinear().domain([0,450000]).range([ih,0]);
+  y.ticks(5).forEach(t=>{g.append('line').attr('x1',0).attr('x2',iw).attr('y1',y(t)).attr('y2',y(t)).attr('stroke','#E2E8F0').attr('stroke-dasharray','3,3')});
+  g.append('g').attr('transform',`translate(0,${ih})`).call(d3.axisBottom(x0)).selectAll('text').attr('font-size','16px').attr('font-weight','700');
+  g.append('g').call(d3.axisLeft(y).ticks(5).tickFormat(d=>'¥'+(d/10000).toFixed(0)+'万')).selectAll('text').attr('font-size','14px');
+  // Bars
+  days.forEach((d,i)=>{
+    const barColor = diff[i]<0 ? C.neg : (d==='日'||d==='土') ? C.pos : C.blue;
+    g.append('rect').attr('x',x0(d)+x1('今週')).attr('y',y(thisW[i])).attr('width',x1.bandwidth()).attr('height',ih-y(thisW[i])).attr('fill',barColor).attr('rx',3);
+    g.append('rect').attr('x',x0(d)+x1('4週平均')).attr('y',y(avg4[i])).attr('width',x1.bandwidth()).attr('height',ih-y(avg4[i])).attr('fill',C.gray).attr('rx',3).attr('opacity',0.6);
+    // Diff label
+    const lbl = diff[i]>=0 ? '+¥'+(diff[i]/1000).toFixed(0)+'K' : '-¥'+(-diff[i]/1000).toFixed(0)+'K';
+    const lc = diff[i]>=0 ? C.pos : C.neg;
+    g.append('text').attr('x',x0(d)+x0.bandwidth()/2).attr('y',y(Math.max(thisW[i],avg4[i]))-8).attr('text-anchor','middle').attr('font-size','14px').attr('font-weight','700').attr('fill',lc).text(lbl);
+  });
+  // Highlight Sunday
+  const sunX=x0('日');
+  g.append('rect').attr('x',sunX-4).attr('y',y(396050)-4).attr('width',x0.bandwidth()+8).attr('height',ih-y(396050)+8).attr('fill','none').attr('stroke',C.pos).attr('stroke-width',2.5).attr('stroke-dasharray','6,3').attr('rx',6);
+  addCallout(g,sunX+x0.bandwidth()/2-30,y(396050)-40,'日曜 ¥396,050 週内最高',{bgColor:'#F0FDF4',borderColor:C.pos});
+  // Highlight Friday (negative)
+  const friX=x0('金');
+  g.insert('rect',':first-child').attr('x',friX-4).attr('y',0).attr('width',x0.bandwidth()+8).attr('height',ih).attr('fill','#FEF2F2').attr('rx',4).attr('opacity',0.5);
+  // Legend
+  const lg=svg.append('g').attr('transform',`translate(${w-200},20)`);
+  lg.append('rect').attr('width',16).attr('height',16).attr('fill',C.blue).attr('rx',2);
+  lg.append('text').attr('x',22).attr('y',13).attr('font-size','16px').attr('fill',C.dark).text('今週');
+  lg.append('rect').attr('x',80).attr('width',16).attr('height',16).attr('fill',C.gray).attr('rx',2).attr('opacity',0.6);
+  lg.append('text').attr('x',102).attr('y',13).attr('font-size','16px').attr('fill',C.dark).text('4週平均');
+  svg.append('text').attr('x',w/2).attr('y',28).attr('text-anchor','middle').attr('font-size','20px').attr('font-weight','700').attr('fill',C.dark).text('曜日別売上（今週 vs 4週平均）');
+})();
+
+// === Chart 8: Friday Ratio Bar ===
+(function(){
+  const svg=d3.select('#chart-8'),w=1200,h=460,m={top:50,right:200,bottom:40,left:120};
+  const iw=w-m.left-m.right, ih=h-m.top-m.bottom;
+  const g=svg.append('g').attr('transform',`translate(${m.left},${m.top})`);
+  const data=[
+    {label:'売上',thisW:124980,avg:196243,pct:63.7,fmtThis:'¥124,980',fmtAvg:'¥196,243'},
+    {label:'客数',thisW:43,avg:35.5,pct:121.1,fmtThis:'43人',fmtAvg:'35.5人'},
+    {label:'客単価',thisW:2907,avg:5493,pct:52.9,fmtThis:'¥2,907',fmtAvg:'¥5,493'}
+  ];
+  const y=d3.scaleBand().domain(data.map(d=>d.label)).range([0,ih]).padding(0.35);
+  const x=d3.scaleLinear().domain([0,150]).range([0,iw]);
+  // 100% line
+  g.append('line').attr('x1',x(100)).attr('x2',x(100)).attr('y1',-10).attr('y2',ih+10).attr('stroke',C.accent).attr('stroke-width',2.5).attr('stroke-dasharray','6,4');
+  g.append('text').attr('x',x(100)).attr('y',-18).attr('text-anchor','middle').attr('font-size','16px').attr('font-weight','700').attr('fill',C.accent).text('4週平均=100%');
+  data.forEach(d=>{
+    const barColor = d.pct<80?C.neg:d.pct>120?C.pos:C.blue;
+    const barW = x(Math.min(d.pct,150));
+    g.append('rect').attr('x',0).attr('y',y(d.label)).attr('width',barW).attr('height',y.bandwidth()).attr('fill',barColor).attr('rx',4);
+    // Label
+    g.append('text').attr('x',-10).attr('y',y(d.label)+y.bandwidth()/2+6).attr('text-anchor','end').attr('font-size','18px').attr('font-weight','700').attr('fill',C.dark).text(d.label);
+    // Pct
+    g.append('text').attr('x',barW+10).attr('y',y(d.label)+y.bandwidth()/2-6).attr('font-size','22px').attr('font-weight','800').attr('fill',barColor).text(d.pct+'%');
+    g.append('text').attr('x',barW+10).attr('y',y(d.label)+y.bandwidth()/2+18).attr('font-size','16px').attr('fill','#64748B').text(d.fmtThis+' / '+d.fmtAvg);
+  });
+  // Highlight lowest (客単価 52.9%)
+  const worstY=y('客単価');
+  g.insert('rect',':first-child').attr('x',-120).attr('y',worstY-8).attr('width',iw+320).attr('height',y.bandwidth()+16).attr('fill','#FEF2F2').attr('rx',6).attr('opacity',0.5);
+  g.append('rect').attr('x',-2).attr('y',worstY-2).attr('width',x(52.9)+4).attr('height',y.bandwidth()+4).attr('fill','none').attr('stroke',C.neg).attr('stroke-width',3).attr('rx',5);
+  addBadge(g,x(52.9)+140,worstY+y.bandwidth()/2-20,'▼ 要改善',C.neg,'#FEF2F2');
+  // Best badge
+  addBadge(g,x(121.1)+140,y('客数')+y.bandwidth()/2-20,'★ 好調',C.pos,'#F0FDF4');
+  svg.append('text').attr('x',w/2).attr('y',28).attr('text-anchor','middle').attr('font-size','20px').attr('font-weight','700').attr('fill',C.dark).text('金曜日 基本数字（4週平均比）');
+})();
+
+// === Chart 9: Friday vs Sunday Group Size ===
+(function(){
+  const svg=d3.select('#chart-9'),w=560,h=400,m={top:40,right:30,bottom:40,left:100};
+  const iw=w-m.left-m.right, ih=h-m.top-m.bottom;
+  const g=svg.append('g').attr('transform',`translate(${m.left},${m.top})`);
+  const labels=['1名','2名','3-4名','5名以上'];
+  const fri=[9900,49280,43400,24400];
+  const sun=[6750,130680,135770,122850];
+  const y0=d3.scaleBand().domain(labels).range([0,ih]).padding(0.2);
+  const y1=d3.scaleBand().domain(['金曜','日曜']).range([0,y0.bandwidth()]).padding(0.1);
+  const x=d3.scaleLinear().domain([0,160000]).range([0,iw]);
+  labels.forEach((l,i)=>{
+    g.append('rect').attr('x',0).attr('y',y0(l)+y1('金曜')).attr('width',x(fri[i])).attr('height',y1.bandwidth()).attr('fill',C.neg).attr('rx',3).attr('opacity',0.8);
+    g.append('rect').attr('x',0).attr('y',y0(l)+y1('日曜')).attr('width',x(sun[i])).attr('height',y1.bandwidth()).attr('fill',C.pos).attr('rx',3).attr('opacity',0.8);
+    g.append('text').attr('x',x(fri[i])+4).attr('y',y0(l)+y1('金曜')+y1.bandwidth()/2+5).attr('font-size','14px').attr('font-weight','700').attr('fill',C.neg).text(fmt(fri[i]));
+    g.append('text').attr('x',x(sun[i])+4).attr('y',y0(l)+y1('日曜')+y1.bandwidth()/2+5).attr('font-size','14px').attr('font-weight','700').attr('fill',C.pos).text(fmt(sun[i]));
+    g.append('text').attr('x',-10).attr('y',y0(l)+y0.bandwidth()/2+5).attr('text-anchor','end').attr('font-size','16px').attr('font-weight','700').attr('fill',C.dark).text(l);
+  });
+  // Legend
+  const lg=g.append('g').attr('transform',`translate(${iw-140},-20)`);
+  lg.append('rect').attr('width',14).attr('height',14).attr('fill',C.neg).attr('rx',2);
+  lg.append('text').attr('x',18).attr('y',12).attr('font-size','14px').text('金曜');
+  lg.append('rect').attr('x',60).attr('width',14).attr('height',14).attr('fill',C.pos).attr('rx',2);
+  lg.append('text').attr('x',78).attr('y',12).attr('font-size','14px').text('日曜');
+})();
+
+// === Chart 10: Friday vs Sunday Time Slots ===
+(function(){
+  const svg=d3.select('#chart-10'),w=1200,h=460,m={top:50,right:40,bottom:50,left:100};
+  const iw=w-m.left-m.right, ih=h-m.top-m.bottom;
+  const g=svg.append('g').attr('transform',`translate(${m.left},${m.top})`);
+  const times=['20時台','21時台','22時台'];
+  const friS=[5100,31570,18460]; const friN=[6,10,4]; const friU=[850,3157,4615];
+  const sunS=[156750,28270,1800]; const sunN=[7,9,2]; const sunU=[22393,3141,900];
+  const x0=d3.scaleBand().domain(times).range([0,iw]).padding(0.25);
+  const x1=d3.scaleBand().domain(['金曜','日曜']).range([0,x0.bandwidth()]).padding(0.1);
+  const y=d3.scaleLinear().domain([0,180000]).range([ih,0]);
+  y.ticks(5).forEach(t=>{g.append('line').attr('x1',0).attr('x2',iw).attr('y1',y(t)).attr('y2',y(t)).attr('stroke','#E2E8F0').attr('stroke-dasharray','3,3')});
+  g.append('g').attr('transform',`translate(0,${ih})`).call(d3.axisBottom(x0)).selectAll('text').attr('font-size','16px').attr('font-weight','700');
+  g.append('g').call(d3.axisLeft(y).ticks(5).tickFormat(d=>'¥'+(d/10000).toFixed(0)+'万')).selectAll('text').attr('font-size','14px');
+  times.forEach((t,i)=>{
+    g.append('rect').attr('x',x0(t)+x1('金曜')).attr('y',y(friS[i])).attr('width',x1.bandwidth()).attr('height',ih-y(friS[i])).attr('fill',C.neg).attr('rx',3);
+    g.append('rect').attr('x',x0(t)+x1('日曜')).attr('y',y(sunS[i])).attr('width',x1.bandwidth()).attr('height',ih-y(sunS[i])).attr('fill',C.pos).attr('rx',3);
+    // Labels
+    g.append('text').attr('x',x0(t)+x1('金曜')+x1.bandwidth()/2).attr('y',y(friS[i])-8).attr('text-anchor','middle').attr('font-size','14px').attr('font-weight','700').attr('fill',C.neg).text(fmt(friS[i]));
+    g.append('text').attr('x',x0(t)+x1('日曜')+x1.bandwidth()/2).attr('y',y(sunS[i])-8).attr('text-anchor','middle').attr('font-size','14px').attr('font-weight','700').attr('fill',C.pos).text(fmt(sunS[i]));
+    // Unit price
+    g.append('text').attr('x',x0(t)+x1('金曜')+x1.bandwidth()/2).attr('y',y(friS[i])-26).attr('text-anchor','middle').attr('font-size','14px').attr('fill','#64748B').text(friN[i]+'件/'+fmt(friU[i]));
+    if(sunS[i]>5000) g.append('text').attr('x',x0(t)+x1('日曜')+x1.bandwidth()/2).attr('y',y(sunS[i])-26).attr('text-anchor','middle').attr('font-size','14px').attr('fill','#64748B').text(sunN[i]+'件/'+fmt(sunU[i]));
+  });
+  // Highlight 20時台 Sunday
+  const t20x=x0('20時台')+x1('日曜');
+  g.append('rect').attr('x',t20x-2).attr('y',y(156750)-2).attr('width',x1.bandwidth()+4).attr('height',ih-y(156750)+4).attr('fill','none').attr('stroke',C.pos).attr('stroke-width',3).attr('rx',5);
+  addBadge(g,t20x+x1.bandwidth()/2,y(156750)-50,'売上の84%',C.pos,'#F0FDF4');
+  // Highlight 20時台 Friday poor
+  const t20fx=x0('20時台')+x1('金曜');
+  g.insert('rect',':first-child').attr('x',x0('20時台')-4).attr('y',0).attr('width',x0.bandwidth()+8).attr('height',ih).attr('fill','#FEF2F2').attr('rx',4).attr('opacity',0.3);
+  // Legend
+  const lg=svg.append('g').attr('transform',`translate(${w-200},20)`);
+  lg.append('rect').attr('width',14).attr('height',14).attr('fill',C.neg).attr('rx',2);
+  lg.append('text').attr('x',18).attr('y',12).attr('font-size','16px').text('金曜');
+  lg.append('rect').attr('x',80).attr('width',14).attr('height',14).attr('fill',C.pos).attr('rx',2);
+  lg.append('text').attr('x',98).attr('y',12).attr('font-size','16px').text('日曜');
+  svg.append('text').attr('x',w/2).attr('y',28).attr('text-anchor','middle').attr('font-size','20px').attr('font-weight','700').attr('fill',C.dark).text('時間帯別売上（金曜 vs 日曜）');
+})();
+
+// === Chart 11: Friday vs Sunday Product Mix ===
+(function(){
+  const svg=d3.select('#chart-11'),w=1200,h=460,m={top:50,right:200,bottom:40,left:140};
+  const iw=w-m.left-m.right, ih=h-m.top-m.bottom;
+  const g=svg.append('g').attr('transform',`translate(${m.left},${m.top})`);
+  const cats=['コース','フード','ランチ','ウーバーイーツ','ドリンク'];
+  const friV=[16000,36990,53300,26010,6470];
+  const sunV=[145000,111480,29550,30260,43660];
+  const friP=['11.0%','25.5%','36.8%','17.9%','4.5%'];
+  const sunP=['36.4%','28.0%','7.4%','7.6%','11.0%'];
+  const y0=d3.scaleBand().domain(cats).range([0,ih]).padding(0.2);
+  const y1=d3.scaleBand().domain(['金曜','日曜']).range([0,y0.bandwidth()]).padding(0.1);
+  const x=d3.scaleLinear().domain([0,160000]).range([0,iw]);
+  cats.forEach((c,i)=>{
+    g.append('rect').attr('x',0).attr('y',y0(c)+y1('金曜')).attr('width',x(friV[i])).attr('height',y1.bandwidth()).attr('fill',C.neg).attr('rx',3).attr('opacity',0.8);
+    g.append('rect').attr('x',0).attr('y',y0(c)+y1('日曜')).attr('width',x(sunV[i])).attr('height',y1.bandwidth()).attr('fill',C.pos).attr('rx',3).attr('opacity',0.8);
+    g.append('text').attr('x',x(friV[i])+6).attr('y',y0(c)+y1('金曜')+y1.bandwidth()/2+5).attr('font-size','14px').attr('font-weight','700').attr('fill',C.neg).text(fmt(friV[i])+' ('+friP[i]+')');
+    g.append('text').attr('x',x(sunV[i])+6).attr('y',y0(c)+y1('日曜')+y1.bandwidth()/2+5).attr('font-size','14px').attr('font-weight','700').attr('fill',C.pos).text(fmt(sunV[i])+' ('+sunP[i]+')');
+    g.append('text').attr('x',-10).attr('y',y0(c)+y0.bandwidth()/2+5).attr('text-anchor','end').attr('font-size','16px').attr('font-weight','700').attr('fill',C.dark).text(c);
+  });
+  // Highlight course row
+  g.insert('rect',':first-child').attr('x',-140).attr('y',y0('コース')-6).attr('width',iw+340).attr('height',y0.bandwidth()+12).attr('fill','#FEF2F2').attr('rx',6).attr('opacity',0.4);
+  addBadge(g,iw+80,y0('コース')+y0.bandwidth()/2,'差額-¥129,000',C.neg,'#FEF2F2');
+  // Highlight ランチ for Friday
+  addBadge(g,iw+80,y0('ランチ')+y0.bandwidth()/2,'金曜依存36.8%',C.accent,'#FFF7ED');
+  // Legend
+  const lg=svg.append('g').attr('transform',`translate(${w-200},20)`);
+  lg.append('rect').attr('width',14).attr('height',14).attr('fill',C.neg).attr('rx',2);
+  lg.append('text').attr('x',18).attr('y',12).attr('font-size','16px').text('金曜');
+  lg.append('rect').attr('x',80).attr('width',14).attr('height',14).attr('fill',C.pos).attr('rx',2);
+  lg.append('text').attr('x',98).attr('y',12).attr('font-size','16px').text('日曜');
+  svg.append('text').attr('x',w/2).attr('y',28).attr('text-anchor','middle').attr('font-size','20px').attr('font-weight','700').attr('fill',C.dark).text('カテゴリ別構成比（金曜 vs 日曜）');
+})();
+
+// === Chart 13: Sunday Ratio Bar ===
+(function(){
+  const svg=d3.select('#chart-13'),w=1200,h=460,m={top:50,right:200,bottom:40,left:120};
+  const iw=w-m.left-m.right, ih=h-m.top-m.bottom;
+  const g=svg.append('g').attr('transform',`translate(${m.left},${m.top})`);
+  const data=[
+    {label:'売上',pct:147.9,fmtThis:'¥396,050',fmtAvg:'¥267,868',diff:'+¥128,183'},
+    {label:'客数',pct:110.6,fmtThis:'55人',fmtAvg:'49.8人',diff:'+5.3人'},
+    {label:'客単価',pct:132.9,fmtThis:'¥7,201',fmtAvg:'¥5,417',diff:'+¥1,784'}
+  ];
+  const y=d3.scaleBand().domain(data.map(d=>d.label)).range([0,ih]).padding(0.35);
+  const x=d3.scaleLinear().domain([0,170]).range([0,iw]);
+  g.append('line').attr('x1',x(100)).attr('x2',x(100)).attr('y1',-10).attr('y2',ih+10).attr('stroke',C.accent).attr('stroke-width',2.5).attr('stroke-dasharray','6,4');
+  g.append('text').attr('x',x(100)).attr('y',-18).attr('text-anchor','middle').attr('font-size','16px').attr('font-weight','700').attr('fill',C.accent).text('4週平均=100%');
+  data.forEach(d=>{
+    const barColor = C.pos;
+    g.append('rect').attr('x',0).attr('y',y(d.label)).attr('width',x(d.pct)).attr('height',y.bandwidth()).attr('fill',barColor).attr('rx',4);
+    g.append('text').attr('x',-10).attr('y',y(d.label)+y.bandwidth()/2+6).attr('text-anchor','end').attr('font-size','18px').attr('font-weight','700').attr('fill',C.dark).text(d.label);
+    g.append('text').attr('x',x(d.pct)+10).attr('y',y(d.label)+y.bandwidth()/2-6).attr('font-size','22px').attr('font-weight','800').attr('fill',barColor).text(d.pct+'%');
+    g.append('text').attr('x',x(d.pct)+10).attr('y',y(d.label)+y.bandwidth()/2+18).attr('font-size','16px').attr('fill','#64748B').text(d.fmtThis+' / '+d.fmtAvg);
+  });
+  // Best badge on sales
+  const bestY=y('売上');
+  g.append('rect').attr('x',-2).attr('y',bestY-2).attr('width',x(147.9)+4).attr('height',y.bandwidth()+4).attr('fill','none').attr('stroke',C.pos).attr('stroke-width',3).attr('rx',5);
+  addBadge(g,x(147.9)+150,bestY+y.bandwidth()/2,'★ 好調 +48%',C.pos,'#F0FDF4');
+  svg.append('text').attr('x',w/2).attr('y',28).attr('text-anchor','middle').attr('font-size','20px').attr('font-weight','700').attr('fill',C.dark).text('日曜日 基本数字（4週平均比）');
+})();
+
+// === Chart 14: Sunday Group Size ===
+(function(){
+  const svg=d3.select('#chart-14'),w=1200,h=460,m={top:50,right:200,bottom:40,left:120};
+  const iw=w-m.left-m.right, ih=h-m.top-m.bottom;
+  const g=svg.append('g').attr('transform',`translate(${m.left},${m.top})`);
+  const labels=['1名','2名','3-4名','5名以上'];
+  const counts=[6,12,13,2];
+  const sales=[6750,130680,135770,122850];
+  const perUnit=[1125,10890,10444,61425];
+  const pcts=['18.2%','36.4%','39.4%','6.1%'];
+  const y0=d3.scaleBand().domain(labels).range([0,ih]).padding(0.25);
+  const x=d3.scaleLinear().domain([0,160000]).range([0,iw]);
+  labels.forEach((l,i)=>{
+    const bc = i===3 ? C.pos : C.blue;
+    g.append('rect').attr('x',0).attr('y',y0(l)).attr('width',x(sales[i])).attr('height',y0.bandwidth()).attr('fill',bc).attr('rx',4);
+    g.append('text').attr('x',-10).attr('y',y0(l)+y0.bandwidth()/2+6).attr('text-anchor','end').attr('font-size','18px').attr('font-weight','700').attr('fill',C.dark).text(l);
+    g.append('text').attr('x',x(sales[i])+10).attr('y',y0(l)+y0.bandwidth()/2-4).attr('font-size','18px').attr('font-weight','800').attr('fill',bc).text(fmt(sales[i])+' ('+pcts[i]+')');
+    g.append('text').attr('x',x(sales[i])+10).attr('y',y0(l)+y0.bandwidth()/2+18).attr('font-size','16px').attr('fill','#64748B').text(counts[i]+'件 / 1組'+fmt(perUnit[i]));
+  });
+  // Highlight 5名以上
+  const hlY=y0('5名以上');
+  g.append('rect').attr('x',-2).attr('y',hlY-2).attr('width',x(122850)+4).attr('height',y0.bandwidth()+4).attr('fill','none').attr('stroke',C.pos).attr('stroke-width',3).attr('rx',5);
+  addBadge(g,x(122850)+150,hlY+y0.bandwidth()/2,'1組¥61,425',C.pos,'#F0FDF4');
+  svg.append('text').attr('x',w/2).attr('y',28).attr('text-anchor','middle').attr('font-size','20px').attr('font-weight','700').attr('fill',C.dark).text('日曜日 組人数別売上');
+})();
+
+// === Chart 15: Sunday Time Slots ===
+(function(){
+  const svg=d3.select('#chart-15'),w=1200,h=460,m={top:50,right:40,bottom:50,left:100};
+  const iw=w-m.left-m.right, ih=h-m.top-m.bottom;
+  const g=svg.append('g').attr('transform',`translate(${m.left},${m.top})`);
+  const times=['20時台','21時台','22時台'];
+  const sales=[156750,28270,1800];
+  const counts=[7,9,2];
+  const units=[22393,3141,900];
+  const x0=d3.scaleBand().domain(times).range([0,iw]).padding(0.3);
+  const y=d3.scaleLinear().domain([0,180000]).range([ih,0]);
+  y.ticks(5).forEach(t=>{g.append('line').attr('x1',0).attr('x2',iw).attr('y1',y(t)).attr('y2',y(t)).attr('stroke','#E2E8F0').attr('stroke-dasharray','3,3')});
+  g.append('g').attr('transform',`translate(0,${ih})`).call(d3.axisBottom(x0)).selectAll('text').attr('font-size','16px').attr('font-weight','700');
+  g.append('g').call(d3.axisLeft(y).ticks(5).tickFormat(d=>'¥'+(d/10000).toFixed(0)+'万')).selectAll('text').attr('font-size','14px');
+  times.forEach((t,i)=>{
+    const bc = i===0 ? C.pos : C.blue;
+    g.append('rect').attr('x',x0(t)).attr('y',y(sales[i])).attr('width',x0.bandwidth()).attr('height',ih-y(sales[i])).attr('fill',bc).attr('rx',4);
+    g.append('text').attr('x',x0(t)+x0.bandwidth()/2).attr('y',y(sales[i])-28).attr('text-anchor','middle').attr('font-size','18px').attr('font-weight','800').attr('fill',bc).text(fmt(sales[i]));
+    g.append('text').attr('x',x0(t)+x0.bandwidth()/2).attr('y',y(sales[i])-8).attr('text-anchor','middle').attr('font-size','16px').attr('fill','#64748B').text(counts[i]+'件 / '+fmt(units[i])+'/件');
+  });
+  // Highlight 20時台
+  g.append('rect').attr('x',x0('20時台')-3).attr('y',y(156750)-3).attr('width',x0.bandwidth()+6).attr('height',ih-y(156750)+6).attr('fill','none').attr('stroke',C.pos).attr('stroke-width',3).attr('rx',6);
+  addBadge(g,x0('20時台')+x0.bandwidth()/2,y(156750)-56,'売上の84% コース集中',C.pos,'#F0FDF4');
+  svg.append('text').attr('x',w/2).attr('y',28).attr('text-anchor','middle').attr('font-size','20px').attr('font-weight','700').attr('fill',C.dark).text('日曜日 時間帯別売上');
+})();
+
+// === Chart 16: Sunday Product Mix ===
+(function(){
+  const svg=d3.select('#chart-16'),w=1200,h=460,m={top:50,right:200,bottom:40,left:140};
+  const iw=w-m.left-m.right, ih=h-m.top-m.bottom;
+  const g=svg.append('g').attr('transform',`translate(${m.left},${m.top})`);
+  const cats=['コース','フード','ドリンク','ウーバーイーツ','ランチ'];
+  const vals=[145000,111480,43660,30260,29550];
+  const pcts=['36.4%','28.0%','11.0%','7.6%','7.4%'];
+  const colors=[C.pos,C.blue,C.blue,C.blue,C.gray];
+  const y0=d3.scaleBand().domain(cats).range([0,ih]).padding(0.25);
+  const x=d3.scaleLinear().domain([0,170000]).range([0,iw]);
+  cats.forEach((c,i)=>{
+    g.append('rect').attr('x',0).attr('y',y0(c)).attr('width',x(vals[i])).attr('height',y0.bandwidth()).attr('fill',colors[i]).attr('rx',4).attr('opacity',i===0?1:0.7);
+    g.append('text').attr('x',-10).attr('y',y0(c)+y0.bandwidth()/2+6).attr('text-anchor','end').attr('font-size','18px').attr('font-weight','700').attr('fill',C.dark).text(c);
+    g.append('text').attr('x',x(vals[i])+10).attr('y',y0(c)+y0.bandwidth()/2+6).attr('font-size','18px').attr('font-weight','800').attr('fill',i===0?C.pos:C.dark).text(fmt(vals[i])+' ('+pcts[i]+')');
+  });
+  // Highlight course
+  g.append('rect').attr('x',-2).attr('y',y0('コース')-2).attr('width',x(145000)+4).attr('height',y0.bandwidth()+4).attr('fill','none').attr('stroke',C.pos).attr('stroke-width',3).attr('rx',5);
+  addBadge(g,x(145000)+140,y0('コース')+y0.bandwidth()/2,'🏆 最大カテゴリ',C.pos,'#F0FDF4');
+  svg.append('text').attr('x',w/2).attr('y',28).attr('text-anchor','middle').attr('font-size','20px').attr('font-weight','700').attr('fill',C.dark).text('日曜日 カテゴリ別売上構成');
+})();
+
+// === Chart 19: Donut Chart ===
+(function(){
+  const svg=d3.select('#chart-19'),w=580,h=460;
+  const g=svg.append('g').attr('transform',`translate(${w/2},${h/2+10})`);
+  const data=[
+    {name:'フード',value:495460,color:'#3B82F6'},
+    {name:'コース',value:369000,color:'#22C55E'},
+    {name:'ランチ',value:332220,color:'#F97316'},
+    {name:'ウーバーイーツ',value:232570,color:'#8B5CF6'},
+    {name:'ドリンク',value:178710,color:'#EC4899'},
+    {name:'その他',value:105900,color:'#CBD5E1'}
+  ];
+  const total=data.reduce((s,d)=>s+d.value,0);
+  const radius=180, innerR=100;
+  const pie=d3.pie().value(d=>d.value).sort(null);
+  const arc=d3.arc().innerRadius(innerR).outerRadius(radius);
+  const arcs=g.selectAll('.arc').data(pie(data)).join('g').attr('class','arc');
+  arcs.append('path').attr('d',arc).attr('fill',(d,i)=>data[i].color).attr('stroke','#fff').attr('stroke-width',2);
+  // Explode largest segment (フード)
+  arcs.filter((d,i)=>i===0).attr('transform',d=>{
+    const [cx,cy]=arc.centroid(d);
+    const dist=Math.sqrt(cx*cx+cy*cy);
+    return `translate(${cx/dist*18},${cy/dist*18})`;
+  });
+  // Labels on segments
+  arcs.each(function(d,i){
+    if(data[i].value/total>0.08){
+      const [lx,ly]=arc.centroid(d);
+      const offset=i===0?18:0;
+      d3.select(this).append('text').attr('x',lx*(i===0?1.15:1)+offset*lx/Math.abs(lx||1)*0.05).attr('y',ly*(i===0?1.15:1)).attr('text-anchor','middle').attr('font-size','16px').attr('font-weight','700').attr('fill','#fff').text((data[i].value/total*100).toFixed(1)+'%');
+    }
+  });
+  // Center text
+  g.append('text').attr('text-anchor','middle').attr('y',-8).attr('font-size','18px').attr('fill','#64748B').text('合計');
+  g.append('text').attr('text-anchor','middle').attr('y',22).attr('font-size','24px').attr('font-weight','800').attr('fill',C.dark).text(fmt(total));
+  // Leader line for largest
+  const maxD=pie(data)[0];
+  const midA=(maxD.startAngle+maxD.endAngle)/2;
+  const outerPt=[Math.sin(midA)*(radius+30),-Math.cos(midA)*(radius+30)];
+  const labelPt=[Math.sin(midA)*(radius+60),-Math.cos(midA)*(radius+60)];
+  const endPt=[labelPt[0]+(labelPt[0]>0?40:-40),labelPt[1]];
+  g.append('polyline').attr('points',[outerPt,labelPt,endPt].map(p=>p.join(',')).join(' ')).attr('fill','none').attr('stroke','#3B82F6').attr('stroke-width',1.5);
+  g.append('text').attr('x',endPt[0]+(endPt[0]>0?6:-6)).attr('y',endPt[1]+5).attr('text-anchor',endPt[0]>0?'start':'end').attr('font-size','16px').attr('font-weight','800').attr('fill','#3B82F6').text('フード 28.9%');
+})();
+
+// === Chart 21: Product TOP 10 ===
+(function(){
+  const svg=d3.select('#chart-21'),w=1200,h=480,m={top:40,right:60,bottom:30,left:300};
+  const iw=w-m.left-m.right, ih=h-m.top-m.bottom;
+  const g=svg.append('g').attr('transform',`translate(${m.left},${m.top})`);
+  const products=[
+    {name:'歓送迎会コース飲み放題',sales:144000,pct:'8.4%'},
+    {name:'梅肝重30%オフ',sales:137200,pct:'8.0%'},
+    {name:'ランチ麻布しきコース',sales:126000,pct:'7.4%'},
+    {name:'うな重 梅',sales:109200,pct:'6.4%'},
+    {name:'うな重 竹',sales:46400,pct:'2.7%'},
+    {name:'お通し',sales:43560,pct:'2.5%'},
+    {name:'しょうが焼き定食',sales:38400,pct:'2.2%'},
+    {name:'とり天定食',sales:36300,pct:'2.1%'},
+    {name:'歓送迎会コース',sales:36000,pct:'2.1%'},
+    {name:'TO)うな重 松',sales:34500,pct:'2.0%'}
+  ];
+  const y0=d3.scaleBand().domain(products.map(p=>p.name)).range([0,ih]).padding(0.18);
+  const x=d3.scaleLinear().domain([0,160000]).range([0,iw]);
+  products.forEach((p,i)=>{
+    const bc = i===0 ? C.pos : (i<3 ? C.blue : '#94A3B8');
+    const op = i<3 ? 1 : 0.7;
+    g.append('rect').attr('x',0).attr('y',y0(p.name)).attr('width',x(p.sales)).attr('height',y0.bandwidth()).attr('fill',bc).attr('rx',3).attr('opacity',op);
+    g.append('text').attr('x',-8).attr('y',y0(p.name)+y0.bandwidth()/2+5).attr('text-anchor','end').attr('font-size','16px').attr('font-weight',i<3?'800':'500').attr('fill',C.dark).text((i+1)+'. '+p.name);
+    g.append('text').attr('x',x(p.sales)+8).attr('y',y0(p.name)+y0.bandwidth()/2+5).attr('font-size','16px').attr('font-weight','700').attr('fill',i<3?bc:'#64748B').text(fmt(p.sales)+' ('+p.pct+')');
+  });
+  // Highlight top
+  g.append('rect').attr('x',-2).attr('y',y0('歓送迎会コース飲み放題')-2).attr('width',x(144000)+4).attr('height',y0.bandwidth()+4).attr('fill','none').attr('stroke',C.pos).attr('stroke-width',3).attr('rx',5);
+  addBadge(g,x(144000)+120,y0('歓送迎会コース飲み放題')+y0.bandwidth()/2,'🏆 TOP',C.pos,'#F0FDF4');
+  // Total
+  g.append('text').attr('x',iw/2).attr('y',ih+22).attr('text-anchor','middle').attr('font-size','16px').attr('font-weight','700').attr('fill',C.dark).text('上位10商品合計: ¥751,560（構成比43.8%）');
+})();
+</script>
+</body>
+</html>

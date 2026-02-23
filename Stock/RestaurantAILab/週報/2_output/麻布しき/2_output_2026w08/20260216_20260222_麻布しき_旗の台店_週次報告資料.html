@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>麻布しき 旗の台店 週次営業報告 — 2026年第8週</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#e2e8f0;padding:20px 0}
+.slide{width:1280px;height:720px;position:relative;overflow:hidden;background:#fff;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;font-size:20px;color:#334155}
+@media print{body{margin:0;padding:0;background:#fff}.slide{page-break-after:always;page-break-inside:avoid;break-after:page;break-inside:avoid;box-shadow:none;margin:0}.slide:last-child{page-break-after:auto}}
+@media screen{.slide{margin:0 auto 40px auto;box-shadow:0 4px 20px rgba(0,0,0,.12)}}
+.slide-header{background:#1E3A5F;color:#fff;padding:14px 40px;display:flex;align-items:center;justify-content:space-between;position:relative}
+.slide-header h2{font-size:28px;font-weight:700}
+.slide-header .pn{font-size:16px;opacity:.7;flex-shrink:0;margin-left:16px}
+.progress-bar{position:absolute;bottom:0;left:0;height:3px;background:rgba(255,255,255,.4);border-radius:0 2px 2px 0}
+.section-tag{background:rgba(255,255,255,.2);padding:4px 12px;border-radius:4px;font-size:14px;font-weight:500;margin-right:8px}
+.msg-bar{background:#FFF7ED;border-left:5px solid #F97316;padding:10px 40px;font-size:28px;font-weight:800;color:#1E293B;line-height:1.35}
+.slide-body{padding:12px 40px;overflow:hidden}
+.slide-title{background:linear-gradient(135deg,#1E3A5F 0%,#0F172A 100%);display:flex;flex-direction:column;justify-content:center;align-items:center;color:#fff}
+.main-title{font-size:48px;font-weight:800}
+.sub-title{font-size:28px;font-weight:400;margin-top:12px;opacity:.9}
+.period-text{font-size:18px;margin-top:24px;opacity:.7}
+.kpi-row{display:flex;gap:16px;justify-content:center;margin-top:10px}
+.kpi-card{background:#F8FAFC;border-radius:12px;padding:16px 18px;text-align:center;flex:1;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.kpi-label{display:block;font-size:17px;font-weight:600;color:#64748B;margin-bottom:4px}
+.kpi-value{display:block;font-size:44px;font-weight:800;color:#1E293B}
+.kpi-change{display:block;font-size:20px;font-weight:700;margin-top:4px}
+.kpi-sub{display:block;font-size:16px;color:#64748B;margin-top:2px}
+.positive{color:#22C55E}.negative{color:#EF4444}
+.two-col{display:flex;gap:24px;height:100%}
+.col-chart{flex:2}.col-comment{flex:1;display:flex;flex-direction:column;justify-content:center}
+.col-comment p{font-size:17px;line-height:1.6;color:#334155}
+.gauge-row{display:flex;gap:16px;margin-top:10px}
+.gauge-card{flex:1;background:#F8FAFC;border-radius:12px;padding:18px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.gauge-label{font-size:17px;font-weight:600;color:#64748B}
+.gauge-value{font-size:48px;font-weight:900;margin:6px 0}
+.gauge-sub{font-size:17px;color:#64748B}
+.dt{width:100%;border-collapse:collapse;font-size:17px}
+.dt th{background:#1E3A5F;color:#fff;padding:9px 12px;text-align:left;font-weight:700;font-size:16px}
+.dt td{padding:9px 12px;border-bottom:1px solid #E2E8F0}
+.dt tr:nth-child(even){background:#F8FAFC}
+.dt .num{text-align:right}
+.dt .hl{background:#FFF7ED;border-left:4px solid #F97316}
+.dt .hl td{font-weight:800;color:#C2410C}
+.at{width:100%;border-collapse:collapse;font-size:15px}
+.at th{background:#1E3A5F;color:#fff;padding:7px 10px;text-align:left;font-weight:700;font-size:15px}
+.at td{padding:6px 10px;border-bottom:1px solid #E2E8F0;vertical-align:top}
+.at tr:nth-child(even){background:#F8FAFC}
+.bl{list-style:none;padding:0}
+.bl li{display:flex;align-items:flex-start;gap:12px;background:#F8FAFC;border-radius:10px;padding:12px 16px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.bl .ic{font-size:26px;flex-shrink:0}
+.bl .tx{font-size:17px;line-height:1.5}
+.bl .tx strong{color:#1E293B}
+.si,.ci{border-radius:10px;padding:12px 16px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.si{background:#F0FDF4;border-left:4px solid #22C55E}
+.ci{background:#FEF2F2;border-left:4px solid #EF4444}
+.si h4{font-size:19px;font-weight:800;color:#166534;margin-bottom:4px}
+.ci h4{font-size:19px;font-weight:800;color:#991B1B;margin-bottom:4px}
+.si p,.ci p{font-size:16px;line-height:1.5}
+.note-box{padding:10px 16px;border-radius:10px;font-size:17px;line-height:1.5}
+h3{font-size:21px;font-weight:800;color:#1E293B;margin:6px 0}
+svg text{font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif}
+.pc{background:#F8FAFC;border-radius:12px;padding:12px 16px;margin-bottom:8px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.pc h4{font-size:18px;font-weight:800;color:#1E293B;margin-bottom:4px}
+.pc p{font-size:16px;line-height:1.4}
+</style>
+</head>
+<body>
+
+<!-- Slide 1: Title -->
+<div class="slide slide-title" id="slide-1">
+<div class="main-title">麻布しき 旗の台店 週次営業報告</div>
+<div class="sub-title">2026年 第8週（2/16〜2/22）</div>
+<div class="period-text">作成日: 2026-02-23</div>
+</div>
+
+<!-- Slide 2: Executive Summary -->
+<div class="slide" id="slide-2">
+<div class="slide-header"><h2>エグゼクティブサマリー</h2><span class="pn">2 / 28</span><div class="progress-bar" style="width:3.7%"></div></div>
+<div class="msg-bar">データ蓄積初週 — 週間売上¥163万のベースラインを確立</div>
+<div class="slide-body">
+<div class="kpi-row">
+<div class="kpi-card"><span class="kpi-label">💰 売上</span><span class="kpi-value">¥1,628,490</span><span class="kpi-change" style="color:#94A3B8">— 初週</span><span class="kpi-sub">前年データなし</span></div>
+<div class="kpi-card"><span class="kpi-label">👥 客数</span><span class="kpi-value">264人</span><span class="kpi-change" style="color:#94A3B8">— 初週</span><span class="kpi-sub">195組（1.35人/組）</span></div>
+<div class="kpi-card"><span class="kpi-label">🍽️ 客単価</span><span class="kpi-value">¥6,169</span><span class="kpi-change" style="color:#94A3B8">— 初週</span><span class="kpi-sub">コース利用で底上げ</span></div>
+<div class="kpi-card"><span class="kpi-label">📋 組数</span><span class="kpi-value">195組</span><span class="kpi-change" style="color:#94A3B8">— 初週</span></div>
+</div>
+<div style="display:flex;gap:12px;margin-top:14px">
+<div class="note-box" style="flex:1;background:#F0FDF4;border-left:4px solid #22C55E"><p>🎯 <strong>日曜最高売上¥396,050</strong>（構成比24.3%）、コース利用が牽引</p></div>
+<div class="note-box" style="flex:1;background:#FEF2F2;border-left:4px solid #EF4444"><p>⚠️ <strong>木金2日間で週全体の14.4%</strong>にとどまり、曜日間格差が大きい</p></div>
+<div class="note-box" style="flex:1;background:#FFF7ED;border-left:4px solid #F97316"><p>📦 <strong>デリバリー4チャネル合計¥281,070</strong>（構成比17.3%）多角的売上</p></div>
+</div>
+</div>
+</div>
+
+<!-- Slide 3: Sales Trend -->
+<div class="slide" id="slide-3">
+<div class="slide-header"><h2>売上トレンド</h2><span class="pn">3 / 28</span><div class="progress-bar" style="width:7.4%"></div></div>
+<div class="msg-bar">初週のため推移なし — ¥1,628,490をベースラインとして記録</div>
+<div class="slide-body"><div class="two-col">
+<div class="col-chart"><svg id="chart-3" width="760" height="430"></svg></div>
+<div class="col-comment">
+<h3>📊 トレンド読み取り</h3>
+<p>初週のためトレンド比較は不可。<br><br>週間売上<strong style="color:#3B82F6">¥1,628,490</strong>を今後の比較基準として設定。<br><br>来週（W09）以降、前週比の推移を追跡開始します。</p>
+</div></div></div>
+</div>
+
+<!-- Slide 4: Customer Count Trend -->
+<div class="slide" id="slide-4">
+<div class="slide-header"><h2>客数トレンド</h2><span class="pn">4 / 28</span><div class="progress-bar" style="width:11.1%"></div></div>
+<div class="msg-bar">初週 — 週間264人（1組あたり1.35人、少人数来店が中心）</div>
+<div class="slide-body"><div class="two-col">
+<div class="col-chart"><svg id="chart-4" width="760" height="430"></svg></div>
+<div class="col-comment">
+<h3>📊 トレンド読み取り</h3>
+<p>195組・264人で<strong>1組あたり平均1.35人</strong> — 1人客が多い構造。<br><br>コース利用の55人を除くと、1人客中心の日常利用が主体。</p>
+</div></div></div>
+</div>
+
+<!-- Slide 5: Avg Spend Trend -->
+<div class="slide" id="slide-5">
+<div class="slide-header"><h2>客単価トレンド</h2><span class="pn">5 / 28</span><div class="progress-bar" style="width:14.8%"></div></div>
+<div class="msg-bar">初週 — 客単価¥6,169、コース利用で底上げ</div>
+<div class="slide-body"><div class="two-col">
+<div class="col-chart"><svg id="chart-5" width="760" height="430"></svg></div>
+<div class="col-comment">
+<h3>📊 トレンド読み取り</h3>
+<p>客単価<strong style="color:#3B82F6">¥6,169</strong>はコース利用（¥369,000、構成比21.5%）によって底上げ。<br><br>曜日による客単価のばらつきが大きい（¥3,256〜¥8,054）。</p>
+</div></div></div>
+</div>
+
+<!-- Slide 6: Baseline Setup -->
+<div class="slide" id="slide-6">
+<div class="slide-header"><h2>初週ベースライン設定</h2><span class="pn">6 / 28</span><div class="progress-bar" style="width:18.5%"></div></div>
+<div class="msg-bar">W08を基準値として、来週以降の成長を追跡</div>
+<div class="slide-body">
+<h3>📋 基準値一覧と3ヶ月目標</h3>
+<table class="dt" style="margin-top:10px">
+<tr><th>指標</th><th class="num">W08実績（基準値）</th><th class="num">3ヶ月目標</th><th class="num">目標成長率</th></tr>
+<tr class="hl"><td>🏆 週間売上</td><td class="num">¥1,628,490</td><td class="num">¥1,800,000</td><td class="num" style="color:#22C55E">+10.5%</td></tr>
+<tr><td>木曜売上</td><td class="num">¥108,140</td><td class="num">¥160,000</td><td class="num" style="color:#22C55E">+48.0%</td></tr>
+<tr><td>金曜客単価</td><td class="num">¥3,256</td><td class="num">¥4,500</td><td class="num" style="color:#22C55E">+38.2%</td></tr>
+<tr><td>ドリンク構成比</td><td class="num">10.4%</td><td class="num">13.0%</td><td class="num" style="color:#22C55E">+2.6pt</td></tr>
+<tr><td>週間口コミ数</td><td class="num">0件</td><td class="num">2件以上</td><td class="num" style="color:#94A3B8">—</td></tr>
+</table>
+<div class="note-box" style="margin-top:16px;background:#FFF7ED;border-left:4px solid #F97316">
+<p>📈 前年比・前週比のデータが揃うまで、W08の数値をベースラインとして設定。3ヶ月目標は店舗の成長ポテンシャルを踏まえた暫定値。</p>
+</div>
+</div>
+</div>
+
+<!-- Slide 7: Weekday Overview -->
+<div class="slide" id="slide-7">
+<div class="slide-header"><h2><span class="section-tag">第2部</span> 曜日別概況</h2><span class="pn">7 / 28</span><div class="progress-bar" style="width:22.2%"></div></div>
+<div class="msg-bar">週末が好調、木金が課題 — 曜日別の戦い方を明確にする</div>
+<div class="slide-body">
+<svg id="chart-7" width="1200" height="500"></svg>
+</div>
+</div>
+
+<!-- Slide 8: Friday Basic Numbers -->
+<div class="slide" id="slide-8">
+<div class="slide-header"><h2>金曜日（不調）基本数字</h2><span class="pn">8 / 28</span><div class="progress-bar" style="width:25.9%"></div></div>
+<div class="msg-bar">客数は4週平均比+21%だが、客単価が4週平均の53%に急落</div>
+<div class="slide-body">
+<svg id="chart-8" width="1200" height="460"></svg>
+</div>
+</div>
+
+<!-- Slide 9: Friday Group Size -->
+<div class="slide" id="slide-9">
+<div class="slide-header"><h2>金曜日（不調）組人数別構成</h2><span class="pn">9 / 28</span><div class="progress-bar" style="width:29.6%"></div></div>
+<div class="msg-bar">1名客が26.7%と多く、高額会計がゼロ</div>
+<div class="slide-body" style="display:flex;gap:20px">
+<div style="flex:1"><h3>👥 組人数別売上（金曜 vs 日曜）</h3><svg id="chart-9" width="560" height="400"></svg></div>
+<div style="flex:1"><h3>💰 会計金額帯分布</h3>
+<table class="dt" style="margin-top:10px">
+<tr><th>金額帯</th><th class="num">金曜</th><th class="num">金曜構成比</th><th class="num">日曜</th><th class="num">日曜構成比</th></tr>
+<tr class="hl"><td>⚠️ 〜5千円</td><td class="num">19件</td><td class="num" style="font-size:19px;color:#EF4444">67.9%</td><td class="num">17件</td><td class="num">51.5%</td></tr>
+<tr><td>5千〜1万円</td><td class="num">5件</td><td class="num">17.9%</td><td class="num">3件</td><td class="num">9.1%</td></tr>
+<tr><td>1万〜1.5万円</td><td class="num">3件</td><td class="num">10.7%</td><td class="num">3件</td><td class="num">9.1%</td></tr>
+<tr><td>1.5万〜2万円</td><td class="num">1件</td><td class="num">3.6%</td><td class="num">5件</td><td class="num">15.2%</td></tr>
+<tr style="background:#FEF2F2;border-left:4px solid #EF4444"><td style="font-weight:800;color:#991B1B">🚨 2万円以上</td><td class="num" style="font-weight:800;color:#EF4444">0件</td><td class="num" style="font-weight:800;color:#EF4444">0.0%</td><td class="num" style="font-weight:800;color:#22C55E">5件</td><td class="num" style="font-weight:800;color:#22C55E">15.2%</td></tr>
+</table></div>
+</div>
+</div>
+
+<!-- Slide 10: Friday Time Slots -->
+<div class="slide" id="slide-10">
+<div class="slide-header"><h2>金曜日（不調）時間帯別売上</h2><span class="pn">10 / 28</span><div class="progress-bar" style="width:33.3%"></div></div>
+<div class="msg-bar">20時台の会計単価¥850 — ディナー帯が機能していない</div>
+<div class="slide-body">
+<svg id="chart-10" width="1200" height="460"></svg>
+</div>
+</div>
+
+<!-- Slide 11: Friday Product Mix -->
+<div class="slide" id="slide-11">
+<div class="slide-header"><h2>金曜日（不調）商品構成</h2><span class="pn">11 / 28</span><div class="progress-bar" style="width:37.0%"></div></div>
+<div class="msg-bar">ランチ依存36.8% — コース・ドリンクが不在</div>
+<div class="slide-body">
+<svg id="chart-11" width="1200" height="460"></svg>
+</div>
+</div>
+
+<!-- Slide 12: Friday Summary -->
+<div class="slide" id="slide-12">
+<div class="slide-header"><h2>金曜日（不調）まとめ</h2><span class="pn">12 / 28</span><div class="progress-bar" style="width:40.7%"></div></div>
+<div class="msg-bar">金曜日の最大課題は「ディナー帯のコース利用不在」</div>
+<div class="slide-body">
+<h3>🚨 不調の主要因（3点）</h3>
+<div style="display:flex;gap:12px;margin-top:8px">
+<div class="ci" style="flex:1"><h4>1. コース利用の不在</h4><p>金曜¥16,000 vs 日曜¥145,000<br>影響額: <strong style="color:#EF4444;font-size:20px">-¥129,000</strong></p></div>
+<div class="ci" style="flex:1"><h4>2. ランチ依存構造</h4><p>構成比36.8%、低単価¥1,100-1,800帯<br>影響: <strong style="color:#EF4444">客単価押下</strong></p></div>
+<div class="ci" style="flex:1"><h4>3. ディナー帯の弱さ</h4><p>20時台 会計単価¥850<br>影響: <strong style="color:#EF4444">ドリンク売上-¥37,190</strong></p></div>
+</div>
+<h3 style="margin-top:14px">📋 改善アクション</h3>
+<table class="dt" style="margin-top:6px">
+<tr><th>優先度</th><th>施策</th><th>期待効果</th></tr>
+<tr class="hl"><td style="font-weight:800">🔴 高</td><td>金曜限定ディナーコースの企画・訴求</td><td class="num">コース売上+¥50,000〜100,000</td></tr>
+<tr class="hl"><td style="font-weight:800">🔴 高</td><td>金曜予約促進（SNS・LINE配信）</td><td class="num">ディナー客数+5〜10人</td></tr>
+<tr><td>🟡 中</td><td>金曜ハッピーアワー（18-19時ドリンク割引）</td><td class="num">早い時間帯の集客</td></tr>
+<tr><td>🟡 中</td><td>ランチ客への次回ディナー割引券配布</td><td class="num">リピート来店促進</td></tr>
+</table>
+</div>
+</div>
+
+<!-- Slide 13: Sunday Basic Numbers -->
+<div class="slide" id="slide-13">
+<div class="slide-header"><h2>日曜日（好調）基本数字</h2><span class="pn">13 / 28</span><div class="progress-bar" style="width:44.4%"></div></div>
+<div class="msg-bar">売上4週平均比+48%、客数・客単価ともに上振れ</div>
+<div class="slide-body">
+<svg id="chart-13" width="1200" height="460"></svg>
+</div>
+</div>
+
+<!-- Slide 14: Sunday Group Size -->
+<div class="slide" id="slide-14">
+<div class="slide-header"><h2>日曜日（好調）組人数別構成</h2><span class="pn">14 / 28</span><div class="progress-bar" style="width:48.1%"></div></div>
+<div class="msg-bar">2名客36.4%が中心、5名以上の高額コース利用が売上を牽引</div>
+<div class="slide-body">
+<svg id="chart-14" width="1200" height="460"></svg>
+</div>
+</div>
+
+<!-- Slide 15: Sunday Time Slots -->
+<div class="slide" id="slide-15">
+<div class="slide-header"><h2>日曜日（好調）時間帯別売上</h2><span class="pn">15 / 28</span><div class="progress-bar" style="width:51.9%"></div></div>
+<div class="msg-bar">20時台に売上が集中 — コース利用7件で¥156,750を記録</div>
+<div class="slide-body">
+<svg id="chart-15" width="1200" height="460"></svg>
+</div>
+</div>
+
+<!-- Slide 16: Sunday Product Mix -->
+<div class="slide" id="slide-16">
+<div class="slide-header"><h2>日曜日（好調）商品構成</h2><span class="pn">16 / 28</span><div class="progress-bar" style="width:55.6%"></div></div>
+<div class="msg-bar">コース構成比36.4% — 高単価商品がバランスよく売上を構成</div>
+<div class="slide-body">
+<svg id="chart-16" width="1200" height="460"></svg>
+</div>
+</div>
+
+<!-- Slide 17: Sunday Summary -->
+<div class="slide" id="slide-17">
+<div class="slide-header"><h2>日曜日（好調）まとめ</h2><span class="pn">17 / 28</span><div class="progress-bar" style="width:59.3%"></div></div>
+<div class="msg-bar">成功の鍵は「コース予約の獲得」と「幅広い客層の取り込み」</div>
+<div class="slide-body">
+<h3>🎯 好調の主要因（3点）</h3>
+<div style="display:flex;gap:12px;margin-top:8px">
+<div class="si" style="flex:1"><h4>1. コース利用が集中</h4><p>構成比36.4%、¥145,000<br>会計単価: <strong style="color:#22C55E;font-size:20px">¥22,393</strong></p></div>
+<div class="si" style="flex:1"><h4>2. 2名・3-4名グループの高単価利用</h4><p>1組あたり¥10,400〜10,900<br>幅広い客層から売上を獲得</p></div>
+<div class="si" style="flex:1"><h4>3. 20時台への予約集中</h4><p>7件で¥156,750を記録<br>効率的なオペレーションを実現</p></div>
+</div>
+<h3 style="margin-top:14px">🔄 再現性の評価</h3>
+<ul class="bl" style="margin-top:6px">
+<li><div class="ic">📅</div><div class="tx"><strong>歓送迎会シーズン（2-4月）</strong>のコース需要を確実に取り込む予約促進が鍵</div></li>
+<li><div class="ic">📋</div><div class="tx"><strong>日曜ディナーの予約枠管理を最適化</strong>し、高単価利用の安定化を図る</div></li>
+<li><div class="ic">🍽️</div><div class="tx"><strong>2名客向けのコースメニュー開発</strong>で平日への横展開も検討</div></li>
+</ul>
+</div>
+</div>
+
+<!-- Slide 18: Weekday Summary -->
+<div class="slide" id="slide-18">
+<div class="slide-header"><h2>曜日別評価まとめ</h2><span class="pn">18 / 28</span><div class="progress-bar" style="width:63.0%"></div></div>
+<div class="msg-bar">週末の強さを維持しつつ、木金の底上げが成長の鍵</div>
+<div class="slide-body">
+<h3>📊 金曜日 vs 日曜日 対比表</h3>
+<table class="dt" style="margin-top:8px">
+<tr><th>観点</th><th class="num">金曜日（不調）</th><th class="num">日曜日（好調）</th></tr>
+<tr><td>売上</td><td class="num" style="color:#EF4444;font-weight:700">¥124,980（4週平均比63.7%）</td><td class="num" style="color:#22C55E;font-weight:700">¥396,050（4週平均比147.9%）</td></tr>
+<tr><td>客数</td><td class="num">43人（4週平均比+21%）</td><td class="num">55人（4週平均比+11%）</td></tr>
+<tr><td>客単価</td><td class="num" style="color:#EF4444;font-weight:700">¥2,907（4週平均の53%）</td><td class="num" style="color:#22C55E;font-weight:700">¥7,201（4週平均の133%）</td></tr>
+<tr class="hl"><td>🏆 コース構成比</td><td class="num" style="color:#EF4444">11.0%（¥16,000）</td><td class="num" style="color:#22C55E">36.4%（¥145,000）</td></tr>
+<tr><td>高額会計（2万円以上）</td><td class="num" style="color:#EF4444;font-weight:700">0件</td><td class="num" style="color:#22C55E;font-weight:700">5件（15.2%）</td></tr>
+<tr><td>課題/成功要因</td><td class="num">ランチ依存、ディナー不在</td><td class="num">コース予約、幅広い客層</td></tr>
+</table>
+<div class="note-box" style="margin-top:12px;background:#FFF7ED;border-left:4px solid #F97316">
+<p>📈 月〜水が4週平均を上回り週前半は好調。木金の落ち込みを土日がカバー。<strong>最大の改善余地は金曜日のディナー帯活性化（+¥50,000〜100,000のポテンシャル）</strong></p>
+</div>
+</div>
+</div>
+
+<!-- Slide 19: Category Donut -->
+<div class="slide" id="slide-19">
+<div class="slide-header"><h2><span class="section-tag">第3部</span> カテゴリ別売上構成比</h2><span class="pn">19 / 28</span><div class="progress-bar" style="width:66.7%"></div></div>
+<div class="msg-bar">フード・コース・ランチの3本柱で約70%、デリバリー4チャネルで17%</div>
+<div class="slide-body" style="display:flex;gap:20px">
+<div style="flex:1"><svg id="chart-19" width="580" height="460"></svg></div>
+<div style="flex:1">
+<h3>📊 カテゴリ一覧</h3>
+<table class="dt" style="margin-top:8px">
+<tr><th>カテゴリ</th><th class="num">売上</th><th class="num">構成比</th><th class="num">販売数</th></tr>
+<tr class="hl"><td>🏆 フード</td><td class="num">¥495,460</td><td class="num" style="font-size:19px;color:#F97316">28.9%</td><td class="num">305個</td></tr>
+<tr><td>コース</td><td class="num">¥369,000</td><td class="num">21.5%</td><td class="num">51個</td></tr>
+<tr><td>ランチ</td><td class="num">¥332,220</td><td class="num">19.4%</td><td class="num">187個</td></tr>
+<tr><td>ウーバーイーツ</td><td class="num">¥232,570</td><td class="num">13.6%</td><td class="num">92個</td></tr>
+<tr><td>ドリンク</td><td class="num">¥178,710</td><td class="num">10.4%</td><td class="num">219個</td></tr>
+<tr><td>その他</td><td class="num">¥105,900</td><td class="num">6.2%</td><td class="num">51個</td></tr>
+</table>
+</div>
+</div>
+</div>
+
+<!-- Slide 20: Notable Categories -->
+<div class="slide" id="slide-20">
+<div class="slide-header"><h2>注目カテゴリの深掘り</h2><span class="pn">20 / 28</span><div class="progress-bar" style="width:70.4%"></div></div>
+<div class="msg-bar">コースが高単価の柱、デリバリーは多角化のエンジン</div>
+<div class="slide-body">
+<div style="display:flex;gap:14px">
+<div class="pc" style="flex:1;border-left:4px solid #3B82F6">
+<h4>🍽️ コース（構成比21.5%）</h4>
+<p><strong style="font-size:20px;color:#1E293B">¥369,000</strong>（51個）<br>1品あたり単価: ¥7,235<br>主力: 歓送迎会コース飲み放題（¥144,000）<br>ランチ麻布しきコース（¥126,000）<br><span style="color:#22C55E;font-weight:700">歓送迎会シーズンの需要を捕捉</span></p>
+</div>
+<div class="pc" style="flex:1;border-left:4px solid #F97316">
+<h4>📦 ウーバーイーツ（構成比13.6%）</h4>
+<p><strong style="font-size:20px;color:#1E293B">¥232,570</strong>（92個）<br>1品あたり単価: ¥2,528<br>主力: 梅肝重30%オフ（¥137,200, 38個）<br><span style="color:#EF4444;font-weight:700">⚠️ 割引商品が主力で利益率要検証</span></p>
+</div>
+<div class="pc" style="flex:1;border-left:4px solid #94A3B8">
+<h4>🥤 ドリンク（構成比10.4%）</h4>
+<p><strong style="font-size:20px;color:#1E293B">¥178,710</strong>（219個）<br>1品あたり単価: ¥816<br>主力: 角ハイボール（¥25,600）<br>自家製レモンサワー（¥24,600）<br><span style="color:#F97316;font-weight:700">目標: 構成比13%へ引き上げ</span></p>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Slide 21: Product TOP 10 -->
+<div class="slide" id="slide-21">
+<div class="slide-header"><h2>商品別売上 上位10商品</h2><span class="pn">21 / 28</span><div class="progress-bar" style="width:74.1%"></div></div>
+<div class="msg-bar">鰻メニューとコースが上位を占め、店舗の看板商品が明確</div>
+<div class="slide-body">
+<svg id="chart-21" width="1200" height="480"></svg>
+</div>
+</div>
+
+<!-- Slide 22: Composition Baseline -->
+<div class="slide" id="slide-22">
+<div class="slide-header"><h2>商品構成比の変化</h2><span class="pn">22 / 28</span><div class="progress-bar" style="width:77.8%"></div></div>
+<div class="msg-bar">初週のため前週比較は不可 — 現在の構成比を基準値として記録</div>
+<div class="slide-body">
+<h3>📋 現在の構成比（基準値として記録）</h3>
+<table class="dt" style="margin-top:10px">
+<tr><th>商品群</th><th class="num">構成比</th><th>代表商品</th></tr>
+<tr class="hl"><td>🏆 コース系</td><td class="num" style="font-size:19px;color:#F97316">17.9%</td><td>歓送迎会コース飲み放題、ランチ麻布しきコース</td></tr>
+<tr><td>鰻メニュー</td><td class="num">11.1%</td><td>うな重 梅、うな重 竹、TO)うな重 松</td></tr>
+<tr><td>ドリンク系</td><td class="num">10.4%</td><td>角ハイボール、自家製レモンサワー、プレミアムモルツ</td></tr>
+<tr><td>ランチ定食系</td><td class="num">8.5%</td><td>しょうが焼き定食、とり天定食、チキン南蛮定食</td></tr>
+<tr><td>デリバリー割引品</td><td class="num">8.0%</td><td>梅肝重30%オフ</td></tr>
+</table>
+<div class="note-box" style="margin-top:14px;background:#FFF7ED;border-left:4px solid #F97316">
+<p>📈 前週データがないため構成比の変化分析は不可。来週以降、構成比の推移を追跡し、特に<strong>コース構成比とドリンク構成比</strong>の推移に注目。</p>
+</div>
+</div>
+</div>
+
+<!-- Slide 23: Product Summary -->
+<div class="slide" id="slide-23">
+<div class="slide-header"><h2>商品分析まとめ</h2><span class="pn">23 / 28</span><div class="progress-bar" style="width:81.5%"></div></div>
+<div class="msg-bar">「鰻の看板力」と「コースの収益力」が二本柱</div>
+<div class="slide-body">
+<h3>🏛️ 商品戦略の2本柱</h3>
+<div style="display:flex;gap:16px;margin-top:10px">
+<div style="flex:1;background:linear-gradient(135deg,#FFF7ED,#FFEDD5);border-radius:12px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.06)">
+<div style="font-size:40px;text-align:center;margin-bottom:8px">🐟</div>
+<h4 style="font-size:22px;color:#C2410C;text-align:center;margin-bottom:8px">鰻の看板力</h4>
+<p style="font-size:17px;text-align:center;line-height:1.5">うな重・白焼き等の鰻メニューが<br>店舗の差別化要因<br><strong style="font-size:24px;color:#1E293B">¥367,500+（22.6%+）</strong></p>
+</div>
+<div style="flex:1;background:linear-gradient(135deg,#F0FDF4,#DCFCE7);border-radius:12px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.06)">
+<div style="font-size:40px;text-align:center;margin-bottom:8px">🎉</div>
+<h4 style="font-size:22px;color:#166534;text-align:center;margin-bottom:8px">コースの収益力</h4>
+<p style="font-size:17px;text-align:center;line-height:1.5">歓送迎会コース・ランチコースで<br>高単価利用を実現<br><strong style="font-size:24px;color:#1E293B">¥369,000（21.5%）</strong></p>
+</div>
+</div>
+<h3 style="margin-top:14px">📋 今後の商品戦略方針</h3>
+<ul class="bl" style="margin-top:6px">
+<li><div class="ic">🐟</div><div class="tx"><strong>鰻メニューの強化</strong>: 季節限定メニュー（ひつまぶし等）の追加で鮮度を維持</div></li>
+<li><div class="ic">🎉</div><div class="tx"><strong>コース利用の通年化</strong>: 歓送迎会シーズン後も利用動機を創出</div></li>
+<li><div class="ic">🥤</div><div class="tx"><strong>ドリンク構成比の改善</strong>: フード注文時のペアリング提案で10.4%→13%へ</div></li>
+</ul>
+</div>
+</div>
+
+<!-- Slide 24: Wins -->
+<div class="slide" id="slide-24">
+<div class="slide-header"><h2><span class="section-tag">第4部</span> 今週の総括 — 強み</h2><span class="pn">24 / 28</span><div class="progress-bar" style="width:85.2%"></div></div>
+<div class="msg-bar">3つの強みが確認された初週</div>
+<div class="slide-body">
+<div style="display:flex;flex-direction:column;gap:12px;margin-top:6px">
+<div class="si" style="display:flex;align-items:center;gap:16px;padding:18px 20px">
+<div style="font-size:48px">🏆</div>
+<div><h4 style="font-size:20px">週間売上¥163万のベースラインを確立</h4><p style="font-size:17px">コース・鰻・デリバリーの3軸で安定した売上構造<br><strong>売上¥1,628,490、コース21.5%、デリバリー16.4%</strong></p></div>
+</div>
+<div class="si" style="display:flex;align-items:center;gap:16px;padding:18px 20px">
+<div style="font-size:48px">📈</div>
+<div><h4 style="font-size:20px">土日の集客力が堅調</h4><p style="font-size:17px">客数99人、売上¥726,320（週全体の44.6%）<br><strong>日曜¥396,050、土曜¥330,270</strong></p></div>
+</div>
+<div class="si" style="display:flex;align-items:center;gap:16px;padding:18px 20px">
+<div style="font-size:48px">🎯</div>
+<div><h4 style="font-size:20px">歓送迎会コースの需要捕捉</h4><p style="font-size:17px">飲み放題付きコースが売上1位（¥144,000）<br><strong>コース合計¥369,000、51個販売</strong></p></div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Slide 25: Challenges -->
+<div class="slide" id="slide-25">
+<div class="slide-header"><h2>今週の総括 — 課題</h2><span class="pn">25 / 28</span><div class="progress-bar" style="width:88.9%"></div></div>
+<div class="msg-bar">3つの課題が改善のポテンシャルを示す</div>
+<div class="slide-body">
+<div style="display:flex;flex-direction:column;gap:12px;margin-top:6px">
+<div class="ci" style="display:flex;align-items:center;gap:16px;padding:18px 20px">
+<div style="font-size:48px">⚠️</div>
+<div><h4 style="font-size:20px">金曜日の客単価低迷</h4><p style="font-size:17px">ランチ依存で客単価¥2,907（全曜日最低）<br><strong>4週平均比53%、2万円以上会計0件</strong></p></div>
+</div>
+<div class="ci" style="display:flex;align-items:center;gap:16px;padding:18px 20px">
+<div style="font-size:48px">📉</div>
+<div><h4 style="font-size:20px">ドリンク構成比10.4%</h4><p style="font-size:17px">フード比率（28.9%）に対して低く追加注文の促進余地<br><strong>ドリンク¥178,710 vs フード¥495,460</strong></p></div>
+</div>
+<div class="ci" style="display:flex;align-items:center;gap:16px;padding:18px 20px">
+<div style="font-size:48px">🚨</div>
+<div><h4 style="font-size:20px">木曜日の売上¥108,140</h4><p style="font-size:17px">日曜の27%にとどまり曜日間格差が大きい<br><strong>客数26人、客単価¥4,236</strong></p></div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Slide 26: Actions 1 -->
+<div class="slide" id="slide-26">
+<div class="slide-header"><h2><span class="section-tag">第5部</span> 施策一覧① メニュー・集客</h2><span class="pn">26 / 28</span><div class="progress-bar" style="width:92.6%"></div></div>
+<div class="msg-bar">メニュー戦略と集客施策で売上の底上げを図る</div>
+<div class="slide-body" style="display:flex;gap:16px">
+<div style="flex:1">
+<h3 style="font-size:18px">🍽️ メニュー開発（10件）</h3>
+<table class="at" style="margin-top:4px">
+<tr><th style="width:30px">No.</th><th>施策内容</th><th>狙い</th></tr>
+<tr><td>1</td><td>金曜限定ディナーコース（鰻御膳+飲み放題¥6,000）</td><td>金曜客単価の向上</td></tr>
+<tr><td>2</td><td>平日限定ペアコース（2名¥10,000）</td><td>高単価利用を他曜日へ横展開</td></tr>
+<tr><td>3</td><td>ランチのアップグレードセット（+¥500）</td><td>ランチ客単価の底上げ</td></tr>
+<tr><td>4</td><td>季節限定鰻メニュー（ひつまぶし等）</td><td>鰻メニューの鮮度維持</td></tr>
+<tr><td>5</td><td>ドリンクペアリングセット（鰻×日本酒3種¥1,500）</td><td>ドリンク構成比の向上</td></tr>
+<tr><td>6</td><td>デリバリー専用新商品（正価・高粗利メニュー）</td><td>デリバリーの利益率改善</td></tr>
+<tr><td>7</td><td>お通しのグレードアップ（季節の先付け化）</td><td>お通し単価の微増</td></tr>
+<tr><td>8</td><td>テイクアウト弁当の品揃え拡充</td><td>TO/出前チャネルの売上拡大</td></tr>
+<tr><td>9</td><td>木曜限定メニュー（木曜ご褒美セット等）</td><td>木曜集客テコ入れ</td></tr>
+<tr><td>10</td><td>ふぐメニューの訴求強化（冬季限定）</td><td>高単価フードの販売促進</td></tr>
+</table>
+</div>
+<div style="flex:1">
+<h3 style="font-size:18px">📣 集客・マーケティング（10件）</h3>
+<table class="at" style="margin-top:4px">
+<tr><th style="width:30px">No.</th><th>施策内容</th><th>狙い</th></tr>
+<tr><td>1</td><td>金曜ディナー予約促進（Instagram・LINE配信）</td><td>金曜ディナー客の獲得</td></tr>
+<tr><td>2</td><td>歓送迎会シーズンの予約キャンペーン</td><td>コース利用の拡大</td></tr>
+<tr><td>3</td><td>Google Business プロフィールの最適化</td><td>検索経由の新規獲得</td></tr>
+<tr><td>4</td><td>近隣企業向けランチ法人契約の営業</td><td>平日ランチの安定集客</td></tr>
+<tr><td>5</td><td>SNS投稿の定期化（鰻調理の動画等）</td><td>ブランド認知の向上</td></tr>
+<tr><td>6</td><td>食べログ・ぐるなびの掲載内容更新</td><td>掲載媒体からの流入増</td></tr>
+<tr><td>7</td><td>誕生日・記念日プランの告知強化</td><td>特別な日の利用動機創出</td></tr>
+<tr><td>8</td><td>デリバリーアプリ内のサムネイル改善</td><td>デリバリー注文数の増加</td></tr>
+<tr><td>9</td><td>近隣住民向けポスティング（初回割引付き）</td><td>地域密着型の新規獲得</td></tr>
+<tr><td>10</td><td>LINE公式アカウント開設とクーポン配信</td><td>リピーターとの接点構築</td></tr>
+</table>
+</div>
+</div>
+</div>
+
+<!-- Slide 27: Actions 2 -->
+<div class="slide" id="slide-27">
+<div class="slide-header"><h2>施策一覧② 顧客育成・運営改善</h2><span class="pn">27 / 28</span><div class="progress-bar" style="width:96.3%"></div></div>
+<div class="msg-bar">リピーター育成と運営効率化で持続的な成長基盤を構築</div>
+<div class="slide-body" style="display:flex;gap:16px">
+<div style="flex:1">
+<h3 style="font-size:18px">👥 顧客育成・リピーター（10件）</h3>
+<table class="at" style="margin-top:4px">
+<tr><th style="width:30px">No.</th><th>施策内容</th><th>狙い</th></tr>
+<tr><td>1</td><td>ポイントカードの導入（10回来店で鰻1品サービス）</td><td>リピート来店の動機付け</td></tr>
+<tr><td>2</td><td>ランチ客への次回ディナー割引券配布</td><td>ランチ→ディナーの送客</td></tr>
+<tr><td>3</td><td>会計時の口コミ投稿依頼（QRコード設置）</td><td>口コミ数の増加</td></tr>
+<tr><td>4</td><td>常連客の好みデータ蓄積と個別対応</td><td>顧客満足度の向上</td></tr>
+<tr><td>5</td><td>季節の挨拶ハガキ/DMの送付</td><td>休眠顧客の掘り起こし</td></tr>
+<tr><td>6</td><td>2回目来店特典の設定</td><td>初回→リピートの転換率向上</td></tr>
+<tr><td>7</td><td>コース利用者への次回予約案内</td><td>歓送迎会リピートの獲得</td></tr>
+<tr><td>8</td><td>ファミリー向け特典（子供用メニュー無料等）</td><td>日曜客層の拡大</td></tr>
+<tr><td>9</td><td>テイクアウト利用者へのイートイン招待</td><td>チャネル間の送客</td></tr>
+<tr><td>10</td><td>お持ち帰り用ショップカードの同梱</td><td>デリバリー客の店舗誘導</td></tr>
+</table>
+</div>
+<div style="flex:1">
+<h3 style="font-size:18px">⚙️ 運営改善（10件）</h3>
+<table class="at" style="margin-top:4px">
+<tr><th style="width:30px">No.</th><th>施策内容</th><th>狙い</th></tr>
+<tr><td>1</td><td>金曜ディナー帯のシフト強化</td><td>金曜の機会損失防止</td></tr>
+<tr><td>2</td><td>コース予約の導線整理（電話・Web・SNS）</td><td>予約取りこぼし削減</td></tr>
+<tr><td>3</td><td>ドリンク推奨トークスクリプトの作成</td><td>ドリンク追加注文率の向上</td></tr>
+<tr><td>4</td><td>デリバリー調理の効率化（専用動線の確保）</td><td>デリバリー対応時間短縮</td></tr>
+<tr><td>5</td><td>仕込みの曜日別最適化（木金は軽量化）</td><td>食材ロスの削減</td></tr>
+<tr><td>6</td><td>予約管理ツールの導入・統一</td><td>予約管理の効率化</td></tr>
+<tr><td>7</td><td>客単価目標の曜日別設定と朝礼共有</td><td>スタッフの意識統一</td></tr>
+<tr><td>8</td><td>ピークタイム（20時台）のオペレーション見直し</td><td>回転率の最適化</td></tr>
+<tr><td>9</td><td>デリバリーチャネルの統廃合検討（ウォルト・menu）</td><td>運営負荷の軽減</td></tr>
+<tr><td>10</td><td>週次レビューの定例化（毎週月曜AM）</td><td>PDCAサイクルの定着</td></tr>
+</table>
+</div>
+</div>
+</div>
+
+<!-- Slide 28: Actions 3 -->
+<div class="slide" id="slide-28">
+<div class="slide-header"><h2>施策一覧③ スタッフ育成・組織強化</h2><span class="pn">28 / 28</span><div class="progress-bar" style="width:100%"></div></div>
+<div class="msg-bar">人材の成長が店舗の成長を支える</div>
+<div class="slide-body">
+<h3>👨‍🍳 スタッフ育成・組織強化（10件）</h3>
+<table class="dt" style="margin-top:8px">
+<tr><th style="width:40px">No.</th><th>施策内容</th><th>狙い</th></tr>
+<tr><td>1</td><td>鰻調理技術の研修プログラム策定</td><td>調理品質の安定化</td></tr>
+<tr><td>2</td><td>接客マニュアルの整備（コース案内のロールプレイ）</td><td>コース提案力の向上</td></tr>
+<tr><td>3</td><td>ドリンク知識研修（日本酒・焼酎の基礎）</td><td>ドリンク推奨力の強化</td></tr>
+<tr><td>4</td><td>新人向けOJTプログラムの体系化</td><td>即戦力化の期間短縮</td></tr>
+<tr><td>5</td><td>売上目標の可視化（店内掲示・朝礼共有）</td><td>モチベーション向上</td></tr>
+<tr><td>6</td><td>曜日別リーダーの任命</td><td>曜日ごとの責任体制明確化</td></tr>
+<tr><td>7</td><td>デリバリー対応の専門スタッフ育成</td><td>デリバリー品質の安定</td></tr>
+<tr><td>8</td><td>衛生管理研修の定期実施（月1回）</td><td>食品安全の担保</td></tr>
+<tr><td>9</td><td>スタッフ間コミュニケーション促進（月1回のミーティング）</td><td>チームワーク強化</td></tr>
+<tr><td>10</td><td>成功事例の共有（日曜好調日の振り返り等）</td><td>好事例の横展開</td></tr>
+</table>
+</div>
+</div>
+

@@ -36,7 +36,7 @@ STORES = {
         "file_pattern": "BAR FIVE Arrows",
     },
     "BBC": {
-        "store_code": "bbc-001",
+        "store_code": "bginza-001",
         "store_name": "別天地　銀座",
         "pos_type": "dinii",
         "file_pattern": "別天地 銀座",

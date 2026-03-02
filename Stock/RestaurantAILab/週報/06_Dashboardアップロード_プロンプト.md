@@ -45,7 +45,7 @@ node scripts/upload-weekly-report.mjs \
 ```bash
 node scripts/upload-weekly-report.mjs \
   --file ../aipm_v0/Stock/RestaurantAILab/週報/2_output/BBC/2_output_2026w07/20260209_20260215_別天地_銀座_週次報告資料.html \
-  --store bbc-001 \
+  --store bginza-001 \
   --week 2026-W07 \
   --title "別天地　銀座 週次営業報告 — 2026-W07" \
   --env prod

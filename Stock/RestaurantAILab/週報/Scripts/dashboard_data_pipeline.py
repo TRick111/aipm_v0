@@ -419,7 +419,7 @@ def cmd_sync(args):
 # incremental-export 用ヘルパー
 # ──────────────────────────────────────────────
 
-def get_latest_date_in_rawdata(csv_path: str) -> str | None:
+def get_latest_date_in_rawdata(csv_path: str):
     """既存 rawdata.csv の entry_at カラムから最新日付(YYYY-MM-DD)を返す。ファイルがなければ None。"""
     if not os.path.exists(csv_path):
         return None

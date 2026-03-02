@@ -140,6 +140,35 @@ python Scripts/dashboard_data_pipeline.py incremental-export \
 2. 最終日付の翌日〜`{endDate}` のデータだけを Dashboard API から月ごとに取得
 3. 既存ファイルに追記（ファイルがなければ全期間を新規取得）
 
+### Step 3.5: 日報データエクスポート（PL日報API）
+
+Dashboard の PL日報 API からスタッフ日報を取得し、`DailyReport.csv` に出力する。PL日報未設定の店舗は自動スキップされる。
+
+```bash
+cd /Users/rikutanaka/aipm_v0/Stock/RestaurantAILab/週報
+
+# 全店舗の日報を一括エクスポート（本番DB）
+python Scripts/dashboard_data_pipeline.py export-daily-reports \
+  --start-date {startDate} --end-date {endDate} --base-url http://localhost:3001
+
+# 特定店舗のみ
+python Scripts/dashboard_data_pipeline.py export-daily-reports \
+  --store BFA --start-date {startDate} --end-date {endDate} --base-url http://localhost:3001
+```
+
+> **注意**: `--base-url` を省略すると `http://localhost:3000`（検証環境）に接続する。本番データには必ず `--base-url http://localhost:3001` を指定すること。
+
+**動作:**
+1. 各店舗のメンバー存在チェック（メンバーが未登録なら日報未設定と判断しスキップ）
+2. `{startDate}` 〜 `{endDate}` の各日付について API 呼び出し
+3. `status: "completed"` のレポートのみ処理
+4. `1_input/{store}/DailyReport.csv` に上書き出力（毎回全量書き出し）
+
+**出力CSV形式:**
+```csv
+営業日,入力者氏名,①来客特徴,②改善ポイント
+```
+
 ### Step 4: 検証
 
 ```bash
@@ -163,11 +192,19 @@ for store in BFA BBC 麻布しき キーポイント; do
 done
 ```
 
+```bash
+# 日報CSVの確認
+wc -l 1_input/*/DailyReport.csv 2>/dev/null
+head -1 1_input/BFA/DailyReport.csv 2>/dev/null
+```
+
 確認事項:
 - 全4店舗のrawdata.csvが生成されていること
 - レコード数が0でないこと
 - カラム構造が18カラム（store_code〜cost_rate）であること
 - **開業以来の全データが含まれていること**（昨年比等の分析に必要）
+- PL日報が有効な店舗のDailyReport.csvが生成されていること（ヘッダー: 営業日,入力者氏名,①来客特徴,②改善ポイント）
+- PL日報未設定の店舗はスキップされていること（エラーではない）
 
 ---
 

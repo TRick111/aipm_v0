@@ -10,6 +10,8 @@ Usage:
   python dashboard_data_pipeline.py sync    --start-date 2026-02-09 --end-date 2026-02-15 --downloads-dir 0_downloads
   python dashboard_data_pipeline.py incremental-export --store BFA --end-date 2026-02-22
   python dashboard_data_pipeline.py incremental-export --end-date 2026-02-22   # 全店舗
+  python dashboard_data_pipeline.py export-daily-reports --start-date 2026-02-23 --end-date 2026-03-01
+  python dashboard_data_pipeline.py export-daily-reports --store BFA --start-date 2026-02-23 --end-date 2026-03-01
 """
 
 import argparse
@@ -150,6 +152,32 @@ class DashboardClient:
                 "mapping": json.dumps(mapping),
             }
             resp = self.session.post(f"{self.base_url}/api/upload", files=files, data=form)
+        return self._check_response(resp)
+
+    # ── Daily Report ──
+
+    def get_daily_report_members(self, store_code: str):
+        """PL日報のメンバー一覧を取得。空リストなら日報未設定。"""
+        resp = self.session.get(
+            f"{self.base_url}/api/daily-report/members",
+            params={"storeId": store_code},
+        )
+        return self._check_response(resp)
+
+    def get_daily_reports_by_date(self, store_code: str, date: str):
+        """指定日の日報一覧を取得。"""
+        resp = self.session.get(
+            f"{self.base_url}/api/daily-report/reports",
+            params={"storeId": store_code, "date": date, "mode": "date"},
+        )
+        return self._check_response(resp)
+
+    def get_feature_flags(self, store_code: str):
+        """フィーチャーフラグを取得（参考用）。"""
+        resp = self.session.get(
+            f"{self.base_url}/api/pl/feature-flags",
+            params={"storeId": store_code},
+        )
         return self._check_response(resp)
 
     # ── Export ──
@@ -544,6 +572,133 @@ def cmd_incremental_export(args):
 
 
 # ──────────────────────────────────────────────
+# Daily Report helpers
+# ──────────────────────────────────────────────
+
+DAILY_REPORT_COLUMNS = ["営業日", "入力者氏名", "①来客特徴", "②改善ポイント"]
+
+
+def check_daily_report_enabled(client: DashboardClient, store_code: str) -> bool:
+    """メンバーの存在で日報機能の有効/無効を判定する。"""
+    try:
+        result = client.get_daily_report_members(store_code)
+        members = result.get("data", result) if isinstance(result, dict) else result
+        if isinstance(members, list):
+            return len(members) > 0
+        if isinstance(members, dict) and "members" in members:
+            return len(members["members"]) > 0
+        return bool(members)
+    except Exception as e:
+        print(f"    Warning: メンバー取得エラー ({e})")
+        return False
+
+
+def map_question_to_column(question_title: str):
+    """questionTitle をキーワードで CSVカラムにマッピングする。"""
+    if "来客" in question_title or "来店" in question_title:
+        return "①来客特徴"
+    if "改善" in question_title:
+        return "②改善ポイント"
+    return None
+
+
+def daily_reports_to_rows(reports: list[dict]) -> list[dict]:
+    """APIレスポンスの日報データを CSV行のリストに変換する。"""
+    rows = []
+    for report in reports:
+        if report.get("status") != "completed":
+            continue
+        row = {
+            "営業日": report.get("date", ""),
+            "入力者氏名": report.get("memberName", ""),
+            "①来客特徴": "",
+            "②改善ポイント": "",
+        }
+        for answer in report.get("answers", []):
+            title = answer.get("questionTitle", "")
+            col = map_question_to_column(title)
+            if col:
+                row[col] = answer.get("summary", "")
+            else:
+                print(f"    Warning: マッチしない質問をスキップ: {title}")
+        rows.append(row)
+    return rows
+
+
+def write_daily_report_csv(rows: list[dict], output_path: str):
+    """日報CSVを書き出す（上書き）。"""
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    with open(output_path, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=DAILY_REPORT_COLUMNS, quoting=csv.QUOTE_ALL)
+        writer.writeheader()
+        writer.writerows(rows)
+    print(f"  Wrote {len(rows)} rows → {output_path}")
+
+
+# ──────────────────────────────────────────────
+# サブコマンド: export-daily-reports
+# ──────────────────────────────────────────────
+
+def cmd_export_daily_reports(args):
+    """Dashboard PL日報APIから日報データをエクスポートし、DailyReport.csv に上書き保存する。"""
+    stores_to_process = list(STORES.keys()) if not args.store else [args.store]
+    client = DashboardClient(args.base_url)
+    client.login()
+
+    start_dt = datetime.strptime(args.start_date, "%Y-%m-%d")
+    end_dt = datetime.strptime(args.end_date, "%Y-%m-%d")
+
+    for store_key in stores_to_process:
+        cfg = STORES[store_key]
+        store_code = cfg["store_code"]
+
+        print(f"\n{'='*50}")
+        print(f"  [{store_key}] {cfg['store_name']} ({store_code})")
+        print(f"{'='*50}")
+
+        # Step 1: メンバー存在チェック
+        if not check_daily_report_enabled(client, store_code):
+            print(f"  SKIP: PL日報未設定（メンバーなし）")
+            continue
+
+        # Step 2: 日付ごとにAPI呼び出し
+        print(f"  Period: {args.start_date} ~ {args.end_date}")
+        all_rows = []
+        current = start_dt
+        while current <= end_dt:
+            date_str = current.strftime("%Y-%m-%d")
+            try:
+                result = client.get_daily_reports_by_date(store_code, date_str)
+                reports = result.get("data", result) if isinstance(result, dict) else result
+                if isinstance(reports, dict) and "reports" in reports:
+                    reports = reports["reports"]
+                if isinstance(reports, list) and reports:
+                    rows = daily_reports_to_rows(reports)
+                    if rows:
+                        all_rows.extend(rows)
+                        print(f"    {date_str}: {len(rows)} reports")
+            except RuntimeError as e:
+                if "404" not in str(e):
+                    print(f"    {date_str}: Error - {e}")
+            except Exception as e:
+                print(f"    {date_str}: Error - {e}")
+            current += timedelta(days=1)
+
+        if not all_rows:
+            print(f"  No daily reports found")
+            continue
+
+        # Step 3: CSV出力（上書き）
+        output_path = os.path.join(f"1_input/{store_key}", "DailyReport.csv")
+        write_daily_report_csv(all_rows, output_path)
+        print(f"  Total: {len(all_rows)} reports exported")
+
+    print(f"\n{'='*50}")
+    print("  Daily report export complete")
+    print(f"{'='*50}")
+
+
+# ──────────────────────────────────────────────
 # CLI
 # ──────────────────────────────────────────────
 
@@ -589,6 +744,15 @@ def main():
     p_incr.add_argument("--output-dir",
                         help="Output directory (default: 1_input/<store>)")
 
+    # export-daily-reports
+    p_daily = subparsers.add_parser("export-daily-reports",
+                                    help="Export daily reports from Dashboard PL日報 API")
+    p_daily.add_argument("--base-url", **base_url_kwargs)
+    p_daily.add_argument("--store", choices=STORES.keys(),
+                         help="Single store (default: all stores)")
+    p_daily.add_argument("--start-date", required=True, help="Start date (YYYY-MM-DD)")
+    p_daily.add_argument("--end-date", required=True, help="End date (YYYY-MM-DD)")
+
     args = parser.parse_args()
 
     if args.command == "upload":
@@ -599,6 +763,8 @@ def main():
         cmd_sync(args)
     elif args.command == "incremental-export":
         cmd_incremental_export(args)
+    elif args.command == "export-daily-reports":
+        cmd_export_daily_reports(args)
 
 
 if __name__ == "__main__":

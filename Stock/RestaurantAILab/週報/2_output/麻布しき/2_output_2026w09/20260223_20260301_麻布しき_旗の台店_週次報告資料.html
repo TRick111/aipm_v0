@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>麻布しき 旗の台店 週次営業報告 — 2026-W09</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;background:#E2E8F0;font-size:20px;color:#334155;}
+.slide{width:1280px;height:720px;position:relative;overflow:hidden;background:#fff;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;}
+@media print{body{margin:0;padding:0;background:#fff;}.slide{page-break-after:always;page-break-inside:avoid;break-after:page;break-inside:avoid;box-shadow:none!important;margin:0!important;}.slide:last-child{page-break-after:auto;}}
+@media screen{.slide{margin:0 auto 40px auto;box-shadow:0 4px 20px rgba(0,0,0,0.12);}}
+.slide-header{background:#1E3A5F;color:#fff;padding:14px 40px;display:flex;align-items:center;justify-content:space-between;position:relative;}
+.slide-header h2{font-size:32px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:85%;}
+.slide-header .pn{font-size:16px;opacity:0.7;white-space:nowrap;}
+.progress-bar{position:absolute;bottom:0;left:0;height:3px;background:rgba(255,255,255,0.4);border-radius:0 2px 2px 0;}
+.slide-header .section-tag{background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:4px;font-size:14px;font-weight:500;margin-right:10px;}
+.msg-bar{background:#FFF7ED;border-left:5px solid #F97316;padding:12px 40px;font-size:26px;font-weight:800;color:#1E293B;line-height:1.4;}
+.slide-body{padding:20px 40px;height:calc(720px - 60px - 60px);overflow:hidden;}
+.slide-body.with-msg{height:calc(720px - 60px - 60px - 10px);}
+.kpi-grid{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-top:20px;}
+.kpi-card{background:#F8FAFC;border-radius:12px;padding:20px 24px;text-align:center;flex:1;min-width:200px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.kpi-label{font-size:17px;font-weight:600;color:#64748B;display:block;margin-bottom:8px;}
+.kpi-value{font-size:44px;font-weight:800;color:#1E293B;display:block;}
+.kpi-change{font-size:22px;font-weight:700;display:block;margin-top:4px;}
+.kpi-sub{font-size:18px;color:#64748B;display:block;}
+.positive{color:#22C55E;}.negative{color:#EF4444;}
+.dt{width:100%;border-collapse:collapse;font-size:18px;margin-top:10px;}
+.dt th{background:#1E3A5F;color:#fff;padding:8px 12px;text-align:left;font-size:17px;font-weight:700;}
+.dt td{padding:8px 12px;border-bottom:1px solid #E2E8F0;}
+.dt tr:nth-child(even){background:#F8FAFC;}
+.dt .highlight{background:#FFF7ED;border-left:4px solid #F97316;font-weight:800;}
+.dt .highlight td{font-weight:800;color:#C2410C;}
+.dt td.num{text-align:right;}
+.chart-container{background:#F8FAFC;border-radius:12px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.two-col{display:flex;gap:24px;height:100%;}
+.col-left{flex:2;}.col-right{flex:1;}
+.gauge-card{background:#F8FAFC;border-radius:12px;padding:16px 20px;box-shadow:0 2px 8px rgba(0,0,0,0.06);margin-bottom:16px;text-align:center;}
+.gauge-label{font-size:17px;font-weight:600;color:#64748B;}
+.gauge-value{font-size:48px;font-weight:900;}
+.gauge-sub{font-size:18px;color:#64748B;}
+.success-item,.challenge-item{background:#F8FAFC;border-radius:10px;padding:14px 18px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,0.05);}
+.success-item h4{color:#22C55E;font-size:20px;margin-bottom:6px;}
+.challenge-item h4{color:#EF4444;font-size:20px;margin-bottom:6px;}
+.success-item p,.challenge-item p{font-size:17px;color:#334155;}
+.action-table{width:100%;border-collapse:collapse;font-size:15px;}
+.action-table th{background:#1E3A5F;color:#fff;padding:6px 10px;font-size:15px;font-weight:700;text-align:left;}
+.action-table td{padding:6px 10px;border-bottom:1px solid #E2E8F0;}
+.action-table tr:nth-child(even){background:#F8FAFC;}
+.section-title{font-size:22px;font-weight:800;color:#1E293B;margin:12px 0 8px 0;padding-bottom:4px;border-bottom:2px solid #E2E8F0;}
+.pillar-card{background:#F8FAFC;border-radius:12px;padding:16px 20px;box-shadow:0 2px 8px rgba(0,0,0,0.06);margin-bottom:12px;}
+.pillar-card h4{font-size:20px;font-weight:800;color:#1E293B;margin-bottom:8px;}
+.pillar-card p{font-size:17px;color:#334155;}
+.bullet-list{list-style:none;padding:0;}
+.bullet-list li{display:flex;align-items:flex-start;gap:12px;padding:10px 14px;background:#F8FAFC;border-radius:10px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,0.05);}
+.bullet-list .icon{font-size:28px;flex-shrink:0;}
+.bullet-list .text{font-size:17px;}
+.bullet-list .text strong{font-size:18px;color:#1E293B;}
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.compare-card{border-radius:12px;padding:16px 20px;}
+.compare-card.bad{background:#FEF2F2;border:2px solid #EF4444;}
+.compare-card.good{background:#F0FDF4;border:2px solid #22C55E;}
+.compare-card h4{font-size:20px;font-weight:800;margin-bottom:10px;}
+.slide-title{background:linear-gradient(135deg,#1E3A5F 0%,#0F172A 100%);display:flex;flex-direction:column;justify-content:center;align-items:center;color:#fff;height:720px;}
+.main-title{font-size:48px;font-weight:800;}.sub-title{font-size:28px;font-weight:400;margin-top:12px;opacity:0.9;}.period{font-size:18px;margin-top:24px;opacity:0.7;}
+</style>
+</head>
+<body>
+<!-- Slide 1: Title -->
+<div class="slide slide-title" id="slide-1">
+<div class="main-title">麻布しき 旗の台店</div>
+<div class="sub-title">週次営業報告</div>
+<div class="period">2026年 第9週（2月23日〜3月1日）</div>
+</div>
+
+<!-- Slide 2: Executive Summary -->
+<div class="slide" id="slide-2">
+<div class="slide-header"><h2><span class="section-tag">第1部</span>今週の全体像</h2><span class="pn">2 / 28</span><div class="progress-bar" style="width:3.7%"></div></div>
+<div class="msg-bar">前年比+29.5%と成長を維持。客数+3.8%増も、客単価-5.7%の低下で前週比-2.1%の微減</div>
+<div class="slide-body with-msg">
+<div class="kpi-grid">
+<div class="kpi-card"><span class="kpi-label">週間売上</span><span class="kpi-value">¥1,594,390</span><span class="kpi-change negative">▼ 前週比 -2.1%</span><span class="kpi-sub">前年比 +29.5%</span></div>
+<div class="kpi-card"><span class="kpi-label">客数</span><span class="kpi-value">274人</span><span class="kpi-change positive">▲ 前週比 +3.8%</span><span class="kpi-sub">前年比 +25.7%</span></div>
+<div class="kpi-card"><span class="kpi-label">客単価</span><span class="kpi-value">¥5,819</span><span class="kpi-change negative">▼ 前週比 -5.7%</span><span class="kpi-sub">前年比 +3.0%</span></div>
+<div class="kpi-card"><span class="kpi-label">組数</span><span class="kpi-value">192組</span><span class="kpi-change negative">▼ 前週比 -1.5%</span><span class="kpi-sub">前年比 +46.6%</span></div>
+</div>
+<div style="margin-top:24px;padding:16px 20px;background:#F8FAFC;border-radius:12px;">
+<p style="font-size:18px;font-weight:600;color:#1E293B;">📋 特記事項</p>
+<p style="font-size:17px;margin-top:6px;">・歓送迎会シーズン本格化でコース構成比28.5%に拡大（前週21.5%）</p>
+<p style="font-size:17px;">・金曜日が売上¥373,790と突出好調（4週平均比+151.6%）</p>
+<p style="font-size:17px;">・火曜日・日曜日が不調（それぞれ4週平均比-47.6%、-37.4%）</p>
+</div>
+</div>
+</div>
+
+<!-- Slide 3: Sales Trend -->
+<div class="slide" id="slide-3">
+<div class="slide-header"><h2>売上の推移</h2><span class="pn">3 / 28</span><div class="progress-bar" style="width:7.4%"></div></div>
+<div class="msg-bar">直近5週間で2番目の売上水準。前年比+29.5%の成長トレンドを維持</div>
+<div class="slide-body with-msg">
+<div class="two-col">
+<div class="col-left chart-container"><svg id="chart-sales" width="720" height="460"></svg></div>
+<div class="col-right">
+<div class="gauge-card"><div class="gauge-label">前年同週比</div><div class="gauge-value positive">+29.5%</div><div class="gauge-sub">¥1,231,372 → ¥1,594,390</div></div>
+<div style="background:#F8FAFC;border-radius:12px;padding:14px 18px;margin-top:12px;">
+<p style="font-size:17px;font-weight:700;">📈 トレンド読み取り</p>
+<p style="font-size:17px;margin-top:6px;">W08の¥1,628,490から-2.1%の微減だが、前年比+29.5%と成長トレンドは維持</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Slide 4: Customer Trend -->
+<div class="slide" id="slide-4">
+<div class="slide-header"><h2>客数の推移</h2><span class="pn">4 / 28</span><div class="progress-bar" style="width:11.1%"></div></div>
+<div class="msg-bar">客数274人は前週比+3.8%増。前年比+25.7%で集客力の向上が継続</div>
+<div class="slide-body with-msg">
+<div class="two-col">
+<div class="col-left chart-container"><svg id="chart-customers" width="720" height="460"></svg></div>
+<div class="col-right">
+<div class="gauge-card"><div class="gauge-label">前年同週比</div><div class="gauge-value positive">+25.7%</div><div class="gauge-sub">218人 → 274人</div></div>
+<div style="background:#F8FAFC;border-radius:12px;padding:14px 18px;margin-top:12px;">
+<p style="font-size:17px;font-weight:700;">📊 トレンド読み取り</p>
+<p style="font-size:17px;margin-top:6px;">W08の264人から+10人の増加。W06の201人からは大きく回復し、安定した集客水準に</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Slide 5: Unit Price Trend -->
+<div class="slide" id="slide-5">
+<div class="slide-header"><h2>客単価の推移</h2><span class="pn">5 / 28</span><div class="progress-bar" style="width:14.8%"></div></div>
+<div class="msg-bar">客単価¥5,819は前週比-5.7%低下。W08のコース需要好調からの反動が要因</div>
+<div class="slide-body with-msg">
+<div class="two-col">
+<div class="col-left chart-container"><svg id="chart-unitprice" width="720" height="460"></svg></div>
+<div class="col-right">
+<div class="gauge-card"><div class="gauge-label">前年同週比</div><div class="gauge-value positive">+3.0%</div><div class="gauge-sub">¥5,648 → ¥5,819</div></div>
+<div style="background:#F8FAFC;border-radius:12px;padding:14px 18px;margin-top:12px;">
+<p style="font-size:17px;font-weight:700;">📈 トレンド読み取り</p>
+<p style="font-size:17px;margin-top:6px;">W08の¥6,169から¥5,819へ-5.7%低下。ただし前年比+3.0%でベースアップは維持</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Slide 6: YoY Summary -->
+<div class="slide" id="slide-6">
+<div class="slide-header"><h2>前年同週比</h2><span class="pn">6 / 28</span><div class="progress-bar" style="width:18.5%"></div></div>
+<div class="msg-bar">売上・客数・客単価の3指標すべてで前年を上回り、安定した成長基盤を確認</div>
+<div class="slide-body with-msg">
+<div class="kpi-grid" style="margin-top:30px;">
+<div class="gauge-card" style="border:3px solid #22C55E;"><div class="gauge-label">売上</div><div class="gauge-value positive" style="font-size:56px;">+29.5%</div><div class="gauge-sub">¥1,231,372 → ¥1,594,390</div></div>
+<div class="gauge-card" style="border:3px solid #22C55E;"><div class="gauge-label">客数</div><div class="gauge-value positive" style="font-size:56px;">+25.7%</div><div class="gauge-sub">218人 → 274人</div></div>
+<div class="gauge-card" style="border:3px solid #22C55E;"><div class="gauge-label">客単価</div><div class="gauge-value positive" style="font-size:56px;">+3.0%</div><div class="gauge-sub">¥5,648 → ¥5,819</div></div>
+</div>
+<div style="margin-top:30px;padding:16px 20px;background:#F0FDF4;border-radius:12px;border:2px solid #22C55E;">
+<p style="font-size:18px;font-weight:700;color:#22C55E;">🎯 全3指標で前年同週を上回る</p>
+<p style="font-size:17px;margin-top:6px;">客数の+25.7%成長が売上伸長の最大ドライバー。前年W09はコース構成比14.6%で、今週の28.5%と比較して大幅に拡大</p>
+</div>
+</div>
+</div>
+
+<!-- Slide 7: Day of Week Overview -->
+<div class="slide" id="slide-7">
+<div class="slide-header"><h2><span class="section-tag">第2部</span>曜日別概況</h2><span class="pn">7 / 28</span><div class="progress-bar" style="width:22.2%"></div></div>
+<div class="msg-bar">金曜日が+¥225,278の大幅好調。一方、火曜日-¥101,768・日曜日-¥121,655と週後半の明暗が分かれた</div>
+<div class="slide-body with-msg">
+<div class="chart-container" style="height:100%;"><svg id="chart-weekday" width="1180" height="440"></svg></div>
+</div>
+</div>
+
+<!-- Slide 8: Sunday Bad - Basic -->
+<div class="slide" id="slide-8">
+<div class="slide-header"><h2>日曜日 不調の分析：基本数字</h2><span class="pn">8 / 28</span><div class="progress-bar" style="width:25.9%"></div></div>
+<div class="msg-bar">売上は4週平均の62.6%にとどまる。客数35人（4週平均50.8人）の大幅減が主因</div>
+<div class="slide-body with-msg">
+<div class="chart-container" style="height:90%;"><svg id="chart-sun-ratio" width="1180" height="380"></svg></div>
+</div>
+</div>
+
+<!-- Slide 9: Sunday Bad - Group Size -->
+<div class="slide" id="slide-9">
+<div class="slide-header"><h2>日曜日 不調の分析：人数別構成</h2><span class="pn">9 / 28</span><div class="progress-bar" style="width:29.6%"></div></div>
+<div class="msg-bar">3-4名グループの客数が激減（20人→6人）。中規模グループの不在が売上低下の主因</div>
+<div class="slide-body with-msg">
+<table class="dt" style="margin-top:20px;">
+<tr><th>人数</th><th>会計数</th><th>客数</th><th style="text-align:right;">売上</th><th style="text-align:right;">平均単価</th></tr>
+<tr><td>1名</td><td>6件</td><td>6人</td><td class="num">¥11,410</td><td class="num">¥1,902</td></tr>
+<tr><td>2名</td><td>6件</td><td>12人</td><td class="num">¥42,230</td><td class="num">¥3,519</td></tr>
+<tr style="background:#FEF2F2;border-left:4px solid #EF4444;"><td style="font-weight:800;color:#EF4444;">⚠️ 3-4名</td><td style="font-weight:800;">10件</td><td style="font-weight:800;color:#EF4444;">6人</td><td class="num" style="font-weight:800;">¥79,490</td><td class="num" style="font-weight:800;">¥13,248</td></tr>
+<tr><td>5名以上</td><td>2件</td><td>11人</td><td class="num">¥70,820</td><td class="num">¥6,438</td></tr>
+</table>
+<div style="margin-top:24px;padding:14px 18px;background:#FEF2F2;border-radius:10px;border:2px solid #EF4444;">
+<p style="font-size:18px;font-weight:700;color:#EF4444;">🚨 3-4名グループの客数が激減</p>
+<p style="font-size:17px;margin-top:6px;">3-4名グループの客数が6人と低水準。金曜日の20人と比較して大幅に少なく、中規模グループの獲得が急務</p>
+</div>
+</div>
+</div>
+
+<!-- Slide 10: Sunday Bad - Hourly -->
+<div class="slide" id="slide-10">
+<div class="slide-header"><h2>日曜日 不調の分析：時間帯別売上</h2><span class="pn">10 / 28</span><div class="progress-bar" style="width:33.3%"></div></div>
+<div class="msg-bar">20時台が¥91,350で最大だが、深夜帯は¥72,400にとどまる。翌日が平日のため早い退店が多い</div>
+<div class="slide-body with-msg">
+<table class="dt" style="margin-top:20px;">
+<tr><th>時間帯</th><th>会計数</th><th style="text-align:right;">売上</th><th style="text-align:right;">平均売上/会計</th></tr>
+<tr style="background:#F0FDF4;border-left:4px solid #22C55E;"><td style="font-weight:800;color:#166534;">🏆 20時台</td><td style="font-weight:800;">8件</td><td class="num" style="font-weight:800;color:#166534;font-size:20px;">¥91,350</td><td class="num" style="font-weight:800;">¥11,419</td></tr>
+<tr><td>21時台</td><td>4件</td><td class="num">¥31,190</td><td class="num">¥7,798</td></tr>
+<tr><td>22時台</td><td>4件</td><td class="num">¥7,110</td><td class="num">¥1,778</td></tr>
+<tr style="background:#FEF2F2;border-left:4px solid #EF4444;"><td style="font-weight:800;color:#EF4444;">⚠️ 深夜帯</td><td style="font-weight:800;">7件</td><td class="num" style="font-weight:800;color:#EF4444;">¥72,400</td><td class="num" style="font-weight:800;">¥10,343</td></tr>
+</table>
+<div style="margin-top:24px;padding:14px 18px;background:#FEF2F2;border-radius:10px;border:2px solid #EF4444;">
+<p style="font-size:18px;font-weight:700;color:#EF4444;">🚨 深夜帯の売上低下が課題</p>
+<p style="font-size:17px;margin-top:6px;">深夜帯¥72,400は金曜日の¥292,250と比較して大幅に少ない。翌日が月曜日のため早い退店が多く、滞在時間が短い</p>
+</div>
+</div>
+</div>
+
+<!-- Slide 11: Sunday Bad - Products -->
+<div class="slide" id="slide-11">
+<div class="slide-header"><h2>日曜日 不調の分析：商品別売上</h2><span class="pn">11 / 28</span><div class="progress-bar" style="width:37.0%"></div></div>
+<div class="msg-bar">ランチが37.1%と最大カテゴリ。ディナー帯のコース・フード売上の伸び悩みが課題</div>
+<div class="slide-body with-msg">
+<div class="two-col">
+<div class="col-left">
+<p style="font-size:20px;font-weight:800;margin-bottom:10px;">カテゴリ別売上構成</p>
+<table class="dt">
+<tr><th>カテゴリ</th><th style="text-align:right;">売上</th><th style="text-align:right;">構成比</th></tr>
+<tr style="background:#FFF7ED;border-left:4px solid #F97316;"><td style="font-weight:800;color:#C2410C;">🏆 ランチ</td><td class="num" style="font-weight:800;">¥151,020</td><td class="num" style="font-weight:800;color:#F97316;font-size:20px;">37.1%</td></tr>
+<tr><td>コース</td><td class="num">¥98,000</td><td class="num">24.1%</td></tr>
+<tr><td>フード</td><td class="num">¥61,640</td><td class="num">15.1%</td></tr>
+<tr><td>TO/出前</td><td class="num">¥41,400</td><td class="num">10.2%</td></tr>
+<tr><td>ウーバーイーツ</td><td class="num">¥27,900</td><td class="num">6.9%</td></tr>
+<tr><td>ドリンク</td><td class="num">¥20,040</td><td class="num">4.9%</td></tr>
+<tr><td>ロケットナウ</td><td class="num">¥7,200</td><td class="num">1.8%</td></tr>
+</table>
+</div>
+<div class="col-right">
+<p style="font-size:20px;font-weight:800;margin-bottom:10px;">高単価商品</p>
+<table class="dt" style="font-size:16px;">
+<tr><th>商品名</th><th style="text-align:right;">売上</th></tr>
+<tr><td>うな重 松 定食</td><td class="num">¥66,000</td></tr>
+<tr><td>歓送迎会コース飲み放題</td><td class="num">¥48,000</td></tr>
+<tr><td>TO)うな重 松</td><td class="num">¥41,400</td></tr>
+<tr><td>ランチ麻布しきコース</td><td class="num">¥28,000</td></tr>
+<tr><td>uberうな重竹</td><td class="num">¥26,000</td></tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Slide 12: Sunday Bad - Summary -->
+<div class="slide" id="slide-12">
+<div class="slide-header"><h2>日曜日 不調の分析：まとめ</h2><span class="pn">12 / 28</span><div class="progress-bar" style="width:40.7%"></div></div>
+<div class="msg-bar">客数の大幅減（-31.1%）が最大の課題。3-4名グループの獲得とディナー集客が改善の鍵</div>
+<div class="slide-body with-msg">
+<ul class="bullet-list" style="margin-top:16px;">
+<li><div class="icon">🚨</div><div class="text"><strong>客数の大幅減少</strong><br>35人（4週平均50.8人から-15.8人、-31.1%）。特に3-4名グループの客数が激減</div></li>
+<li><div class="icon">🍽️</div><div class="text"><strong>ランチ依存</strong><br>ランチ構成比37.1%。ディナー帯のコース・フード売上が伸び悩み</div></li>
+<li><div class="icon">⏰</div><div class="text"><strong>深夜帯が弱い</strong><br>深夜帯売上¥72,400。翌日が月曜日のため早い退店が多い</div></li>
+</ul>
+<div style="margin-top:16px;padding:14px 18px;background:#F8FAFC;border-radius:12px;">
+<p style="font-size:18px;font-weight:700;">💡 改善の方向性</p>
+<p style="font-size:17px;margin-top:6px;">📋 日曜限定のグループ割引・コース設定で3-4名グループを呼び込む</p>
+<p style="font-size:17px;">⏰ 日曜ディナーの早期予約促進（18時台の集客強化）</p>
+<p style="font-size:17px;">📱 土曜夜〜日曜朝のSNS告知で来店を促す</p>
+</div>
+</div>
+</div>
+
+<!-- Slide 13: Friday Good - Basic -->
+<div class="slide" id="slide-13">
+<div class="slide-header"><h2>金曜日 好調の分析：基本数字</h2><span class="pn">13 / 28</span><div class="progress-bar" style="width:44.4%"></div></div>
+<div class="msg-bar">売上は4週平均の2.5倍。客数+46.0%、客単価+65.5%と両方が大幅プラス</div>
+<div class="slide-body with-msg">
+<div class="chart-container" style="height:90%;"><svg id="chart-fri-ratio" width="1180" height="380"></svg></div>
+</div>
+</div>
+
+<!-- Slide 14: Friday Good - Group Size -->
+<div class="slide" id="slide-14">
+<div class="slide-header"><h2>金曜日 好調の分析：人数別構成</h2><span class="pn">14 / 28</span><div class="progress-bar" style="width:48.1%"></div></div>
+<div class="msg-bar">3-4名グループが13件・売上¥182,830で全体の48.9%。コース利用に適した中規模グループが主力</div>
+<div class="slide-body with-msg">
+<table class="dt" style="margin-top:20px;">
+<tr><th>人数</th><th>会計数</th><th>客数</th><th style="text-align:right;">売上</th><th style="text-align:right;">平均単価</th></tr>
+<tr><td>1名</td><td>8件</td><td>8人</td><td class="num">¥18,180</td><td class="num">¥2,272</td></tr>
+<tr><td>2名</td><td>8件</td><td>16人</td><td class="num">¥95,980</td><td class="num">¥5,999</td></tr>
+<tr style="background:#F0FDF4;border-left:4px solid #22C55E;"><td style="font-weight:800;color:#166534;">🏆 3-4名</td><td style="font-weight:800;">13件</td><td style="font-weight:800;">20人</td><td class="num" style="font-weight:800;color:#166534;font-size:20px;">¥182,830</td><td class="num" style="font-weight:800;">¥9,142</td></tr>
+<tr style="background:#F0FDF4;border-left:4px solid #22C55E;"><td style="font-weight:800;color:#166534;">🎯 5名以上</td><td style="font-weight:800;">1件</td><td style="font-weight:800;">6人</td><td class="num" style="font-weight:800;color:#166534;">¥76,800</td><td class="num" style="font-weight:800;">¥12,800</td></tr>
+</table>
+<div style="margin-top:24px;padding:14px 18px;background:#F0FDF4;border-radius:10px;border:2px solid #22C55E;">
+<p style="font-size:18px;font-weight:700;color:#22C55E;">🎯 3-4名グループが売上の約半分を占める</p>
+<p style="font-size:17px;margin-top:6px;">3-4名（¥182,830）+5名以上（¥76,800）= ¥259,630で売上の69.5%。コース利用に適した中規模グループが主力</p>
+</div>
+</div>
+</div>
+
+<!-- Slide 15: Friday Good - Hourly -->
+<div class="slide" id="slide-15">
+<div class="slide-header"><h2>金曜日 好調の分析：時間帯別売上</h2><span class="pn">15 / 28</span><div class="progress-bar" style="width:51.9%"></div></div>
+<div class="msg-bar">深夜帯が¥292,250と突出。コース+飲み放題の長時間滞在が客単価¥7,476を押し上げた</div>
+<div class="slide-body with-msg">
+<table class="dt" style="margin-top:20px;">
+<tr><th>時間帯</th><th>会計数</th><th style="text-align:right;">売上</th><th style="text-align:right;">平均売上/会計</th></tr>
+<tr><td>20時台</td><td>8件</td><td class="num">¥39,580</td><td class="num">¥4,948</td></tr>
+<tr><td>21時台</td><td>7件</td><td class="num">¥23,960</td><td class="num">¥3,423</td></tr>
+<tr><td>22時台</td><td>3件</td><td class="num">¥15,300</td><td class="num">¥5,100</td></tr>
+<tr style="background:#F0FDF4;border-left:4px solid #22C55E;"><td style="font-weight:800;color:#166534;">🏆 深夜帯</td><td style="font-weight:800;">11件</td><td class="num" style="font-weight:800;color:#166534;font-size:20px;">¥292,250</td><td class="num" style="font-weight:800;color:#166534;">¥26,568</td></tr>
+</table>
+<div style="margin-top:24px;padding:14px 18px;background:#F0FDF4;border-radius:10px;border:2px solid #22C55E;">
+<p style="font-size:18px;font-weight:700;color:#22C55E;">🎯 深夜帯が売上の78.2%を占める</p>
+<p style="font-size:17px;margin-top:6px;">コース+飲み放題による長時間滞在が深夜帯に売上を集中。平均¥26,568/会計は全時間帯最高</p>
+</div>
+</div>
+</div>
+
+<!-- Slide 16: Friday Good - Products -->
+<div class="slide" id="slide-16">
+<div class="slide-header"><h2>金曜日 好調の分析：商品別売上</h2><span class="pn">16 / 28</span><div class="progress-bar" style="width:55.6%"></div></div>
+<div class="msg-bar">コースが38.7%で最大カテゴリ。鰻満喫コース・歓送迎会コースが売上を牽引</div>
+<div class="slide-body with-msg">
+<div class="two-col">
+<div class="col-left">
+<p style="font-size:20px;font-weight:800;margin-bottom:10px;">カテゴリ別売上構成</p>
+<table class="dt">
+<tr><th>カテゴリ</th><th style="text-align:right;">売上</th><th style="text-align:right;">構成比</th></tr>
+<tr style="background:#F0FDF4;border-left:4px solid #22C55E;"><td style="font-weight:800;color:#166534;">🏆 コース</td><td class="num" style="font-weight:800;color:#166534;">¥144,800</td><td class="num" style="font-weight:800;color:#22C55E;font-size:20px;">38.7%</td></tr>
+<tr><td>フード</td><td class="num">¥96,570</td><td class="num">25.8%</td></tr>
+<tr><td>ランチ</td><td class="num">¥46,580</td><td class="num">12.5%</td></tr>
+<tr><td>ドリンク</td><td class="num">¥40,750</td><td class="num">10.9%</td></tr>
+<tr><td>TO/出前</td><td class="num">¥21,800</td><td class="num">5.8%</td></tr>
+<tr><td>ウーバーイーツ</td><td class="num">¥20,590</td><td class="num">5.5%</td></tr>
+<tr><td>ロケットナウ</td><td class="num">¥2,700</td><td class="num">0.7%</td></tr>
+</table>
+</div>
+<div class="col-right">
+<p style="font-size:20px;font-weight:800;margin-bottom:10px;">高単価商品</p>
+<table class="dt" style="font-size:16px;">
+<tr><th>商品名</th><th style="text-align:right;">売上</th></tr>
+<tr style="background:#F0FDF4;"><td style="font-weight:800;">鰻満喫コース飲み放題</td><td class="num" style="font-weight:800;">¥76,800</td></tr>
+<tr><td>歓送迎会コース</td><td class="num">¥36,000</td></tr>
+<tr><td>歓送迎会コース飲み放題</td><td class="num">¥32,000</td></tr>
+<tr><td>うな重 松</td><td class="num">¥20,700</td></tr>
+<tr><td>ふぐ刺し</td><td class="num">¥13,200</td></tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Slide 17: Friday Good - Summary -->
+<div class="slide" id="slide-17">
+<div class="slide-header"><h2>金曜日 好調の分析：まとめ</h2><span class="pn">17 / 28</span><div class="progress-bar" style="width:59.3%"></div></div>
+<div class="msg-bar">コース利用×3-4名グループ×長時間滞在の好循環。この成功パターンを他曜日へ横展開すべき</div>
+<div class="slide-body with-msg">
+<ul class="bullet-list" style="margin-top:16px;">
+<li><div class="icon">🎯</div><div class="text"><strong>コース利用の活発化</strong><br>コース構成比38.7%（¥144,800）。鰻満喫・歓送迎会の2本柱</div></li>
+<li><div class="icon">👥</div><div class="text"><strong>3-4名グループの集中</strong><br>13件・売上¥182,830（全体の48.9%）。コース利用に適した規模</div></li>
+<li><div class="icon">⏰</div><div class="text"><strong>深夜帯の高売上</strong><br>11件・¥292,250。コース+飲み放題による長時間滞在</div></li>
+</ul>
+<div style="margin-top:16px;padding:14px 18px;background:#F0FDF4;border-radius:12px;border:2px solid #22C55E;">
+<p style="font-size:18px;font-weight:700;color:#22C55E;">🌱 成功パターンの横展開</p>
+<p style="font-size:17px;margin-top:6px;">📋 木曜・土曜にもコース予約を促進（法人営業、SNS告知）</p>
+<p style="font-size:17px;">🍽️ 3-4名向けコースの充実（歓送迎会以外の利用シーンも提案）</p>
+<p style="font-size:17px;">📱 金曜夜の成功事例をSNSで発信し、他曜日の予約を促す</p>
+</div>
+</div>
+</div>
+
+<!-- Slide 18: Weekday Summary -->
+<div class="slide" id="slide-18">
+<div class="slide-header"><h2>曜日別評価まとめ</h2><span class="pn">18 / 28</span><div class="progress-bar" style="width:63.0%"></div></div>
+<div class="msg-bar">金曜のコース利用成功を他曜日に展開し、火曜・日曜の集客を底上げすることが来週の課題</div>
+<div class="slide-body with-msg">
+<div class="compare-grid" style="margin-top:16px;">
+<div class="compare-card bad">
+<h4 style="color:#EF4444;">⚠️ 日曜日（不調）</h4>
+<table class="dt" style="font-size:16px;">
+<tr><td>売上</td><td class="num">¥203,950（4週平均の62.6%）</td></tr>
+<tr><td>最大の要因</td><td class="num">客数35人（-31.1%）</td></tr>
+<tr><td>中心カテゴリ</td><td>ランチ（37.1%）</td></tr>
+<tr><td>3-4名グループ</td><td class="num">客数6人</td></tr>
+<tr><td>課題</td><td>ディナー帯集客の弱さ</td></tr>
+</table>
+</div>
+<div class="compare-card good">
+<h4 style="color:#22C55E;">🎯 金曜日（好調）</h4>
+<table class="dt" style="font-size:16px;">
+<tr><td>売上</td><td class="num">¥373,790（4週平均の251.7%）</td></tr>
+<tr><td>最大の要因</td><td class="num">客数50人（+46.0%）</td></tr>
+<tr><td>中心カテゴリ</td><td>コース（38.7%）</td></tr>
+<tr><td>3-4名グループ</td><td class="num">客数20人</td></tr>
+<tr><td>強み</td><td>コース×グループの好循環</td></tr>
+</table>
+</div>
+</div>
+<div style="margin-top:16px;padding:14px 18px;background:#F8FAFC;border-radius:12px;">
+<p style="font-size:18px;font-weight:700;">📊 週全体の評価</p>
+<p style="font-size:17px;margin-top:6px;">7日中4日（月・水・木・金）が4週平均超え。金曜の+¥225,278が火曜-¥101,768と日曜-¥121,655の不調をカバー</p>
+</div>
+</div>
+</div>
+
+<!-- Slide 19: Category Composition -->
+<div class="slide" id="slide-19">
+<div class="slide-header"><h2><span class="section-tag">第3部</span>カテゴリ別売上構成比</h2><span class="pn">19 / 28</span><div class="progress-bar" style="width:66.7%"></div></div>
+<div class="msg-bar">コースが28.5%で最大カテゴリに。歓送迎会シーズンでコース+ランチが全体の52.1%を占める</div>
+<div class="slide-body with-msg">
+<div class="two-col">
+<div class="col-left chart-container"><svg id="chart-donut" width="520" height="440"></svg></div>
+<div class="col-right">
+<table class="dt" style="font-size:16px;">
+<tr><th>カテゴリ</th><th style="text-align:right;">売上</th><th style="text-align:right;">構成比</th><th style="text-align:right;">前週比</th></tr>
+<tr style="background:#FFF7ED;border-left:4px solid #F97316;"><td style="font-weight:800;">🏆 コース</td><td class="num" style="font-weight:800;">¥523,200</td><td class="num" style="font-weight:800;">28.5%</td><td class="num positive" style="font-weight:800;">+6.9pt</td></tr>
+<tr><td>ランチ</td><td class="num">¥432,710</td><td class="num">23.6%</td><td class="num positive">+4.2pt</td></tr>
+<tr><td>フード</td><td class="num">¥370,330</td><td class="num">20.2%</td><td class="num negative">-8.8pt</td></tr>
+<tr><td>ウーバーイーツ</td><td class="num">¥252,070</td><td class="num">13.7%</td><td class="num positive">+0.1pt</td></tr>
+<tr><td>ドリンク</td><td class="num">¥131,030</td><td class="num">7.1%</td><td class="num negative">-3.3pt</td></tr>
+<tr><td>その他</td><td class="num">¥127,800</td><td class="num">7.0%</td><td class="num">—</td></tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Slide 20: Hot Categories -->
+<div class="slide" id="slide-20">
+<div class="slide-header"><h2>好調カテゴリの深掘り</h2><span class="pn">20 / 28</span><div class="progress-bar" style="width:70.4%"></div></div>
+<div class="msg-bar">コース（+6.9pt）とランチ（+4.2pt）が大幅増加。歓送迎会需要と安定したランチ営業が成長の2本柱</div>
+<div class="slide-body with-msg">
+<div style="display:flex;gap:16px;margin-top:12px;">
+<div class="pillar-card" style="flex:1;border-top:4px solid #22C55E;">
+<h4>🥂 コース（28.5%、前週比+6.9pt）</h4>
+<table class="dt" style="font-size:16px;margin-top:8px;">
+<tr><td>売上</td><td class="num">¥523,200</td><td class="num positive">前週比 +41.8%</td></tr>
+<tr><td>販売数</td><td class="num">73個</td><td class="num positive">前週比 +43.1%</td></tr>
+<tr><td>構成比</td><td class="num">28.5%</td><td class="num positive">+6.9pt</td></tr>
+</table>
+<p style="margin-top:8px;">歓送迎会コース飲み放題（¥200,000、10.9%）が最大の牽引役</p>
+</div>
+<div class="pillar-card" style="flex:1;border-top:4px solid #3B82F6;">
+<h4>🍽️ ランチ（23.6%、前週比+4.2pt）</h4>
+<table class="dt" style="font-size:16px;margin-top:8px;">
+<tr><td>売上</td><td class="num">¥432,710</td><td class="num positive">前週比 +30.3%</td></tr>
+<tr><td>販売数</td><td class="num">237個</td><td class="num positive">前週比 +26.7%</td></tr>
+<tr><td>構成比</td><td class="num">23.6%</td><td class="num positive">+4.2pt</td></tr>
+</table>
+<p style="margin-top:8px;">うな重定食メニュー（松・竹）の構成比が大幅増加</p>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Slide 21: Product TOP10 -->
+<div class="slide" id="slide-21">
+<div class="slide-header"><h2>商品別売上 上位10商品</h2><span class="pn">21 / 28</span><div class="progress-bar" style="width:74.1%"></div></div>
+<div class="msg-bar">歓送迎会コース飲み放題が構成比10.9%で1位。コース・うな重が上位を独占し、専門店としてのブランドが定着</div>
+<div class="slide-body with-msg">
+<table class="dt" style="margin-top:8px;font-size:17px;">
+<tr><th>順位</th><th>商品名</th><th style="text-align:right;">売上</th><th style="text-align:right;">構成比</th><th style="text-align:right;">4週平均</th><th style="text-align:right;">成長率</th></tr>
+<tr style="background:#FFF7ED;border-left:4px solid #F97316;"><td style="font-weight:800;">🏆 1</td><td style="font-weight:800;">歓送迎会コース飲み放題</td><td class="num" style="font-weight:800;">¥200,000</td><td class="num" style="font-weight:800;">10.9%</td><td class="num">¥132,000</td><td class="num positive">+51.5%</td></tr>
+<tr><td>2</td><td>歓送迎会コース</td><td class="num">¥84,000</td><td class="num">4.6%</td><td class="num">¥36,000</td><td class="num positive">+133.3%</td></tr>
+<tr><td>3</td><td>鰻満喫コース飲み放題</td><td class="num">¥76,800</td><td class="num">4.2%</td><td class="num">¥91,000</td><td class="num negative">-15.6%</td></tr>
+<tr><td>4</td><td>うな重 梅</td><td class="num">¥75,600</td><td class="num">4.1%</td><td class="num">¥56,700</td><td class="num positive">+33.3%</td></tr>
+<tr><td>5</td><td>うな重 松 定食</td><td class="num">¥71,500</td><td class="num">3.9%</td><td class="num">¥24,750</td><td class="num positive">+188.9%</td></tr>
+<tr><td>6</td><td>うな重 竹 定食</td><td class="num">¥70,400</td><td class="num">3.8%</td><td class="num">¥41,800</td><td class="num negative">+68.4%</td></tr>
+<tr><td>7</td><td>麻布しきコース飲み放題</td><td class="num">¥66,000</td><td class="num">3.6%</td><td class="num">¥44,000</td><td class="num positive">+50.0%</td></tr>
+<tr><td>8</td><td>uberうな重竹</td><td class="num">¥65,000</td><td class="num">3.5%</td><td class="num">¥24,375</td><td class="num positive">+166.7%</td></tr>
+<tr><td>9</td><td>ランチ麻布しきコース</td><td class="num">¥64,400</td><td class="num">3.5%</td><td class="num">¥63,350</td><td class="num positive">+1.7%</td></tr>
+<tr><td>10</td><td>梅肝重30％オフ</td><td class="num">¥61,740</td><td class="num">3.4%</td><td class="num">¥90,038</td><td class="num negative">-31.4%</td></tr>
+</table>
+</div>
+</div>
+
+<!-- Slide 22: Product Composition Change -->
+<div class="slide" id="slide-22">
+<div class="slide-header"><h2>商品構成比の変化</h2><span class="pn">22 / 28</span><div class="progress-bar" style="width:77.8%"></div></div>
+<div class="msg-bar">うな重定食（松・竹）の構成比が大幅増加。一方、梅肝重30％オフとランチ麻布しきコースが減少</div>
+<div class="slide-body with-msg">
+<div class="two-col" style="margin-top:8px;">
+<div class="col-left">
+<p style="font-size:20px;font-weight:800;color:#22C55E;margin-bottom:10px;">📈 構成比増加 上位5</p>
+<table class="dt">
+<tr><th>商品名</th><th style="text-align:right;">今週</th><th style="text-align:right;">前週</th><th style="text-align:right;">変化</th></tr>
+<tr style="background:#F0FDF4;"><td style="font-weight:800;">うな重 松 定食</td><td class="num">3.89%</td><td class="num">0.96%</td><td class="num positive" style="font-weight:800;">+2.93pt</td></tr>
+<tr style="background:#F0FDF4;"><td style="font-weight:800;">うな重 竹 定食</td><td class="num">3.83%</td><td class="num">1.03%</td><td class="num positive" style="font-weight:800;">+2.81pt</td></tr>
+<tr><td>uberうな重竹</td><td class="num">3.54%</td><td class="num">0.76%</td><td class="num positive">+2.78pt</td></tr>
+<tr><td>鰻満喫コース飲み放題</td><td class="num">4.18%</td><td class="num">1.63%</td><td class="num positive">+2.55pt</td></tr>
+<tr><td>歓送迎会コース飲み放題</td><td class="num">10.89%</td><td class="num">8.40%</td><td class="num positive">+2.48pt</td></tr>
+</table>
+</div>
+<div class="col-right">
+<p style="font-size:20px;font-weight:800;color:#EF4444;margin-bottom:10px;">📉 構成比減少 上位5</p>
+<table class="dt">
+<tr><th>商品名</th><th style="text-align:right;">今週</th><th style="text-align:right;">前週</th><th style="text-align:right;">変化</th></tr>
+<tr style="background:#FEF2F2;"><td style="font-weight:800;">梅肝重30％オフ</td><td class="num">3.36%</td><td class="num">8.01%</td><td class="num negative" style="font-weight:800;">-4.64pt</td></tr>
+<tr style="background:#FEF2F2;"><td style="font-weight:800;">ランチ麻布しきコース</td><td class="num">3.51%</td><td class="num">7.35%</td><td class="num negative" style="font-weight:800;">-3.85pt</td></tr>
+<tr><td>うな重 梅</td><td class="num">4.12%</td><td class="num">6.37%</td><td class="num negative">-2.26pt</td></tr>
+<tr><td>自家製レモンサワー</td><td class="num">0.15%</td><td class="num">1.44%</td><td class="num negative">-1.29pt</td></tr>
+<tr><td>しょうが焼き定食</td><td class="num">1.18%</td><td class="num">2.24%</td><td class="num negative">-1.06pt</td></tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Slide 23: Product Summary -->
+<div class="slide" id="slide-23">
+<div class="slide-header"><h2>商品分析まとめ</h2><span class="pn">23 / 28</span><div class="progress-bar" style="width:81.5%"></div></div>
+<div class="msg-bar">「コース（歓送迎会）」と「うな重定食」の2本柱が売上の中核。3月ピークに向けた予約促進が最優先</div>
+<div class="slide-body with-msg">
+<div style="display:flex;gap:24px;margin-top:20px;">
+<div class="pillar-card" style="flex:1;border-left:5px solid #3B82F6;">
+<h4>📋 柱①：コース（歓送迎会・鰻満喫・麻布しき）</h4>
+<p style="margin-top:8px;">売上: ¥523,200（構成比28.5%）</p>
+<p>歓送迎会コース飲み放題が¥200,000と突出</p>
+<p style="font-weight:800;margin-top:8px;font-size:20px;color:#3B82F6;">3月は歓送迎会ピーク → 法人営業・予約促進が急務</p>
+</div>
+<div class="pillar-card" style="flex:1;border-left:5px solid #F97316;">
+<h4>🍽️ 柱②：うな重定食メニュー</h4>
+<p style="margin-top:8px;">松定食¥71,500 + 竹定食¥70,400 + 梅¥75,600</p>
+<p style="font-weight:800;margin-top:4px;font-size:20px;color:#F97316;">合計: ¥217,500</p>
+<p style="margin-top:8px;">ランチ帯・ディナー帯ともに安定した需要。看板商品としてのブランド価値を形成</p>
+</div>
+</div>
+<div style="margin-top:16px;padding:14px 18px;background:#F8FAFC;border-radius:12px;">
+<p style="font-size:18px;font-weight:700;">💡 来週への方向性</p>
+<p style="font-size:17px;margin-top:6px;">📋 歓送迎会コースの予約獲得を最優先。法人向け営業を強化</p>
+<p style="font-size:17px;">🍽️ うな重定食のバリエーション訴求を継続</p>
+<p style="font-size:17px;">📊 梅肝重30％オフの需要変動を注視し、割引戦略を見直し</p>
+</div>
+</div>
+</div>
+
+<!-- Slide 24: Wins -->
+<div class="slide" id="slide-24">
+<div class="slide-header"><h2><span class="section-tag">第4部</span>今週の強み</h2><span class="pn">24 / 28</span><div class="progress-bar" style="width:85.2%"></div></div>
+<div class="msg-bar">前年比+29.5%の成長、歓送迎会コースの需要拡大、金曜日のコース利用成功が3大成果</div>
+<div class="slide-body with-msg">
+<div class="success-item"><h4>🎯 前年比+29.5%の成長を維持</h4><p>売上¥1,594,390、客数274人（+25.7%）。年間を通じた集客力向上が実を結ぶ</p></div>
+<div class="success-item"><h4>🥂 歓送迎会シーズンの需要を獲得</h4><p>コース構成比28.5%（¥523,200）。歓送迎会コース飲み放題が¥200,000で構成比10.9%</p></div>
+<div class="success-item"><h4>🎉 金曜日の大成功</h4><p>売上¥373,790（4週平均比+151.6%）。客数50人×客単価¥7,476のコース利用パターンが確立</p></div>
+</div>
+</div>
+
+<!-- Slide 25: Challenges -->
+<div class="slide" id="slide-25">
+<div class="slide-header"><h2>今週の課題</h2><span class="pn">25 / 28</span><div class="progress-bar" style="width:88.9%"></div></div>
+<div class="msg-bar">火曜・日曜の集客力低下、フード単品売上の減少、口コミ投稿ゼロが3大課題</div>
+<div class="slide-body with-msg">
+<div class="challenge-item"><h4>⚠️ 火曜日の両面不調</h4><p>売上¥111,740（4週平均比-47.6%）。客数24人（-29.4%）×客単価¥4,656（-33.1%）と両方が大幅低下</p></div>
+<div class="challenge-item"><h4>📉 日曜日の客数大幅減</h4><p>客数35人（4週平均50.8人から-31.1%）。3-4名グループの激減が主因</p></div>
+<div class="challenge-item"><h4>💰 口コミ投稿ゼロが継続</h4><p>新規顧客の獲得・口コミ経由の来店機会を逸している</p></div>
+<div style="margin-top:12px;padding:14px 18px;background:#FEF2F2;border-radius:12px;border:2px solid #EF4444;">
+<p style="font-size:18px;font-weight:700;color:#EF4444;">🚨 来週の重点施策</p>
+<p style="font-size:17px;margin-top:6px;">火曜日: 平日限定コース・早割プランの導入で集客と単価の両面を改善</p>
+<p style="font-size:17px;">日曜日: グループ予約の促進、ランチ客のディナー誘導</p>
+<p style="font-size:17px;">口コミ: 会計時の投稿依頼を仕組み化</p>
+</div>
+</div>
+</div>
+
+<!-- Slide 26: Actions 1 -->
+<div class="slide" id="slide-26">
+<div class="slide-header"><h2><span class="section-tag">第5部</span>施策一覧① メニュー・集客</h2><span class="pn">26 / 28</span><div class="progress-bar" style="width:92.6%"></div></div>
+<div class="msg-bar">歓送迎会コースの予約獲得と不調曜日の集客改善が最優先施策</div>
+<div class="slide-body with-msg">
+<div class="two-col" style="gap:16px;">
+<div>
+<p style="font-size:17px;font-weight:800;margin-bottom:6px;">🍽️ メニュー開発</p>
+<table class="action-table">
+<tr><th>施策</th><th>狙い</th></tr>
+<tr><td>歓送迎会コース3月限定プランの設計</td><td>歓送迎会需要のピーク対応</td></tr>
+<tr><td>平日限定ランチコースの新設</td><td>平日ランチの客単価向上</td></tr>
+<tr><td>うな重ハーフサイズメニューの検討</td><td>価格帯の幅を広げて新規層を取り込む</td></tr>
+<tr><td>季節限定フードメニューの入れ替え</td><td>来店動機の創出・リピート促進</td></tr>
+<tr><td>ドリンクペアリングセットの提案</td><td>ドリンク構成比の回復（7.1%→10%以上）</td></tr>
+<tr><td>火曜限定セットメニューの開発</td><td>火曜日の客単価向上</td></tr>
+<tr><td>テイクアウト専用メニューの拡充</td><td>デリバリー以外の持ち帰り需要取り込み</td></tr>
+<tr><td>うな重×コースの組み合わせプラン</td><td>看板商品とコースの相乗効果</td></tr>
+<tr><td>お通し代替のアミューズ提供</td><td>初来店客の満足度向上</td></tr>
+<tr><td>デザートメニューの充実</td><td>客単価+¥500の底上げ</td></tr>
+</table>
+</div>
+<div>
+<p style="font-size:17px;font-weight:800;margin-bottom:6px;">📢 集客・販促</p>
+<table class="action-table">
+<tr><th>施策</th><th>狙い</th></tr>
+<tr><td>法人向け歓送迎会チラシの配布</td><td>コース予約の法人向け獲得</td></tr>
+<tr><td>日曜ディナー限定割引の実施</td><td>日曜ディナー帯の集客強化</td></tr>
+<tr><td>SNS投稿の曜日最適化（土曜夜・火曜朝）</td><td>不調曜日の認知向上</td></tr>
+<tr><td>Google口コミ投稿キャンペーン</td><td>口コミ数ゼロからの脱却</td></tr>
+<tr><td>近隣オフィスへのランチメニュー配布</td><td>平日ランチ客の新規獲得</td></tr>
+<tr><td>予約特典（ドリンク1杯無料）の導入</td><td>予約率の向上</td></tr>
+<tr><td>常連客へのDM送付（3月コースの案内）</td><td>リピーターのコース利用促進</td></tr>
+<tr><td>ウーバーイーツの掲載写真刷新</td><td>デリバリー経由の注文増加</td></tr>
+<tr><td>Instagram映えする盛り付けの強化</td><td>SNS拡散による新規集客</td></tr>
+<tr><td>雨の日クーポンの準備</td><td>天候不良時の集客維持</td></tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Slide 27: Actions 2 -->
+<div class="slide" id="slide-27">
+<div class="slide-header"><h2>施策一覧② 顧客・運営</h2><span class="pn">27 / 28</span><div class="progress-bar" style="width:96.3%"></div></div>
+<div class="msg-bar">リピーター育成と曜日別オペレーション最適化で安定した売上基盤を構築</div>
+<div class="slide-body with-msg">
+<div class="two-col" style="gap:16px;">
+<div>
+<p style="font-size:17px;font-weight:800;margin-bottom:6px;">👥 顧客育成・リピーター</p>
+<table class="action-table">
+<tr><th>施策</th><th>狙い</th></tr>
+<tr><td>LINE公式アカウントの開設・運用開始</td><td>リピーター向け情報配信の基盤構築</td></tr>
+<tr><td>スタンプカードの導入</td><td>来店頻度の向上</td></tr>
+<tr><td>誕生日・記念日コースの案内強化</td><td>特別な日の利用シーン創出</td></tr>
+<tr><td>常連客向けの先行予約枠の設定</td><td>常連客の囲い込み</td></tr>
+<tr><td>金曜コース利用客へのフォローメール</td><td>リピート予約の促進</td></tr>
+<tr><td>1人客向けの居心地改善（カウンター席充実）</td><td>1名客セグメントの底上げ</td></tr>
+<tr><td>ランチ客へのディナー割引券配布</td><td>ランチ→ディナーの送客</td></tr>
+<tr><td>テイクアウト利用客へのイートイン誘導</td><td>デリバリー客の店内利用転換</td></tr>
+<tr><td>団体利用後のお礼メッセージ送付</td><td>幹事客のリピート獲得</td></tr>
+<tr><td>顧客アンケートの実施（四半期に1回）</td><td>顧客ニーズの定量把握</td></tr>
+</table>
+</div>
+<div>
+<p style="font-size:17px;font-weight:800;margin-bottom:6px;">⚙️ 運営改善</p>
+<table class="action-table">
+<tr><th>施策</th><th>狙い</th></tr>
+<tr><td>火曜・日曜のシフト最適化</td><td>不調曜日の人件費適正化</td></tr>
+<tr><td>金曜のシフト増強</td><td>好調曜日の機会損失防止</td></tr>
+<tr><td>予約管理システムの導入検討</td><td>予約率・稼働率の可視化</td></tr>
+<tr><td>コース料理のオペレーション効率化</td><td>コース需要増への対応力強化</td></tr>
+<tr><td>ランチ営業の回転率改善</td><td>ランチ帯の売上最大化</td></tr>
+<tr><td>デリバリー注文のピーク時間対応</td><td>ウーバーイーツの品質維持</td></tr>
+<tr><td>食材ロス率の管理強化</td><td>コスト削減</td></tr>
+<tr><td>客席レイアウトの見直し（グループ席確保）</td><td>3-4名グループの受け入れ体制強化</td></tr>
+<tr><td>会計オペレーションの迅速化</td><td>回転率向上</td></tr>
+<tr><td>曜日別の目標売上設定</td><td>日次管理の精度向上</td></tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Slide 28: Actions 3 -->
+<div class="slide" id="slide-28">
+<div class="slide-header"><h2>施策一覧③ スタッフ育成</h2><span class="pn">28 / 28</span><div class="progress-bar" style="width:100%"></div></div>
+<div class="msg-bar">コース接客力とうなぎ商品知識の向上が客単価アップの基盤</div>
+<div class="slide-body with-msg">
+<p style="font-size:17px;font-weight:800;margin-bottom:8px;">🎓 スタッフ育成・組織強化</p>
+<table class="action-table" style="width:80%;margin:0 auto;">
+<tr><th>施策</th><th>狙い</th></tr>
+<tr><td>コース説明・提案のロールプレイ研修</td><td>コース予約率の向上</td></tr>
+<tr><td>うな重の調理品質の標準化</td><td>看板商品の品質一定化</td></tr>
+<tr><td>ドリンク推奨トークの練習</td><td>ドリンク追加注文率の向上</td></tr>
+<tr><td>口コミ依頼の声かけ研修</td><td>口コミ投稿数の増加</td></tr>
+<tr><td>予約電話対応マニュアルの作成</td><td>予約率の向上</td></tr>
+<tr><td>新人向け接客基礎研修の実施</td><td>即戦力化</td></tr>
+<tr><td>ランチ・ディナーの切り替えオペ訓練</td><td>営業効率化</td></tr>
+<tr><td>食材知識・アレルギー対応の研修</td><td>顧客安全・満足度向上</td></tr>
+<tr><td>チームビルディング（月1回の振り返り会）</td><td>チームワーク強化・離職率低下</td></tr>
+<tr><td>売上目標の共有と日報の活用</td><td>目標意識の醸成</td></tr>
+</table>
+</div>
+</div>
+
+<script>
+const COLORS = {positive:'#22C55E',negative:'#EF4444',main:'#3B82F6',gray:'#94A3B8',orange:'#F97316',dark:'#1E293B',light:'#F8FAFC'};
+const fmt = v => '¥' + Math.round(v).toLocaleString();
+const fmtP = v => v.toLocaleString() + '人';
+
+// Line chart helper
+function drawLineChart(svgId, data, labelKey, valueKey, fmtFn) {
+  const svg = d3.select('#'+svgId);
+  const w = +svg.attr('width'), h = +svg.attr('height');
+  const m = {top:40,right:60,bottom:50,left:80};
+  const iw = w-m.left-m.right, ih = h-m.top-m.bottom;
+  const g = svg.append('g').attr('transform',`translate(${m.left},${m.top})`);
+  const x = d3.scalePoint().domain(data.map(d=>d[labelKey])).range([0,iw]).padding(0.5);
+  const vals = data.map(d=>d[valueKey]);
+  const yMin = d3.min(vals)*0.85, yMax = d3.max(vals)*1.1;
+  const y = d3.scaleLinear().domain([yMin,yMax]).range([ih,0]);
+  // Grid
+  g.selectAll('.grid').data(y.ticks(5)).join('line').attr('x1',0).attr('x2',iw).attr('y1',d=>y(d)).attr('y2',d=>y(d)).attr('stroke','#E2E8F0').attr('stroke-dasharray','3,3');
+  // Axes
+  g.append('g').attr('transform',`translate(0,${ih})`).call(d3.axisBottom(x)).selectAll('text').style('font-size','16px');
+  g.append('g').call(d3.axisLeft(y).ticks(5).tickFormat(d=>fmtFn(d))).selectAll('text').style('font-size','14px');
+  // Line
+  const line = d3.line().x(d=>x(d[labelKey])).y(d=>y(d[valueKey])).curve(d3.curveMonotoneX);
+  g.append('path').datum(data).attr('d',line).attr('fill','none').attr('stroke',COLORS.main).attr('stroke-width',3);
+  // Dots
+  g.selectAll('.dot').data(data).join('circle').attr('cx',d=>x(d[labelKey])).attr('cy',d=>y(d[valueKey])).attr('r',(d,i)=>i===data.length-1?8:5).attr('fill',(d,i)=>i===data.length-1?COLORS.main:'#fff').attr('stroke',COLORS.main).attr('stroke-width',2);
+  // Trend arrow between last two points
+  if(data.length>=2){
+    const prev=data[data.length-2], curr=data[data.length-1];
+    const px=x(prev[labelKey]),py=y(prev[valueKey]),cx2=x(curr[labelKey]),cy2=y(curr[valueKey]);
+    const pct=((curr[valueKey]-prev[valueKey])/prev[valueKey]*100).toFixed(1);
+    const col=curr[valueKey]>=prev[valueKey]?COLORS.positive:COLORS.negative;
+    const mid_x=(px+cx2)/2, mid_y=(py+cy2)/2;
+    const markerId=svgId+'-arrow';
+    svg.append('defs').append('marker').attr('id',markerId).attr('viewBox','0 0 10 10').attr('refX',8).attr('refY',5).attr('markerWidth',8).attr('markerHeight',8).attr('orient','auto-start-reverse').append('path').attr('d','M 0 0 L 10 5 L 0 10 z').attr('fill',col);
+    const ag=g.append('g').attr('opacity',0.65);
+    const off=curr[valueKey]>=prev[valueKey]?-8:8;
+    ag.append('line').attr('x1',px+14).attr('y1',py+off).attr('x2',cx2-14).attr('y2',cy2-off).attr('stroke',col).attr('stroke-width',3.5).attr('marker-end','url(#'+markerId+')');
+    ag.append('text').attr('x',mid_x+20).attr('y',mid_y-12).attr('font-size','15px').attr('font-weight','700').attr('fill',col).text((pct>0?'+':'')+pct+'%');
+  }
+  // Callout on last point
+  const last=data[data.length-1];
+  const lx=x(last[labelKey]),ly=y(last[valueKey]);
+  const callX=lx>iw*0.85?lx-50:lx;
+  const anchor=lx>iw*0.85?'end':'middle';
+  const cg=g.append('g');
+  const ct=cg.append('text').attr('x',callX).attr('y',ly-20).attr('text-anchor',anchor).attr('font-size','18px').attr('font-weight','800').attr('fill',COLORS.dark).text(fmtFn(last[valueKey]));
+  const bb=ct.node().getBBox();
+  cg.insert('rect','text').attr('x',bb.x-8).attr('y',bb.y-4).attr('width',bb.width+16).attr('height',bb.height+8).attr('rx',6).attr('fill','#FFF7ED').attr('stroke',COLORS.orange).attr('stroke-width',1.5);
+  if(lx>iw*0.85){cg.append('line').attr('x1',callX+10).attr('y1',bb.y+bb.height+4).attr('x2',lx).attr('y2',ly-10).attr('stroke',COLORS.orange).attr('stroke-width',1.5).attr('stroke-dasharray','4,3');}
+}
+
+// Sales trend
+drawLineChart('chart-sales',[{w:'W05',v:1497730},{w:'W06',v:1199870},{w:'W07',v:1451060},{w:'W08',v:1628490},{w:'W09',v:1594390}],'w','v',fmt);
+// Customer trend
+drawLineChart('chart-customers',[{w:'W05',v:281},{w:'W06',v:201},{w:'W07',v:280},{w:'W08',v:264},{w:'W09',v:274}],'w','v',fmtP);
+// Unit price trend
+drawLineChart('chart-unitprice',[{w:'W05',v:5330},{w:'W06',v:5970},{w:'W07',v:5182},{w:'W08',v:6169},{w:'W09',v:5819}],'w','v',fmt);
+
+// Weekday bar chart
+(function(){
+  const svg=d3.select('#chart-weekday');
+  const w=+svg.attr('width'),h=+svg.attr('height');
+  const m={top:30,right:40,bottom:50,left:80};
+  const iw=w-m.left-m.right,ih=h-m.top-m.bottom;
+  const g=svg.append('g').attr('transform',`translate(${m.left},${m.top})`);
+  const data=[
+    {d:'月',tw:179770,avg:170148,diff:9622},
+    {d:'火',tw:111740,avg:213508,diff:-101768},
+    {d:'水',tw:256670,avg:191873,diff:64797},
+    {d:'木',tw:198320,avg:135990,diff:62330},
+    {d:'金',tw:373790,avg:148512,diff:225278},
+    {d:'土',tw:270150,avg:306620,diff:-36470},
+    {d:'日',tw:203950,avg:325605,diff:-121655}
+  ];
+  const x0=d3.scaleBand().domain(data.map(d=>d.d)).range([0,iw]).padding(0.3);
+  const x1=d3.scaleBand().domain(['tw','avg']).range([0,x0.bandwidth()]).padding(0.1);
+  const yMax=420000;
+  const y=d3.scaleLinear().domain([0,yMax]).range([ih,0]);
+  g.selectAll('.grid').data(y.ticks(5)).join('line').attr('x1',0).attr('x2',iw).attr('y1',d=>y(d)).attr('y2',d=>y(d)).attr('stroke','#E2E8F0').attr('stroke-dasharray','3,3');
+  g.append('g').attr('transform',`translate(0,${ih})`).call(d3.axisBottom(x0)).selectAll('text').style('font-size','16px').style('font-weight','700');
+  g.append('g').call(d3.axisLeft(y).ticks(5).tickFormat(d=>'¥'+Math.round(d/10000)+'万')).selectAll('text').style('font-size','14px');
+  // Background band for worst days
+  g.insert('rect',':first-child').attr('x',x0('火')-4).attr('y',0).attr('width',x0.bandwidth()+8).attr('height',ih).attr('fill','#FEF2F2').attr('rx',6).attr('opacity',0.4);
+  g.insert('rect',':first-child').attr('x',x0('日')-4).attr('y',0).attr('width',x0.bandwidth()+8).attr('height',ih).attr('fill','#FEF2F2').attr('rx',6).attr('opacity',0.4);
+  data.forEach(d=>{
+    const gx=x0(d.d);
+    const col=d.d==='金'?COLORS.positive:(d.d==='火'||d.d==='日')?COLORS.negative:COLORS.main;
+    g.append('rect').attr('x',gx+x1('tw')).attr('y',y(d.tw)).attr('width',x1.bandwidth()).attr('height',ih-y(d.tw)).attr('fill',col).attr('rx',3);
+    g.append('rect').attr('x',gx+x1('avg')).attr('y',y(d.avg)).attr('width',x1.bandwidth()).attr('height',ih-y(d.avg)).attr('fill',COLORS.gray).attr('rx',3);
+  });
+  // Callout for best (金)
+  const best=data.find(d=>d.d==='金');
+  const bx=x0(best.d)+x0.bandwidth()/2;
+  const cbg=g.append('g');
+  const btext=cbg.append('text').attr('x',bx).attr('y',y(best.tw)-16).attr('text-anchor','middle').attr('font-size','16px').attr('font-weight','800').attr('fill',COLORS.positive).text('+¥225,278');
+  const bbb=btext.node().getBBox();
+  cbg.insert('rect','text').attr('x',bbb.x-6).attr('y',bbb.y-3).attr('width',bbb.width+12).attr('height',bbb.height+6).attr('rx',4).attr('fill','#F0FDF4').attr('stroke',COLORS.positive).attr('stroke-width',1.5);
+  // Callout for worst (日) - offset left since it's rightmost
+  const worst=data.find(d=>d.d==='日');
+  const wx=x0(worst.d)+x0.bandwidth()/2;
+  const cwg=g.append('g');
+  const wtext=cwg.append('text').attr('x',wx-50).attr('y',y(worst.tw)-16).attr('text-anchor','end').attr('font-size','16px').attr('font-weight','800').attr('fill',COLORS.negative).text('-¥121,655');
+  const wbb=wtext.node().getBBox();
+  cwg.insert('rect','text').attr('x',wbb.x-6).attr('y',wbb.y-3).attr('width',wbb.width+12).attr('height',wbb.height+6).attr('rx',4).attr('fill','#FEF2F2').attr('stroke',COLORS.negative).attr('stroke-width',1.5);
+  cwg.append('line').attr('x1',wbb.x+wbb.width+6).attr('y1',wbb.y+wbb.height/2).attr('x2',wx).attr('y2',y(worst.tw)+4).attr('stroke',COLORS.negative).attr('stroke-width',1.5).attr('stroke-dasharray','4,3');
+  // Legend
+  const lg=g.append('g').attr('transform',`translate(${iw-200},0)`);
+  lg.append('rect').attr('width',14).attr('height',14).attr('fill',COLORS.main).attr('rx',2);
+  lg.append('text').attr('x',18).attr('y',12).attr('font-size','14px').text('対象週');
+  lg.append('rect').attr('x',80).attr('width',14).attr('height',14).attr('fill',COLORS.gray).attr('rx',2);
+  lg.append('text').attr('x',98).attr('y',12).attr('font-size','14px').text('4週平均');
+})();
+
+// Ratio bar chart helper
+function drawRatioBar(svgId, labels, thisW, avg4, fmtFns) {
+  const svg=d3.select('#'+svgId);
+  const w=+svg.attr('width'),h=+svg.attr('height');
+  const m={top:30,right:200,bottom:30,left:120};
+  const iw=w-m.left-m.right,ih=h-m.top-m.bottom;
+  const g=svg.append('g').attr('transform',`translate(${m.left},${m.top})`);
+  const y=d3.scaleBand().domain(labels).range([0,ih]).padding(0.35);
+  const maxRatio=Math.max(...thisW.map((v,i)=>v/avg4[i]))*1.1;
+  const x=d3.scaleLinear().domain([0,Math.max(maxRatio,1.5)]).range([0,iw]);
+  // 100% line
+  g.append('line').attr('x1',x(1)).attr('y1',0).attr('x2',x(1)).attr('y2',ih).attr('stroke','#334155').attr('stroke-width',2.5);
+  g.append('text').attr('x',x(1)).attr('y',-8).attr('text-anchor','middle').attr('font-size','14px').attr('font-weight','700').attr('fill','#334155').text('4週平均=100%');
+  labels.forEach((label,i)=>{
+    const ratio=thisW[i]/avg4[i];
+    const pct=(ratio*100).toFixed(1);
+    const col=ratio<0.8?COLORS.negative:ratio>1.2?COLORS.positive:COLORS.main;
+    const bw=x(ratio);
+    g.append('rect').attr('x',0).attr('y',y(label)).attr('width',bw).attr('height',y.bandwidth()).attr('fill',col).attr('rx',5);
+    // Outline for extremes
+    if(ratio<0.8||ratio>1.3){
+      g.append('rect').attr('x',-1.5).attr('y',y(label)-1.5).attr('width',bw+3).attr('height',y.bandwidth()+3).attr('fill','none').attr('stroke',col).attr('stroke-width',3).attr('rx',5);
+    }
+    // Label on left
+    g.append('text').attr('x',-10).attr('y',y(label)+y.bandwidth()/2+6).attr('text-anchor','end').attr('font-size','18px').attr('font-weight','700').attr('fill','#1E293B').text(label);
+    // Pct on bar
+    g.append('text').attr('x',bw+8).attr('y',y(label)+y.bandwidth()/2+6).attr('font-size','18px').attr('font-weight','800').attr('fill',col).text(pct+'%');
+    // Real value
+    g.append('text').attr('x',bw+90).attr('y',y(label)+y.bandwidth()/2+6).attr('font-size','16px').attr('fill','#64748B').text(fmtFns[i](thisW[i]));
+    // Badge
+    if(ratio<0.8){
+      const bx2=bw+160,by2=y(label)+y.bandwidth()/2;
+      const bg=g.append('g');
+      const bt=bg.append('text').attr('x',bx2).attr('y',by2+5).attr('text-anchor','middle').attr('font-size','14px').attr('font-weight','800').attr('fill',COLORS.negative).text('▼ 要改善');
+      const bb2=bt.node().getBBox();
+      bg.insert('rect','text').attr('x',bb2.x-4).attr('y',bb2.y-2).attr('width',bb2.width+8).attr('height',bb2.height+4).attr('rx',4).attr('fill','#FEF2F2').attr('stroke',COLORS.negative).attr('stroke-width',1);
+    }
+    if(ratio>1.3){
+      const bx2=bw+160,by2=y(label)+y.bandwidth()/2;
+      const bg=g.append('g');
+      const bt=bg.append('text').attr('x',bx2).attr('y',by2+5).attr('text-anchor','middle').attr('font-size','14px').attr('font-weight','800').attr('fill',COLORS.positive).text('★ 好調');
+      const bb2=bt.node().getBBox();
+      bg.insert('rect','text').attr('x',bb2.x-4).attr('y',bb2.y-2).attr('width',bb2.width+8).attr('height',bb2.height+4).attr('rx',4).attr('fill','#F0FDF4').attr('stroke',COLORS.positive).attr('stroke-width',1);
+    }
+  });
+}
+
+// Sunday ratio bar (不調)
+drawRatioBar('chart-sun-ratio',['売上','客数','客単価'],[203950,35,5827],[325605,50.8,6435],[fmt,fmtP,fmt]);
+// Friday ratio bar (好調)
+drawRatioBar('chart-fri-ratio',['売上','客数','客単価'],[373790,50,7476],[148512,34.2,4517],[fmt,fmtP,fmt]);
+
+// Donut chart
+(function(){
+  const svg=d3.select('#chart-donut');
+  const w=+svg.attr('width'),h=+svg.attr('height');
+  const radius=Math.min(w,h)/2-40;
+  const g=svg.append('g').attr('transform',`translate(${w/2},${h/2})`);
+  const data=[
+    {name:'コース',value:523200,color:'#22C55E'},
+    {name:'ランチ',value:432710,color:'#3B82F6'},
+    {name:'フード',value:370330,color:'#F97316'},
+    {name:'ウーバーイーツ',value:252070,color:'#8B5CF6'},
+    {name:'ドリンク',value:131030,color:'#EC4899'},
+    {name:'その他',value:127800,color:'#CBD5E1'}
+  ];
+  const total=d3.sum(data,d=>d.value);
+  const pie=d3.pie().value(d=>d.value).sort(null);
+  const arc=d3.arc().innerRadius(radius*0.55).outerRadius(radius);
+  const arcs=g.selectAll('.arc').data(pie(data)).join('g').attr('class','arc');
+  arcs.append('path').attr('d',arc).attr('fill',d=>d.data.color).attr('stroke','#fff').attr('stroke-width',2);
+  // Explode largest
+  arcs.filter((d,i)=>i===0).attr('transform',d=>{const[cx,cy]=arc.centroid(d);const dist=Math.sqrt(cx*cx+cy*cy);return `translate(${cx/dist*18},${cy/dist*18})`;});
+  // Labels
+  const labelArc=d3.arc().innerRadius(radius*0.78).outerRadius(radius*0.78);
+  arcs.filter(d=>d.data.value/total>0.05).append('text').attr('transform',d=>`translate(${labelArc.centroid(d)})`).attr('text-anchor','middle').attr('font-size','16px').attr('font-weight','700').attr('fill','#fff').text(d=>(d.data.value/total*100).toFixed(1)+'%');
+  // Center text
+  g.append('text').attr('text-anchor','middle').attr('y',-8).attr('font-size','16px').attr('fill','#64748B').text('合計');
+  g.append('text').attr('text-anchor','middle').attr('y',20).attr('font-size','24px').attr('font-weight','800').attr('fill','#1E293B').text('¥'+total.toLocaleString());
+  // Leader line for largest (コース)
+  const maxSlice=pie(data)[0];
+  const midA=(maxSlice.startAngle+maxSlice.endAngle)/2;
+  const outerPt=[Math.sin(midA)*(radius+30),-Math.cos(midA)*(radius+30)];
+  const labelPt=[Math.sin(midA)*(radius+55),-Math.cos(midA)*(radius+55)];
+  const endPt=[labelPt[0]+(labelPt[0]>0?40:-40),labelPt[1]];
+  g.append('polyline').attr('points',[outerPt,labelPt,endPt].map(p=>p.join(',')).join(' ')).attr('fill','none').attr('stroke','#22C55E').attr('stroke-width',1.5);
+  g.append('text').attr('x',endPt[0]+(endPt[0]>0?4:-4)).attr('y',endPt[1]+5).attr('text-anchor',endPt[0]>0?'start':'end').attr('font-size','16px').attr('font-weight','800').attr('fill','#22C55E').text('コース 28.5%');
+})();
+</script>
+</body>
+</html>

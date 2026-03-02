@@ -25,6 +25,12 @@ body {
   background: #FFFFFF;
   page-break-after: always;
   page-break-inside: avoid;
+  break-after: page;
+  break-inside: avoid;
+}
+.slide:last-child {
+  page-break-after: auto;
+  break-after: auto;
 }
 
 /* ===== Slide Header ===== */
@@ -782,9 +788,15 @@ blockquote .quote-source {
   .slide {
     page-break-after: always;
     page-break-inside: avoid;
+    break-after: page;
+    break-inside: avoid;
     margin: 0;
     box-shadow: none;
     border: none;
+  }
+  .slide:last-child {
+    page-break-after: auto;
+    break-after: auto;
   }
 }
 
@@ -1075,7 +1087,7 @@ blockquote .quote-source {
     <span class="pn">10 / 28</span>
     <div class="progress-bar" style="width:33.3%"></div>
   </div>
-  <div class="msg-bar">19-20時台に3件のみで営業終了。22時以降の来客がゼロで、深夜帯の売上機会を完全に逸失</div>
+  <div class="msg-bar">火曜は20-24時に¥33,880/3組のみ。4週平均¥110,542比で-69.3%の大幅減少、18-20時の来客はゼロ</div>
   <div class="slide-body">
     <div id="chart-tue-time" style="width:100%;height:440px;"></div>
   </div>
@@ -1117,14 +1129,14 @@ blockquote .quote-source {
     <span class="pn">12 / 28</span>
     <div class="progress-bar" style="width:40.7%"></div>
   </div>
-  <div class="msg-bar">火曜日は「来客数の絶対的不足」が本質的課題。3件・5人では商品力に関係なく売上は伸びない</div>
+  <div class="msg-bar">火曜日は「来客数の絶対的不足」が本質的課題。3組・5人・¥33,880で4週平均の約3割にとどまる</div>
   <div class="slide-body" style="padding:24px 40px;">
     <div style="margin-bottom:24px;">
       <h3 style="font-size:22px;font-weight:800;color:#1E293B;margin-bottom:16px;">🚨 不調の主要因</h3>
       <ul class="bullet-list">
         <li><div class="icon" style="font-size:28px">🚨</div><div class="text"><strong>来客が3件・5人と極端に少ない</strong>（4週平均の24%）</div></li>
         <li><div class="icon" style="font-size:28px">📉</div><div class="text"><strong>3名以上のグループ客がゼロ</strong>。売上の底上げ要因がない</div></li>
-        <li><div class="icon" style="font-size:28px">⏰</div><div class="text"><strong>22時以降の来客がなく</strong>、深夜帯の売上機会を逸失</div></li>
+        <li><div class="icon" style="font-size:28px">⏰</div><div class="text"><strong>来客は20-24時に限定</strong>、18-20時の営業序盤の集客がゼロ</div></li>
       </ul>
     </div>
     <div>
@@ -1371,7 +1383,7 @@ blockquote .quote-source {
     <span class="pn">21 / 28</span>
     <div class="progress-bar" style="width:74.1%"></div>
   </div>
-  <div class="msg-bar">上位10商品で全売上の51.4%を占める。高額ワインボトル4商品がランクインし、単価の高さが際立つ</div>
+  <div class="msg-bar">上位10商品で全売上の約49.8%を占める。高額ワインボトル4商品がランクインし、単価の高さが際立つ</div>
   <div class="slide-body" style="padding:16px 40px;">
     <table class="data-table" style="width:100%;">
       <thead><tr><th>順位</th><th>商品名</th><th style="text-align:right">売上</th><th style="text-align:right">構成比</th><th style="text-align:right">販売数</th></tr></thead>
@@ -2010,7 +2022,7 @@ function drawDonut(containerId){
     .text(d=>(d.data.value/total*100).toFixed(1)+'%');
 
   // Center text
-  g.append('text').attr('text-anchor','middle').attr('y',-8).attr('font-size','18px').attr('fill',COLORS.lightText).text('合計');
+  g.append('text').attr('text-anchor','middle').attr('y',-8).attr('font-size','18px').attr('fill',COLORS.lightText).text('カテゴリ合計');
   g.append('text').attr('text-anchor','middle').attr('y',22).attr('font-size','24px').attr('font-weight','800').attr('fill',COLORS.darkText).text(fmtYen(total));
 
   // Leader line for largest

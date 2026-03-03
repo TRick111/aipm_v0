@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>コンサルタント向けダッシュボード</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', sans-serif; background: #f8f9fa; color: #1a1a2e; min-height: 100vh; }
+
+  /* Layout */
+  .app { display: flex; min-height: 100vh; }
+  .sidebar { width: 260px; background: #1a1a2e; color: #e0e0e0; padding: 0; flex-shrink: 0; position: fixed; top: 0; left: 0; bottom: 0; overflow-y: auto; }
+  .main { margin-left: 260px; flex: 1; padding: 24px 32px; }
+
+  /* Sidebar */
+  .sidebar-header { padding: 20px 20px 16px; border-bottom: 1px solid #2a2a4a; }
+  .sidebar-header h1 { font-size: 15px; font-weight: 700; color: #fff; }
+  .sidebar-header .subtitle { font-size: 11px; color: #8888aa; margin-top: 2px; }
+  .sidebar-section { padding: 12px 12px 4px; }
+  .sidebar-section-title { font-size: 10px; font-weight: 700; color: #6666aa; text-transform: uppercase; letter-spacing: 0.5px; padding: 0 8px; margin-bottom: 6px; }
+  .client-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; cursor: pointer; transition: background 0.15s; text-decoration: none; color: #ccc; }
+  .client-item:hover { background: #2a2a4a; }
+  .client-item.active { background: #3a3a6a; color: #fff; }
+  .client-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .client-info { flex: 1; min-width: 0; }
+  .client-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .client-meta { font-size: 10px; color: #8888aa; }
+  .client-alert { font-size: 10px; background: #ef4444; color: #fff; padding: 1px 6px; border-radius: 8px; flex-shrink: 0; }
+
+  .sidebar-nav { padding: 8px 12px; border-top: 1px solid #2a2a4a; margin-top: 8px; }
+  .nav-link { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 8px; font-size: 13px; color: #aaa; text-decoration: none; transition: background 0.15s; }
+  .nav-link:hover { background: #2a2a4a; color: #fff; }
+  .nav-link.active { background: #3a3a6a; color: #fff; }
+  .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+
+  /* Main content */
+  .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+  .page-title { font-size: 22px; font-weight: 700; }
+  .page-date { font-size: 12px; color: #888; margin-top: 4px; }
+  .btn-group { display: flex; gap: 8px; }
+  .btn { padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; transition: all 0.15s; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+  .btn-primary { background: #4f46e5; color: #fff; }
+  .btn-primary:hover { background: #4338ca; }
+  .btn-outline { background: #fff; color: #4f46e5; border: 1px solid #e0e0e8; }
+  .btn-outline:hover { background: #f0f0ff; }
+
+  /* Client overview cards */
+  .client-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+  .client-card { background: #fff; border-radius: 12px; padding: 18px; border: 2px solid transparent; transition: all 0.15s; cursor: pointer; }
+  .client-card:hover { border-color: #4f46e5; box-shadow: 0 4px 12px rgba(79,70,229,0.1); }
+  .client-card.selected { border-color: #4f46e5; background: #fafaff; }
+  .cc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .cc-name { font-size: 15px; font-weight: 700; }
+  .cc-status { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 6px; }
+  .status-good { background: #dcfce7; color: #166534; }
+  .status-warn { background: #fef3c7; color: #92400e; }
+  .status-alert { background: #fce4ec; color: #c62828; }
+  .cc-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .cc-metric { }
+  .cc-metric-label { font-size: 10px; color: #888; font-weight: 600; }
+  .cc-metric-value { font-size: 16px; font-weight: 700; }
+  .cc-metric-change { font-size: 11px; }
+  .up { color: #16a34a; }
+  .down { color: #dc2626; }
+  .flat { color: #888; }
+  .cc-review { display: flex; align-items: center; gap: 4px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #f0f0f0; }
+  .cc-stars { color: #f59e0b; font-size: 12px; }
+  .cc-review-text { font-size: 11px; color: #888; }
+
+  /* Analysis grid */
+  .analysis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .panel { background: #fff; border-radius: 12px; padding: 18px; }
+  .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .panel-title { font-size: 14px; font-weight: 700; }
+  .panel-badge { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 6px; background: #f3e8ff; color: #7c3aed; }
+
+  /* Chart placeholder */
+  .chart-placeholder { background: #f8f9fa; border-radius: 8px; height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #bbb; font-size: 12px; position: relative; overflow: hidden; }
+  .mini-bars { display: flex; align-items: flex-end; gap: 6px; height: 120px; padding: 0 12px; }
+  .mini-bar { width: 24px; border-radius: 4px 4px 0 0; transition: height 0.3s; }
+  .mini-bar-label { font-size: 9px; color: #888; text-align: center; margin-top: 4px; }
+
+  /* Factor decomposition */
+  .factor-table { width: 100%; font-size: 13px; }
+  .factor-table th { text-align: left; font-weight: 600; color: #888; font-size: 11px; padding: 4px 0; border-bottom: 1px solid #f0f0f0; }
+  .factor-table td { padding: 8px 0; border-bottom: 1px solid #f5f5f7; }
+  .factor-bar { display: inline-block; height: 8px; border-radius: 4px; vertical-align: middle; margin-right: 6px; }
+
+  /* Review trend */
+  .review-trend-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #f5f5f7; }
+  .review-trend-row:last-child { border-bottom: none; }
+  .rt-label { font-size: 13px; color: #555; }
+  .rt-bar-wrap { flex: 1; margin: 0 12px; background: #f0f0f0; height: 6px; border-radius: 3px; }
+  .rt-bar { height: 100%; border-radius: 3px; }
+  .rt-value { font-size: 13px; font-weight: 600; width: 36px; text-align: right; }
+
+  /* Keyword bubbles */
+  .keywords { display: flex; flex-wrap: wrap; gap: 6px; }
+  .keyword { font-size: 12px; padding: 4px 10px; border-radius: 16px; background: #f0f0ff; color: #4f46e5; font-weight: 500; }
+  .keyword.negative { background: #fce4ec; color: #c62828; }
+  .keyword.positive { background: #dcfce7; color: #166534; }
+
+  /* Diary analysis */
+  .diary-summary { font-size: 13px; line-height: 1.7; color: #555; margin-bottom: 12px; }
+  .diary-staff { display: flex; gap: 8px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid #f5f5f7; }
+  .diary-staff:last-child { border-bottom: none; }
+  .diary-staff-name { font-size: 12px; font-weight: 700; color: #4f46e5; background: #f0f0ff; padding: 2px 8px; border-radius: 4px; flex-shrink: 0; }
+  .diary-staff-text { font-size: 12px; color: #555; line-height: 1.5; }
+
+  /* Action tracking */
+  .action-track { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f5f5f7; }
+  .action-track:last-child { border-bottom: none; }
+  .action-check { width: 20px; height: 20px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; margin-top: 1px; }
+  .check-done { background: #dcfce7; color: #166534; }
+  .check-progress { background: #fef3c7; color: #92400e; }
+  .check-todo { background: #f0f0f0; color: #888; }
+  .action-track-text { font-size: 13px; line-height: 1.4; }
+  .action-track-date { font-size: 11px; color: #888; }
+
+  /* Full width panel */
+  .panel-full { grid-column: 1 / -1; }
+
+  /* Report buttons */
+  .report-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .report-btn { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 20px; background: #f8f9fa; border-radius: 10px; border: 1px solid #e0e0e8; cursor: pointer; transition: all 0.15s; text-decoration: none; color: inherit; }
+  .report-btn:hover { background: #f0f0ff; border-color: #4f46e5; }
+  .report-icon { font-size: 28px; }
+  .report-label { font-size: 13px; font-weight: 600; }
+  .report-desc { font-size: 11px; color: #888; text-align: center; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h1>Restaurant AI Lab</h1>
+      <div class="subtitle">コンサルタントダッシュボード</div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">クライアント</div>
+      <a class="client-item active" href="#">
+        <span class="client-dot" style="background:#ef4444"></span>
+        <div class="client-info">
+          <div class="client-name">別天地 本店</div>
+          <div class="client-meta">売上 ¥247万 / 目標82%</div>
+        </div>
+        <span class="client-alert">FL超過</span>
+      </a>
+      <a class="client-item" href="#">
+        <span class="client-dot" style="background:#22c55e"></span>
+        <div class="client-info">
+          <div class="client-name">直送生ホルモンなかせい</div>
+          <div class="client-meta">売上 ¥185万 / 目標92%</div>
+        </div>
+      </a>
+      <a class="client-item" href="#">
+        <span class="client-dot" style="background:#22c55e"></span>
+        <div class="client-info">
+          <div class="client-name">THE BIFTEKI 赤坂見附</div>
+          <div class="client-meta">売上 ¥1,200万 / 目標105%</div>
+        </div>
+      </a>
+      <a class="client-item" href="#">
+        <span class="client-dot" style="background:#f59e0b"></span>
+        <div class="client-info">
+          <div class="client-name">ChefsRoom 恵比寿</div>
+          <div class="client-meta">売上 ¥320万 / 目標88%</div>
+        </div>
+      </a>
+    </div>
+
+    <div class="sidebar-nav">
+      <a class="nav-link active" href="#"><span class="nav-icon">📊</span>ダッシュボード</a>
+      <a class="nav-link" href="#"><span class="nav-icon">📝</span>レポート作成</a>
+      <a class="nav-link" href="#"><span class="nav-icon">💬</span>口コミ管理</a>
+      <a class="nav-link" href="#"><span class="nav-icon">📋</span>アクション管理</a>
+      <a class="nav-link" href="#"><span class="nav-icon">⚙️</span>設定</a>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="page-header">
+      <div>
+        <div class="page-title">別天地 本店</div>
+        <div class="page-date">2026年3月3日（月）/ 3月度進捗</div>
+      </div>
+      <div class="btn-group">
+        <a class="btn btn-outline" href="#">📄 週報生成</a>
+        <a class="btn btn-primary" href="#">📊 月次レポート生成</a>
+      </div>
+    </div>
+
+    <!-- Client overview (all clients) -->
+    <div class="client-cards">
+      <div class="client-card selected">
+        <div class="cc-header">
+          <span class="cc-name">別天地 本店</span>
+          <span class="cc-status status-warn">要注意</span>
+        </div>
+        <div class="cc-metrics">
+          <div class="cc-metric">
+            <div class="cc-metric-label">売上</div>
+            <div class="cc-metric-value">¥247万</div>
+            <div class="cc-metric-change down">▼ 8.3% 前週比</div>
+          </div>
+          <div class="cc-metric">
+            <div class="cc-metric-label">FL比率</div>
+            <div class="cc-metric-value">62.1%</div>
+            <div class="cc-metric-change down">▲ 3.9pt ⚠</div>
+          </div>
+        </div>
+        <div class="cc-review">
+          <span class="cc-stars">★★★★☆</span>
+          <span class="cc-review-text">4.2（+0.1）・新着3件</span>
+        </div>
+      </div>
+      <div class="client-card">
+        <div class="cc-header">
+          <span class="cc-name">なかせい</span>
+          <span class="cc-status status-good">順調</span>
+        </div>
+        <div class="cc-metrics">
+          <div class="cc-metric">
+            <div class="cc-metric-label">売上</div>
+            <div class="cc-metric-value">¥185万</div>
+            <div class="cc-metric-change up">▲ 3.1% 前週比</div>
+          </div>
+          <div class="cc-metric">
+            <div class="cc-metric-label">FL比率</div>
+            <div class="cc-metric-value">56.8%</div>
+            <div class="cc-metric-change up">▼ 1.2pt</div>
+          </div>
+        </div>
+        <div class="cc-review">
+          <span class="cc-stars">★★★★☆</span>
+          <span class="cc-review-text">3.8（→）・新着1件</span>
+        </div>
+      </div>
+      <div class="client-card">
+        <div class="cc-header">
+          <span class="cc-name">THE BIFTEKI</span>
+          <span class="cc-status status-good">好調</span>
+        </div>
+        <div class="cc-metrics">
+          <div class="cc-metric">
+            <div class="cc-metric-label">売上</div>
+            <div class="cc-metric-value">¥1,200万</div>
+            <div class="cc-metric-change up">▲ 5.2% 前週比</div>
+          </div>
+          <div class="cc-metric">
+            <div class="cc-metric-label">FL比率</div>
+            <div class="cc-metric-value">54.3%</div>
+            <div class="cc-metric-change up">▼ 0.5pt</div>
+          </div>
+        </div>
+        <div class="cc-review">
+          <span class="cc-stars">★★★★★</span>
+          <span class="cc-review-text">4.5（+0.2）・新着5件</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Analysis panels -->
+    <div class="analysis-grid">
+
+      <!-- Sales analysis -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">売上分析（週次）</span>
+          <span class="panel-badge">✦ AI分析</span>
+        </div>
+        <div class="mini-bars">
+          <div style="text-align:center">
+            <div class="mini-bar" style="height:60px;background:#c7d2fe"></div>
+            <div class="mini-bar-label">月</div>
+          </div>
+          <div style="text-align:center">
+            <div class="mini-bar" style="height:72px;background:#c7d2fe"></div>
+            <div class="mini-bar-label">火</div>
+          </div>
+          <div style="text-align:center">
+            <div class="mini-bar" style="height:85px;background:#a5b4fc"></div>
+            <div class="mini-bar-label">水</div>
+          </div>
+          <div style="text-align:center">
+            <div class="mini-bar" style="height:95px;background:#a5b4fc"></div>
+            <div class="mini-bar-label">木</div>
+          </div>
+          <div style="text-align:center">
+            <div class="mini-bar" style="height:110px;background:#818cf8"></div>
+            <div class="mini-bar-label">金</div>
+          </div>
+          <div style="text-align:center">
+            <div class="mini-bar" style="height:120px;background:#6366f1"></div>
+            <div class="mini-bar-label">土</div>
+          </div>
+          <div style="text-align:center">
+            <div class="mini-bar" style="height:80px;background:#a5b4fc"></div>
+            <div class="mini-bar-label">日</div>
+          </div>
+        </div>
+        <div style="margin-top:14px">
+          <table class="factor-table">
+            <thead><tr><th>要因</th><th>寄与額</th><th></th></tr></thead>
+            <tbody>
+              <tr>
+                <td>客数要因</td>
+                <td class="down" style="font-weight:600">-¥12.3万</td>
+                <td><span class="factor-bar" style="width:60px;background:#fca5a5"></span></td>
+              </tr>
+              <tr>
+                <td>客単価要因</td>
+                <td class="up" style="font-weight:600">+¥5.1万</td>
+                <td><span class="factor-bar" style="width:25px;background:#86efac"></span></td>
+              </tr>
+              <tr>
+                <td style="font-weight:700">売上差</td>
+                <td class="down" style="font-weight:700">-¥7.2万</td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="font-size:12px;color:#888;margin-top:8px;line-height:1.5">
+            → <strong style="color:#1a1a2e">平日ディナー（火〜木）の客数減</strong>が売上減の主因。客単価は上昇傾向で、高単価メニューの訴求が奏功。
+          </div>
+        </div>
+      </div>
+
+      <!-- Review analysis -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">口コミ分析</span>
+          <span class="panel-badge">✦ AI要約</span>
+        </div>
+        <div style="margin-bottom:14px">
+          <div class="review-trend-row">
+            <span class="rt-label">料理</span>
+            <div class="rt-bar-wrap"><div class="rt-bar" style="width:88%;background:#22c55e"></div></div>
+            <span class="rt-value">4.4</span>
+          </div>
+          <div class="review-trend-row">
+            <span class="rt-label">雰囲気</span>
+            <div class="rt-bar-wrap"><div class="rt-bar" style="width:84%;background:#22c55e"></div></div>
+            <span class="rt-value">4.2</span>
+          </div>
+          <div class="review-trend-row">
+            <span class="rt-label">接客</span>
+            <div class="rt-bar-wrap"><div class="rt-bar" style="width:80%;background:#eab308"></div></div>
+            <span class="rt-value">4.0</span>
+          </div>
+          <div class="review-trend-row">
+            <span class="rt-label">CP</span>
+            <div class="rt-bar-wrap"><div class="rt-bar" style="width:76%;background:#eab308"></div></div>
+            <span class="rt-value">3.8</span>
+          </div>
+          <div class="review-trend-row">
+            <span class="rt-label">待ち時間</span>
+            <div class="rt-bar-wrap"><div class="rt-bar" style="width:64%;background:#ef4444"></div></div>
+            <span class="rt-value">3.2</span>
+          </div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:#555;margin-bottom:6px">口コミキーワード（直近30日）</div>
+        <div class="keywords">
+          <span class="keyword positive">松坂牛</span>
+          <span class="keyword positive">一人鍋</span>
+          <span class="keyword positive">金目鯛</span>
+          <span class="keyword positive">炊き込みご飯</span>
+          <span class="keyword negative">待ち時間</span>
+          <span class="keyword negative">予約取りにくい</span>
+          <span class="keyword">個室</span>
+          <span class="keyword">記念日</span>
+        </div>
+        <div style="font-size:12px;color:#888;margin-top:10px;line-height:1.5">
+          <strong style="color:#166534">強み:</strong> 松坂牛しゃぶしゃぶ（一人一鍋）、金目鯛煮付け<br>
+          <strong style="color:#c62828">課題:</strong> 週末の待ち時間。予約の取りにくさ<br>
+          <strong style="color:#4f46e5">注目:</strong> 新メニュー「炊き込みご飯」の言及が先月の3倍に急増
+        </div>
+      </div>
+
+      <!-- PL analysis -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">PL推移</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+          <div style="background:#fef3c7;border-radius:8px;padding:12px">
+            <div style="font-size:10px;color:#92400e;font-weight:600">FL比率</div>
+            <div style="font-size:24px;font-weight:700;color:#92400e">62.1%</div>
+            <div style="font-size:11px;color:#b45309">目標60% ⚠ +2.1pt超過</div>
+          </div>
+          <div style="background:#f0fdf4;border-radius:8px;padding:12px">
+            <div style="font-size:10px;color:#166534;font-weight:600">営業利益率</div>
+            <div style="font-size:24px;font-weight:700;color:#166534">12.5%</div>
+            <div style="font-size:11px;color:#15803d">前月比 +2.1pt</div>
+          </div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:#555;margin-bottom:8px">経費カテゴリ内訳</div>
+        <div class="review-trend-row">
+          <span class="rt-label">食材費</span>
+          <div class="rt-bar-wrap"><div class="rt-bar" style="width:76%;background:#ef4444"></div></div>
+          <span class="rt-value" style="color:#ef4444">38%</span>
+        </div>
+        <div class="review-trend-row">
+          <span class="rt-label">人件費</span>
+          <div class="rt-bar-wrap"><div class="rt-bar" style="width:48%;background:#eab308"></div></div>
+          <span class="rt-value">24%</span>
+        </div>
+        <div class="review-trend-row">
+          <span class="rt-label">家賃</span>
+          <div class="rt-bar-wrap"><div class="rt-bar" style="width:24%;background:#94a3b8"></div></div>
+          <span class="rt-value">12%</span>
+        </div>
+        <div class="review-trend-row">
+          <span class="rt-label">光熱費</span>
+          <div class="rt-bar-wrap"><div class="rt-bar" style="width:10%;background:#94a3b8"></div></div>
+          <span class="rt-value">5%</span>
+        </div>
+        <div style="font-size:12px;color:#888;margin-top:10px;line-height:1.5">
+          → <strong style="color:#c62828">食材費が前月比+1.8pt上昇</strong>。鮮魚カテゴリが+12%。仕入れ先の分散検討を推奨。
+        </div>
+      </div>
+
+      <!-- Diary analysis -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">日報分析（今週）</span>
+          <span class="panel-badge">✦ AI要約</span>
+        </div>
+        <div class="diary-summary">
+          今週の日報からは<strong>「予約」「新人」「仕込み」</strong>のキーワードが多く見られました。金曜の満席は予約戦略の成果ですが、土曜のウォークイン減少が課題です。
+        </div>
+        <div style="font-size:12px;font-weight:700;color:#555;margin-bottom:8px">スタッフ別サマリー</div>
+        <div class="diary-staff">
+          <span class="diary-staff-name">店長 佐藤</span>
+          <span class="diary-staff-text">土曜のウォークイン減が気になる。仕込みの段取り改善で準備時間を15分短縮できた。新人の成長に手応え。</span>
+        </div>
+        <div class="diary-staff">
+          <span class="diary-staff-name">副店長 田中</span>
+          <span class="diary-staff-text">金曜の予約対応がスムーズだった。常連客から新メニューへの好意的な声をもらった。</span>
+        </div>
+        <div class="diary-staff">
+          <span class="diary-staff-name">ホール 山田</span>
+          <span class="diary-staff-text">週末の配膳が追いつかない場面があった。ピーク時のオペレーション見直しが必要。</span>
+        </div>
+      </div>
+
+      <!-- Action tracking -->
+      <div class="panel panel-full">
+        <div class="panel-header">
+          <span class="panel-title">アクション管理</span>
+          <a class="btn btn-outline" href="#" style="font-size:11px;padding:4px 12px">+ 追加</a>
+        </div>
+        <div class="action-track">
+          <span class="action-check check-done">✓</span>
+          <div>
+            <div class="action-track-text"><strong>SNSでの新メニュー告知</strong> — Instagram投稿3件実施</div>
+            <div class="action-track-date">提案日: 2/24 → 完了: 2/28</div>
+          </div>
+        </div>
+        <div class="action-track">
+          <span class="action-check check-progress">△</span>
+          <div>
+            <div class="action-track-text"><strong>平日ディナーのクーポン施策</strong> — LINE配信準備中</div>
+            <div class="action-track-date">提案日: 2/24 → 期限: 3/7</div>
+          </div>
+        </div>
+        <div class="action-track">
+          <span class="action-check check-todo">−</span>
+          <div>
+            <div class="action-track-text"><strong>仕入れ先の見直し（鮮魚）</strong> — 未着手</div>
+            <div class="action-track-date">提案日: 2/24 → 期限: 3/15</div>
+          </div>
+        </div>
+        <div class="action-track">
+          <span class="action-check check-todo">−</span>
+          <div>
+            <div class="action-track-text"><strong>週末の予約枠拡大検討</strong> — 口コミの「予約取りにくい」対策</div>
+            <div class="action-track-date">提案日: 3/3（NEW）</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Report generation -->
+      <div class="panel panel-full">
+        <div class="panel-header">
+          <span class="panel-title">レポート生成</span>
+        </div>
+        <div class="report-grid">
+          <a class="report-btn" href="#">
+            <span class="report-icon">📊</span>
+            <span class="report-label">週報生成</span>
+            <span class="report-desc">売上要因分解 + 口コミ + 日報の統合週報</span>
+          </a>
+          <a class="report-btn" href="#">
+            <span class="report-icon">📋</span>
+            <span class="report-label">月次レポート</span>
+            <span class="report-desc">PL分析 + トレンド + 改善提案のPDF</span>
+          </a>
+          <a class="report-btn" href="#">
+            <span class="report-icon">📑</span>
+            <span class="report-label">クライアント提出用</span>
+            <span class="report-desc">オーナー向けにカスタマイズした報告書</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

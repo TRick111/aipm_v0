@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>オーナー向けダッシュボード</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', sans-serif; background: #f5f5f7; color: #1d1d1f; max-width: 430px; margin: 0 auto; min-height: 100vh; }
+
+  /* Header */
+  .header { background: #fff; padding: 16px 20px 12px; border-bottom: 1px solid #e5e5e7; position: sticky; top: 0; z-index: 10; }
+  .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .header h1 { font-size: 20px; font-weight: 700; }
+  .header .date { font-size: 12px; color: #86868b; }
+  .store-badge { font-size: 11px; color: #fff; background: #1d1d1f; padding: 2px 8px; border-radius: 10px; }
+
+  /* Score Cards */
+  .scores { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 16px; }
+  .score-card { background: #fff; border-radius: 14px; padding: 16px; position: relative; overflow: hidden; }
+  .score-card .label { font-size: 11px; color: #86868b; font-weight: 600; margin-bottom: 8px; }
+  .score-card .value { font-size: 28px; font-weight: 700; line-height: 1.1; }
+  .score-card .sub { font-size: 12px; color: #86868b; margin-top: 4px; }
+  .score-card .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 6px; border-radius: 6px; margin-top: 6px; }
+  .badge-green { background: #e8f5e9; color: #2e7d32; }
+  .badge-yellow { background: #fff8e1; color: #f57f17; }
+  .badge-red { background: #fce4ec; color: #c62828; }
+
+  /* Progress bar */
+  .progress-bar { height: 6px; background: #f0f0f0; border-radius: 3px; margin-top: 10px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 3px; transition: width 0.5s; }
+
+  /* Section */
+  .section { margin: 0 16px 12px; background: #fff; border-radius: 14px; overflow: hidden; }
+  .section-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px 0; }
+  .section-header h2 { font-size: 15px; font-weight: 700; }
+  .section-header .more { font-size: 12px; color: #007aff; text-decoration: none; }
+  .section-body { padding: 12px 16px 16px; }
+
+  /* AI Summary */
+  .ai-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; color: #7c3aed; background: #f3e8ff; padding: 2px 8px; border-radius: 8px; margin-bottom: 8px; }
+  .ai-summary { font-size: 14px; line-height: 1.7; color: #3a3a3c; }
+  .ai-summary strong { color: #1d1d1f; }
+
+  /* Action items */
+  .action-list { list-style: none; }
+  .action-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+  .action-item:last-child { border-bottom: none; }
+  .action-num { width: 22px; height: 22px; background: #007aff; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+  .action-text { font-size: 13px; line-height: 1.5; color: #3a3a3c; }
+  .action-tag { font-size: 10px; color: #86868b; background: #f5f5f7; padding: 1px 6px; border-radius: 4px; margin-left: 4px; }
+
+  /* Diary highlight */
+  .diary-card { background: #f9fafb; border-radius: 10px; padding: 12px; }
+  .diary-author { font-size: 11px; font-weight: 700; color: #007aff; margin-bottom: 4px; }
+  .diary-text { font-size: 13px; line-height: 1.6; color: #3a3a3c; }
+  .diary-text em { font-style: normal; background: #fef3c7; padding: 0 2px; border-radius: 2px; }
+
+  /* Store comparison */
+  .store-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+  .store-row:last-child { border-bottom: none; }
+  .store-name { font-size: 13px; font-weight: 600; width: 80px; flex-shrink: 0; }
+  .store-bar-wrap { flex: 1; }
+  .store-bar { height: 20px; border-radius: 4px; display: flex; align-items: center; padding-left: 8px; font-size: 11px; font-weight: 600; color: #fff; }
+  .store-pct { font-size: 12px; color: #86868b; width: 40px; text-align: right; flex-shrink: 0; }
+
+  /* Review card */
+  .review-card { border-left: 3px solid #fbbf24; padding-left: 12px; }
+  .review-stars { color: #fbbf24; font-size: 14px; margin-bottom: 2px; }
+  .review-text { font-size: 13px; color: #3a3a3c; line-height: 1.5; }
+  .review-source { font-size: 11px; color: #86868b; margin-top: 4px; }
+
+  /* Trend row */
+  .trend-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f5f5f7; }
+  .trend-row:last-child { border-bottom: none; }
+  .trend-label { font-size: 13px; color: #3a3a3c; }
+  .trend-values { display: flex; gap: 16px; }
+  .trend-val { font-size: 13px; font-weight: 600; }
+  .trend-change { font-size: 12px; }
+  .up { color: #2e7d32; }
+  .down { color: #c62828; }
+  .flat { color: #86868b; }
+
+  /* Nav bar */
+  .nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px; background: #fff; border-top: 1px solid #e5e5e7; display: flex; justify-content: space-around; padding: 8px 0 calc(8px + env(safe-area-inset-bottom)); z-index: 10; }
+  .nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 10px; color: #86868b; text-decoration: none; }
+  .nav-item.active { color: #007aff; }
+  .nav-icon { font-size: 20px; }
+
+  .spacer { height: 80px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <h1>経営ダッシュボード</h1>
+    <span class="store-badge">別天地 本店</span>
+  </div>
+  <div class="date">2026年3月3日（月）</div>
+</div>
+
+<!-- Score Cards -->
+<div class="scores">
+  <div class="score-card">
+    <div class="label">今月の売上</div>
+    <div class="value">¥247<span style="font-size:16px">万</span></div>
+    <div class="sub">目標 ¥300万</div>
+    <div class="progress-bar"><div class="progress-fill" style="width:82%;background:#007aff"></div></div>
+    <span class="badge badge-yellow">達成率 82%</span>
+  </div>
+  <div class="score-card">
+    <div class="label">営業利益</div>
+    <div class="value">¥31<span style="font-size:16px">万</span></div>
+    <div class="sub">利益率 12.5%</div>
+    <div class="progress-bar"><div class="progress-fill" style="width:62%;background:#2e7d32"></div></div>
+    <span class="badge badge-green">前月比 +2.1pt</span>
+  </div>
+  <div class="score-card">
+    <div class="label">口コミ評価</div>
+    <div class="value" style="color:#f59e0b">★ 4.2</div>
+    <div class="sub">Google Maps</div>
+    <span class="badge badge-green">↑ 0.1 先月比</span>
+  </div>
+  <div class="score-card">
+    <div class="label">FL比率</div>
+    <div class="value">58.2<span style="font-size:16px">%</span></div>
+    <div class="sub">目標 60%以下</div>
+    <div class="progress-bar"><div class="progress-fill" style="width:58%;background:#2e7d32"></div></div>
+    <span class="badge badge-green">目標内</span>
+  </div>
+</div>
+
+<!-- AI Summary -->
+<div class="section">
+  <div class="section-header">
+    <h2>AIサマリー</h2>
+    <span class="ai-badge">✦ AI分析</span>
+  </div>
+  <div class="section-body">
+    <div class="ai-summary">
+      今月の売上は目標を<strong>18%下回るペース</strong>で推移しています。主因は<strong>平日ディナーの客数減</strong>（前月比-12%）。一方、口コミ評価は改善傾向で、特に<strong>新メニュー「季節の炊き込みご飯」への言及が急増</strong>しています。客単価は前月比+3%と好調です。
+    </div>
+  </div>
+</div>
+
+<!-- AI Actions -->
+<div class="section">
+  <div class="section-header">
+    <h2>AIからの提案</h2>
+  </div>
+  <div class="section-body">
+    <ul class="action-list">
+      <li class="action-item">
+        <span class="action-num">1</span>
+        <div class="action-text">
+          <strong>平日ディナーの集客施策を検討</strong><br>
+          火〜木の来店数が前月比-18%。近隣オフィスワーカー向けの平日限定セットや早割の導入を推奨
+          <span class="action-tag">集客</span>
+        </div>
+      </li>
+      <li class="action-item">
+        <span class="action-num">2</span>
+        <div class="action-text">
+          <strong>好評の新メニューをSNS・店頭で訴求</strong><br>
+          口コミで「炊き込みご飯」の言及が先月の3倍に。写真映えするため、Instagram投稿を強化
+          <span class="action-tag">販促</span>
+        </div>
+      </li>
+      <li class="action-item">
+        <span class="action-num">3</span>
+        <div class="action-text">
+          <strong>食材費の仕入れ先を見直し</strong><br>
+          原価率が先月比+1.8pt上昇。特に鮮魚の仕入れ単価が+12%。代替仕入れ先の検討を
+          <span class="action-tag">原価</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<!-- Trends -->
+<div class="section">
+  <div class="section-header">
+    <h2>前週比レポート</h2>
+    <a class="more" href="#">詳細 →</a>
+  </div>
+  <div class="section-body">
+    <div class="trend-row">
+      <span class="trend-label">売上</span>
+      <div class="trend-values">
+        <span class="trend-val">¥58.2万</span>
+        <span class="trend-change down">▼ 8.3%</span>
+      </div>
+    </div>
+    <div class="trend-row">
+      <span class="trend-label">客数</span>
+      <div class="trend-values">
+        <span class="trend-val">312名</span>
+        <span class="trend-change down">▼ 12.1%</span>
+      </div>
+    </div>
+    <div class="trend-row">
+      <span class="trend-label">客単価</span>
+      <div class="trend-values">
+        <span class="trend-val">¥4,438</span>
+        <span class="trend-change up">▲ 3.2%</span>
+      </div>
+    </div>
+    <div class="trend-row">
+      <span class="trend-label">組数</span>
+      <div class="trend-values">
+        <span class="trend-val">98組</span>
+        <span class="trend-change down">▼ 9.5%</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Review -->
+<div class="section">
+  <div class="section-header">
+    <h2>最新の口コミ</h2>
+    <a class="more" href="#">すべて見る →</a>
+  </div>
+  <div class="section-body">
+    <div class="review-card">
+      <div class="review-stars">★★★★☆</div>
+      <div class="review-text">松坂牛のしゃぶしゃぶが絶品でした。一人一鍋スタイルが嬉しい。金目鯛の煮付けも大きくて驚きました。ただ、週末は少し待ち時間が長かったです。</div>
+      <div class="review-source">Google Maps — 2日前</div>
+    </div>
+  </div>
+</div>
+
+<!-- Diary Highlight -->
+<div class="section">
+  <div class="section-header">
+    <h2>日報ハイライト</h2>
+    <a class="more" href="#">全文を見る →</a>
+  </div>
+  <div class="section-body">
+    <div class="diary-card">
+      <div class="diary-author">店長 佐藤</div>
+      <div class="diary-text">
+        金曜は<em>予約で満席</em>。土曜はウォークインが少なく、<em>空席が目立った</em>。新人の鈴木さんがホール対応を一人で回せるようになり成長を感じた。仕込みの段取りを改善し、ピーク前の準備時間を15分短縮できた。
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Store Comparison -->
+<div class="section">
+  <div class="section-header">
+    <h2>店舗比較（今月）</h2>
+  </div>
+  <div class="section-body">
+    <div class="store-row">
+      <span class="store-name">別天地 本店</span>
+      <div class="store-bar-wrap">
+        <div class="store-bar" style="width:82%;background:linear-gradient(90deg,#007aff,#5ac8fa)">¥247万</div>
+      </div>
+      <span class="store-pct">82%</span>
+    </div>
+    <div class="store-row">
+      <span class="store-name">別天地 2号店</span>
+      <div class="store-bar-wrap">
+        <div class="store-bar" style="width:91%;background:linear-gradient(90deg,#34c759,#30d158)">¥182万</div>
+      </div>
+      <span class="store-pct">91%</span>
+    </div>
+    <div class="store-row">
+      <span class="store-name">別天地 新宿店</span>
+      <div class="store-bar-wrap">
+        <div class="store-bar" style="width:105%;background:linear-gradient(90deg,#ff9500,#ffcc02)">¥315万</div>
+      </div>
+      <span class="store-pct" style="color:#2e7d32;font-weight:600">105%</span>
+    </div>
+  </div>
+</div>
+
+<div class="spacer"></div>
+
+<!-- Nav -->
+<nav class="nav">
+  <a class="nav-item active" href="#"><span class="nav-icon">📊</span>ホーム</a>
+  <a class="nav-item" href="#"><span class="nav-icon">💰</span>PL</a>
+  <a class="nav-item" href="#"><span class="nav-icon">💬</span>口コミ</a>
+  <a class="nav-item" href="#"><span class="nav-icon">📝</span>日報</a>
+  <a class="nav-item" href="#"><span class="nav-icon">📋</span>レポート</a>
+</nav>
+
+</body>
+</html>

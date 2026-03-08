@@ -595,9 +595,16 @@ def check_daily_report_enabled(client: DashboardClient, store_code: str) -> bool
 
 def map_question_to_column(question_title: str):
     """questionTitle をキーワードで CSVカラムにマッピングする。"""
-    if "来客" in question_title or "来店" in question_title:
+    t = question_title.lower()
+    # ①来客特徴 にマッピング
+    if any(k in question_title for k in ("来客", "来店", "客の特徴")):
         return "①来客特徴"
-    if "改善" in question_title:
+    if "customer" in t:
+        return "①来客特徴"
+    # ②改善ポイント にマッピング
+    if any(k in question_title for k in ("改善", "売上要因", "課題", "気づき")):
+        return "②改善ポイント"
+    if any(k in t for k in ("improvement", "growth", "work")):
         return "②改善ポイント"
     return None
 

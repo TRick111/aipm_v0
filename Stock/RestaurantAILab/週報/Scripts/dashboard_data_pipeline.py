@@ -49,6 +49,12 @@ STORES = {
         "pos_type": "usenregi",
         "file_pattern": "麻布しき",
     },
+    "麻布しき本店": {
+        "store_code": "shiki-002",
+        "store_name": "麻布しき本店",
+        "pos_type": "usenregi",
+        "file_pattern": "麻布しき本店",
+    },
     "キーポイント": {
         "store_code": "kp-001",
         "store_name": "かめや駅前店",

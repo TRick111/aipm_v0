@@ -1,0 +1,1734 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>麻布しき 旗の台店 週次営業報告 — 2026-W11</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #E2E8F0;
+      font-family: 'Helvetica Neue', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+      font-size: 20px;
+      color: #334155;
+    }
+    .slide {
+      width: 1280px;
+      height: 720px;
+      position: relative;
+      overflow: hidden;
+      background: #F8FAFC;
+    }
+    @media screen {
+      .slide { margin: 0 auto 40px auto; box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
+    }
+    @media print {
+      body { margin: 0; padding: 0; }
+      .slide { page-break-after: always; page-break-inside: avoid; break-after: page; break-inside: avoid; }
+      .slide:last-child { page-break-after: auto; }
+    }
+    .slide-header {
+      background: #1E3A5F;
+      color: #fff;
+      padding: 14px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+    }
+    .slide-header h2 { font-size: 32px; font-weight: 700; }
+    .slide-header .pn { font-size: 16px; opacity: 0.7; white-space: nowrap; }
+    .progress-bar {
+      position: absolute;
+      bottom: 0; left: 0;
+      height: 3px;
+      background: rgba(255,255,255,0.4);
+      border-radius: 0 2px 2px 0;
+    }
+    .section-tag {
+      background: rgba(255,255,255,0.2);
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      margin-right: 10px;
+    }
+    .msg-bar {
+      background: #FFF7ED;
+      border-left: 5px solid #F97316;
+      padding: 12px 40px;
+      font-size: 28px;
+      font-weight: 800;
+      color: #1E293B;
+      line-height: 1.4;
+    }
+    .slide-body {
+      padding: 18px 40px;
+      height: calc(720px - 62px - 56px);
+      overflow: hidden;
+    }
+    /* Title Slide */
+    .slide-title {
+      background: linear-gradient(135deg, #1E3A5F 0%, #0F172A 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      height: 720px;
+    }
+    .main-title { font-size: 52px; font-weight: 800; letter-spacing: 0.02em; }
+    .sub-title { font-size: 30px; font-weight: 400; margin-top: 16px; opacity: 0.9; }
+    .period-label { font-size: 20px; margin-top: 28px; opacity: 0.65; }
+    /* KPI Cards */
+    .kpi-grid { display: flex; gap: 16px; margin-top: 8px; }
+    .kpi-card {
+      flex: 1;
+      background: #fff;
+      border-radius: 12px;
+      padding: 18px 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .kpi-label { font-size: 17px; font-weight: 600; color: #64748B; }
+    .kpi-value { font-size: 44px; font-weight: 800; color: #1E293B; line-height: 1.1; }
+    .kpi-change { font-size: 22px; font-weight: 700; }
+    .kpi-change-sub { font-size: 18px; font-weight: 400; color: #64748B; }
+    .positive { color: #22C55E; }
+    .negative { color: #EF4444; }
+    .neutral { color: #94A3B8; }
+    /* Notes */
+    .notice-box {
+      background: #F1F5F9;
+      border-left: 4px solid #94A3B8;
+      padding: 8px 16px;
+      font-size: 16px;
+      color: #64748B;
+      border-radius: 0 6px 6px 0;
+      margin-top: 10px;
+    }
+    /* Special items */
+    .special-list { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+    .special-item {
+      background: #fff;
+      border-radius: 10px;
+      padding: 12px 18px;
+      font-size: 18px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      color: #1E293B;
+    }
+    /* Chart containers */
+    .chart-area { display: flex; gap: 20px; height: 100%; }
+    .chart-main { flex: 2; }
+    .chart-side { flex: 1; display: flex; flex-direction: column; gap: 12px; justify-content: center; }
+    .side-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 14px 18px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .side-card .label { font-size: 17px; color: #64748B; font-weight: 600; }
+    .side-card .value { font-size: 32px; font-weight: 800; color: #1E293B; }
+    .side-card .sub { font-size: 18px; color: #64748B; }
+    /* Table styles */
+    .dt {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 18px;
+    }
+    .dt th {
+      background: #1E3A5F;
+      color: #fff;
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 17px;
+      font-weight: 700;
+    }
+    .dt td {
+      padding: 9px 14px;
+      border-bottom: 1px solid #E2E8F0;
+      font-size: 18px;
+    }
+    .dt tr:nth-child(even) td { background: #F8FAFC; }
+    .dt .num { text-align: right; }
+    .highlight-row td { background: #FFF7ED !important; border-left: 4px solid #F97316; font-weight: 800; }
+    /* Ratio bar */
+    .ratio-section { margin-top: 4px; }
+    /* Bullet list */
+    .bullet-list { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+    .bullet-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      background: #fff;
+      border-radius: 10px;
+      padding: 13px 18px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      font-size: 18px;
+    }
+    .bullet-list li .icon { font-size: 26px; flex-shrink: 0; }
+    /* Comparison layout */
+    .compare-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top: 8px; }
+    .gauge-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      text-align: center;
+    }
+    .gauge-card .g-label { font-size: 17px; font-weight: 600; color: #64748B; }
+    .gauge-card .g-now { font-size: 36px; font-weight: 800; color: #1E293B; margin: 6px 0; }
+    .gauge-card .g-prev { font-size: 18px; color: #94A3B8; }
+    .gauge-card .g-rate { font-size: 32px; font-weight: 800; margin-top: 8px; }
+    /* Two column layout */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  </style>
+</head>
+<body>
+
+<!-- ===== SLIDE 1: タイトル ===== -->
+<div class="slide" id="slide-1">
+  <div class="slide-title">
+    <div style="text-align:center;">
+      <div style="font-size:20px; opacity:0.6; letter-spacing:0.1em; margin-bottom:12px;">WEEKLY REPORT</div>
+      <div class="main-title">麻布しき 旗の台店</div>
+      <div class="main-title" style="margin-top:8px;">週次営業報告</div>
+      <div class="sub-title">2026年第11週（3月9日〜3月15日）</div>
+      <div class="period-label">作成日：2026年3月16日</div>
+      <div style="margin-top:32px; display:flex; gap:40px; justify-content:center; opacity:0.7; font-size:18px;">
+        <span>📊 全32枚</span>
+        <span>🗓️ 2026-W11</span>
+        <span>🏮 麻布しき 旗の台店</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 2: 全体サマリー ===== -->
+<div class="slide" id="slide-2">
+  <div class="slide-header">
+    <h2><span class="section-tag">第1部</span>全体サマリー</h2>
+    <span class="pn">2 / 32</span>
+    <div class="progress-bar" style="width:3.2%"></div>
+  </div>
+  <div class="msg-bar">前年比+32.2%と成長を維持するも、直近3週平均比-39.8%で大幅減。客数・客単価ともに低下</div>
+  <div class="slide-body" style="padding:14px 40px;">
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <span class="kpi-label">週間売上</span>
+        <span class="kpi-value">¥937,700</span>
+        <span class="kpi-change positive">▲ 前年比 +32.2%</span>
+        <span class="kpi-change negative">▼ 3週平均比 -39.8%</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">客数</span>
+        <span class="kpi-value">211人</span>
+        <span class="kpi-change positive">▲ 前年比 +47.6%</span>
+        <span class="kpi-change negative">▼ 3週平均比 -22.7%</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">客単価</span>
+        <span class="kpi-value">¥4,444</span>
+        <span class="kpi-change negative">▼ 前年比 -10.4%</span>
+        <span class="kpi-change negative">▼ 3週平均比 -22.3%</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">組数</span>
+        <span class="kpi-value">170組</span>
+        <span class="kpi-change neutral">— 前年比</span>
+        <span class="kpi-change negative">▼ 3週平均比 -12.4%</span>
+      </div>
+    </div>
+    <div class="special-list" style="margin-top:12px;">
+      <div class="special-item">⚠️ 7日中6日が4週平均を下回り、<strong>月曜日のみ+¥39,850のプラス</strong></div>
+      <div class="special-item">🚨 火曜日は客単価<strong>¥1,659</strong>（通常の29%水準）と異常値</div>
+      <div class="special-item">📉 コース売上が<strong>大幅減</strong>（歓送迎会コース -79.3%）</div>
+    </div>
+    <div class="notice-box">※前週(W10)のデータが欠損のため、直近3週(W07-W09)平均を比較基準として使用</div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 3: 売上トレンド ===== -->
+<div class="slide" id="slide-3">
+  <div class="slide-header">
+    <h2><span class="section-tag">第1部</span>売上トレンド</h2>
+    <span class="pn">3 / 32</span>
+    <div class="progress-bar" style="width:6.5%"></div>
+  </div>
+  <div class="msg-bar">W08の¥162.8万をピークに下降トレンド。W11は¥93.8万で直近5週の最低水準</div>
+  <div class="slide-body">
+    <div class="chart-area">
+      <div class="chart-main">
+        <svg id="chart-sales-trend" width="820" height="520"></svg>
+      </div>
+      <div class="chart-side">
+        <div class="side-card">
+          <div class="label">📅 今週（W11）</div>
+          <div class="value">¥937,700</div>
+        </div>
+        <div class="side-card">
+          <div class="label">📅 前年同週</div>
+          <div class="value" style="font-size:26px;">¥709,520</div>
+          <div class="sub" style="color:#22C55E; font-weight:700;">▲ +32.2%</div>
+        </div>
+        <div class="side-card" style="border-left:4px solid #EF4444;">
+          <div class="label">📉 3週平均比</div>
+          <div class="value" style="font-size:26px; color:#EF4444;">-39.8%</div>
+          <div class="sub">3週平均 ¥1,557,980</div>
+        </div>
+        <div class="side-card" style="border-left:4px solid #94A3B8;">
+          <div class="label">💡 W10</div>
+          <div class="value" style="font-size:22px; color:#94A3B8;">欠損</div>
+          <div class="sub">データなし</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 4: 客数トレンド ===== -->
+<div class="slide" id="slide-4">
+  <div class="slide-header">
+    <h2><span class="section-tag">第1部</span>客数トレンド</h2>
+    <span class="pn">4 / 32</span>
+    <div class="progress-bar" style="width:9.7%"></div>
+  </div>
+  <div class="msg-bar">客数211人は前年比+47.6%だが、3週平均273人から大幅減少。集客力の回復が急務</div>
+  <div class="slide-body">
+    <div class="chart-area">
+      <div class="chart-main">
+        <svg id="chart-pax-trend" width="820" height="520"></svg>
+      </div>
+      <div class="chart-side">
+        <div class="side-card">
+          <div class="label">👥 今週（W11）</div>
+          <div class="value">211人</div>
+        </div>
+        <div class="side-card">
+          <div class="label">👥 前年同週</div>
+          <div class="value" style="font-size:26px;">143人</div>
+          <div class="sub" style="color:#22C55E; font-weight:700;">▲ +47.6%</div>
+        </div>
+        <div class="side-card" style="border-left:4px solid #EF4444;">
+          <div class="label">📉 3週平均比</div>
+          <div class="value" style="font-size:26px; color:#EF4444;">-22.7%</div>
+          <div class="sub">3週平均 273人</div>
+        </div>
+        <div class="side-card" style="border-left:4px solid #F97316;">
+          <div class="label">🚨 集客課題</div>
+          <div class="value" style="font-size:22px; color:#F97316;">-62人</div>
+          <div class="sub">3週平均との差</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 5: 客単価トレンド ===== -->
+<div class="slide" id="slide-5">
+  <div class="slide-header">
+    <h2><span class="section-tag">第1部</span>客単価トレンド</h2>
+    <span class="pn">5 / 32</span>
+    <div class="progress-bar" style="width:12.9%"></div>
+  </div>
+  <div class="msg-bar">客単価¥4,444は3週平均¥5,723から-22.3%。コース減少と低単価ランチ偏重が要因</div>
+  <div class="slide-body">
+    <div class="chart-area">
+      <div class="chart-main">
+        <svg id="chart-spend-trend" width="820" height="520"></svg>
+      </div>
+      <div class="chart-side">
+        <div class="side-card">
+          <div class="label">💴 今週（W11）</div>
+          <div class="value">¥4,444</div>
+        </div>
+        <div class="side-card">
+          <div class="label">💴 前年同週</div>
+          <div class="value" style="font-size:26px;">¥4,962</div>
+          <div class="sub" style="color:#EF4444; font-weight:700;">▼ -10.4%</div>
+        </div>
+        <div class="side-card" style="border-left:4px solid #EF4444;">
+          <div class="label">📉 3週平均比</div>
+          <div class="value" style="font-size:26px; color:#EF4444;">-22.3%</div>
+          <div class="sub">3週平均 ¥5,723</div>
+        </div>
+        <div class="side-card" style="border-left:4px solid #F97316;">
+          <div class="label">🔍 主因</div>
+          <div class="value" style="font-size:18px; color:#F97316; line-height:1.4;">コース減少<br>ランチ偏重</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 6: 前年同週比サマリー ===== -->
+<div class="slide" id="slide-6">
+  <div class="slide-header">
+    <h2><span class="section-tag">第1部</span>前年同週比サマリー</h2>
+    <span class="pn">6 / 32</span>
+    <div class="progress-bar" style="width:16.1%"></div>
+  </div>
+  <div class="msg-bar">売上+32.2%・客数+47.6%と前年比は好調だが、客単価-10.4%に課題。客数で稼ぐ構造へ変化</div>
+  <div class="slide-body" style="padding:16px 40px;">
+    <div class="compare-grid">
+      <div class="gauge-card" style="border-top:4px solid #22C55E;">
+        <div class="g-label">📈 週間売上</div>
+        <div class="g-now">¥937,700</div>
+        <div class="g-prev">前年同週：¥709,520</div>
+        <div class="g-rate positive">▲ +32.2%</div>
+      </div>
+      <div class="gauge-card" style="border-top:4px solid #22C55E;">
+        <div class="g-label">👥 客数</div>
+        <div class="g-now">211人</div>
+        <div class="g-prev">前年同週：143人</div>
+        <div class="g-rate positive">▲ +47.6%</div>
+      </div>
+      <div class="gauge-card" style="border-top:4px solid #EF4444;">
+        <div class="g-label">💴 客単価</div>
+        <div class="g-now">¥4,444</div>
+        <div class="g-prev">前年同週：¥4,962</div>
+        <div class="g-rate negative">▼ -10.4%</div>
+      </div>
+    </div>
+    <div class="special-list" style="margin-top:16px;">
+      <div class="special-item">🌱 客数は前年比+68人と大幅増加。ランチ営業の集客力向上が寄与</div>
+      <div class="special-item">⚠️ 客単価は前年比-¥518。コース利用減少とランチ構成比の上昇が影響</div>
+      <div class="special-item">📊 売上成長は客数増加がドライバー。単価向上策が今後の課題</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 7: 曜日別概況 ===== -->
+<div class="slide" id="slide-7">
+  <div class="slide-header">
+    <h2><span class="section-tag">第2部</span>曜日別概況</h2>
+    <span class="pn">7 / 32</span>
+    <div class="progress-bar" style="width:19.4%"></div>
+  </div>
+  <div class="msg-bar">7日中6日が4週平均を下回り、月曜日のみ+¥39,850のプラス。火曜日-¥137,580が最大の不振</div>
+  <div class="slide-body" style="padding:10px 40px;">
+    <svg id="chart-weekday" width="1200" height="560"></svg>
+  </div>
+</div>
+
+<!-- ===== SLIDE 8: 火曜日不調：基本数字 ===== -->
+<div class="slide" id="slide-8">
+  <div class="slide-header">
+    <h2><span class="section-tag">第2部</span>火曜日 不調の分析：基本数字</h2>
+    <span class="pn">8 / 32</span>
+    <div class="progress-bar" style="width:22.6%"></div>
+  </div>
+  <div class="msg-bar">売上¥31,530は4週平均の18.6%水準。客単価¥1,659（通常の29%）が最大の問題</div>
+  <div class="slide-body" style="padding:14px 40px;">
+    <div style="display:flex; gap:24px; height:100%;">
+      <div style="flex:1.6;">
+        <svg id="chart-tue-ratio" width="720" height="480"></svg>
+      </div>
+      <div style="flex:1; display:flex; flex-direction:column; gap:12px; justify-content:center;">
+        <div class="side-card" style="border-left:5px solid #EF4444;">
+          <div class="label">📉 売上</div>
+          <div class="value" style="font-size:30px; color:#EF4444;">¥31,530</div>
+          <div class="sub">4週平均 ¥169,110</div>
+          <div style="font-size:22px; font-weight:800; color:#EF4444;">18.6%水準</div>
+        </div>
+        <div class="side-card" style="border-left:5px solid #EF4444;">
+          <div class="label">👥 客数</div>
+          <div class="value" style="font-size:30px; color:#EF4444;">19人</div>
+          <div class="sub">4週平均 30.0人</div>
+          <div style="font-size:22px; font-weight:800; color:#EF4444;">63.3%水準</div>
+        </div>
+        <div class="side-card" style="border-left:5px solid #EF4444; background:#FEF2F2;">
+          <div class="label">🚨 客単価</div>
+          <div class="value" style="font-size:30px; color:#EF4444;">¥1,659</div>
+          <div class="sub">4週平均 ¥5,729</div>
+          <div style="font-size:22px; font-weight:800; color:#EF4444;">29.0%水準</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// 共通設定
+// ============================================================
+const COLORS = {
+  positive: '#22C55E',
+  negative: '#EF4444',
+  current: '#3B82F6',
+  avg: '#94A3B8',
+  accent: '#F97316',
+  navy: '#1E3A5F',
+  text: '#334155',
+  dark: '#1E293B'
+};
+
+// ============================================================
+// スライド3: 売上トレンド
+// ============================================================
+(function drawSalesTrend() {
+  const svgEl = document.getElementById('chart-sales-trend');
+  if (!svgEl) return;
+  const W = 820, H = 520;
+  const margin = { top: 50, right: 80, bottom: 50, left: 90 };
+  const iW = W - margin.left - margin.right;
+  const iH = H - margin.top - margin.bottom;
+
+  const data = [
+    { week: 'W07', value: 1451060 },
+    { week: 'W08', value: 1628490 },
+    { week: 'W09', value: 1594390 },
+    { week: 'W11', value: 937700 }
+  ];
+
+  const svg = d3.select(svgEl)
+    .attr('width', W).attr('height', H);
+  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+  const x = d3.scalePoint().domain(data.map(d => d.week)).range([0, iW]).padding(0.3);
+  const yMin = 800000, yMax = 1800000;
+  const y = d3.scaleLinear().domain([yMin, yMax]).range([iH, 0]).nice();
+
+  // グリッド
+  g.append('g').selectAll('line').data(y.ticks(5)).join('line')
+    .attr('x1', 0).attr('x2', iW)
+    .attr('y1', d => y(d)).attr('y2', d => y(d))
+    .attr('stroke', '#E2E8F0').attr('stroke-dasharray', '3,3');
+
+  // W10欠損区間：W09→W11 破線
+  const w09 = data.find(d => d.week === 'W09');
+  const w11 = data.find(d => d.week === 'W11');
+  // 破線の中間点（W10の位置を仮想的に表現するため、W09とW11の中間をW10位置とする）
+  // x scaleにはW10が含まれないので、W09とW11の間に破線を引く
+  g.append('line')
+    .attr('x1', x('W09')).attr('y1', y(w09.value))
+    .attr('x2', x('W11')).attr('y2', y(w11.value))
+    .attr('stroke', COLORS.current).attr('stroke-width', 2.5)
+    .attr('stroke-dasharray', '8,5').attr('opacity', 0.7);
+
+  // W10欠損ラベル
+  const midX = (x('W09') + x('W11')) / 2;
+  const midY = (y(w09.value) + y(w11.value)) / 2;
+  g.append('text').attr('x', midX).attr('y', midY - 18)
+    .attr('text-anchor', 'middle').attr('font-size', '14px')
+    .attr('fill', '#94A3B8').attr('font-weight', '600').text('W10欠損');
+
+  // 通常折れ線（W07-W09）
+  const lineGen = d3.line().x(d => x(d.week)).y(d => y(d.value));
+  const solidData = data.slice(0, 3);
+  g.append('path').datum(solidData)
+    .attr('fill', 'none').attr('stroke', COLORS.current)
+    .attr('stroke-width', 3).attr('d', lineGen);
+
+  // ドット
+  data.forEach((d, i) => {
+    const isLast = i === data.length - 1;
+    g.append('circle')
+      .attr('cx', x(d.week)).attr('cy', y(d.value))
+      .attr('r', isLast ? 8 : 5)
+      .attr('fill', isLast ? COLORS.current : '#fff')
+      .attr('stroke', COLORS.current).attr('stroke-width', isLast ? 0 : 2.5);
+  });
+
+  // データラベル
+  data.forEach((d, i) => {
+    const isLast = i === data.length - 1;
+    const fmt = v => '¥' + Math.round(v / 10000) + '万';
+    g.append('text')
+      .attr('x', x(d.week)).attr('y', y(d.value) - (isLast ? 18 : 14))
+      .attr('text-anchor', 'middle')
+      .attr('font-size', isLast ? '20px' : '16px')
+      .attr('font-weight', isLast ? '800' : '600')
+      .attr('fill', isLast ? COLORS.negative : COLORS.text)
+      .text(fmt(d.value));
+  });
+
+  // トレンド矢印（W09→W11）
+  const arrowMarkerId = 'arrow-sales';
+  svg.append('defs').append('marker').attr('id', arrowMarkerId)
+    .attr('viewBox', '0 0 10 10').attr('refX', 8).attr('refY', 5)
+    .attr('markerWidth', 7).attr('markerHeight', 7).attr('orient', 'auto')
+    .append('path').attr('d', 'M 0 0 L 10 5 L 0 10 z').attr('fill', COLORS.negative);
+
+  const aX1 = x('W09') + 20, aY1 = y(w09.value) + 10;
+  const aX2 = x('W11') - 20, aY2 = y(w11.value) - 10;
+  g.append('line')
+    .attr('x1', aX1).attr('y1', aY1).attr('x2', aX2).attr('y2', aY2)
+    .attr('stroke', COLORS.negative).attr('stroke-width', 3).attr('opacity', 0.65)
+    .attr('marker-end', `url(#${arrowMarkerId})`);
+
+  const tMidX = (aX1 + aX2) / 2 + 25;
+  const tMidY = (aY1 + aY2) / 2 - 10;
+  const pct = ((w11.value - w09.value) / w09.value * 100).toFixed(1);
+  g.append('text').attr('x', tMidX).attr('y', tMidY)
+    .attr('font-size', '17px').attr('font-weight', '800').attr('fill', COLORS.negative)
+    .text(pct + '%');
+
+  // W11吹き出し（左にオフセット）
+  const cX = x('W11') - 10;
+  const cY = y(w11.value) - 36;
+  const cText = '¥937,700（最低水準）';
+  const cG = g.append('g');
+  const cTxt = cG.append('text').attr('x', cX).attr('y', cY)
+    .attr('text-anchor', 'end').attr('font-size', '18px').attr('font-weight', '800')
+    .attr('fill', COLORS.dark).text(cText);
+  const bb = cTxt.node().getBBox();
+  cG.insert('rect', 'text')
+    .attr('x', bb.x - 10).attr('y', bb.y - 6)
+    .attr('width', bb.width + 20).attr('height', bb.height + 12)
+    .attr('rx', 6).attr('fill', '#FFF7ED').attr('stroke', COLORS.accent).attr('stroke-width', 1.5);
+
+  // 軸
+  const xAxis = d3.axisBottom(x).tickSize(0);
+  const yAxis = d3.axisLeft(y).ticks(5).tickFormat(v => '¥' + (v / 10000) + '万');
+  g.append('g').attr('transform', `translate(0,${iH})`).call(xAxis)
+    .selectAll('text').attr('font-size', '16px').attr('fill', COLORS.text);
+  g.select('.domain').remove();
+  g.append('g').call(yAxis).selectAll('text').attr('font-size', '14px');
+  g.select('g:last-of-type .domain').remove();
+})();
+
+// ============================================================
+// スライド4: 客数トレンド
+// ============================================================
+(function drawPaxTrend() {
+  const svgEl = document.getElementById('chart-pax-trend');
+  if (!svgEl) return;
+  const W = 820, H = 520;
+  const margin = { top: 50, right: 80, bottom: 50, left: 70 };
+  const iW = W - margin.left - margin.right;
+  const iH = H - margin.top - margin.bottom;
+
+  const data = [
+    { week: 'W07', value: 280 },
+    { week: 'W08', value: 264 },
+    { week: 'W09', value: 274 },
+    { week: 'W11', value: 211 }
+  ];
+
+  const svg = d3.select(svgEl).attr('width', W).attr('height', H);
+  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+  const x = d3.scalePoint().domain(data.map(d => d.week)).range([0, iW]).padding(0.3);
+  const y = d3.scaleLinear().domain([150, 310]).range([iH, 0]).nice();
+
+  g.append('g').selectAll('line').data(y.ticks(5)).join('line')
+    .attr('x1', 0).attr('x2', iW)
+    .attr('y1', d => y(d)).attr('y2', d => y(d))
+    .attr('stroke', '#E2E8F0').attr('stroke-dasharray', '3,3');
+
+  const w09 = data.find(d => d.week === 'W09');
+  const w11 = data.find(d => d.week === 'W11');
+
+  g.append('line')
+    .attr('x1', x('W09')).attr('y1', y(w09.value))
+    .attr('x2', x('W11')).attr('y2', y(w11.value))
+    .attr('stroke', COLORS.current).attr('stroke-width', 2.5)
+    .attr('stroke-dasharray', '8,5').attr('opacity', 0.7);
+
+  const midX = (x('W09') + x('W11')) / 2;
+  const midY = (y(w09.value) + y(w11.value)) / 2;
+  g.append('text').attr('x', midX).attr('y', midY - 18)
+    .attr('text-anchor', 'middle').attr('font-size', '14px')
+    .attr('fill', '#94A3B8').attr('font-weight', '600').text('W10欠損');
+
+  const lineGen = d3.line().x(d => x(d.week)).y(d => y(d.value));
+  g.append('path').datum(data.slice(0, 3))
+    .attr('fill', 'none').attr('stroke', COLORS.current).attr('stroke-width', 3).attr('d', lineGen);
+
+  data.forEach((d, i) => {
+    const isLast = i === data.length - 1;
+    g.append('circle').attr('cx', x(d.week)).attr('cy', y(d.value))
+      .attr('r', isLast ? 8 : 5)
+      .attr('fill', isLast ? COLORS.current : '#fff')
+      .attr('stroke', COLORS.current).attr('stroke-width', isLast ? 0 : 2.5);
+    g.append('text').attr('x', x(d.week)).attr('y', y(d.value) - (isLast ? 18 : 14))
+      .attr('text-anchor', 'middle')
+      .attr('font-size', isLast ? '20px' : '16px').attr('font-weight', isLast ? '800' : '600')
+      .attr('fill', isLast ? COLORS.negative : COLORS.text)
+      .text(d.value + '人');
+  });
+
+  // トレンド矢印
+  const arrowId = 'arrow-pax';
+  svg.append('defs').append('marker').attr('id', arrowId)
+    .attr('viewBox', '0 0 10 10').attr('refX', 8).attr('refY', 5)
+    .attr('markerWidth', 7).attr('markerHeight', 7).attr('orient', 'auto')
+    .append('path').attr('d', 'M 0 0 L 10 5 L 0 10 z').attr('fill', COLORS.negative);
+
+  g.append('line')
+    .attr('x1', x('W09') + 15).attr('y1', y(w09.value) + 10)
+    .attr('x2', x('W11') - 15).attr('y2', y(w11.value) - 10)
+    .attr('stroke', COLORS.negative).attr('stroke-width', 3).attr('opacity', 0.65)
+    .attr('marker-end', `url(#${arrowId})`);
+
+  const pct = ((w11.value - w09.value) / w09.value * 100).toFixed(1);
+  const aMidX = (x('W09') + x('W11')) / 2 + 20;
+  const aMidY = (y(w09.value) + y(w11.value)) / 2 - 12;
+  g.append('text').attr('x', aMidX).attr('y', aMidY)
+    .attr('font-size', '17px').attr('font-weight', '800').attr('fill', COLORS.negative)
+    .text(pct + '%');
+
+  // W11吹き出し
+  const cG = g.append('g');
+  const cTxt = cG.append('text').attr('x', x('W11') - 10).attr('y', y(w11.value) - 36)
+    .attr('text-anchor', 'end').attr('font-size', '18px').attr('font-weight', '800')
+    .attr('fill', COLORS.dark).text('211人（直近最低）');
+  const bb = cTxt.node().getBBox();
+  cG.insert('rect', 'text').attr('x', bb.x - 10).attr('y', bb.y - 6)
+    .attr('width', bb.width + 20).attr('height', bb.height + 12)
+    .attr('rx', 6).attr('fill', '#FFF7ED').attr('stroke', COLORS.accent).attr('stroke-width', 1.5);
+
+  const xAxis = d3.axisBottom(x).tickSize(0);
+  const yAxis = d3.axisLeft(y).ticks(5).tickFormat(v => v + '人');
+  g.append('g').attr('transform', `translate(0,${iH})`).call(xAxis)
+    .selectAll('text').attr('font-size', '16px').attr('fill', COLORS.text);
+  g.append('g').call(yAxis).selectAll('text').attr('font-size', '14px');
+})();
+
+// ============================================================
+// スライド5: 客単価トレンド
+// ============================================================
+(function drawSpendTrend() {
+  const svgEl = document.getElementById('chart-spend-trend');
+  if (!svgEl) return;
+  const W = 820, H = 520;
+  const margin = { top: 50, right: 80, bottom: 50, left: 80 };
+  const iW = W - margin.left - margin.right;
+  const iH = H - margin.top - margin.bottom;
+
+  const data = [
+    { week: 'W07', value: 5182 },
+    { week: 'W08', value: 6169 },
+    { week: 'W09', value: 5819 },
+    { week: 'W11', value: 4444 }
+  ];
+
+  const svg = d3.select(svgEl).attr('width', W).attr('height', H);
+  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+  const x = d3.scalePoint().domain(data.map(d => d.week)).range([0, iW]).padding(0.3);
+  const y = d3.scaleLinear().domain([3500, 7000]).range([iH, 0]).nice();
+
+  g.append('g').selectAll('line').data(y.ticks(5)).join('line')
+    .attr('x1', 0).attr('x2', iW)
+    .attr('y1', d => y(d)).attr('y2', d => y(d))
+    .attr('stroke', '#E2E8F0').attr('stroke-dasharray', '3,3');
+
+  const w09 = data.find(d => d.week === 'W09');
+  const w11 = data.find(d => d.week === 'W11');
+
+  g.append('line')
+    .attr('x1', x('W09')).attr('y1', y(w09.value))
+    .attr('x2', x('W11')).attr('y2', y(w11.value))
+    .attr('stroke', COLORS.current).attr('stroke-width', 2.5)
+    .attr('stroke-dasharray', '8,5').attr('opacity', 0.7);
+
+  const midX = (x('W09') + x('W11')) / 2;
+  const midY = (y(w09.value) + y(w11.value)) / 2;
+  g.append('text').attr('x', midX).attr('y', midY - 18)
+    .attr('text-anchor', 'middle').attr('font-size', '14px')
+    .attr('fill', '#94A3B8').attr('font-weight', '600').text('W10欠損');
+
+  const lineGen = d3.line().x(d => x(d.week)).y(d => y(d.value));
+  g.append('path').datum(data.slice(0, 3))
+    .attr('fill', 'none').attr('stroke', COLORS.current).attr('stroke-width', 3).attr('d', lineGen);
+
+  data.forEach((d, i) => {
+    const isLast = i === data.length - 1;
+    g.append('circle').attr('cx', x(d.week)).attr('cy', y(d.value))
+      .attr('r', isLast ? 8 : 5)
+      .attr('fill', isLast ? COLORS.current : '#fff')
+      .attr('stroke', COLORS.current).attr('stroke-width', isLast ? 0 : 2.5);
+    g.append('text').attr('x', x(d.week)).attr('y', y(d.value) - (isLast ? 18 : 14))
+      .attr('text-anchor', 'middle')
+      .attr('font-size', isLast ? '20px' : '16px').attr('font-weight', isLast ? '800' : '600')
+      .attr('fill', isLast ? COLORS.negative : COLORS.text)
+      .text('¥' + d.value.toLocaleString());
+  });
+
+  // トレンド矢印
+  const arrowId = 'arrow-spend';
+  svg.append('defs').append('marker').attr('id', arrowId)
+    .attr('viewBox', '0 0 10 10').attr('refX', 8).attr('refY', 5)
+    .attr('markerWidth', 7).attr('markerHeight', 7).attr('orient', 'auto')
+    .append('path').attr('d', 'M 0 0 L 10 5 L 0 10 z').attr('fill', COLORS.negative);
+
+  g.append('line')
+    .attr('x1', x('W09') + 15).attr('y1', y(w09.value) + 10)
+    .attr('x2', x('W11') - 15).attr('y2', y(w11.value) - 10)
+    .attr('stroke', COLORS.negative).attr('stroke-width', 3).attr('opacity', 0.65)
+    .attr('marker-end', `url(#${arrowId})`);
+
+  const pct = ((w11.value - w09.value) / w09.value * 100).toFixed(1);
+  const aMidX = (x('W09') + x('W11')) / 2 + 22;
+  const aMidY = (y(w09.value) + y(w11.value)) / 2 - 12;
+  g.append('text').attr('x', aMidX).attr('y', aMidY)
+    .attr('font-size', '17px').attr('font-weight', '800').attr('fill', COLORS.negative)
+    .text(pct + '%');
+
+  // W11吹き出し
+  const cG = g.append('g');
+  const cTxt = cG.append('text').attr('x', x('W11') - 12).attr('y', y(w11.value) - 36)
+    .attr('text-anchor', 'end').attr('font-size', '18px').attr('font-weight', '800')
+    .attr('fill', COLORS.dark).text('¥4,444（3週平均比-22.3%）');
+  const bb = cTxt.node().getBBox();
+  cG.insert('rect', 'text').attr('x', bb.x - 10).attr('y', bb.y - 6)
+    .attr('width', bb.width + 20).attr('height', bb.height + 12)
+    .attr('rx', 6).attr('fill', '#FFF7ED').attr('stroke', COLORS.accent).attr('stroke-width', 1.5);
+
+  const xAxis = d3.axisBottom(x).tickSize(0);
+  const yAxis = d3.axisLeft(y).ticks(5).tickFormat(v => '¥' + v.toLocaleString());
+  g.append('g').attr('transform', `translate(0,${iH})`).call(xAxis)
+    .selectAll('text').attr('font-size', '16px').attr('fill', COLORS.text);
+  g.append('g').call(yAxis).selectAll('text').attr('font-size', '14px');
+})();
+
+// ============================================================
+// スライド7: 曜日別棒グラフ
+// ============================================================
+(function drawWeekday() {
+  const svgEl = document.getElementById('chart-weekday');
+  if (!svgEl) return;
+  const W = 1200, H = 560;
+  const margin = { top: 50, right: 160, bottom: 50, left: 70 };
+  const iW = W - margin.left - margin.right;
+  const iH = H - margin.top - margin.bottom;
+
+  const data = [
+    { day: '月', cur: 172790, avg: 132940, diff: 39850 },
+    { day: '火', cur: 31530,  avg: 169110, diff: -137580 },
+    { day: '水', cur: 99900,  avg: 229073, diff: -129173 },
+    { day: '木', cur: 79690,  avg: 149670, diff: -69980 },
+    { day: '金', cur: 161430, avg: 219997, diff: -58567 },
+    { day: '土', cur: 206430, avg: 309953, diff: -103523 },
+    { day: '日', cur: 185930, avg: 303323, diff: -117393 }
+  ];
+
+  const days = data.map(d => d.day);
+  const svg = d3.select(svgEl).attr('width', W).attr('height', H);
+  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+  const x0 = d3.scaleBand().domain(days).range([0, iW]).paddingInner(0.25).paddingOuter(0.1);
+  const x1 = d3.scaleBand().domain(['cur', 'avg']).range([0, x0.bandwidth()]).padding(0.05);
+  const y = d3.scaleLinear().domain([0, 380000]).range([iH, 0]).nice();
+
+  // グリッド
+  g.append('g').selectAll('line').data(y.ticks(5)).join('line')
+    .attr('x1', 0).attr('x2', iW)
+    .attr('y1', d => y(d)).attr('y2', d => y(d))
+    .attr('stroke', '#E2E8F0').attr('stroke-dasharray', '3,3');
+
+  // 火曜背景帯
+  g.insert('rect', ':first-child')
+    .attr('x', x0('火')).attr('y', 0)
+    .attr('width', x0.bandwidth()).attr('height', iH)
+    .attr('fill', '#FEF2F2').attr('rx', 6).attr('opacity', 0.5);
+
+  // 月曜楕円強調
+  const monCx = x0('月') + x0.bandwidth() / 2;
+  g.append('ellipse')
+    .attr('cx', monCx).attr('cy', iH / 2)
+    .attr('rx', x0.bandwidth() / 2 + 10).attr('ry', iH / 2 + 5)
+    .attr('fill', 'none').attr('stroke', COLORS.positive).attr('stroke-width', 2.5)
+    .attr('stroke-dasharray', '6,3').attr('opacity', 0.7);
+
+  // 棒
+  data.forEach(d => {
+    const isPos = d.diff > 0;
+    const isTue = d.day === '火';
+    const isMon = d.day === '月';
+    const curColor = isMon ? COLORS.positive : isTue ? COLORS.negative : COLORS.current;
+
+    // 当週棒
+    const bx = x0(d.day) + x1('cur');
+    g.append('rect')
+      .attr('x', bx).attr('y', y(d.cur))
+      .attr('width', x1.bandwidth()).attr('height', iH - y(d.cur))
+      .attr('fill', curColor).attr('rx', 3);
+
+    // 当週ラベル
+    const fmtK = v => '¥' + Math.round(v / 1000) + '千';
+    g.append('text').attr('x', bx + x1.bandwidth() / 2).attr('y', y(d.cur) - 6)
+      .attr('text-anchor', 'middle')
+      .attr('font-size', (isMon || isTue) ? '16px' : '14px')
+      .attr('font-weight', (isMon || isTue) ? '800' : '600')
+      .attr('fill', curColor).text(fmtK(d.cur));
+
+    // 4週平均棒
+    const ax = x0(d.day) + x1('avg');
+    g.append('rect')
+      .attr('x', ax).attr('y', y(d.avg))
+      .attr('width', x1.bandwidth()).attr('height', iH - y(d.avg))
+      .attr('fill', COLORS.avg).attr('rx', 3).attr('opacity', 0.75);
+  });
+
+  // 差額アノテーション（月・火のみ）
+  [data[0], data[1]].forEach(d => {
+    const isMon = d.day === '月';
+    const cx = x0(d.day) + x0.bandwidth() / 2;
+    const cy = isMon ? y(d.cur) - 36 : y(d.cur) - 50;
+    const txt = (d.diff > 0 ? '+' : '') + '¥' + Math.abs(d.diff).toLocaleString();
+    const color = d.diff > 0 ? COLORS.positive : COLORS.negative;
+    const cG = g.append('g');
+    const cTxt = cG.append('text').attr('x', cx).attr('y', cy)
+      .attr('text-anchor', 'middle').attr('font-size', '17px').attr('font-weight', '800')
+      .attr('fill', color).text(txt);
+    const bb = cTxt.node().getBBox();
+    cG.insert('rect', 'text').attr('x', bb.x - 8).attr('y', bb.y - 5)
+      .attr('width', bb.width + 16).attr('height', bb.height + 10)
+      .attr('rx', 5).attr('fill', d.diff > 0 ? '#F0FDF4' : '#FEF2F2')
+      .attr('stroke', color).attr('stroke-width', 1.5);
+  });
+
+  // 凡例
+  const legX = iW + 20;
+  [['当週', COLORS.current], ['4週平均', COLORS.avg]].forEach(([lbl, col], i) => {
+    g.append('rect').attr('x', legX).attr('y', i * 30).attr('width', 16).attr('height', 16).attr('fill', col).attr('rx', 3);
+    g.append('text').attr('x', legX + 22).attr('y', i * 30 + 13).attr('font-size', '16px').attr('fill', COLORS.text).text(lbl);
+  });
+  g.append('rect').attr('x', legX).attr('y', 65).attr('width', 16).attr('height', 16).attr('fill', COLORS.positive).attr('rx', 3);
+  g.append('text').attr('x', legX + 22).attr('y', 78).attr('font-size', '16px').attr('fill', COLORS.text).text('月曜（好調）');
+  g.append('rect').attr('x', legX).attr('y', 95).attr('width', 16).attr('height', 16).attr('fill', COLORS.negative).attr('rx', 3);
+  g.append('text').attr('x', legX + 22).attr('y', 108).attr('font-size', '16px').attr('fill', COLORS.text).text('火曜（不調）');
+
+  // 軸
+  g.append('g').attr('transform', `translate(0,${iH})`).call(d3.axisBottom(x0).tickSize(0))
+    .selectAll('text').attr('font-size', '18px').attr('font-weight', '700').attr('fill', COLORS.dark);
+  g.append('g').call(d3.axisLeft(y).ticks(5).tickFormat(v => '¥' + (v / 10000) + '万'))
+    .selectAll('text').attr('font-size', '14px');
+})();
+
+// ============================================================
+// スライド8: 火曜日 割合棒グラフ
+// ============================================================
+(function drawTueRatio() {
+  const svgEl = document.getElementById('chart-tue-ratio');
+  if (!svgEl) return;
+  const W = 720, H = 480;
+  const margin = { top: 40, right: 180, bottom: 40, left: 90 };
+  const iW = W - margin.left - margin.right;
+  const iH = H - margin.top - margin.bottom;
+
+  const items = [
+    { label: '売上', thisW: 31530, avg4: 169110, fmt: v => '¥' + v.toLocaleString() },
+    { label: '客数', thisW: 19,    avg4: 30.0,   fmt: v => v + '人' },
+    { label: '客単価', thisW: 1659, avg4: 5729,  fmt: v => '¥' + v.toLocaleString() }
+  ];
+
+  const ratios = items.map(d => d.thisW / d.avg4 * 100);
+  const svg = d3.select(svgEl).attr('width', W).attr('height', H);
+  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+  const bH = iH / items.length * 0.55;
+  const gap = iH / items.length;
+  const maxRatio = 130;
+  const x = d3.scaleLinear().domain([0, maxRatio]).range([0, iW]);
+
+  // 100%基準線
+  g.append('line')
+    .attr('x1', x(100)).attr('y1', -20).attr('x2', x(100)).attr('y2', iH + 10)
+    .attr('stroke', '#1E293B').attr('stroke-width', 2.5);
+  g.append('text').attr('x', x(100)).attr('y', -26)
+    .attr('text-anchor', 'middle').attr('font-size', '14px').attr('font-weight', '700')
+    .attr('fill', '#1E293B').text('4週平均=100%');
+
+  items.forEach((item, i) => {
+    const ratio = ratios[i];
+    const barColor = ratio < 80 ? COLORS.negative : ratio >= 120 ? COLORS.positive : COLORS.current;
+    const cy = i * gap + gap / 2 - bH / 2;
+
+    // 背景ハイライト（最低値 = 客単価）
+    if (i === 2) {
+      g.insert('rect', ':first-child')
+        .attr('x', -margin.left).attr('y', cy - 10)
+        .attr('width', W).attr('height', bH + 20)
+        .attr('fill', '#FEF2F2').attr('rx', 6).attr('opacity', 0.5);
+    }
+
+    // ラベル
+    g.append('text').attr('x', -10).attr('y', cy + bH / 2 + 6)
+      .attr('text-anchor', 'end').attr('font-size', '18px').attr('font-weight', '700')
+      .attr('fill', COLORS.dark).text(item.label);
+
+    // バー
+    g.append('rect').attr('x', 0).attr('y', cy)
+      .attr('width', x(ratio)).attr('height', bH)
+      .attr('fill', barColor).attr('rx', 4);
+
+    // 太枠（最低値）
+    if (i === 2) {
+      g.append('rect').attr('x', -1.5).attr('y', cy - 1.5)
+        .attr('width', x(ratio) + 3).attr('height', bH + 3)
+        .attr('fill', 'none').attr('stroke', COLORS.negative).attr('stroke-width', 3).attr('rx', 5);
+    }
+
+    // 割合ラベル
+    g.append('text').attr('x', x(ratio) + 8).attr('y', cy + bH / 2 + 6)
+      .attr('font-size', '18px').attr('font-weight', '800').attr('fill', barColor)
+      .text(ratio.toFixed(1) + '%');
+
+    // 実数値
+    g.append('text').attr('x', x(maxRatio) + 60).attr('y', cy + bH / 2 + 6)
+      .attr('text-anchor', 'middle').attr('font-size', '17px').attr('font-weight', '700')
+      .attr('fill', COLORS.dark).text(item.fmt(item.thisW));
+
+    // バッジ（要改善）
+    if (ratio < 50) {
+      const bx = x(ratio) / 2;
+      const by = cy - 20;
+      const bG = g.append('g');
+      const bTxt = bG.append('text').attr('x', bx).attr('y', by)
+        .attr('text-anchor', 'middle').attr('font-size', '16px').attr('font-weight', '800')
+        .attr('fill', COLORS.negative).text('▼ 要改善');
+      const bb = bTxt.node().getBBox();
+      bG.insert('rect', 'text').attr('x', bb.x - 6).attr('y', bb.y - 3)
+        .attr('width', bb.width + 12).attr('height', bb.height + 6)
+        .attr('rx', 4).attr('fill', '#FEF2F2').attr('stroke', COLORS.negative).attr('stroke-width', 1.5);
+    }
+  });
+
+  // 軸ラベル
+  g.append('text').attr('x', iW + margin.right - 10).attr('y', iH / 2)
+    .attr('text-anchor', 'middle').attr('font-size', '16px').attr('fill', '#94A3B8').text('今週実績');
+})();
+</script>
+
+<!-- ===== SLIDE 9: 火曜日：来店人数別 ===== -->
+<div class="slide" id="slide-9">
+  <div class="slide-header">
+    <h2><span class="section-tag">第2部</span>火曜日 不調の分析：来店人数別</h2>
+    <span class="pn">9 / 32</span>
+    <div class="progress-bar" style="width:25.8%"></div>
+  </div>
+  <div class="msg-bar">3-4名組は8件あるが売上¥12,200と極めて低い。高単価注文がほぼなく、ランチのみの利用に偏る</div>
+  <div class="slide-body" style="padding:14px 40px;">
+    <div style="display:flex; gap:24px; height:100%;">
+      <div style="flex:1.8;">
+        <svg id="chart-tue-group" width="780" height="480"></svg>
+      </div>
+      <div style="flex:1; display:flex; flex-direction:column; gap:10px; justify-content:center;">
+        <div class="side-card" style="background:#FEF2F2;">
+          <div class="label">🚨 最多件数グループ</div>
+          <div class="value" style="font-size:28px; color:#EF4444;">3-4名：8件</div>
+          <div class="sub">売上¥12,200 / 平均¥1,525/件</div>
+        </div>
+        <div class="side-card">
+          <div class="label">👤 1名</div>
+          <div style="font-size:22px; font-weight:800;">4件 / ¥5,580</div>
+          <div class="sub">平均¥1,395/件</div>
+        </div>
+        <div class="side-card">
+          <div class="label">👥 2名</div>
+          <div style="font-size:22px; font-weight:800;">1件 / ¥2,550</div>
+          <div class="sub">平均¥1,275/件</div>
+        </div>
+        <div class="side-card">
+          <div class="label">👥 5名以上</div>
+          <div style="font-size:22px; font-weight:800;">1件 / ¥11,200</div>
+          <div class="sub">平均¥1,120/件</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 10: 火曜日：時間帯別売上 ===== -->
+<div class="slide" id="slide-10">
+  <div class="slide-header">
+    <h2><span class="section-tag">第2部</span>火曜日 不調の分析：時間帯別売上</h2>
+    <span class="pn">10 / 32</span>
+    <div class="progress-bar" style="width:29.0%"></div>
+  </div>
+  <div class="msg-bar">ディナータイムの来店がゼロ。ランチ¥24,130とデリバリー¥7,400のみで、営業時間の大半が空白</div>
+  <div class="slide-body" style="padding:14px 40px;">
+    <div style="display:flex; gap:24px; height:100%;">
+      <div style="flex:1.8;">
+        <svg id="chart-tue-time" width="780" height="480"></svg>
+      </div>
+      <div style="flex:1; display:flex; flex-direction:column; gap:12px; justify-content:center;">
+        <div class="side-card" style="border-left:5px solid #3B82F6;">
+          <div class="label">🍱 ランチ（11-13時）</div>
+          <div class="value" style="font-size:28px;">¥24,130</div>
+          <div class="sub">来店7件</div>
+        </div>
+        <div class="side-card" style="border-left:5px solid #94A3B8;">
+          <div class="label">🛵 デリバリー</div>
+          <div class="value" style="font-size:28px;">¥7,400</div>
+          <div class="sub">ロケットナウ+UberEats</div>
+        </div>
+        <div class="side-card" style="border-left:5px solid #EF4444; background:#FEF2F2;">
+          <div class="label">🚨 ディナー（17時以降）</div>
+          <div class="value" style="font-size:28px; color:#EF4444;">¥0</div>
+          <div class="sub">来店ゼロ</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 11: 火曜日：商品別売上 ===== -->
+<div class="slide" id="slide-11">
+  <div class="slide-header">
+    <h2><span class="section-tag">第2部</span>火曜日 不調の分析：商品別売上</h2>
+    <span class="pn">11 / 32</span>
+    <div class="progress-bar" style="width:32.3%"></div>
+  </div>
+  <div class="msg-bar">ランチ定食が売上の大半を占め、高単価商品の注文がほぼゼロ。フード・ドリンク売上は完全にゼロ</div>
+  <div class="slide-body" style="padding:14px 40px;">
+    <div style="display:flex; gap:24px; height:100%;">
+      <div style="flex:1;">
+        <div style="margin-bottom:12px; font-size:20px; font-weight:800; color:#1E293B;">🏷️ カテゴリ構成</div>
+        <table class="dt" style="font-size:17px;">
+          <thead>
+            <tr><th>カテゴリ</th><th class="num">売上</th><th class="num">構成比</th></tr>
+          </thead>
+          <tbody>
+            <tr class="highlight-row"><td>🍱 ランチ</td><td class="num">¥24,130</td><td class="num" style="color:#F97316; font-size:20px;">76.5%</td></tr>
+            <tr><td>🛵 ロケットナウ</td><td class="num">¥3,900</td><td class="num">12.4%</td></tr>
+            <tr><td>🚗 ウーバーイーツ</td><td class="num">¥3,500</td><td class="num">11.1%</td></tr>
+            <tr style="color:#EF4444; font-weight:800;"><td>⚠️ フード</td><td class="num">¥0</td><td class="num">0%</td></tr>
+            <tr style="color:#EF4444; font-weight:800;"><td>⚠️ ドリンク</td><td class="num">¥0</td><td class="num">0%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="flex:1;">
+        <div style="margin-bottom:12px; font-size:20px; font-weight:800; color:#1E293B;">🏷️ 主要商品</div>
+        <table class="dt" style="font-size:17px;">
+          <thead>
+            <tr><th>商品名</th><th>カテゴリ</th><th class="num">売上</th></tr>
+          </thead>
+          <tbody>
+            <tr class="highlight-row"><td>カキフライ定食</td><td>ランチ</td><td class="num">¥3,600</td></tr>
+            <tr><td>uber生姜焼き弁当</td><td>ウーバーイーツ</td><td class="num">¥3,800</td></tr>
+            <tr><td>とんかつ定食</td><td>ランチ</td><td class="num">¥1,800</td></tr>
+            <tr><td>穴子天丼定食</td><td>ランチ</td><td class="num">¥1,500</td></tr>
+            <tr><td>ロケットサバの一夜干し弁当</td><td>ロケットナウ</td><td class="num">¥1,500</td></tr>
+          </tbody>
+        </table>
+        <div class="notice-box" style="margin-top:12px; font-size:16px;">※フード・ドリンク売上は完全ゼロ。ディナー来客がなかったことが直接の原因</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 12: 火曜日：まとめ ===== -->
+<div class="slide" id="slide-12">
+  <div class="slide-header">
+    <h2><span class="section-tag">第2部</span>火曜日 不調の分析：まとめ</h2>
+    <span class="pn">12 / 32</span>
+    <div class="progress-bar" style="width:35.5%"></div>
+  </div>
+  <div class="msg-bar">火曜日不調の主因は「ディナー来店ゼロ」。天候（雪・寒さ）も影響したが、構造的な集客課題が根底にある</div>
+  <div class="slide-body" style="padding:16px 40px;">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; height:calc(100% - 10px);">
+      <div>
+        <div style="font-size:22px; font-weight:800; color:#1E293B; margin-bottom:12px;">🚨 不調の3大要因</div>
+        <ul class="bullet-list">
+          <li>
+            <div class="icon">🌙</div>
+            <div class="text"><strong>ディナー来店ゼロ</strong><br><span style="font-size:17px; color:#64748B;">フード・ドリンク売上が完全にゼロ。来客動線が存在しない</span></div>
+          </li>
+          <li>
+            <div class="icon">❄️</div>
+            <div class="text"><strong>天候要因</strong><br><span style="font-size:17px; color:#64748B;">朝の雪・寒さでランチ客数も7件に低下。媒体の反応もなし</span></div>
+          </li>
+          <li>
+            <div class="icon">📉</div>
+            <div class="text"><strong>火曜日の構造的弱さ</strong><br><span style="font-size:17px; color:#64748B;">スタッフも「火曜日は売上が良くない傾向」と認識する恒常的な課題</span></div>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <div style="font-size:22px; font-weight:800; color:#1E293B; margin-bottom:12px;">💡 改善の方向性</div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div style="background:#F0FDF4; border-radius:10px; padding:13px 18px; font-size:18px; border-left:4px solid #22C55E;">
+            📅 火曜日限定のディナー集客策（早割コース、SNS告知）
+          </div>
+          <div style="background:#F0FDF4; border-radius:10px; padding:13px 18px; font-size:18px; border-left:4px solid #22C55E;">
+            🛵 デリバリー強化で天候リスクを軽減
+          </div>
+          <div style="background:#F0FDF4; border-radius:10px; padding:13px 18px; font-size:18px; border-left:4px solid #22C55E;">
+            📋 予約サイトの火曜日枠の最適化
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 13: 月曜日好調：基本数字 ===== -->
+<div class="slide" id="slide-13">
+  <div class="slide-header">
+    <h2><span class="section-tag">第2部</span>月曜日 好調の分析：基本数字</h2>
+    <span class="pn">13 / 32</span>
+    <div class="progress-bar" style="width:38.7%"></div>
+  </div>
+  <div class="msg-bar">売上¥172,790は4週平均比+30.0%。客数38人と4週平均比+44.8%で、唯一のプラス曜日</div>
+  <div class="slide-body" style="padding:14px 40px;">
+    <div style="display:flex; gap:24px; height:100%;">
+      <div style="flex:1.6;">
+        <svg id="chart-mon-ratio" width="720" height="480"></svg>
+      </div>
+      <div style="flex:1; display:flex; flex-direction:column; gap:12px; justify-content:center;">
+        <div class="side-card" style="border-left:5px solid #22C55E; background:#F0FDF4;">
+          <div class="label">🎯 売上</div>
+          <div class="value" style="font-size:30px; color:#22C55E;">¥172,790</div>
+          <div class="sub">4週平均 ¥132,940</div>
+          <div style="font-size:22px; font-weight:800; color:#22C55E;">130.0%水準</div>
+        </div>
+        <div class="side-card" style="border-left:5px solid #22C55E; background:#F0FDF4;">
+          <div class="label">👥 客数</div>
+          <div class="value" style="font-size:30px; color:#22C55E;">38人</div>
+          <div class="sub">4週平均 26.2人</div>
+          <div style="font-size:22px; font-weight:800; color:#22C55E;">144.8%水準</div>
+        </div>
+        <div class="side-card" style="border-left:5px solid #94A3B8;">
+          <div class="label">💴 客単価</div>
+          <div class="value" style="font-size:30px;">¥4,547</div>
+          <div class="sub" style="color:#94A3B8;">※4週平均はW10欠損により算出不可</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 14: 月曜日好調：来店人数別 ===== -->
+<div class="slide" id="slide-14">
+  <div class="slide-header">
+    <h2><span class="section-tag">第2部</span>月曜日 好調の分析：来店人数別</h2>
+    <span class="pn">14 / 32</span>
+    <div class="progress-bar" style="width:41.9%"></div>
+  </div>
+  <div class="msg-bar">3-4名グループが11件で売上の60%（¥103,650）を占め、好調を牽引。2名組も高単価利用</div>
+  <div class="slide-body" style="padding:14px 40px;">
+    <div style="display:flex; gap:24px; height:100%;">
+      <div style="flex:1.8;">
+        <svg id="chart-mon-group" width="780" height="480"></svg>
+      </div>
+      <div style="flex:1; display:flex; flex-direction:column; gap:10px; justify-content:center;">
+        <div class="side-card" style="background:#F0FDF4; border-left:5px solid #22C55E;">
+          <div class="label">🏆 最多グループ</div>
+          <div class="value" style="font-size:28px; color:#22C55E;">3-4名：11件</div>
+          <div class="sub">売上¥103,650 / 平均¥6,478/件</div>
+          <div style="font-size:17px; font-weight:700; color:#22C55E; margin-top:4px;">売上全体の60%</div>
+        </div>
+        <div class="side-card">
+          <div class="label">👤 1名</div>
+          <div style="font-size:22px; font-weight:800;">7件 / ¥13,040</div>
+          <div class="sub">平均¥1,863/件</div>
+        </div>
+        <div class="side-card">
+          <div class="label">👥 2名</div>
+          <div style="font-size:22px; font-weight:800;">5件 / ¥36,400</div>
+          <div class="sub">平均¥3,640/件</div>
+        </div>
+        <div class="side-card">
+          <div class="label">👥 5名以上</div>
+          <div style="font-size:22px; font-weight:800;">1件 / ¥19,700</div>
+          <div class="sub">平均¥3,940/件</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 15: 月曜日好調：時間帯別売上 ===== -->
+<div class="slide" id="slide-15">
+  <div class="slide-header">
+    <h2><span class="section-tag">第2部</span>月曜日 好調の分析：時間帯別売上</h2>
+    <span class="pn">15 / 32</span>
+    <div class="progress-bar" style="width:45.2%"></div>
+  </div>
+  <div class="msg-bar">ランチ¥64,810に加え、ディナー¥98,320を確保。ディナーの存在が火曜日との決定的な差</div>
+  <div class="slide-body" style="padding:14px 40px;">
+    <div style="display:flex; gap:24px; height:100%;">
+      <div style="flex:1.8;">
+        <svg id="chart-mon-time" width="780" height="480"></svg>
+      </div>
+      <div style="flex:1; display:flex; flex-direction:column; gap:12px; justify-content:center;">
+        <div class="side-card" style="border-left:5px solid #3B82F6;">
+          <div class="label">🍱 ランチ（11-13時）</div>
+          <div class="value" style="font-size:28px;">¥64,810</div>
+          <div class="sub">30人来店</div>
+        </div>
+        <div class="side-card" style="border-left:5px solid #22C55E; background:#F0FDF4;">
+          <div class="label">🌙 ディナー（17-21時）</div>
+          <div class="value" style="font-size:28px; color:#22C55E;">¥78,580</div>
+          <div class="sub">5人来店</div>
+        </div>
+        <div class="side-card" style="border-left:5px solid #F97316;">
+          <div class="label">🚗 UberEats</div>
+          <div class="value" style="font-size:28px;">¥29,400</div>
+          <div class="sub">うな重梅・松が好調</div>
+        </div>
+        <div class="notice-box" style="font-size:16px;">🔑 ディナー¥78,580の存在が<br>火曜日との決定的な差</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 16: 月曜日好調：商品別売上 ===== -->
+<div class="slide" id="slide-16">
+  <div class="slide-header">
+    <h2><span class="section-tag">第2部</span>月曜日 好調の分析：商品別売上</h2>
+    <span class="pn">16 / 32</span>
+    <div class="progress-bar" style="width:48.4%"></div>
+  </div>
+  <div class="msg-bar">うな重竹定食が¥22,000で最多。UberEats鰻商品も¥29,400と好調で、ランチ+デリバリーの両輪が機能</div>
+  <div class="slide-body" style="padding:12px 40px;">
+    <div style="display:flex; gap:24px; height:100%;">
+      <div style="flex:1.1;">
+        <div style="font-size:20px; font-weight:800; color:#1E293B; margin-bottom:10px;">🏆 上位商品</div>
+        <table class="dt" style="font-size:17px;">
+          <thead>
+            <tr><th>商品名</th><th>カテゴリ</th><th class="num">売上</th></tr>
+          </thead>
+          <tbody>
+            <tr class="highlight-row"><td>🏆 うな重 竹 定食</td><td>ランチ</td><td class="num">¥22,000</td></tr>
+            <tr><td>uberうな重梅</td><td>ウーバーイーツ</td><td class="num">¥13,200</td></tr>
+            <tr><td>うな重 梅</td><td>ランチ</td><td class="num">¥12,600</td></tr>
+            <tr><td>うなぎ白焼き</td><td>フード</td><td class="num">¥12,000</td></tr>
+            <tr><td>uberうな重松</td><td>ウーバーイーツ</td><td class="num">¥7,700</td></tr>
+            <tr><td>穴子天丼定食</td><td>ランチ</td><td class="num">¥6,000</td></tr>
+            <tr><td>うな重 竹</td><td>フード</td><td class="num">¥5,800</td></tr>
+            <tr><td>海鮮丼</td><td>ランチ</td><td class="num">¥5,400</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="flex:1;">
+        <div style="font-size:20px; font-weight:800; color:#1E293B; margin-bottom:10px;">📊 カテゴリ構成</div>
+        <table class="dt" style="font-size:17px;">
+          <thead>
+            <tr><th>カテゴリ</th><th class="num">売上</th><th class="num">構成比</th></tr>
+          </thead>
+          <tbody>
+            <tr class="highlight-row"><td>🍱 ランチ</td><td class="num">¥64,810</td><td class="num" style="color:#F97316; font-size:19px;">36.6%</td></tr>
+            <tr><td>🍽️ フード</td><td class="num">¥54,820</td><td class="num">31.0%</td></tr>
+            <tr><td>🚗 ウーバーイーツ</td><td class="num">¥29,400</td><td class="num">16.6%</td></tr>
+            <tr><td>🥤 ドリンク</td><td class="num">¥25,060</td><td class="num">14.2%</td></tr>
+            <tr><td>🛵 ロケットナウ</td><td class="num">¥2,900</td><td class="num">1.6%</td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:14px; background:#F0FDF4; border-radius:10px; padding:13px 18px; font-size:18px; border-left:4px solid #22C55E;">
+          🎯 ランチ+デリバリーの両輪で¥94,210（54.7%）を確保
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// スライド9: 火曜日 来店人数別横棒グラフ
+// ============================================================
+(function drawTueGroup() {
+  const svgEl = document.getElementById('chart-tue-group');
+  if (!svgEl) return;
+  const W = 780, H = 480;
+  const margin = { top: 40, right: 160, bottom: 40, left: 110 };
+  const iW = W - margin.left - margin.right;
+  const iH = H - margin.top - margin.bottom;
+
+  const data = [
+    { label: '1名', sales: 5580, count: 4, avg: 1395 },
+    { label: '2名', sales: 2550, count: 1, avg: 1275 },
+    { label: '3-4名', sales: 12200, count: 8, avg: 1525 },
+    { label: '5名以上', sales: 11200, count: 1, avg: 1120 }
+  ];
+
+  const svg = d3.select(svgEl).attr('width', W).attr('height', H);
+  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+  const y = d3.scaleBand().domain(data.map(d => d.label)).range([0, iH]).paddingInner(0.3).paddingOuter(0.1);
+  const x = d3.scaleLinear().domain([0, 14000]).range([0, iW]).nice();
+
+  // グリッド
+  g.append('g').selectAll('line').data(x.ticks(5)).join('line')
+    .attr('x1', d => x(d)).attr('x2', d => x(d))
+    .attr('y1', 0).attr('y2', iH)
+    .attr('stroke', '#E2E8F0').attr('stroke-dasharray', '3,3');
+
+  // 3-4名 背景ハイライト
+  g.insert('rect', ':first-child')
+    .attr('x', -margin.left).attr('y', y('3-4名') - 5)
+    .attr('width', W).attr('height', y.bandwidth() + 10)
+    .attr('fill', '#FEF2F2').attr('rx', 4).attr('opacity', 0.5);
+
+  data.forEach(d => {
+    const isTgt = d.label === '3-4名';
+    const barColor = isTgt ? COLORS.negative : COLORS.current;
+
+    // ラベル
+    g.append('text').attr('x', -10).attr('y', y(d.label) + y.bandwidth() / 2 + 6)
+      .attr('text-anchor', 'end').attr('font-size', '18px').attr('font-weight', '700')
+      .attr('fill', COLORS.dark).text(d.label);
+
+    // バー
+    g.append('rect')
+      .attr('x', 0).attr('y', y(d.label))
+      .attr('width', x(d.sales)).attr('height', y.bandwidth())
+      .attr('fill', barColor).attr('rx', 4);
+
+    // 太枠（3-4名）
+    if (isTgt) {
+      g.append('rect').attr('x', -1.5).attr('y', y(d.label) - 1.5)
+        .attr('width', x(d.sales) + 3).attr('height', y.bandwidth() + 3)
+        .attr('fill', 'none').attr('stroke', COLORS.negative).attr('stroke-width', 3).attr('rx', 5);
+    }
+
+    // 売上ラベル
+    g.append('text').attr('x', x(d.sales) + 8).attr('y', y(d.label) + y.bandwidth() / 2 + 6)
+      .attr('font-size', '18px').attr('font-weight', isTgt ? '800' : '600')
+      .attr('fill', isTgt ? COLORS.negative : COLORS.text)
+      .text('¥' + d.sales.toLocaleString());
+
+    // 件数・平均
+    g.append('text').attr('x', iW + margin.right - 10).attr('y', y(d.label) + y.bandwidth() / 2 + 6)
+      .attr('text-anchor', 'end').attr('font-size', '16px').attr('fill', '#64748B')
+      .text(d.count + '件 / 平均¥' + d.avg.toLocaleString());
+  });
+
+  // MAXバッジ（3-4名）
+  const bx = x(12200) / 2;
+  const by = y('3-4名') - 14;
+  const bG = g.append('g');
+  const bTxt = bG.append('text').attr('x', bx).attr('y', by)
+    .attr('text-anchor', 'middle').attr('font-size', '16px').attr('font-weight', '800')
+    .attr('fill', COLORS.negative).text('MAX 8件');
+  const bb = bTxt.node().getBBox();
+  bG.insert('rect', 'text').attr('x', bb.x - 6).attr('y', bb.y - 3)
+    .attr('width', bb.width + 12).attr('height', bb.height + 6)
+    .attr('rx', 4).attr('fill', '#FEF2F2').attr('stroke', COLORS.negative).attr('stroke-width', 1.5);
+
+  g.append('g').attr('transform', `translate(0,${iH})`).call(d3.axisBottom(x).ticks(5).tickFormat(v => '¥' + (v / 1000) + '千'))
+    .selectAll('text').attr('font-size', '14px');
+  g.append('g').call(d3.axisLeft(y).tickSize(0)).selectAll('text').attr('font-size', '0px');
+})();
+
+// ============================================================
+// スライド10: 火曜日 時間帯別横棒グラフ
+// ============================================================
+(function drawTueTime() {
+  const svgEl = document.getElementById('chart-tue-time');
+  if (!svgEl) return;
+  const W = 780, H = 480;
+  const margin = { top: 40, right: 120, bottom: 40, left: 160 };
+  const iW = W - margin.left - margin.right;
+  const iH = H - margin.top - margin.bottom;
+
+  const data = [
+    { label: 'ランチ（11-13時）', sales: 24130, color: COLORS.current },
+    { label: 'デリバリー', sales: 7400, color: COLORS.avg },
+    { label: 'ディナー（17時以降）', sales: 0, color: COLORS.negative }
+  ];
+
+  const svg = d3.select(svgEl).attr('width', W).attr('height', H);
+  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+  const y = d3.scaleBand().domain(data.map(d => d.label)).range([0, iH]).paddingInner(0.35).paddingOuter(0.15);
+  const x = d3.scaleLinear().domain([0, 30000]).range([0, iW]).nice();
+
+  g.append('g').selectAll('line').data(x.ticks(5)).join('line')
+    .attr('x1', d => x(d)).attr('x2', d => x(d))
+    .attr('y1', 0).attr('y2', iH)
+    .attr('stroke', '#E2E8F0').attr('stroke-dasharray', '3,3');
+
+  // ディナー背景（ゼロを強調）
+  g.insert('rect', ':first-child')
+    .attr('x', -margin.left).attr('y', y('ディナー（17時以降）') - 8)
+    .attr('width', W).attr('height', y.bandwidth() + 16)
+    .attr('fill', '#FEF2F2').attr('rx', 4).attr('opacity', 0.5);
+
+  data.forEach(d => {
+    const isTop = d.label === 'ランチ（11-13時）';
+    const isDinner = d.label === 'ディナー（17時以降）';
+
+    g.append('text').attr('x', -10).attr('y', y(d.label) + y.bandwidth() / 2 + 6)
+      .attr('text-anchor', 'end').attr('font-size', '18px').attr('font-weight', '700')
+      .attr('fill', isDinner ? COLORS.negative : COLORS.dark).text(d.label);
+
+    if (d.sales > 0) {
+      g.append('rect').attr('x', 0).attr('y', y(d.label))
+        .attr('width', x(d.sales)).attr('height', y.bandwidth())
+        .attr('fill', d.color).attr('rx', 4);
+
+      if (isTop) {
+        g.append('rect').attr('x', -1.5).attr('y', y(d.label) - 1.5)
+          .attr('width', x(d.sales) + 3).attr('height', y.bandwidth() + 3)
+          .attr('fill', 'none').attr('stroke', COLORS.current).attr('stroke-width', 3).attr('rx', 5);
+      }
+    } else {
+      // ゼロバー表示
+      g.append('rect').attr('x', 0).attr('y', y(d.label))
+        .attr('width', 6).attr('height', y.bandwidth())
+        .attr('fill', COLORS.negative).attr('rx', 2);
+      g.append('text').attr('x', 16).attr('y', y(d.label) + y.bandwidth() / 2 + 6)
+        .attr('font-size', '22px').attr('font-weight', '800').attr('fill', COLORS.negative)
+        .text('¥0 — 来店ゼロ');
+    }
+
+    if (d.sales > 0) {
+      g.append('text').attr('x', x(d.sales) + 8).attr('y', y(d.label) + y.bandwidth() / 2 + 6)
+        .attr('font-size', '18px').attr('font-weight', isTop ? '800' : '600')
+        .attr('fill', d.color).text('¥' + d.sales.toLocaleString());
+    }
+  });
+
+  // ランチバッジ
+  const bx = x(24130) / 2;
+  const by = y('ランチ（11-13時）') - 14;
+  const bG = g.append('g');
+  const bTxt = bG.append('text').attr('x', bx).attr('y', by)
+    .attr('text-anchor', 'middle').attr('font-size', '16px').attr('font-weight', '800')
+    .attr('fill', COLORS.current).text('売上の76.5%');
+  const bb = bTxt.node().getBBox();
+  bG.insert('rect', 'text').attr('x', bb.x - 6).attr('y', bb.y - 3)
+    .attr('width', bb.width + 12).attr('height', bb.height + 6)
+    .attr('rx', 4).attr('fill', '#EFF6FF').attr('stroke', COLORS.current).attr('stroke-width', 1.5);
+
+  g.append('g').attr('transform', `translate(0,${iH})`).call(d3.axisBottom(x).ticks(5).tickFormat(v => '¥' + (v / 1000) + '千'))
+    .selectAll('text').attr('font-size', '14px');
+})();
+
+// ============================================================
+// スライド13: 月曜日 割合棒グラフ
+// ============================================================
+(function drawMonRatio() {
+  const svgEl = document.getElementById('chart-mon-ratio');
+  if (!svgEl) return;
+  const W = 720, H = 480;
+  const margin = { top: 40, right: 180, bottom: 40, left: 90 };
+  const iW = W - margin.left - margin.right;
+  const iH = H - margin.top - margin.bottom;
+
+  const items = [
+    { label: '売上', thisW: 172790, avg4: 132940, fmt: v => '¥' + v.toLocaleString() },
+    { label: '客数', thisW: 38,     avg4: 26.2,   fmt: v => v + '人' }
+  ];
+
+  const ratios = items.map(d => d.thisW / d.avg4 * 100);
+  const svg = d3.select(svgEl).attr('width', W).attr('height', H);
+  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+  const maxRatio = 170;
+  const x = d3.scaleLinear().domain([0, maxRatio]).range([0, iW]);
+  const bH = iH / items.length * 0.55;
+  const gap = iH / items.length;
+
+  // 100%基準線
+  g.append('line')
+    .attr('x1', x(100)).attr('y1', -20).attr('x2', x(100)).attr('y2', iH + 10)
+    .attr('stroke', '#1E293B').attr('stroke-width', 2.5);
+  g.append('text').attr('x', x(100)).attr('y', -26)
+    .attr('text-anchor', 'middle').attr('font-size', '14px').attr('font-weight', '700')
+    .attr('fill', '#1E293B').text('4週平均=100%');
+
+  items.forEach((item, i) => {
+    const ratio = ratios[i];
+    const barColor = ratio >= 120 ? COLORS.positive : ratio < 80 ? COLORS.negative : COLORS.current;
+    const cy = i * gap + gap / 2 - bH / 2 + 20;
+
+    // 背景ハイライト
+    g.insert('rect', ':first-child')
+      .attr('x', -margin.left).attr('y', cy - 12)
+      .attr('width', W).attr('height', bH + 24)
+      .attr('fill', '#F0FDF4').attr('rx', 6).attr('opacity', 0.4);
+
+    g.append('text').attr('x', -10).attr('y', cy + bH / 2 + 6)
+      .attr('text-anchor', 'end').attr('font-size', '20px').attr('font-weight', '700')
+      .attr('fill', COLORS.dark).text(item.label);
+
+    g.append('rect').attr('x', 0).attr('y', cy)
+      .attr('width', x(ratio)).attr('height', bH)
+      .attr('fill', barColor).attr('rx', 4);
+
+    g.append('rect').attr('x', -1.5).attr('y', cy - 1.5)
+      .attr('width', x(ratio) + 3).attr('height', bH + 3)
+      .attr('fill', 'none').attr('stroke', barColor).attr('stroke-width', 3).attr('rx', 5);
+
+    g.append('text').attr('x', x(ratio) + 10).attr('y', cy + bH / 2 + 6)
+      .attr('font-size', '22px').attr('font-weight', '800').attr('fill', barColor)
+      .text(ratio.toFixed(1) + '%');
+
+    g.append('text').attr('x', iW + margin.right - 10).attr('y', cy + bH / 2 + 6)
+      .attr('text-anchor', 'end').attr('font-size', '18px').attr('font-weight', '700')
+      .attr('fill', COLORS.dark).text(item.fmt(item.thisW));
+
+    // 好調バッジ
+    const bxp = x(ratio) / 2;
+    const byp = cy - 18;
+    const bGp = g.append('g');
+    const bTxtp = bGp.append('text').attr('x', bxp).attr('y', byp)
+      .attr('text-anchor', 'middle').attr('font-size', '16px').attr('font-weight', '800')
+      .attr('fill', COLORS.positive).text('★ 好調');
+    const bbp = bTxtp.node().getBBox();
+    bGp.insert('rect', 'text').attr('x', bbp.x - 6).attr('y', bbp.y - 3)
+      .attr('width', bbp.width + 12).attr('height', bbp.height + 6)
+      .attr('rx', 4).attr('fill', '#F0FDF4').attr('stroke', COLORS.positive).attr('stroke-width', 1.5);
+  });
+
+  // 客単価 注記
+  const noteY = gap * 2 + 30;
+  g.append('text').attr('x', iW / 2).attr('y', noteY)
+    .attr('text-anchor', 'middle').attr('font-size', '17px').attr('fill', '#94A3B8')
+    .text('※客単価の4週平均はW10データ欠損により算出不可');
+
+  g.append('g').attr('transform', `translate(0,${iH})`).call(d3.axisBottom(x).ticks(5).tickFormat(v => v + '%'))
+    .selectAll('text').attr('font-size', '14px');
+})();
+
+// ============================================================
+// スライド14: 月曜日 来店人数別横棒グラフ
+// ============================================================
+(function drawMonGroup() {
+  const svgEl = document.getElementById('chart-mon-group');
+  if (!svgEl) return;
+  const W = 780, H = 480;
+  const margin = { top: 40, right: 160, bottom: 40, left: 110 };
+  const iW = W - margin.left - margin.right;
+  const iH = H - margin.top - margin.bottom;
+
+  const data = [
+    { label: '1名', sales: 13040, count: 7, avg: 1863 },
+    { label: '2名', sales: 36400, count: 5, avg: 3640 },
+    { label: '3-4名', sales: 103650, count: 11, avg: 6478 },
+    { label: '5名以上', sales: 19700, count: 1, avg: 3940 }
+  ];
+
+  const svg = d3.select(svgEl).attr('width', W).attr('height', H);
+  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+  const y = d3.scaleBand().domain(data.map(d => d.label)).range([0, iH]).paddingInner(0.3).paddingOuter(0.1);
+  const x = d3.scaleLinear().domain([0, 120000]).range([0, iW]).nice();
+
+  g.append('g').selectAll('line').data(x.ticks(5)).join('line')
+    .attr('x1', d => x(d)).attr('x2', d => x(d))
+    .attr('y1', 0).attr('y2', iH)
+    .attr('stroke', '#E2E8F0').attr('stroke-dasharray', '3,3');
+
+  // 3-4名 背景ハイライト
+  g.insert('rect', ':first-child')
+    .attr('x', -margin.left).attr('y', y('3-4名') - 5)
+    .attr('width', W).attr('height', y.bandwidth() + 10)
+    .attr('fill', '#F0FDF4').attr('rx', 4).attr('opacity', 0.6);
+
+  data.forEach(d => {
+    const isTgt = d.label === '3-4名';
+    const barColor = isTgt ? COLORS.positive : COLORS.current;
+
+    g.append('text').attr('x', -10).attr('y', y(d.label) + y.bandwidth() / 2 + 6)
+      .attr('text-anchor', 'end').attr('font-size', '18px').attr('font-weight', '700')
+      .attr('fill', COLORS.dark).text(d.label);
+
+    g.append('rect').attr('x', 0).attr('y', y(d.label))
+      .attr('width', x(d.sales)).attr('height', y.bandwidth())
+      .attr('fill', barColor).attr('rx', 4);
+
+    if (isTgt) {
+      g.append('rect').attr('x', -1.5).attr('y', y(d.label) - 1.5)
+        .attr('width', x(d.sales) + 3).attr('height', y.bandwidth() + 3)
+        .attr('fill', 'none').attr('stroke', COLORS.positive).attr('stroke-width', 3).attr('rx', 5);
+    }
+
+    g.append('text').attr('x', x(d.sales) + 8).attr('y', y(d.label) + y.bandwidth() / 2 + 6)
+      .attr('font-size', '18px').attr('font-weight', isTgt ? '800' : '600')
+      .attr('fill', isTgt ? COLORS.positive : COLORS.text)
+      .text('¥' + d.sales.toLocaleString());
+
+    g.append('text').attr('x', iW + margin.right - 10).attr('y', y(d.label) + y.bandwidth() / 2 + 6)
+      .attr('text-anchor', 'end').attr('font-size', '16px').attr('fill', '#64748B')
+      .text(d.count + '件 / 平均¥' + d.avg.toLocaleString());
+  });
+
+  // MAXバッジ（3-4名）
+  const bx = x(103650) / 2;
+  const by = y('3-4名') - 14;
+  const bG = g.append('g');
+  const bTxt = bG.append('text').attr('x', bx).attr('y', by)
+    .attr('text-anchor', 'middle').attr('font-size', '16px').attr('font-weight', '800')
+    .attr('fill', COLORS.positive).text('MAX 60%');
+  const bb = bTxt.node().getBBox();
+  bG.insert('rect', 'text').attr('x', bb.x - 6).attr('y', bb.y - 3)
+    .attr('width', bb.width + 12).attr('height', bb.height + 6)
+    .attr('rx', 4).attr('fill', '#F0FDF4').attr('stroke', COLORS.positive).attr('stroke-width', 1.5);
+
+  g.append('g').attr('transform', `translate(0,${iH})`).call(d3.axisBottom(x).ticks(5).tickFormat(v => '¥' + (v / 10000) + '万'))
+    .selectAll('text').attr('font-size', '14px');
+})();
+
+// ============================================================
+// スライド15: 月曜日 時間帯別横棒グラフ
+// ============================================================
+(function drawMonTime() {
+  const svgEl = document.getElementById('chart-mon-time');
+  if (!svgEl) return;
+  const W = 780, H = 480;
+  const margin = { top: 40, right: 120, bottom: 40, left: 160 };
+  const iW = W - margin.left - margin.right;
+  const iH = H - margin.top - margin.bottom;
+
+  const data = [
+    { label: 'ランチ（11-13時）', sales: 64810, color: COLORS.current, note: '30人' },
+    { label: 'ディナー（17-21時）', sales: 78580, color: COLORS.positive, note: '5人' },
+    { label: 'UberEats', sales: 29400, color: '#F97316', note: 'うな重梅・松' }
+  ];
+
+  const svg = d3.select(svgEl).attr('width', W).attr('height', H);
+  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+  const y = d3.scaleBand().domain(data.map(d => d.label)).range([0, iH]).paddingInner(0.35).paddingOuter(0.15);
+  const x = d3.scaleLinear().domain([0, 95000]).range([0, iW]).nice();
+
+  g.append('g').selectAll('line').data(x.ticks(5)).join('line')
+    .attr('x1', d => x(d)).attr('x2', d => x(d))
+    .attr('y1', 0).attr('y2', iH)
+    .attr('stroke', '#E2E8F0').attr('stroke-dasharray', '3,3');
+
+  // ディナー背景ハイライト
+  g.insert('rect', ':first-child')
+    .attr('x', -margin.left).attr('y', y('ディナー（17-21時）') - 8)
+    .attr('width', W).attr('height', y.bandwidth() + 16)
+    .attr('fill', '#F0FDF4').attr('rx', 4).attr('opacity', 0.5);
+
+  data.forEach(d => {
+    const isDinner = d.label === 'ディナー（17-21時）';
+
+    g.append('text').attr('x', -10).attr('y', y(d.label) + y.bandwidth() / 2 + 6)
+      .attr('text-anchor', 'end').attr('font-size', '18px').attr('font-weight', '700')
+      .attr('fill', isDinner ? COLORS.positive : COLORS.dark).text(d.label);
+
+    g.append('rect').attr('x', 0).attr('y', y(d.label))
+      .attr('width', x(d.sales)).attr('height', y.bandwidth())
+      .attr('fill', d.color).attr('rx', 4);
+
+    if (isDinner) {
+      g.append('rect').attr('x', -1.5).attr('y', y(d.label) - 1.5)
+        .attr('width', x(d.sales) + 3).attr('height', y.bandwidth() + 3)
+        .attr('fill', 'none').attr('stroke', COLORS.positive).attr('stroke-width', 3).attr('rx', 5);
+    }
+
+    g.append('text').attr('x', x(d.sales) + 8).attr('y', y(d.label) + y.bandwidth() / 2 + 6)
+      .attr('font-size', '18px').attr('font-weight', isDinner ? '800' : '600')
+      .attr('fill', d.color).text('¥' + d.sales.toLocaleString() + ' (' + d.note + ')');
+  });
+
+  // ディナーバッジ
+  const bx = x(78580) / 2;
+  const by = y('ディナー（17-21時）') - 14;
+  const bG = g.append('g');
+  const bTxt = bG.append('text').attr('x', bx).attr('y', by)
+    .attr('text-anchor', 'middle').attr('font-size', '16px').attr('font-weight', '800')
+    .attr('fill', COLORS.positive).text('★ 火曜との差');
+  const bb = bTxt.node().getBBox();
+  bG.insert('rect', 'text').attr('x', bb.x - 6).attr('y', bb.y - 3)
+    .attr('width', bb.width + 12).attr('height', bb.height + 6)
+    .attr('rx', 4).attr('fill', '#F0FDF4').attr('stroke', COLORS.positive).attr('stroke-width', 1.5);
+
+  g.append('g').attr('transform', `translate(0,${iH})`).call(d3.axisBottom(x).ticks(5).tickFormat(v => '¥' + (v / 10000) + '万'))
+    .selectAll('text').attr('font-size', '14px');
+})();
+</script>

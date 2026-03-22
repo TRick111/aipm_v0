@@ -2,6 +2,7 @@ version: 1
 
 # MasterIndex.yaml（AI専用）
 # - programs / projects のキーは「ID=名前」（同一）とする。
+# - 完了・凍結プロジェクトはIndexから除外（Stockにディレクトリは残る）
 
 programs:
   定型作業:
@@ -20,7 +21,7 @@ programs:
     readme: "Stock/定型作業/README.md"
     projects:
       日程管理:
-        summary: "Google Calendar API（OAuth）でworkカレンダーにBUSYブロックを登録するツール。単発・週次・隔週・平日予定に対応。会社カレンダーを出さずに社外調整を可能にする"
+        summary: "Google Calendar API（OAuth）でworkカレンダーにBUSYブロックを登録するツール。単発・週次・隔週・平日予定に対応"
         keywords:
           - 日程調整
           - 日程管理
@@ -30,15 +31,6 @@ programs:
           - busy
           - ブロック
           - 自動化
-          - 会社カレンダー
-          - セキュリティ
-          - タイムゾーン
-          - 週次
-          - 隔週
-          - 繰り返し
-          - RRULE
-          - Node.js
-          - 依頼テンプレート
         path: "Stock/定型作業/日程管理"
         readme: "Stock/定型作業/日程管理/README.md"
         index: "Stock/定型作業/日程管理/ProjectIndex.yaml"
@@ -59,20 +51,16 @@ programs:
         index: "Stock/定型作業/バックログ/ProjectIndex.yaml"
 
       情報インプット:
-        summary: "読みたい記事・ポスト・動画等のURLをリスト管理し、未読/読了の状態を追跡。AIとの対話で追加・消化を運用する"
+        summary: "読みたい記事・ポスト・動画等のURLをリスト管理し、未読/読了の状態を追跡"
         keywords:
           - 情報インプット
           - 読みたい
           - あとで読む
           - リーディングリスト
           - 記事
-          - ポスト
-          - 動画
           - URL
           - 未読
           - 読了
-          - インプット
-          - ブックマーク
         path: "Stock/定型作業/情報インプット"
         readme: "Stock/定型作業/情報インプット/README.md"
         index: "Stock/定型作業/情報インプット/ProjectIndex.yaml"
@@ -83,146 +71,34 @@ programs:
       - 飲食店
       - AI
       - マーケティング
-      - 口コミ分析
-      - インスタ
       - 週報
-      - HACCP
+      - 月報
+      - ダッシュボード
       - Chef's Room
       - コンサル
+      - BOC
     readme: "Stock/RestaurantAILab/README.md"
     projects:
-      口コミ分析:
-        summary: "飲食店の口コミデータを分析し、改善提案やマーケティングに活用"
-        keywords:
-          - 口コミ
-          - 分析
-          - Google
-          - 食べログ
-          - レビュー
-        path: "Stock/RestaurantAILab/口コミ分析"
-        readme: "Stock/RestaurantAILab/口コミ分析/README.md"
-        index: "Stock/RestaurantAILab/口コミ分析/ProjectIndex.yaml"
       週報:
-        summary: "クライアント飲食店4店舗（BFA/BBC/麻布しき/キーポイント）のPOSデータ分析・週報作成。5段階AIパイプライン（基礎資料→曜日深掘り→スライド構成→日報→D3.js HTML）で一気通貫生成。監査スキルによる品質管理も標準化"
+        summary: "クライアント飲食店（麻布しき旗の台/麻布しき本店/BFA）のPOSデータ分析・週報作成。5段階AIパイプラインで一気通貫生成"
         keywords:
           - 週報
           - POS
-          - POSダウンロード
-          - アカウント管理
           - 売上分析
           - レポート
-          - ランキング
           - HTML
           - D3.js
-          - スライド
           - Python
-          - プロンプト
-          - 監査
-          - スキル
           - BFA
-          - BBC
           - 麻布しき
-          - キーポイント
+          - 日報
+          - 口コミ
         path: "Stock/RestaurantAILab/週報"
         readme: "Stock/RestaurantAILab/週報/README.md"
         index: "Stock/RestaurantAILab/週報/ProjectIndex.yaml"
-      Famm:
-        summary: "Famm講座関連の資料・課題管理"
-        keywords:
-          - Famm
-          - 講座
-          - 課題
-          - 教育
-        path: "Stock/RestaurantAILab/Famm"
-        readme: "Stock/RestaurantAILab/Famm/README.md"
-        index: "Stock/RestaurantAILab/Famm/ProjectIndex.yaml"
-      HACCPアプリ開発:
-        summary: "HACCP管理システムの開発プロジェクト"
-        keywords:
-          - HACCP
-          - アプリ
-          - 開発
-          - 衛生管理
-        path: "Stock/RestaurantAILab/HACCPアプリ開発"
-        readme: "Stock/RestaurantAILab/HACCPアプリ開発/README.md"
-        index: "Stock/RestaurantAILab/HACCPアプリ開発/ProjectIndex.yaml"
-      ChefsRoomマーケティング支援:
-        summary: "竹矢さんのInstagramアカウント運用補助（台本作成・納品）"
-        keywords:
-          - マーケティング
-          - インスタ
-          - 台本
-          - SNS
-          - Chef's Room
-          - 竹矢
-          - リール
-          - Gemini
-          - 自動生成
-        path: "Stock/RestaurantAILab/ChefsRoomマーケティング支援"
-        readme: "Stock/RestaurantAILab/ChefsRoomマーケティング支援/README.md"
-        index: "Stock/RestaurantAILab/ChefsRoomマーケティング支援/ProjectIndex.yaml"
-      別天地口コミ分析:
-        summary: "別天地銀座の食べログ口コミと売上データをクロス分析し、メニュー別の評価・改善提言を導出。数値的分析とグラフ可視化も実施"
-        keywords:
-          - 別天地
-          - 口コミ
-          - 食べログ
-          - 売上
-          - 分析
-          - メニュー
-          - 松坂牛
-          - しゃぶしゃぶ
-          - 金目鯛
-          - 改善提言
-          - 数値分析
-          - 統計
-          - グラフ
-          - Python
-          - カテゴリ別評価
-          - 時系列
-          - いいね数
-        path: "Stock/RestaurantAILab/別天地口コミ分析"
-        readme: "Stock/RestaurantAILab/別天地口コミ分析/README.md"
-        index: "Stock/RestaurantAILab/別天地口コミ分析/ProjectIndex.yaml"
-      GFS飲食店分析:
-        summary: "飲食コンサル会社GFSの顧客飲食店の売上・口コミ分析を行い、経営改善提案を導出。THE BIFTEKI赤坂見附店の中間レポート/スライドドラフトを整備（客単価+40%上昇、ディナー集客が鍵）"
-        keywords:
-          - GFS
-          - 飲食店
-          - 売上分析
-          - 口コミ分析
-          - コンサル
-          - THE BIFTEKI
-          - 赤坂見附
-          - ピーク分析
-          - 滞在時間
-          - POS
-          - 前年比
-          - 客数
-          - 客単価
-          - セグメント分析
-          - ディナー
-          - 中間レポート
-          - スライド
-        path: "Stock/RestaurantAILab/GFS飲食店分析"
-        readme: "Stock/RestaurantAILab/GFS飲食店分析/README.md"
-        index: "Stock/RestaurantAILab/GFS飲食店分析/ProjectIndex.yaml"
-      ダッシュボード改:
-        summary: "既存の週報ダッシュボードを改善し、クライアントが直感的にデータを把握・活用できるようリニューアルする"
-        keywords:
-          - ダッシュボード
-          - 改善
-          - リニューアル
-          - UI
-          - 要件定義
-          - 飲食店
-          - データ可視化
-          - レポート
-        path: "Stock/RestaurantAILab/ダッシュボード改"
-        readme: "Stock/RestaurantAILab/ダッシュボード改/README.md"
-        index: "Stock/RestaurantAILab/ダッシュボード改/ProjectIndex.yaml"
+
       月報:
-        summary: "クライアント飲食店の月次データを分析し月報を作成。Pythonスクリプト（月次集計+週別深掘り）とAIプロンプト5段階フローでKPI・トレンド・深掘り・スライド構成・D3.jsグラフHTML化まで一気通貫で生成"
+        summary: "クライアント飲食店の月次データを分析し月報を作成。一旦停止中、ダッシュボード改のPL機能完成後に再開予定"
         keywords:
           - 月報
           - 月次
@@ -230,101 +106,71 @@ programs:
           - 売上分析
           - 別天地
           - BFA
-          - 飲食店
-          - 定期レポート
           - Python
           - D3.js
-          - HTML
-          - スライド
-          - 前月比
-          - 前年同月比
-          - 週別深掘り
-          - プロンプト
+          - PL
         path: "Stock/RestaurantAILab/月報"
         readme: "Stock/RestaurantAILab/月報/README.md"
         index: "Stock/RestaurantAILab/月報/ProjectIndex.yaml"
-      Albert:
-        summary: "Restaurant AI Lab内部用AIエージェント。LINEグループに常駐し、LLMチャット応答と3名のGoogleカレンダーを参照した日程調整機能を提供。Next.js + Vercelで構築"
-        keywords:
-          - Albert
-          - AIエージェント
-          - LINE Bot
-          - LINE Messaging API
-          - LLMチャット
-          - 日程調整
-          - Googleカレンダー
-          - Google Calendar API
-          - FreeBusy
-          - Next.js
-          - Vercel
-          - Claude API
-          - 内部ツール
-          - サービスアカウント
-          - Webhook
-        path: "Stock/RestaurantAILab/Albert"
-        readme: "Stock/RestaurantAILab/Albert/README.md"
-        index: "Stock/RestaurantAILab/Albert/ProjectIndex.yaml"
 
-  むしめがね:
-    summary: "実験教室むしめがねに関する活動・運用・コンテンツ制作を支える"
-    keywords:
-      - むしめがね
-      - 実験教室
-      - 教育
-      - 運用
-    projects:
-      バンコク2026年3月:
-        summary: "2026年春休みバンコク対面実験教室。浮力・楽器・マジックハンド・回転パラシュートの4実験＋クイズ"
+      ダッシュボード改:
+        summary: "飲食店向けダッシュボードの継続的アップデート。初期実装完了、PL管理機能の追加が次のマイルストーン"
         keywords:
-          - バンコク
-          - 2026年3月
-          - 春休み
-          - 浮力
-          - 楽器
-          - マジックハンド
-          - 回転パラシュート
-          - クイズ
-          - 対面教室
-        path: "Stock/むしめがね/バンコク2026年3月"
-        readme: "Stock/むしめがね/バンコク2026年3月/README.md"
-        index: "Stock/むしめがね/バンコク2026年3月/ProjectIndex.yaml"
+          - ダッシュボード
+          - UI
+          - PL
+          - 飲食店
+          - データ可視化
+          - アップデート
+        path: "Stock/RestaurantAILab/ダッシュボード改"
+        readme: "Stock/RestaurantAILab/ダッシュボード改/README.md"
+        index: "Stock/RestaurantAILab/ダッシュボード改/ProjectIndex.yaml"
 
-      AIOS設計:
-        summary: "Flow/Stock/Meetings運用（AIOS）の設計・整備"
+      BOCリンク張り替え:
+        summary: "クライアント「ベーカリーBOC」のサイト内URLリンクの書き換え作業"
         keywords:
-          - AI活用
-          - フォルダ設計
-          - 運用
-          - Index
-          - 自動更新
-        path: "Stock/むしめがね/AIOS設計"
-        readme: "Stock/むしめがね/AIOS設計/README.md"
-        index: "Stock/むしめがね/AIOS設計/ProjectIndex.yaml"
+          - BOC
+          - リンク
+          - URL
+          - サイト
+          - 書き換え
+          - ベーカリー
+        path: "Stock/RestaurantAILab/BOCリンク張り替え"
+        readme: "Stock/RestaurantAILab/BOCリンク張り替え/README.md"
+        index: "Stock/RestaurantAILab/BOCリンク張り替え/ProjectIndex.yaml"
+
+  # 完了・凍結プロジェクト（Indexから除外、ディレクトリは残存）:
+  # - RestaurantAILab/Albert（凍結: Tachyonプロジェクトに移行）
+  # - RestaurantAILab/ChefsRoomダッシュボード（完了）
+  # - RestaurantAILab/ChefsRoom会議議事録（完了）
+  # - RestaurantAILab/ChefsRoomマーケティング支援（完了）
+  # - RestaurantAILab/Famm（完了）
+  # - RestaurantAILab/GFS飲食店分析（完了）
+  # - RestaurantAILab/HACCPアプリ開発（凍結: 方針変更で不要に）
+  # - RestaurantAILab/別天地口コミ分析（完了）
+  # - RestaurantAILab/口コミ分析（完了）
+  # - むしめがね/全プロジェクト（完了）
+  # - リライフメディカル（完了）
+  # - 作業効率化/ClaudeCode並列処理（クローズ: AGIコックピットで解決）
 
   作業効率化:
-    summary: "開発・運用の効率化ツール、スクリプト、ワークフロー改善を管理するプログラム"
+    summary: "開発・運用の効率化ツール、ワークフロー改善を管理するプログラム"
     keywords:
       - 作業効率化
-      - スクリプト
-      - 自動化
       - ツール
       - ワークフロー
-      - シェル
-      - bash
+      - Manus
     readme: "Stock/作業効率化/README.md"
     projects:
-      シェルスクリプト:
-        summary: "繰り返し使うシェルスクリプトを一元管理。Markserv起動、ポート管理など"
+      Manus活用:
+        summary: "Manus AIエージェントを活用した作業効率化の検討（優先度低）"
         keywords:
-          - シェルスクリプト
-          - bash
-          - markserv
-          - サーバー起動
-          - ポート管理
-          - nohup
-        path: "Stock/作業効率化/シェルスクリプト"
-        readme: "Stock/作業効率化/シェルスクリプト/README.md"
-        index: "Stock/作業効率化/シェルスクリプト/ProjectIndex.yaml"
+          - Manus
+          - AIエージェント
+          - 効率化
+        path: "Stock/作業効率化/Manus活用"
+        readme: "Stock/作業効率化/Manus活用/README.md"
+        index: "Stock/作業効率化/Manus活用/ProjectIndex.yaml"
 
   ゴール管理:
     summary: "個人の中長期目標（健康・スキル・生活習慣等）を定義し、日次記録と週次・月次振り返りで進捗を可視化する"
@@ -363,19 +209,13 @@ programs:
     readme: "Stock/0.Other/README.md"
     projects:
       ビリヤード俯瞰アプリ:
-        summary: "斜めから撮ったビリヤード台の写真を、PnP+レイキャストで3D再構成し正確な俯瞰図に変換するWebアプリ。OpenCV.jsベース"
+        summary: "斜めから撮ったビリヤード台の写真を俯瞰図に変換するWebアプリ。プロトタイプ完成、ボール検出精度の改善が課題（優先度低・趣味）"
         keywords:
           - ビリヤード
-          - ポケットビリヤード
-          - プール
           - 俯瞰図
-          - 3D再構成
           - コンピュータビジョン
           - OpenCV.js
-          - PnP
-          - ホモグラフィ
-          - カメラキャリブレーション
-          - レイキャスト
           - Webアプリ
         path: "Stock/0.Other/ビリヤード俯瞰アプリ"
         readme: "Stock/0.Other/ビリヤード俯瞰アプリ/README.md"
+        index: "Stock/0.Other/ビリヤード俯瞰アプリ/ProjectIndex.yaml"

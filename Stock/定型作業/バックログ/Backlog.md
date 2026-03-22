@@ -14,11 +14,11 @@
 
 | ID | Status | Priority | Due | Title | Program | Project | Tags | Notes |
 |----|--------|----------|-----|-------|---------|---------|------|-------|
-| BL-0001 | todo | P2 |  | BFAの修法の再作成 | RestaurantAILab | 修法 | bfa,週報 |  |
-| BL-0002 | todo | P2 |  | BFAの月報作成 | RestaurantAILab | 週報 | bfa,月報 |  |
-| BL-0003 | todo | P2 |  | 別天地の月報作成 | RestaurantAILab | 別天地口コミ分析 | 月報 |  |
-| BL-0004 | todo | P2 |  | Ponさんの日程調整 | AIPM | Ponさん案件 | 日程調整 |  |
-| BL-0005 | todo | P2 |  | PonさんへK-BEAUTYレポートの送付 | AIPM | Ponさん案件 | k-beauty,レポート,送付 |  |
-| BL-0006 | todo | P2 |  | 竹矢さんのインスタリール作成 | RestaurantAILab | ChefsRoomマーケティング支援 | instagram,reel |  |
-| BL-0007 | todo | P2 |  | ダッシュボード改のUI作成 | RestaurantAILab | ChefsRoomダッシュボード | ui,dashboard |  |
-
+| BL-0001 | todo | P1 |  | BOCのサイト内リンク書き換え作業 | RestaurantAILab | BOCリンク張り替え | boc,リンク,サイト | 書き換え対象リスト作成済み。実行するだけ |
+| BL-0002 | todo | P1 |  | 週報: 店員日報データの自動連携実装 | RestaurantAILab | 週報 | 週報,日報,自動化 | 現在は手動インポート |
+| BL-0003 | todo | P1 |  | 週報: Google Maps/食べログ口コミを手法に反映 | RestaurantAILab | 週報 | 週報,口コミ,手法 |  |
+| BL-0004 | todo | P2 |  | ダッシュボード改: PL管理機能の追加 | RestaurantAILab | ダッシュボード改 | dashboard,PL | 月報再開の前提条件 |
+| BL-0005 | todo | P2 |  | 月報: ダッシュボード改PL対応後に月報作成再開 | RestaurantAILab | 月報 | 月報,PL | BL-0004完了待ち |
+| BL-0006 | todo | P3 |  | ビリヤード俯瞰アプリ: 内部仕様の理解と精度向上調査 | 0.Other | ビリヤード俯瞰アプリ | ビリヤード,精度 | 趣味。優先度低 |
+| BL-0007 | todo | P3 |  | 健康管理: ベースライン計測と記録開始 | ゴール管理 | 健康管理 | 健康,体重 | 体重・体脂肪率を計測して記録開始 |
+| BL-0008 | todo | P3 |  | Manus活用の検討 | 作業効率化 | Manus活用 | manus,効率化 | 優先度低 |

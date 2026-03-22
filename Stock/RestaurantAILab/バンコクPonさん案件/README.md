@@ -12,10 +12,17 @@
 ## 成果物の所在
 **このディレクトリはタスク管理専用。成果物の本体は以下を参照:**
 - `~/RestaurantAILab/Markdowns-1/Stock/バンコクPonさん案件/`
-- サブプロジェクト:
-  - AIOS提供（Ponさん個人活用の定着）
-  - J-Beauty Innovation Hub（日本政府のJ-Beauty施策への提言）
-  - 新規案件ヒント（企画の種メモ）
+
+## アクティブなプロジェクト
+
+### 1. PONさんAI活用サポート
+- 週1回のAI活用セッションを実施
+- 現在: 第3回まで完了。**第4回は2026-03-24に実施予定**
+- 成果物本体: `~/RestaurantAILab/Markdowns-1/Stock/バンコクPonさん案件/AIOS提供/`
+
+### 2. J-Beauty Innovation Hub
+- 日本政府のJ-Beauty施策への提言・提案（AI活用支援）
+- 成果物本体: `~/RestaurantAILab/Markdowns-1/Stock/バンコクPonさん案件/J-Beauty_Innovation_Hub/`
 
 ## 関係者
 
@@ -26,5 +33,4 @@
 | 町田大地 | Restaurant AI Lab AI担当 | AI活用/運用支援 |
 
 ## 現在の状況・ネクストアクション
-- ネクストアクション:
-  - [ ] （バックログで管理）
+- ネクストアクション:（バックログで管理）

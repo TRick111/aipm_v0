@@ -1,0 +1,64 @@
+<header>
+    <section class="primary_header_top"><script>
+            $(function () {
+              var url = getHost() + "/common/LoginCheck/index?type=header";
+              $.ajax({
+                url: url,
+                dataType: "json",
+              });
+            });
+          </script></section>
+    
+    <section class="primary_header">
+    <div class="row">
+    <div class="container">
+    <h1 class="title"><a href="https://www.bridgeonthecloud.com/"><img alt="ベーカリーBOC" src="//s2093909.xaas3.jp/docs/images/logo.svg"> </a></h1>
+    
+    <nav class="global_nav">
+    <ul>
+    <li><a href="https://www.bridgeonthecloud.com/">HOME</a></li>
+    <li><a href="https://www.bridgeonthecloud.com/shop.html">店舗案内</a></li>
+    <li><a href="https://www.bridgeonthecloud.com/kodawari.html">こだわり</a></li>
+    <li><a href="https://www.bridgeonthecloud.com/menu.html">メニュー紹介</a></li>
+    <li><a href="https://www.bridgeonthecloud.com/info.html">特定商取引法に基づく表記</a></li>
+    </ul>
+    
+    <div class="menu_icon"><a href="#menu"><span>メニュー開閉</span></a></div>
+    </nav>
+    
+    <p class="more category_btn"><a class="add_arrow" href="https://thebase.com/to_app?s=shop&shop_id=bakeryboc-base-shop&follow=true"><span class="outer"><span class="inner">通販はこちら</span> </span> </a></p>
+    </div>
+    
+    <div class="searchGoods_1 searchGoods_header">
+    <div class="search_d01">
+    <form action="https://www.bridgeonthecloud.com/app/searchGoodsList/index" class="searchGoodsViewForm" method="post" name="searchGoodsViewForm">
+    <div class="search">
+    <p><label>商品検索</label> <input class="q" maxlength="128" name="q" placeholder="商品検索" type="text" value=""> <span class="btn"> <a href="#">検索</a> </span></p>
+    </div>
+    </form>
+    <script
+                  src="https://web.xaas3.jp/js/app/searchGoodsView.js"
+                  type="text/javascript"
+                ></script></div>
+    </div>
+    </div>
+    </section>
+    <!-- カテゴリapi -->
+    
+    <div class="category_navi category_list_parse category_list_parse_navi">
+    <p class="category_close"><a href="#">&times;</a></p>
+    
+    <div class="regist_d01">
+    <h2>CATEGORY</h2>
+    </div>
+    </div>
+    <script>
+          $(function () {
+            var url = getHost() + "/ajax/categoryview/json?deal=navi";
+            $.ajax({
+              url: url,
+              dataType: "json",
+            });
+          });
+        </script><!-- カテゴリapi end --></header>
+    

@@ -1,0 +1,44 @@
+<style>
+.shop-grid {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.shop-grid a {
+    flex: 1 1 0;
+    max-width: 320px;
+}
+.shop-grid .shop-img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+@media (max-width: 768px) {
+    .shop-grid {
+        flex-direction: column;
+        align-items: center;
+    }
+    .shop-grid a {
+        max-width: 100%;
+    }
+}
+</style>
+<section class="sec04">
+    <div class="container gutters">
+    <div class="regist_d01">
+    <h2 class="large_title">オンラインショップ</h2>
+    <span class="h2-sub">Online Shop</span></div>
+
+    <div class="shop-grid">
+    <a href="https://bakeryboc.base.shop/items/109630573"><img alt="食パン食べ比べセット" class="shop-img" src="https://www.bridgeonthecloud.com/images/material/bread.jpg"></a>
+    <a href="https://bakeryboc.base.shop/items/109632864"><img alt="クロワッサンセット" class="shop-img" src="https://www.bridgeonthecloud.com/images/material/crossaint.jpg"></a>
+    <a href="https://bakeryboc.base.shop/items/99731641"><img alt="BOCサステイナブルセット" class="shop-img" src="https://www.bridgeonthecloud.com/images/material/sustainable.jpg"></a>
+    </div>
+    <!--<div class="row">
+    <div class="col span_12">
+    <figure><a href="https://www.bridgeonthecloud.com/category/2/"><img alt="単品商品" class="pc-only" src="https://www.bridgeonthecloud.com/images/material/top_img007.png"> <img alt="単品商品" class="sp-only" src="https://www.bridgeonthecloud.com/images/material/sp_top_img007.png"> </a></figure>
+    </div>
+    </div>-->
+    </div>
+</section>

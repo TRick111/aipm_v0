@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BFA 4月人員体制 意思決定レポート（Q1 2026）</title>
+<style>
+  @page { size: A4 landscape; margin: 12mm; }
+  * { margin: 0; padding: 0; box-sizing: border-box;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color-adjust: exact !important; }
+  body { font-family: 'Hiragino Sans','Noto Sans JP','Helvetica Neue',sans-serif; background:#f5f5f5; color:#333; line-height:1.6; }
+  .page { width:1100px; margin:20px auto; background:#fff; padding:36px 50px 30px; box-shadow:0 2px 12px rgba(0,0,0,.08); page-break-after:always; page-break-inside:avoid; position:relative; }
+  .page:last-child { page-break-after:avoid; }
+  .page-header { display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #1a365d; padding-bottom:10px; margin-bottom:20px; }
+  .page-header h1 { font-size:22px; color:#1a365d; font-weight:700; }
+  .page-header .tag { background:#1a365d; color:#fff; padding:4px 16px; border-radius:20px; font-size:12px; font-weight:600; }
+  .page-header .page-num { font-size:12px; color:#888; }
+  h2 { font-size:17px; color:#1a365d; margin-bottom:12px; padding-left:12px; border-left:4px solid #e53e3e; }
+  h3 { font-size:14px; color:#2d3748; margin:12px 0 8px; }
+  .kpi-row { display:flex; gap:14px; margin-bottom:18px; }
+  .kpi-card { flex:1; background:#f7fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; text-align:center; }
+  .kpi-card .label { font-size:12px; color:#718096; margin-bottom:4px; }
+  .kpi-card .value { font-size:28px; font-weight:700; color:#1a365d; }
+  .kpi-card .unit { font-size:13px; color:#718096; }
+  .kpi-card .sub { font-size:11px; color:#a0aec0; margin-top:4px; }
+  table { width:100%; border-collapse:collapse; margin-bottom:14px; font-size:13px; }
+  thead th { background:#1a365d; color:#fff; padding:7px 10px; text-align:center; font-weight:600; font-size:12px; }
+  tbody td { padding:6px 10px; text-align:right; border-bottom:1px solid #e2e8f0; }
+  tbody td:first-child { text-align:center; font-weight:600; }
+  tbody tr:nth-child(even) { background:#f7fafc; }
+  tbody tr.highlight { background:#fff5f5; }
+  tbody tr.highlight-green { background:#f0fff4; }
+  .rank-1 { color:#e53e3e; font-weight:700; }
+  .rank-low { color:#38a169; }
+  .chart-container { margin:12px 0; position:relative; }
+  .bar-chart { display:flex; align-items:flex-end; gap:4px; height:160px; padding:0 10px; border-bottom:2px solid #e2e8f0; margin-bottom:6px; }
+  .bar-group { flex:1; display:flex; flex-direction:column; align-items:center; height:100%; justify-content:flex-end; }
+  .bar { width:70%; border-radius:4px 4px 0 0; min-height:2px; }
+  .bar-label { font-size:11px; color:#4a5568; margin-top:6px; font-weight:600; }
+  .bar-value { font-size:10px; color:#718096; text-align:center; margin-bottom:4px; }
+  .h-bar-chart { margin:16px 0; }
+  .h-bar-row { display:flex; align-items:center; margin-bottom:6px; }
+  .h-bar-label { width:80px; font-size:12px; font-weight:600; text-align:right; padding-right:12px; color:#4a5568; }
+  .h-bar-track { flex:1; height:28px; background:#edf2f7; border-radius:4px; overflow:hidden; }
+  .h-bar-fill { height:100%; border-radius:4px; display:flex; align-items:center; padding-left:8px; font-size:11px; color:#fff; font-weight:600; min-width:40px; }
+  .h-bar-val { width:100px; font-size:12px; text-align:right; padding-left:10px; color:#4a5568; }
+  .insight-box { background:#ebf8ff; border-left:4px solid #3182ce; padding:12px 16px; margin:12px 0; border-radius:0 8px 8px 0; font-size:13px; color:#2c5282; }
+  .insight-box.warning { background:#fffbeb; border-left-color:#d69e2e; color:#744210; }
+  .insight-box.action { background:#fff5f5; border-left-color:#e53e3e; color:#9b2c2c; }
+  .insight-box strong { display:block; margin-bottom:4px; font-size:14px; }
+  .page-footer { position:absolute; bottom:20px; right:50px; font-size:10px; color:#a0aec0; }
+  .compare-table { margin:10px 0; }
+  .compare-table td { font-size:13px; }
+  .compare-table .scenario-header { background:#edf2f7; font-weight:700; text-align:left !important; padding:7px 12px; font-size:13px; color:#1a365d; }
+  .text-red { color:#e53e3e; } .text-green { color:#38a169; }
+  .text-sm { font-size:12px; } .text-muted { color:#a0aec0; }
+  .mt-8 { margin-top:8px; } .mb-8 { margin-bottom:8px; }
+  .flex-row { display:flex; gap:24px; } .flex-1 { flex:1; }
+  @media print {
+    body { background:#fff; }
+    .page { box-shadow:none; margin:0; padding:28px 36px 24px; page-break-after:always; page-break-inside:avoid; }
+    .page:last-child { page-break-after:avoid; }
+    .insight-box,table,.kpi-row,.chart-container,.h-bar-chart,.flex-row { page-break-inside:avoid; }
+    h2,h3 { page-break-after:avoid; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== PAGE 1: 概要 ========== -->
+<div class="page">
+  <div class="page-header">
+    <h1>BAR FIVE Arrows &#8212; 4月人員体制 意思決定レポート</h1>
+    <div>
+      <span class="tag">CONFIDENTIAL</span>
+      <span class="page-num" style="margin-left:12px">2026.03.26</span>
+    </div>
+  </div>
+
+  <h2>レポート概要</h2>
+  <div class="insight-box">
+    <strong>目的</strong>
+    4月の2名体制（橋本・大泉）において、定休日設定・営業時間短縮の意思決定を、売上データに基づき支援する。
+  </div>
+
+  <div class="kpi-row" style="margin-top:24px;">
+    <div class="kpi-card">
+      <div class="label">分析対象期間</div>
+      <div class="value" style="font-size:20px">2026 Q1</div>
+      <div class="sub">2026/1/1 〜 2026/3/22</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">営業日数</div>
+      <div class="value">77<span class="unit">日</span></div>
+      <div class="sub">週7日営業（不定休）</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">日平均売上</div>
+      <div class="value" style="font-size:24px">&yen;99,391</div>
+      <div class="sub">全曜日平均</div>
+    </div>
+    <div class="kpi-card">
+      <div class="label">日平均来店数</div>
+      <div class="value">17.1<span class="unit">人</span></div>
+      <div class="sub">全曜日平均</div>
+    </div>
+  </div>
+
+  <h2>分析の構成</h2>
+  <table>
+    <thead>
+      <tr><th style="width:40px">P.</th><th style="text-align:left">セクション</th><th style="text-align:left">内容</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>2</td><td style="text-align:left">曜日別分析</td><td style="text-align:left">売上・来店数・客単価の曜日間比較</td></tr>
+      <tr><td>3</td><td style="text-align:left">時間帯別分析</td><td style="text-align:left">退店（会計）時間帯ごとの売上構成・累積分布</td></tr>
+      <tr><td>4</td><td style="text-align:left">シナリオ比較 &amp; 示唆</td><td style="text-align:left">閉店時間・定休日パターンの売上インパクト試算</td></tr>
+    </tbody>
+  </table>
+
+  <div class="insight-box warning">
+    <strong>データについての注記</strong>
+    &#8226; 会計データ（AirRegi POS rawdata）ベース。時間帯 = 退店（会計決済）時刻<br>
+    &#8226; <b>営業日定義: 翌朝9時までの会計は前日の営業日として計上</b>（例: 木曜1:00会計 → 水曜営業分）<br>
+    &#8226; AirRegiの会計明細にはオーダー時刻が含まれないため、入店時刻は不明。実際の入店は会計の1〜2時間前と推定<br>
+    &#8226; 売上 = account_total（会計単位の合計金額）
+  </div>
+
+  <div class="page-footer">BAR FIVE Arrows | Staffing Analysis (Q1) | p.1</div>
+</div>
+
+<!-- ========== PAGE 2: 曜日別分析 ========== -->
+<div class="page">
+  <div class="page-header">
+    <h1>曜日別売上・来店数・客単価</h1>
+    <span class="tag">FACT</span>
+  </div>
+
+  <h2>曜日別 日平均売上（2026年1〜3月）</h2>
+  <div class="chart-container">
+    <div class="bar-chart">
+      <div class="bar-group">
+        <div class="bar-value">&yen;100,771</div>
+        <div class="bar" style="height:68.7%; background:#4299e1;"></div>
+        <div class="bar-label">月</div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-value">&yen;121,126</div>
+        <div class="bar" style="height:82.6%; background:#2b6cb0;"></div>
+        <div class="bar-label">火</div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-value">&yen;63,097</div>
+        <div class="bar" style="height:43.0%; background:#e53e3e;"></div>
+        <div class="bar-label">水</div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-value">&yen;85,292</div>
+        <div class="bar" style="height:58.1%; background:#f6ad55;"></div>
+        <div class="bar-label">木</div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-value">&yen;146,688</div>
+        <div class="bar" style="height:100%; background:#1a365d;"></div>
+        <div class="bar-label">金</div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-value">&yen;109,174</div>
+        <div class="bar" style="height:74.4%; background:#4299e1;"></div>
+        <div class="bar-label">土</div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-value">&yen;64,484</div>
+        <div class="bar" style="height:43.9%; background:#e53e3e;"></div>
+        <div class="bar-label">日</div>
+      </div>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>曜日</th><th>営業日数</th><th>日平均売上</th><th>日平均来店</th><th>日平均組数</th><th>客単価</th><th>組単価</th><th>売上順位</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="highlight-green">
+        <td>金</td><td>12</td><td>&yen;146,688</td><td>24.9人</td><td>6.5組</td><td>&yen;5,887</td><td>&yen;20,713</td><td class="rank-1">1位</td>
+      </tr>
+      <tr class="highlight-green">
+        <td>火</td><td>10</td><td>&yen;121,126</td><td>16.1人</td><td>5.0組</td><td>&yen;7,523</td><td>&yen;17,982</td><td class="rank-1">2位</td>
+      </tr>
+      <tr class="highlight-green">
+        <td>土</td><td>12</td><td>&yen;109,174</td><td>20.1人</td><td>7.9組</td><td>&yen;5,436</td><td>&yen;14,816</td><td>3位</td>
+      </tr>
+      <tr>
+        <td>月</td><td>10</td><td>&yen;100,771</td><td>15.7人</td><td>5.5組</td><td>&yen;6,419</td><td>&yen;14,978</td><td>4位</td>
+      </tr>
+      <tr>
+        <td>木</td><td>12</td><td>&yen;85,292</td><td>14.6人</td><td>5.9組</td><td>&yen;5,849</td><td>&yen;13,345</td><td>5位</td>
+      </tr>
+      <tr class="highlight">
+        <td>日</td><td>11</td><td>&yen;64,484</td><td>15.4人</td><td>5.5組</td><td>&yen;4,197</td><td>&yen;12,494</td><td class="rank-low">6位</td>
+      </tr>
+      <tr class="highlight">
+        <td>水</td><td>10</td><td>&yen;63,097</td><td>13.2人</td><td>5.4組</td><td>&yen;4,780</td><td>&yen;21,161</td><td class="rank-low">7位</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="insight-box">
+    <strong>事実から読み取れること</strong>
+    &#8226; <b>金曜が最も売上が高く</b>（日平均&yen;146,688）、水曜の約2.3倍<br>
+    &#8226; <b>水・日が低売上グループ</b>（&yen;63,097〜&yen;64,484）。営業日ベースではほぼ同水準<br>
+    &#8226; <b>火曜は客単価&yen;7,523と突出して高い</b>&#8212; 組数は少ないが高単価利用が集中<br>
+    &#8226; 金・火・土が「稼ぎ曜日」（上位3日で全体売上の約55%）
+  </div>
+
+  <div class="page-footer">BAR FIVE Arrows | Staffing Analysis (Q1) | p.2</div>
+</div>
+
+<!-- ========== PAGE 3: 時間帯別分析 ========== -->
+<div class="page">
+  <div class="page-header">
+    <h1>退店（会計）時間帯別 売上・来店数</h1>
+    <span class="tag">FACT</span>
+  </div>
+
+  <h2>退店（会計）時間帯別 売上構成比（2026年1〜3月）</h2>
+  <p class="text-sm text-muted mb-8">※ 営業時間順に並べ替え。各時間帯は「その時間に会計したグループ」の売上合計。実際の入店は1〜2時間前と推定。</p>
+
+  <div class="h-bar-chart">
+    <div class="h-bar-row">
+      <div class="h-bar-label">18時台</div>
+      <div class="h-bar-track"><div class="h-bar-fill" style="width:16.2%; background:#90cdf4;">3.4%</div></div>
+      <div class="h-bar-val">&yen;3,377/日</div>
+    </div>
+    <div class="h-bar-row">
+      <div class="h-bar-label">19時台</div>
+      <div class="h-bar-track"><div class="h-bar-fill" style="width:23.8%; background:#63b3ed;">5.0%</div></div>
+      <div class="h-bar-val">&yen;4,996/日</div>
+    </div>
+    <div class="h-bar-row">
+      <div class="h-bar-label">20時台</div>
+      <div class="h-bar-track"><div class="h-bar-fill" style="width:48.1%; background:#4299e1;">10.1%</div></div>
+      <div class="h-bar-val">&yen;10,031/日</div>
+    </div>
+    <div class="h-bar-row">
+      <div class="h-bar-label" style="color:#1a365d; font-weight:700">21時台</div>
+      <div class="h-bar-track"><div class="h-bar-fill" style="width:100%; background:#2b6cb0;">21.0%</div></div>
+      <div class="h-bar-val" style="font-weight:700">&yen;20,861/日</div>
+    </div>
+    <div class="h-bar-row">
+      <div class="h-bar-label" style="color:#1a365d; font-weight:700">22時台</div>
+      <div class="h-bar-track"><div class="h-bar-fill" style="width:94.3%; background:#2b6cb0;">19.8%</div></div>
+      <div class="h-bar-val" style="font-weight:700">&yen;19,677/日</div>
+    </div>
+    <div class="h-bar-row">
+      <div class="h-bar-label" style="color:#c53030; font-weight:700">23時台</div>
+      <div class="h-bar-track"><div class="h-bar-fill" style="width:86.7%; background:#e53e3e;">18.2%</div></div>
+      <div class="h-bar-val" style="font-weight:700; color:#e53e3e">&yen;18,067/日</div>
+    </div>
+    <div class="h-bar-row">
+      <div class="h-bar-label" style="color:#c53030">0時台</div>
+      <div class="h-bar-track"><div class="h-bar-fill" style="width:89.5%; background:#fc8181;">18.8%</div></div>
+      <div class="h-bar-val" style="color:#e53e3e">&yen;18,712/日</div>
+    </div>
+    <div class="h-bar-row">
+      <div class="h-bar-label">1時台</div>
+      <div class="h-bar-track"><div class="h-bar-fill" style="width:11.9%; background:#feb2b2;">2.5%</div></div>
+      <div class="h-bar-val">&yen;2,451/日</div>
+    </div>
+    <div class="h-bar-row">
+      <div class="h-bar-label">2時台</div>
+      <div class="h-bar-track"><div class="h-bar-fill" style="width:5.7%; background:#fed7d7;">1.2%</div></div>
+      <div class="h-bar-val">&yen;1,218/日</div>
+    </div>
+  </div>
+
+  <h3>累積売上構成比（会計時間帯順の積み上げ）</h3>
+  <table>
+    <thead>
+      <tr><th>時間帯</th><th>売上構成比</th><th>累積比</th><th>日平均売上</th><th>日平均来店</th><th>日平均組数</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>18時台</td><td>3.4%</td><td>3.4%</td><td>&yen;3,377</td><td>0.8人</td><td>0.1組</td></tr>
+      <tr><td>19時台</td><td>5.0%</td><td>8.4%</td><td>&yen;4,996</td><td>0.8人</td><td>0.3組</td></tr>
+      <tr><td>20時台</td><td>10.1%</td><td>18.5%</td><td>&yen;10,031</td><td>1.8人</td><td>0.7組</td></tr>
+      <tr style="background:#f0fff4"><td>21時台</td><td><b>21.0%</b></td><td>39.5%</td><td>&yen;20,861</td><td>3.9人</td><td>1.2組</td></tr>
+      <tr style="background:#f0fff4"><td>22時台</td><td><b>19.8%</b></td><td>59.3%</td><td>&yen;19,677</td><td>3.4人</td><td>1.2組</td></tr>
+      <tr style="background:#fff5f5"><td>23時台</td><td><b>18.2%</b></td><td>77.5%</td><td>&yen;18,067</td><td>3.7人</td><td>1.5組</td></tr>
+      <tr style="background:#fff5f5"><td>0時台</td><td><b>18.8%</b></td><td>96.3%</td><td>&yen;18,712</td><td>2.6人</td><td>0.8組</td></tr>
+      <tr style="background:#fff5f5"><td>1時台</td><td>2.5%</td><td>98.8%</td><td>&yen;2,451</td><td>0.2人</td><td>0.2組</td></tr>
+      <tr style="background:#fff5f5"><td>2時台</td><td>1.2%</td><td>100.0%</td><td>&yen;1,218</td><td>0.2人</td><td>0.1組</td></tr>
+    </tbody>
+  </table>
+
+  <div class="insight-box">
+    <strong>事実から読み取れること</strong>
+    &#8226; <b>ピークは21〜22時台</b>（合計40.8%）。ここがコア営業帯<br>
+    &#8226; <b>23時以降の会計で売上の40.7%</b>を占める（23時台18.2% + 0時台18.8% + 深夜3.7%）<br>
+    &#8226; <b>0時台が23時台とほぼ同規模</b>（18.8% vs 18.2%）&#8212; 深夜1時頃までが実質的なコアタイムの延長<br>
+    &#8226; 18〜20時台は合計18.5%のみ。21時以前の会計は「立ち上がり」の時間帯
+  </div>
+
+  <div class="page-footer">BAR FIVE Arrows | Staffing Analysis (Q1) | p.3</div>
+</div>
+
+<!-- ========== PAGE 4: シナリオ比較 ========== -->
+<div class="page">
+  <div class="page-header">
+    <h1>シナリオ比較 &amp; 示唆</h1>
+    <span class="tag">INSIGHT</span>
+  </div>
+
+  <h2>閉店時間短縮の売上インパクト</h2>
+  <p class="text-sm text-muted mb-8">※ データは会計（退店）時刻ベース。「閉店X時」= X時以降の会計がなくなる想定。実際の入店は1〜2時間前。</p>
+
+  <table class="compare-table">
+    <thead>
+      <tr><th style="width:220px">シナリオ</th><th>失われる売上構成比</th><th>日平均 失う売上</th><th>月間影響額（26日営業）</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="scenario-header">A. 閉店 23:00</td>
+        <td style="text-align:center; font-size:17px; color:#e53e3e; font-weight:700">40.7%</td>
+        <td>&yen;40,452</td>
+        <td class="text-red" style="font-weight:700">&yen;1,051,752</td>
+      </tr>
+      <tr>
+        <td class="scenario-header">B. 閉店 23:30</td>
+        <td style="text-align:center; font-size:17px; color:#e53e3e; font-weight:700">29.9%</td>
+        <td>&yen;29,718</td>
+        <td class="text-red" style="font-weight:700">&yen;772,668</td>
+      </tr>
+      <tr>
+        <td class="scenario-header">C. 閉店 0:00（=翌0時）</td>
+        <td style="text-align:center; font-size:15px; color:#d69e2e; font-weight:700">22.5%</td>
+        <td>&yen;22,363</td>
+        <td style="color:#d69e2e; font-weight:700">&yen;581,438</td>
+      </tr>
+      <tr>
+        <td class="scenario-header">D. 閉店 1:00（=翌1時）</td>
+        <td style="text-align:center; font-size:15px; color:#38a169;">3.7%</td>
+        <td>&yen;3,677</td>
+        <td class="text-green">&yen;95,602</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>定休日設定の売上インパクト</h2>
+  <table class="compare-table">
+    <thead>
+      <tr><th style="width:220px">定休日パターン</th><th>月間失う売上</th><th>月間残売上（概算）</th><th>削減率</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="scenario-header">なし（現状・週7営業）</td>
+        <td>&yen;0</td>
+        <td>&yen;2,762,528</td>
+        <td style="text-align:center">0%</td>
+      </tr>
+      <tr>
+        <td class="scenario-header">水曜定休（週6）</td>
+        <td>&yen;252,388</td>
+        <td>&yen;2,510,140</td>
+        <td style="text-align:center; color:#38a169; font-weight:700">-9.1%</td>
+      </tr>
+      <tr>
+        <td class="scenario-header">日曜定休（週6）</td>
+        <td>&yen;257,936</td>
+        <td>&yen;2,504,592</td>
+        <td style="text-align:center; color:#38a169; font-weight:700">-9.3%</td>
+      </tr>
+      <tr>
+        <td class="scenario-header">水+日 定休（週5）</td>
+        <td>&yen;510,324</td>
+        <td>&yen;2,252,204</td>
+        <td style="text-align:center; color:#d69e2e; font-weight:700">-18.5%</td>
+      </tr>
+      <tr>
+        <td class="scenario-header">日+木 定休（週5）</td>
+        <td>&yen;599,104</td>
+        <td>&yen;2,163,424</td>
+        <td style="text-align:center; color:#d69e2e; font-weight:700">-21.7%</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="text-sm text-muted mt-8">※ 月間売上は「日平均売上 &times; 各曜日4週分」で概算。営業日 = 翌朝9時までを含む。</p>
+
+  <div class="page-footer">BAR FIVE Arrows | Staffing Analysis (Q1) | p.4</div>
+</div>
+
+<!-- ========== PAGE 5: 示唆まとめ ========== -->
+<div class="page">
+  <div class="page-header">
+    <h1>示唆まとめ</h1>
+    <span class="tag">INSIGHT</span>
+  </div>
+
+  <h2>売上インパクト最小の選択肢</h2>
+
+  <div class="flex-row" style="margin-bottom:14px;">
+    <div class="flex-1">
+      <div class="kpi-card" style="border:2px solid #38a169;">
+        <div class="label">定休日で最もインパクトが小さい曜日</div>
+        <div class="value" style="color:#e53e3e">水曜</div>
+        <div class="sub">日平均&yen;63,097（最低）&amp; 来店13.2人（最少）</div>
+      </div>
+    </div>
+    <div class="flex-1">
+      <div class="kpi-card" style="border:2px solid #38a169;">
+        <div class="label">時短で削りやすいライン</div>
+        <div class="value" style="color:#e53e3e; font-size:22px">閉店 1:00</div>
+        <div class="sub">失うのは売上の3.7%（&yen;3,677/日）のみ</div>
+      </div>
+    </div>
+  </div>
+
+  <h2>時短 vs 休業、どちらが合理的か</h2>
+
+  <table>
+    <thead>
+      <tr><th style="width:180px">施策</th><th>月間売上減</th><th>人件費削減</th><th style="text-align:left">特記</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="text-align:left; font-weight:700">水曜定休のみ</td>
+        <td>&yen;252K (-9.1%)</td>
+        <td>4日分</td>
+        <td style="text-align:left">売上影響最小。体力的にも週1休は最低ライン</td>
+      </tr>
+      <tr>
+        <td style="text-align:left; font-weight:700">閉店 23:00のみ</td>
+        <td>&yen;1,052K (-40.7%)</td>
+        <td>毎日3〜4h短縮</td>
+        <td style="text-align:left; color:#e53e3e"><b>深夜帯が収益の柱のため、インパクトが非常に大きい</b></td>
+      </tr>
+      <tr>
+        <td style="text-align:left; font-weight:700">閉店 1:00 + 水曜休</td>
+        <td>&yen;348K (-12.6%)</td>
+        <td>4日分 + 毎日1〜2h短縮</td>
+        <td style="text-align:left; color:#38a169"><b>バランス型。深夜帯のコアは維持</b></td>
+      </tr>
+      <tr>
+        <td style="text-align:left; font-weight:700">水+日 定休</td>
+        <td>&yen;510K (-18.5%)</td>
+        <td>8日分</td>
+        <td style="text-align:left">週半ば+週末で分散休。売上影響は中程度</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="insight-box action" style="margin-top:12px;">
+    <strong>結論（データからの示唆）</strong>
+    <div style="font-size:14px; line-height:1.7; margin-top:6px;">
+      1. <b>BFAは「深夜帯バー」</b>&#8212; 23時以降の会計が売上の40.7%。23:00閉店は事業モデルの根幹に影響する。<br>
+      2. <b>定休日の方が時短より合理的</b>&#8212; 水曜1日休みで-9.1%だが、23:00閉店は-40.7%。定休日の方がダメージが圧倒的に小さい。<br>
+      3. <b>推奨の組み合わせ</b>：「水曜定休 + 閉店1:00」で売上影響-12.6%。2名体制でも運営可能性が高い。<br>
+      4. <b>もう1日休むなら日曜</b>&#8212; 日曜は売上&yen;64,484で水曜とほぼ同額。水+日の週5営業で-18.5%。
+    </div>
+  </div>
+
+  <div class="insight-box warning" style="margin-top:10px;">
+    <strong>留意事項</strong>
+    &#8226; 本レポートはPOSデータの「売上額」のみで分析。人件費・仕入れ・光熱費の変動は未考慮<br>
+    &#8226; 定休日は常連客の来店パターン変化（他曜日へのシフト）が起こりうるが、データでは予測不能<br>
+    &#8226; 時短による「早い時間帯の客が増える」効果も未考慮（認知の変化には時間がかかる）
+  </div>
+
+  <div class="page-footer">BAR FIVE Arrows | Staffing Analysis (Q1) | p.5</div>
+</div>
+
+</body>
+</html>

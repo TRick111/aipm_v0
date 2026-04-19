@@ -1,0 +1,1840 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e5]: ver 8.11.6
+      - list [ref=e6]:
+        - listitem [ref=e7]:
+          - generic [ref=e8]: "700600"
+          - text: ":"
+          - generic [ref=e9]: 麻布しき 旗の台店
+        - listitem [ref=e10]:
+          - generic [ref=e11]: "001"
+          - text: ":"
+          - generic [ref=e12]: 麻布しき 旗の台店
+        - listitem [ref=e13]:
+          - generic [ref=e14]: "0101"
+          - text: ":"
+          - generic [ref=e15]: オーナー
+  - generic [ref=e18]:
+    - heading "汎用検索" [level=1] [ref=e20]
+    - generic [ref=e21]: データの選択
+    - generic [ref=e22]:
+      - generic [ref=e24]: データ*
+      - combobox [ref=e26]:
+        - option "売上データ(伝票)"
+        - option "売上データ(伝票 + 伝票明細)" [selected]
+        - option "商品マスタ"
+        - option "店舗マスタ"
+        - option "担当者マスタ"
+        - option "顧客マスタ"
+        - option "入出金データ"
+        - option "金種別現金在高"
+        - option "売上データ(伝票+原価情報)"
+        - option "売上データ(伝票+伝票明細+原価情報)"
+        - option "売上データ(伝票 + 伝票明細 + 原価情報)定型フォーマット"
+        - option "売上データ詳細(伝票)"
+        - option "売上データ詳細(伝票 + 伝票明細)"
+        - option "アンケートデータ"
+        - option "売上データ(伝票 + 領収書発行履歴)"
+        - option "売上データ(伝票 + デリバリー情報)"
+        - option "調理時間"
+        - option "呼出時間"
+    - generic [ref=e28]:
+      - generic [ref=e30]: 店舗*
+      - generic [ref=e33]:
+        - generic [ref=e35]:
+          - generic [ref=e36]:
+            - generic [ref=e37]: 親カテゴリ
+            - combobox [ref=e38]:
+              - option "--- select ---" [selected]
+          - generic [ref=e39]:
+            - generic [ref=e40]: 子カテゴリ1
+            - combobox [ref=e41]:
+              - option "--- select ---" [selected]
+          - generic [ref=e42]:
+            - generic [ref=e43]: 子カテゴリ2
+            - combobox [ref=e44]:
+              - option "--- select ---" [selected]
+          - generic [ref=e45]:
+            - generic [ref=e46]: 子カテゴリ3
+            - combobox [ref=e47]:
+              - option "--- select ---" [selected]
+          - generic [ref=e48]:
+            - generic [ref=e49]: 子カテゴリ4
+            - combobox [ref=e50]:
+              - option "--- select ---" [selected]
+        - generic [ref=e51]:
+          - generic [ref=e52]:
+            - checkbox "  ALL" [ref=e53]
+            - generic [ref=e54] [cursor=pointer]:
+              - generic [ref=e55]: 
+              - generic [ref=e56]: 
+            - text: ALL
+          - generic [ref=e58]:
+            - generic [ref=e59]:
+              - generic [ref=e61]:
+                - checkbox "  000:管理者用店舗（日本）" [ref=e62]
+                - generic [ref=e63] [cursor=pointer]:
+                  - generic [ref=e64]: 
+                  - generic [ref=e65]: 
+                - text: 000:管理者用店舗（日本）
+              - generic [ref=e67]:
+                - checkbox "  001:麻布しき 旗の台店" [ref=e68]
+                - generic [ref=e69] [cursor=pointer]:
+                  - generic [ref=e70]: 
+                  - generic [ref=e71]: 
+                - text: 001:麻布しき 旗の台店
+            - generic [ref=e72]:
+              - generic [ref=e74]:
+                - checkbox "  002:麻布 しき 本店" [ref=e75]
+                - generic [ref=e76] [cursor=pointer]:
+                  - generic [ref=e77]: 
+                  - generic [ref=e78]: 
+                - text: 002:麻布 しき 本店
+              - generic [ref=e80]:
+                - checkbox "  003:健康弁当OHANA" [ref=e81]
+                - generic [ref=e82] [cursor=pointer]:
+                  - generic [ref=e83]: 
+                  - generic [ref=e84]: 
+                - text: 003:健康弁当OHANA
+            - generic [ref=e85]:
+              - generic [ref=e87]:
+                - checkbox "  004:健康弁当おはな" [ref=e88]
+                - generic [ref=e89] [cursor=pointer]:
+                  - generic [ref=e90]: 
+                  - generic [ref=e91]: 
+                - text: 004:健康弁当おはな
+              - generic [ref=e93]:
+                - checkbox "  005:一粒鰻盃" [ref=e94]
+                - generic [ref=e95] [cursor=pointer]:
+                  - generic [ref=e96]: 
+                  - generic [ref=e97]: 
+                - text: 005:一粒鰻盃
+    - generic [ref=e99]:
+      - generic [ref=e101]: 期間*
+      - generic [ref=e102]:
+        - generic [ref=e103]:
+          - spinbutton "" [ref=e104]: "20260330"
+          - generic: 
+        - text: ～
+        - generic [ref=e105]:
+          - spinbutton "" [ref=e106]: "20260330"
+          - generic: 
+    - generic [ref=e108]:
+      - generic [ref=e110]: 項目*
+      - generic [ref=e964]:
+        - grid [ref=e967]:
+          - rowgroup [ref=e117]:
+            - row "  項目名 項目別名 出力順序" [ref=e118]:
+              - columnheader " " [ref=e119]:
+                - generic [ref=e120]:
+                  - checkbox " " [ref=e121]
+                  - generic [ref=e122] [cursor=pointer]:
+                    - generic [ref=e123]: 
+                    - generic [ref=e124]: 
+              - columnheader "項目名" [ref=e125]
+              - columnheader "項目別名" [ref=e126]
+              - columnheader "出力順序" [ref=e127]
+        - grid [ref=e129]:
+          - rowgroup:
+            - row "  項目名 項目別名 出力順序":
+              - columnheader " ":
+                - generic [ref=e969]:
+                  - checkbox " " [ref=e970]
+                  - generic [ref=e971] [cursor=pointer]:
+                    - generic [ref=e972]: 
+                    - generic [ref=e973]: 
+              - columnheader "項目名":
+                - generic: 項目名
+              - columnheader "項目別名":
+                - generic: 項目別名
+              - columnheader "出力順序":
+                - generic: 出力順序
+          - rowgroup [ref=e135]:
+            - row "  H.集計フラグ" [ref=e974]:
+              - gridcell " " [ref=e975]:
+                - generic [ref=e976]:
+                  - checkbox " " [ref=e977]
+                  - generic [ref=e978] [cursor=pointer]:
+                    - generic [ref=e979]: 
+                    - generic [ref=e980]: 
+              - gridcell "H.集計フラグ" [ref=e981]
+              - gridcell [ref=e982]:
+                - textbox [ref=e983]
+              - gridcell [ref=e984]:
+                - combobox [ref=e985]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.店舗" [ref=e986]:
+              - gridcell " " [ref=e987]:
+                - generic [ref=e988]:
+                  - checkbox " " [ref=e989]
+                  - generic [ref=e990] [cursor=pointer]:
+                    - generic [ref=e991]: 
+                    - generic [ref=e992]: 
+              - gridcell "H.店舗" [ref=e993]
+              - gridcell [ref=e994]:
+                - textbox [ref=e995]
+              - gridcell [ref=e996]:
+                - combobox [ref=e997]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.伝票番号" [ref=e998]:
+              - gridcell " " [ref=e999]:
+                - generic [ref=e1000]:
+                  - checkbox " " [ref=e1001]
+                  - generic [ref=e1002] [cursor=pointer]:
+                    - generic [ref=e1003]: 
+                    - generic [ref=e1004]: 
+              - gridcell "H.伝票番号" [ref=e1005]
+              - gridcell [ref=e1006]:
+                - textbox [ref=e1007]
+              - gridcell [ref=e1008]:
+                - combobox [ref=e1009]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.伝票番号枝番" [ref=e1010]:
+              - gridcell " " [ref=e1011]:
+                - generic [ref=e1012]:
+                  - checkbox " " [ref=e1013]
+                  - generic [ref=e1014] [cursor=pointer]:
+                    - generic [ref=e1015]: 
+                    - generic [ref=e1016]: 
+              - gridcell "H.伝票番号枝番" [ref=e1017]
+              - gridcell [ref=e1018]:
+                - textbox [ref=e1019]
+              - gridcell [ref=e1020]:
+                - combobox [ref=e1021]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.元伝票番号" [ref=e1022]:
+              - gridcell " " [ref=e1023]:
+                - generic [ref=e1024]:
+                  - checkbox " " [ref=e1025]
+                  - generic [ref=e1026] [cursor=pointer]:
+                    - generic [ref=e1027]: 
+                    - generic [ref=e1028]: 
+              - gridcell "H.元伝票番号" [ref=e1029]
+              - gridcell [ref=e1030]:
+                - textbox [ref=e1031]
+              - gridcell [ref=e1032]:
+                - combobox [ref=e1033]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.登録番号" [ref=e1034]:
+              - gridcell " " [ref=e1035]:
+                - generic [ref=e1036]:
+                  - checkbox " " [ref=e1037]
+                  - generic [ref=e1038] [cursor=pointer]:
+                    - generic [ref=e1039]: 
+                    - generic [ref=e1040]: 
+              - gridcell "H.登録番号" [ref=e1041]
+              - gridcell [ref=e1042]:
+                - textbox [ref=e1043]
+              - gridcell [ref=e1044]:
+                - combobox [ref=e1045]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.事業者名" [ref=e1046]:
+              - gridcell " " [ref=e1047]:
+                - generic [ref=e1048]:
+                  - checkbox " " [ref=e1049]
+                  - generic [ref=e1050] [cursor=pointer]:
+                    - generic [ref=e1051]: 
+                    - generic [ref=e1052]: 
+              - gridcell "H.事業者名" [ref=e1053]
+              - gridcell [ref=e1054]:
+                - textbox [ref=e1055]
+              - gridcell [ref=e1056]:
+                - combobox [ref=e1057]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.合算先伝票番号" [ref=e1058]:
+              - gridcell " " [ref=e1059]:
+                - generic [ref=e1060]:
+                  - checkbox " " [ref=e1061]
+                  - generic [ref=e1062] [cursor=pointer]:
+                    - generic [ref=e1063]: 
+                    - generic [ref=e1064]: 
+              - gridcell "H.合算先伝票番号" [ref=e1065]
+              - gridcell [ref=e1066]:
+                - textbox [ref=e1067]
+              - gridcell [ref=e1068]:
+                - combobox [ref=e1069]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.集計対象営業年月日" [ref=e1070]:
+              - gridcell " " [ref=e1071]:
+                - generic [ref=e1072]:
+                  - checkbox " " [ref=e1073]
+                  - generic [ref=e1074] [cursor=pointer]:
+                    - generic [ref=e1075]: 
+                    - generic [ref=e1076]: 
+              - gridcell "H.集計対象営業年月日" [ref=e1077]
+              - gridcell [ref=e1078]:
+                - textbox [ref=e1079]
+              - gridcell [ref=e1080]:
+                - combobox [ref=e1081]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.集計営業年" [ref=e1082]:
+              - gridcell " " [ref=e1083]:
+                - generic [ref=e1084]:
+                  - checkbox " " [ref=e1085]
+                  - generic [ref=e1086] [cursor=pointer]:
+                    - generic [ref=e1087]: 
+                    - generic [ref=e1088]: 
+              - gridcell "H.集計営業年" [ref=e1089]
+              - gridcell [ref=e1090]:
+                - textbox [ref=e1091]
+              - gridcell [ref=e1092]:
+                - combobox [ref=e1093]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.集計営業月" [ref=e1094]:
+              - gridcell " " [ref=e1095]:
+                - generic [ref=e1096]:
+                  - checkbox " " [ref=e1097]
+                  - generic [ref=e1098] [cursor=pointer]:
+                    - generic [ref=e1099]: 
+                    - generic [ref=e1100]: 
+              - gridcell "H.集計営業月" [ref=e1101]
+              - gridcell [ref=e1102]:
+                - textbox [ref=e1103]
+              - gridcell [ref=e1104]:
+                - combobox [ref=e1105]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.集計営業日" [ref=e1106]:
+              - gridcell " " [ref=e1107]:
+                - generic [ref=e1108]:
+                  - checkbox " " [ref=e1109]
+                  - generic [ref=e1110] [cursor=pointer]:
+                    - generic [ref=e1111]: 
+                    - generic [ref=e1112]: 
+              - gridcell "H.集計営業日" [ref=e1113]
+              - gridcell [ref=e1114]:
+                - textbox [ref=e1115]
+              - gridcell [ref=e1116]:
+                - combobox [ref=e1117]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.曜日" [ref=e1118]:
+              - gridcell " " [ref=e1119]:
+                - generic [ref=e1120]:
+                  - checkbox " " [ref=e1121]
+                  - generic [ref=e1122] [cursor=pointer]:
+                    - generic [ref=e1123]: 
+                    - generic [ref=e1124]: 
+              - gridcell "H.曜日" [ref=e1125]
+              - gridcell [ref=e1126]:
+                - textbox [ref=e1127]
+              - gridcell [ref=e1128]:
+                - combobox [ref=e1129]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.支払ステータス" [ref=e1130]:
+              - gridcell " " [ref=e1131]:
+                - generic [ref=e1132]:
+                  - checkbox " " [ref=e1133]
+                  - generic [ref=e1134] [cursor=pointer]:
+                    - generic [ref=e1135]: 
+                    - generic [ref=e1136]: 
+              - gridcell "H.支払ステータス" [ref=e1137]
+              - gridcell [ref=e1138]:
+                - textbox [ref=e1139]
+              - gridcell [ref=e1140]:
+                - combobox [ref=e1141]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.伝票発行日" [ref=e1142]:
+              - gridcell " " [ref=e1143]:
+                - generic [ref=e1144]:
+                  - checkbox " " [ref=e1145]
+                  - generic [ref=e1146] [cursor=pointer]:
+                    - generic [ref=e1147]: 
+                    - generic [ref=e1148]: 
+              - gridcell "H.伝票発行日" [ref=e1149]
+              - gridcell [ref=e1150]:
+                - textbox [ref=e1151]
+              - gridcell [ref=e1152]:
+                - combobox [ref=e1153]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.伝票処理日" [ref=e1154]:
+              - gridcell " " [ref=e1155]:
+                - generic [ref=e1156]:
+                  - checkbox " " [ref=e1157]
+                  - generic [ref=e1158] [cursor=pointer]:
+                    - generic [ref=e1159]: 
+                    - generic [ref=e1160]: 
+              - gridcell "H.伝票処理日" [ref=e1161]
+              - gridcell [ref=e1162]:
+                - textbox [ref=e1163]
+              - gridcell [ref=e1164]:
+                - combobox [ref=e1165]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.返還元年月(返品)" [ref=e1166]:
+              - gridcell " " [ref=e1167]:
+                - generic [ref=e1168]:
+                  - checkbox " " [ref=e1169]
+                  - generic [ref=e1170] [cursor=pointer]:
+                    - generic [ref=e1171]: 
+                    - generic [ref=e1172]: 
+              - gridcell "H.返還元年月(返品)" [ref=e1173]
+              - gridcell [ref=e1174]:
+                - textbox [ref=e1175]
+              - gridcell [ref=e1176]:
+                - combobox [ref=e1177]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.返還元年月日(赤伝)" [ref=e1178]:
+              - gridcell " " [ref=e1179]:
+                - generic [ref=e1180]:
+                  - checkbox " " [ref=e1181]
+                  - generic [ref=e1182] [cursor=pointer]:
+                    - generic [ref=e1183]: 
+                    - generic [ref=e1184]: 
+              - gridcell "H.返還元年月日(赤伝)" [ref=e1185]
+              - gridcell [ref=e1186]:
+                - textbox [ref=e1187]
+              - gridcell [ref=e1188]:
+                - combobox [ref=e1189]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.POS番号" [ref=e1190]:
+              - gridcell " " [ref=e1191]:
+                - generic [ref=e1192]:
+                  - checkbox " " [ref=e1193]
+                  - generic [ref=e1194] [cursor=pointer]:
+                    - generic [ref=e1195]: 
+                    - generic [ref=e1196]: 
+              - gridcell "H.POS番号" [ref=e1197]
+              - gridcell [ref=e1198]:
+                - textbox [ref=e1199]
+              - gridcell [ref=e1200]:
+                - combobox [ref=e1201]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.テーブル番号" [ref=e1202]:
+              - gridcell " " [ref=e1203]:
+                - generic [ref=e1204]:
+                  - checkbox " " [ref=e1205]
+                  - generic [ref=e1206] [cursor=pointer]:
+                    - generic [ref=e1207]: 
+                    - generic [ref=e1208]: 
+              - gridcell "H.テーブル番号" [ref=e1209]
+              - gridcell [ref=e1210]:
+                - textbox [ref=e1211]
+              - gridcell [ref=e1212]:
+                - combobox [ref=e1213]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.客数（合計）" [ref=e1214]:
+              - gridcell " " [ref=e1215]:
+                - generic [ref=e1216]:
+                  - checkbox " " [ref=e1217]
+                  - generic [ref=e1218] [cursor=pointer]:
+                    - generic [ref=e1219]: 
+                    - generic [ref=e1220]: 
+              - gridcell "H.客数（合計）" [ref=e1221]
+              - gridcell [ref=e1222]:
+                - textbox [ref=e1223]
+              - gridcell [ref=e1224]:
+                - combobox [ref=e1225]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.客数（男）" [ref=e1226]:
+              - gridcell " " [ref=e1227]:
+                - generic [ref=e1228]:
+                  - checkbox " " [ref=e1229]
+                  - generic [ref=e1230] [cursor=pointer]:
+                    - generic [ref=e1231]: 
+                    - generic [ref=e1232]: 
+              - gridcell "H.客数（男）" [ref=e1233]
+              - gridcell [ref=e1234]:
+                - textbox [ref=e1235]
+              - gridcell [ref=e1236]:
+                - combobox [ref=e1237]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.客数（女）" [ref=e1238]:
+              - gridcell " " [ref=e1239]:
+                - generic [ref=e1240]:
+                  - checkbox " " [ref=e1241]
+                  - generic [ref=e1242] [cursor=pointer]:
+                    - generic [ref=e1243]: 
+                    - generic [ref=e1244]: 
+              - gridcell "H.客数（女）" [ref=e1245]
+              - gridcell [ref=e1246]:
+                - textbox [ref=e1247]
+              - gridcell [ref=e1248]:
+                - combobox [ref=e1249]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.客数（選択なし）" [ref=e1250]:
+              - gridcell " " [ref=e1251]:
+                - generic [ref=e1252]:
+                  - checkbox " " [ref=e1253]
+                  - generic [ref=e1254] [cursor=pointer]:
+                    - generic [ref=e1255]: 
+                    - generic [ref=e1256]: 
+              - gridcell "H.客数（選択なし）" [ref=e1257]
+              - gridcell [ref=e1258]:
+                - textbox [ref=e1259]
+              - gridcell [ref=e1260]:
+                - combobox [ref=e1261]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.深夜料金" [ref=e1262]:
+              - gridcell " " [ref=e1263]:
+                - generic [ref=e1264]:
+                  - checkbox " " [ref=e1265]
+                  - generic [ref=e1266] [cursor=pointer]:
+                    - generic [ref=e1267]: 
+                    - generic [ref=e1268]: 
+              - gridcell "H.深夜料金" [ref=e1269]
+              - gridcell [ref=e1270]:
+                - textbox [ref=e1271]
+              - gridcell [ref=e1272]:
+                - combobox [ref=e1273]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.テーブルチャージ料金" [ref=e1274]:
+              - gridcell " " [ref=e1275]:
+                - generic [ref=e1276]:
+                  - checkbox " " [ref=e1277]
+                  - generic [ref=e1278] [cursor=pointer]:
+                    - generic [ref=e1279]: 
+                    - generic [ref=e1280]: 
+              - gridcell "H.テーブルチャージ料金" [ref=e1281]
+              - gridcell [ref=e1282]:
+                - textbox [ref=e1283]
+              - gridcell [ref=e1284]:
+                - combobox [ref=e1285]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.サービス料金" [ref=e1286]:
+              - gridcell " " [ref=e1287]:
+                - generic [ref=e1288]:
+                  - checkbox " " [ref=e1289]
+                  - generic [ref=e1290] [cursor=pointer]:
+                    - generic [ref=e1291]: 
+                    - generic [ref=e1292]: 
+              - gridcell "H.サービス料金" [ref=e1293]
+              - gridcell [ref=e1294]:
+                - textbox [ref=e1295]
+              - gridcell [ref=e1296]:
+                - combobox [ref=e1297]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.小計" [ref=e1298]:
+              - gridcell " " [ref=e1299]:
+                - generic [ref=e1300]:
+                  - checkbox " " [ref=e1301]
+                  - generic [ref=e1302] [cursor=pointer]:
+                    - generic [ref=e1303]: 
+                    - generic [ref=e1304]: 
+              - gridcell "H.小計" [ref=e1305]
+              - gridcell [ref=e1306]:
+                - textbox [ref=e1307]
+              - gridcell [ref=e1308]:
+                - combobox [ref=e1309]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.総商品数" [ref=e1310]:
+              - gridcell " " [ref=e1311]:
+                - generic [ref=e1312]:
+                  - checkbox " " [ref=e1313]
+                  - generic [ref=e1314] [cursor=pointer]:
+                    - generic [ref=e1315]: 
+                    - generic [ref=e1316]: 
+              - gridcell "H.総商品数" [ref=e1317]
+              - gridcell [ref=e1318]:
+                - textbox [ref=e1319]
+              - gridcell [ref=e1320]:
+                - combobox [ref=e1321]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.伝票金額" [ref=e1322]:
+              - gridcell " " [ref=e1323]:
+                - generic [ref=e1324]:
+                  - checkbox " " [ref=e1325]
+                  - generic [ref=e1326] [cursor=pointer]:
+                    - generic [ref=e1327]: 
+                    - generic [ref=e1328]: 
+              - gridcell "H.伝票金額" [ref=e1329]
+              - gridcell [ref=e1330]:
+                - textbox [ref=e1331]
+              - gridcell [ref=e1332]:
+                - combobox [ref=e1333]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.伝票税額" [ref=e1334]:
+              - gridcell " " [ref=e1335]:
+                - generic [ref=e1336]:
+                  - checkbox " " [ref=e1337]
+                  - generic [ref=e1338] [cursor=pointer]:
+                    - generic [ref=e1339]: 
+                    - generic [ref=e1340]: 
+              - gridcell "H.伝票税額" [ref=e1341]
+              - gridcell [ref=e1342]:
+                - textbox [ref=e1343]
+              - gridcell [ref=e1344]:
+                - combobox [ref=e1345]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.税抜金額10%" [ref=e1346]:
+              - gridcell " " [ref=e1347]:
+                - generic [ref=e1348]:
+                  - checkbox " " [ref=e1349]
+                  - generic [ref=e1350] [cursor=pointer]:
+                    - generic [ref=e1351]: 
+                    - generic [ref=e1352]: 
+              - gridcell "H.税抜金額10%" [ref=e1353]
+              - gridcell [ref=e1354]:
+                - textbox [ref=e1355]
+              - gridcell [ref=e1356]:
+                - combobox [ref=e1357]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.税額10%" [ref=e1358]:
+              - gridcell " " [ref=e1359]:
+                - generic [ref=e1360]:
+                  - checkbox " " [ref=e1361]
+                  - generic [ref=e1362] [cursor=pointer]:
+                    - generic [ref=e1363]: 
+                    - generic [ref=e1364]: 
+              - gridcell "H.税額10%" [ref=e1365]
+              - gridcell [ref=e1366]:
+                - textbox [ref=e1367]
+              - gridcell [ref=e1368]:
+                - combobox [ref=e1369]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.税抜金額8%" [ref=e1370]:
+              - gridcell " " [ref=e1371]:
+                - generic [ref=e1372]:
+                  - checkbox " " [ref=e1373]
+                  - generic [ref=e1374] [cursor=pointer]:
+                    - generic [ref=e1375]: 
+                    - generic [ref=e1376]: 
+              - gridcell "H.税抜金額8%" [ref=e1377]
+              - gridcell [ref=e1378]:
+                - textbox [ref=e1379]
+              - gridcell [ref=e1380]:
+                - combobox [ref=e1381]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.税額8%" [ref=e1382]:
+              - gridcell " " [ref=e1383]:
+                - generic [ref=e1384]:
+                  - checkbox " " [ref=e1385]
+                  - generic [ref=e1386] [cursor=pointer]:
+                    - generic [ref=e1387]: 
+                    - generic [ref=e1388]: 
+              - gridcell "H.税額8%" [ref=e1389]
+              - gridcell [ref=e1390]:
+                - textbox [ref=e1391]
+              - gridcell [ref=e1392]:
+                - combobox [ref=e1393]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.非課税金額" [ref=e1394]:
+              - gridcell " " [ref=e1395]:
+                - generic [ref=e1396]:
+                  - checkbox " " [ref=e1397]
+                  - generic [ref=e1398] [cursor=pointer]:
+                    - generic [ref=e1399]: 
+                    - generic [ref=e1400]: 
+              - gridcell "H.非課税金額" [ref=e1401]
+              - gridcell [ref=e1402]:
+                - textbox [ref=e1403]
+              - gridcell [ref=e1404]:
+                - combobox [ref=e1405]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.不課税金額" [ref=e1406]:
+              - gridcell " " [ref=e1407]:
+                - generic [ref=e1408]:
+                  - checkbox " " [ref=e1409]
+                  - generic [ref=e1410] [cursor=pointer]:
+                    - generic [ref=e1411]: 
+                    - generic [ref=e1412]: 
+              - gridcell "H.不課税金額" [ref=e1413]
+              - gridcell [ref=e1414]:
+                - textbox [ref=e1415]
+              - gridcell [ref=e1416]:
+                - combobox [ref=e1417]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.お預かり金額" [ref=e1418]:
+              - gridcell " " [ref=e1419]:
+                - generic [ref=e1420]:
+                  - checkbox " " [ref=e1421]
+                  - generic [ref=e1422] [cursor=pointer]:
+                    - generic [ref=e1423]: 
+                    - generic [ref=e1424]: 
+              - gridcell "H.お預かり金額" [ref=e1425]
+              - gridcell [ref=e1426]:
+                - textbox [ref=e1427]
+              - gridcell [ref=e1428]:
+                - combobox [ref=e1429]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.おつり" [ref=e1430]:
+              - gridcell " " [ref=e1431]:
+                - generic [ref=e1432]:
+                  - checkbox " " [ref=e1433]
+                  - generic [ref=e1434] [cursor=pointer]:
+                    - generic [ref=e1435]: 
+                    - generic [ref=e1436]: 
+              - gridcell "H.おつり" [ref=e1437]
+              - gridcell [ref=e1438]:
+                - textbox [ref=e1439]
+              - gridcell [ref=e1440]:
+                - combobox [ref=e1441]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.免税額（一般品）" [ref=e1442]:
+              - gridcell " " [ref=e1443]:
+                - generic [ref=e1444]:
+                  - checkbox " " [ref=e1445]
+                  - generic [ref=e1446] [cursor=pointer]:
+                    - generic [ref=e1447]: 
+                    - generic [ref=e1448]: 
+              - gridcell "H.免税額（一般品）" [ref=e1449]
+              - gridcell [ref=e1450]:
+                - textbox [ref=e1451]
+              - gridcell [ref=e1452]:
+                - combobox [ref=e1453]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.免税額（消耗品）" [ref=e1454]:
+              - gridcell " " [ref=e1455]:
+                - generic [ref=e1456]:
+                  - checkbox " " [ref=e1457]
+                  - generic [ref=e1458] [cursor=pointer]:
+                    - generic [ref=e1459]: 
+                    - generic [ref=e1460]: 
+              - gridcell "H.免税額（消耗品）" [ref=e1461]
+              - gridcell [ref=e1462]:
+                - textbox [ref=e1463]
+              - gridcell [ref=e1464]:
+                - combobox [ref=e1465]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  D.免税区分" [ref=e1466]:
+              - gridcell " " [ref=e1467]:
+                - generic [ref=e1468]:
+                  - checkbox " " [ref=e1469]
+                  - generic [ref=e1470] [cursor=pointer]:
+                    - generic [ref=e1471]: 
+                    - generic [ref=e1472]: 
+              - gridcell "D.免税区分" [ref=e1473]
+              - gridcell [ref=e1474]:
+                - textbox [ref=e1475]
+              - gridcell [ref=e1476]:
+                - combobox [ref=e1477]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  D.免税額" [ref=e1478]:
+              - gridcell " " [ref=e1479]:
+                - generic [ref=e1480]:
+                  - checkbox " " [ref=e1481]
+                  - generic [ref=e1482] [cursor=pointer]:
+                    - generic [ref=e1483]: 
+                    - generic [ref=e1484]: 
+              - gridcell "D.免税額" [ref=e1485]
+              - gridcell [ref=e1486]:
+                - textbox [ref=e1487]
+              - gridcell [ref=e1488]:
+                - combobox [ref=e1489]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.値引金額" [ref=e1490]:
+              - gridcell " " [ref=e1491]:
+                - generic [ref=e1492]:
+                  - checkbox " " [ref=e1493]
+                  - generic [ref=e1494] [cursor=pointer]:
+                    - generic [ref=e1495]: 
+                    - generic [ref=e1496]: 
+              - gridcell "H.値引金額" [ref=e1497]
+              - gridcell [ref=e1498]:
+                - textbox [ref=e1499]
+              - gridcell [ref=e1500]:
+                - combobox [ref=e1501]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.支払金額（現金）" [ref=e1502]:
+              - gridcell " " [ref=e1503]:
+                - generic [ref=e1504]:
+                  - checkbox " " [ref=e1505]
+                  - generic [ref=e1506] [cursor=pointer]:
+                    - generic [ref=e1507]: 
+                    - generic [ref=e1508]: 
+              - gridcell "H.支払金額（現金）" [ref=e1509]
+              - gridcell [ref=e1510]:
+                - textbox [ref=e1511]
+              - gridcell [ref=e1512]:
+                - combobox [ref=e1513]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.支払金額（クレジットカード）" [ref=e1514]:
+              - gridcell " " [ref=e1515]:
+                - generic [ref=e1516]:
+                  - checkbox " " [ref=e1517]
+                  - generic [ref=e1518] [cursor=pointer]:
+                    - generic [ref=e1519]: 
+                    - generic [ref=e1520]: 
+              - gridcell "H.支払金額（クレジットカード）" [ref=e1521]
+              - gridcell [ref=e1522]:
+                - textbox [ref=e1523]
+              - gridcell [ref=e1524]:
+                - combobox [ref=e1525]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.支払金額（ポイント）" [ref=e1526]:
+              - gridcell " " [ref=e1527]:
+                - generic [ref=e1528]:
+                  - checkbox " " [ref=e1529]
+                  - generic [ref=e1530] [cursor=pointer]:
+                    - generic [ref=e1531]: 
+                    - generic [ref=e1532]: 
+              - gridcell "H.支払金額（ポイント）" [ref=e1533]
+              - gridcell [ref=e1534]:
+                - textbox [ref=e1535]
+              - gridcell [ref=e1536]:
+                - combobox [ref=e1537]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.支払金額（電子マネー）" [ref=e1538]:
+              - gridcell " " [ref=e1539]:
+                - generic [ref=e1540]:
+                  - checkbox " " [ref=e1541]
+                  - generic [ref=e1542] [cursor=pointer]:
+                    - generic [ref=e1543]: 
+                    - generic [ref=e1544]: 
+              - gridcell "H.支払金額（電子マネー）" [ref=e1545]
+              - gridcell [ref=e1546]:
+                - textbox [ref=e1547]
+              - gridcell [ref=e1548]:
+                - combobox [ref=e1549]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.支払金額（商品券：釣り無）" [ref=e1550]:
+              - gridcell " " [ref=e1551]:
+                - generic [ref=e1552]:
+                  - checkbox " " [ref=e1553]
+                  - generic [ref=e1554] [cursor=pointer]:
+                    - generic [ref=e1555]: 
+                    - generic [ref=e1556]: 
+              - gridcell "H.支払金額（商品券：釣り無）" [ref=e1557]
+              - gridcell [ref=e1558]:
+                - textbox [ref=e1559]
+              - gridcell [ref=e1560]:
+                - combobox [ref=e1561]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.商品券差額" [ref=e1562]:
+              - gridcell " " [ref=e1563]:
+                - generic [ref=e1564]:
+                  - checkbox " " [ref=e1565]
+                  - generic [ref=e1566] [cursor=pointer]:
+                    - generic [ref=e1567]: 
+                    - generic [ref=e1568]: 
+              - gridcell "H.商品券差額" [ref=e1569]
+              - gridcell [ref=e1570]:
+                - textbox [ref=e1571]
+              - gridcell [ref=e1572]:
+                - combobox [ref=e1573]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.支払金額（商品券：釣り有）" [ref=e1574]:
+              - gridcell " " [ref=e1575]:
+                - generic [ref=e1576]:
+                  - checkbox " " [ref=e1577]
+                  - generic [ref=e1578] [cursor=pointer]:
+                    - generic [ref=e1579]: 
+                    - generic [ref=e1580]: 
+              - gridcell "H.支払金額（商品券：釣り有）" [ref=e1581]
+              - gridcell [ref=e1582]:
+                - textbox [ref=e1583]
+              - gridcell [ref=e1584]:
+                - combobox [ref=e1585]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.商品券現金釣銭" [ref=e1586]:
+              - gridcell " " [ref=e1587]:
+                - generic [ref=e1588]:
+                  - checkbox " " [ref=e1589]
+                  - generic [ref=e1590] [cursor=pointer]:
+                    - generic [ref=e1591]: 
+                    - generic [ref=e1592]: 
+              - gridcell "H.商品券現金釣銭" [ref=e1593]
+              - gridcell [ref=e1594]:
+                - textbox [ref=e1595]
+              - gridcell [ref=e1596]:
+                - combobox [ref=e1597]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.支払金額（その他）" [ref=e1598]:
+              - gridcell " " [ref=e1599]:
+                - generic [ref=e1600]:
+                  - checkbox " " [ref=e1601]
+                  - generic [ref=e1602] [cursor=pointer]:
+                    - generic [ref=e1603]: 
+                    - generic [ref=e1604]: 
+              - gridcell "H.支払金額（その他）" [ref=e1605]
+              - gridcell [ref=e1606]:
+                - textbox [ref=e1607]
+              - gridcell [ref=e1608]:
+                - combobox [ref=e1609]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.レジ担当者ID" [ref=e1610]:
+              - gridcell " " [ref=e1611]:
+                - generic [ref=e1612]:
+                  - checkbox " " [ref=e1613]
+                  - generic [ref=e1614] [cursor=pointer]:
+                    - generic [ref=e1615]: 
+                    - generic [ref=e1616]: 
+              - gridcell "H.レジ担当者ID" [ref=e1617]
+              - gridcell [ref=e1618]:
+                - textbox [ref=e1619]
+              - gridcell [ref=e1620]:
+                - combobox [ref=e1621]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.スタイリスト（理美容のみ）" [ref=e1622]:
+              - gridcell " " [ref=e1623]:
+                - generic [ref=e1624]:
+                  - checkbox " " [ref=e1625]
+                  - generic [ref=e1626] [cursor=pointer]:
+                    - generic [ref=e1627]: 
+                    - generic [ref=e1628]: 
+              - gridcell "H.スタイリスト（理美容のみ）" [ref=e1629]
+              - gridcell [ref=e1630]:
+                - textbox [ref=e1631]
+              - gridcell [ref=e1632]:
+                - combobox [ref=e1633]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.受付番号" [ref=e1634]:
+              - gridcell " " [ref=e1635]:
+                - generic [ref=e1636]:
+                  - checkbox " " [ref=e1637]
+                  - generic [ref=e1638] [cursor=pointer]:
+                    - generic [ref=e1639]: 
+                    - generic [ref=e1640]: 
+              - gridcell "H.受付番号" [ref=e1641]
+              - gridcell [ref=e1642]:
+                - textbox [ref=e1643]
+              - gridcell [ref=e1644]:
+                - combobox [ref=e1645]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.テーブル合算後伝票番号" [ref=e1646]:
+              - gridcell " " [ref=e1647]:
+                - generic [ref=e1648]:
+                  - checkbox " " [ref=e1649]
+                  - generic [ref=e1650] [cursor=pointer]:
+                    - generic [ref=e1651]: 
+                    - generic [ref=e1652]: 
+              - gridcell "H.テーブル合算後伝票番号" [ref=e1653]
+              - gridcell [ref=e1654]:
+                - textbox [ref=e1655]
+              - gridcell [ref=e1656]:
+                - combobox [ref=e1657]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.税集計区分" [ref=e1658]:
+              - gridcell " " [ref=e1659]:
+                - generic [ref=e1660]:
+                  - checkbox " " [ref=e1661]
+                  - generic [ref=e1662] [cursor=pointer]:
+                    - generic [ref=e1663]: 
+                    - generic [ref=e1664]: 
+              - gridcell "H.税集計区分" [ref=e1665]
+              - gridcell [ref=e1666]:
+                - textbox [ref=e1667]
+              - gridcell [ref=e1668]:
+                - combobox [ref=e1669]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.支払メモ" [ref=e1670]:
+              - gridcell " " [ref=e1671]:
+                - generic [ref=e1672]:
+                  - checkbox " " [ref=e1673]
+                  - generic [ref=e1674] [cursor=pointer]:
+                    - generic [ref=e1675]: 
+                    - generic [ref=e1676]: 
+              - gridcell "H.支払メモ" [ref=e1677]
+              - gridcell [ref=e1678]:
+                - textbox [ref=e1679]
+              - gridcell [ref=e1680]:
+                - combobox [ref=e1681]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.領収書発行回数" [ref=e1682]:
+              - gridcell " " [ref=e1683]:
+                - generic [ref=e1684]:
+                  - checkbox " " [ref=e1685]
+                  - generic [ref=e1686] [cursor=pointer]:
+                    - generic [ref=e1687]: 
+                    - generic [ref=e1688]: 
+              - gridcell "H.領収書発行回数" [ref=e1689]
+              - gridcell [ref=e1690]:
+                - textbox [ref=e1691]
+              - gridcell [ref=e1692]:
+                - combobox [ref=e1693]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.領収書発行最終日付" [ref=e1694]:
+              - gridcell " " [ref=e1695]:
+                - generic [ref=e1696]:
+                  - checkbox " " [ref=e1697]
+                  - generic [ref=e1698] [cursor=pointer]:
+                    - generic [ref=e1699]: 
+                    - generic [ref=e1700]: 
+              - gridcell "H.領収書発行最終日付" [ref=e1701]
+              - gridcell [ref=e1702]:
+                - textbox [ref=e1703]
+              - gridcell [ref=e1704]:
+                - combobox [ref=e1705]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.キッチンプリンタ印字成否" [ref=e1706]:
+              - gridcell " " [ref=e1707]:
+                - generic [ref=e1708]:
+                  - checkbox " " [ref=e1709]
+                  - generic [ref=e1710] [cursor=pointer]:
+                    - generic [ref=e1711]: 
+                    - generic [ref=e1712]: 
+              - gridcell "H.キッチンプリンタ印字成否" [ref=e1713]
+              - gridcell [ref=e1714]:
+                - textbox [ref=e1715]
+              - gridcell [ref=e1716]:
+                - combobox [ref=e1717]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.キッチンプリンタ印字日付" [ref=e1718]:
+              - gridcell " " [ref=e1719]:
+                - generic [ref=e1720]:
+                  - checkbox " " [ref=e1721]
+                  - generic [ref=e1722] [cursor=pointer]:
+                    - generic [ref=e1723]: 
+                    - generic [ref=e1724]: 
+              - gridcell "H.キッチンプリンタ印字日付" [ref=e1725]
+              - gridcell [ref=e1726]:
+                - textbox [ref=e1727]
+              - gridcell [ref=e1728]:
+                - combobox [ref=e1729]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.レシートプリンタ印字成否" [ref=e1730]:
+              - gridcell " " [ref=e1731]:
+                - generic [ref=e1732]:
+                  - checkbox " " [ref=e1733]
+                  - generic [ref=e1734] [cursor=pointer]:
+                    - generic [ref=e1735]: 
+                    - generic [ref=e1736]: 
+              - gridcell "H.レシートプリンタ印字成否" [ref=e1737]
+              - gridcell [ref=e1738]:
+                - textbox [ref=e1739]
+              - gridcell [ref=e1740]:
+                - combobox [ref=e1741]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.レシートプリンタ印字日付" [ref=e1742]:
+              - gridcell " " [ref=e1743]:
+                - generic [ref=e1744]:
+                  - checkbox " " [ref=e1745]
+                  - generic [ref=e1746] [cursor=pointer]:
+                    - generic [ref=e1747]: 
+                    - generic [ref=e1748]: 
+              - gridcell "H.レシートプリンタ印字日付" [ref=e1749]
+              - gridcell [ref=e1750]:
+                - textbox [ref=e1751]
+              - gridcell [ref=e1752]:
+                - combobox [ref=e1753]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.基幹転送成否" [ref=e1754]:
+              - gridcell " " [ref=e1755]:
+                - generic [ref=e1756]:
+                  - checkbox " " [ref=e1757]
+                  - generic [ref=e1758] [cursor=pointer]:
+                    - generic [ref=e1759]: 
+                    - generic [ref=e1760]: 
+              - gridcell "H.基幹転送成否" [ref=e1761]
+              - gridcell [ref=e1762]:
+                - textbox [ref=e1763]
+              - gridcell [ref=e1764]:
+                - combobox [ref=e1765]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  H.基幹転送日付" [ref=e1766]:
+              - gridcell " " [ref=e1767]:
+                - generic [ref=e1768]:
+                  - checkbox " " [ref=e1769]
+                  - generic [ref=e1770] [cursor=pointer]:
+                    - generic [ref=e1771]: 
+                    - generic [ref=e1772]: 
+              - gridcell "H.基幹転送日付" [ref=e1773]
+              - gridcell [ref=e1774]:
+                - textbox [ref=e1775]
+              - gridcell [ref=e1776]:
+                - combobox [ref=e1777]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  C.お客様" [ref=e1778]:
+              - gridcell " " [ref=e1779]:
+                - generic [ref=e1780]:
+                  - checkbox " " [ref=e1781]
+                  - generic [ref=e1782] [cursor=pointer]:
+                    - generic [ref=e1783]: 
+                    - generic [ref=e1784]: 
+              - gridcell "C.お客様" [ref=e1785]
+              - gridcell [ref=e1786]:
+                - textbox [ref=e1787]
+              - gridcell [ref=e1788]:
+                - combobox [ref=e1789]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  C.お客様代表" [ref=e1790]:
+              - gridcell " " [ref=e1791]:
+                - generic [ref=e1792]:
+                  - checkbox " " [ref=e1793]
+                  - generic [ref=e1794] [cursor=pointer]:
+                    - generic [ref=e1795]: 
+                    - generic [ref=e1796]: 
+              - gridcell "C.お客様代表" [ref=e1797]
+              - gridcell [ref=e1798]:
+                - textbox [ref=e1799]
+              - gridcell [ref=e1800]:
+                - combobox [ref=e1801]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  C.客層" [ref=e1802]:
+              - gridcell " " [ref=e1803]:
+                - generic [ref=e1804]:
+                  - checkbox " " [ref=e1805]
+                  - generic [ref=e1806] [cursor=pointer]:
+                    - generic [ref=e1807]: 
+                    - generic [ref=e1808]: 
+              - gridcell "C.客層" [ref=e1809]
+              - gridcell [ref=e1810]:
+                - textbox [ref=e1811]
+              - gridcell [ref=e1812]:
+                - combobox [ref=e1813]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  D.オーダー番号" [ref=e1814]:
+              - gridcell " " [ref=e1815]:
+                - generic [ref=e1816]:
+                  - checkbox " " [ref=e1817]
+                  - generic [ref=e1818] [cursor=pointer]:
+                    - generic [ref=e1819]: 
+                    - generic [ref=e1820]: 
+              - gridcell "D.オーダー番号" [ref=e1821]
+              - gridcell [ref=e1822]:
+                - textbox [ref=e1823]
+              - gridcell [ref=e1824]:
+                - combobox [ref=e1825]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  D.商品カテゴリ1" [ref=e1826]:
+              - gridcell " " [ref=e1827]:
+                - generic [ref=e1828]:
+                  - checkbox " " [ref=e1829]
+                  - generic [ref=e1830] [cursor=pointer]:
+                    - generic [ref=e1831]: 
+                    - generic [ref=e1832]: 
+              - gridcell "D.商品カテゴリ1" [ref=e1833]
+              - gridcell [ref=e1834]:
+                - textbox [ref=e1835]
+              - gridcell [ref=e1836]:
+                - combobox [ref=e1837]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  D.商品カテゴリ2" [ref=e1838]:
+              - gridcell " " [ref=e1839]:
+                - generic [ref=e1840]:
+                  - checkbox " " [ref=e1841]
+                  - generic [ref=e1842] [cursor=pointer]:
+                    - generic [ref=e1843]: 
+                    - generic [ref=e1844]: 
+              - gridcell "D.商品カテゴリ2" [ref=e1845]
+              - gridcell [ref=e1846]:
+                - textbox [ref=e1847]
+              - gridcell [ref=e1848]:
+                - combobox [ref=e1849]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  D.商品カテゴリ3" [ref=e1850]:
+              - gridcell " " [ref=e1851]:
+                - generic [ref=e1852]:
+                  - checkbox " " [ref=e1853]
+                  - generic [ref=e1854] [cursor=pointer]:
+                    - generic [ref=e1855]: 
+                    - generic [ref=e1856]: 
+              - gridcell "D.商品カテゴリ3" [ref=e1857]
+              - gridcell [ref=e1858]:
+                - textbox [ref=e1859]
+              - gridcell [ref=e1860]:
+                - combobox [ref=e1861]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  D.商品カテゴリ4" [ref=e1862]:
+              - gridcell " " [ref=e1863]:
+                - generic [ref=e1864]:
+                  - checkbox " " [ref=e1865]
+                  - generic [ref=e1866] [cursor=pointer]:
+                    - generic [ref=e1867]: 
+                    - generic [ref=e1868]: 
+              - gridcell "D.商品カテゴリ4" [ref=e1869]
+              - gridcell [ref=e1870]:
+                - textbox [ref=e1871]
+              - gridcell [ref=e1872]:
+                - combobox [ref=e1873]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  D.商品カテゴリ5" [ref=e1874]:
+              - gridcell " " [ref=e1875]:
+                - generic [ref=e1876]:
+                  - checkbox " " [ref=e1877]
+                  - generic [ref=e1878] [cursor=pointer]:
+                    - generic [ref=e1879]: 
+                    - generic [ref=e1880]: 
+              - gridcell "D.商品カテゴリ5" [ref=e1881]
+              - gridcell [ref=e1882]:
+                - textbox [ref=e1883]
+              - gridcell [ref=e1884]:
+                - combobox [ref=e1885]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  D.帳票集計対象商品" [ref=e1886]:
+              - gridcell " " [ref=e1887]:
+                - generic [ref=e1888]:
+                  - checkbox " " [ref=e1889]
+                  - generic [ref=e1890] [cursor=pointer]:
+                    - generic [ref=e1891]: 
+                    - generic [ref=e1892]: 
+              - gridcell "D.帳票集計対象商品" [ref=e1893]
+              - gridcell [ref=e1894]:
+                - textbox [ref=e1895]
+              - gridcell [ref=e1896]:
+                - combobox [ref=e1897]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  D.商品" [ref=e1898]:
+              - gridcell " " [ref=e1899]:
+                - generic [ref=e1900]:
+                  - checkbox " " [ref=e1901]
+                  - generic [ref=e1902] [cursor=pointer]:
+                    - generic [ref=e1903]: 
+                    - generic [ref=e1904]: 
+              - gridcell "D.商品" [ref=e1905]
+              - gridcell [ref=e1906]:
+                - textbox [ref=e1907]
+              - gridcell [ref=e1908]:
+                - combobox [ref=e1909]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  D.サブメニュー" [ref=e1910]:
+              - gridcell " " [ref=e1911]:
+                - generic [ref=e1912]:
+                  - checkbox " " [ref=e1913]
+                  - generic [ref=e1914] [cursor=pointer]:
+                    - generic [ref=e1915]: 
+                    - generic [ref=e1916]: 
+              - gridcell "D.サブメニュー" [ref=e1917]
+              - gridcell [ref=e1918]:
+                - textbox [ref=e1919]
+              - gridcell [ref=e1920]:
+                - combobox [ref=e1921]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  D.商品印字成否" [ref=e1922]:
+              - gridcell " " [ref=e1923]:
+                - generic [ref=e1924]:
+                  - checkbox " " [ref=e1925]
+                  - generic [ref=e1926] [cursor=pointer]:
+                    - generic [ref=e1927]: 
+                    - generic [ref=e1928]: 
+              - gridcell "D.商品印字成否" [ref=e1929]
+              - gridcell [ref=e1930]:
+                - textbox [ref=e1931]
+              - gridcell [ref=e1932]:
+                - combobox [ref=e1933]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  D.サブメニュー印字成否" [ref=e1934]:
+              - gridcell " " [ref=e1935]:
+                - generic [ref=e1936]:
+                  - checkbox " " [ref=e1937]
+                  - generic [ref=e1938] [cursor=pointer]:
+                    - generic [ref=e1939]: 
+                    - generic [ref=e1940]: 
+              - gridcell "D.サブメニュー印字成否" [ref=e1941]
+              - gridcell [ref=e1942]:
+                - textbox [ref=e1943]
+              - gridcell [ref=e1944]:
+                - combobox [ref=e1945]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  D.価格" [ref=e1946]:
+              - gridcell " " [ref=e1947]:
+                - generic [ref=e1948]:
+                  - checkbox " " [ref=e1949]
+                  - generic [ref=e1950] [cursor=pointer]:
+                    - generic [ref=e1951]: 
+                    - generic [ref=e1952]: 
+              - gridcell "D.価格" [ref=e1953]
+              - gridcell [ref=e1954]:
+                - textbox [ref=e1955]
+              - gridcell [ref=e1956]:
+                - combobox [ref=e1957]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  D.税区分" [ref=e1958]:
+              - gridcell " " [ref=e1959]:
+                - generic [ref=e1960]:
+                  - checkbox " " [ref=e1961]
+                  - generic [ref=e1962] [cursor=pointer]:
+                    - generic [ref=e1963]: 
+                    - generic [ref=e1964]: 
+              - gridcell "D.税区分" [ref=e1965]
+              - gridcell [ref=e1966]:
+                - textbox [ref=e1967]
+              - gridcell [ref=e1968]:
+                - combobox [ref=e1969]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  D.数量" [ref=e1970]:
+              - gridcell " " [ref=e1971]:
+                - generic [ref=e1972]:
+                  - checkbox " " [ref=e1973]
+                  - generic [ref=e1974] [cursor=pointer]:
+                    - generic [ref=e1975]: 
+                    - generic [ref=e1976]: 
+              - gridcell "D.数量" [ref=e1977]
+              - gridcell [ref=e1978]:
+                - textbox [ref=e1979]
+              - gridcell [ref=e1980]:
+                - combobox [ref=e1981]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  D.優先ステータス" [ref=e1982]:
+              - gridcell " " [ref=e1983]:
+                - generic [ref=e1984]:
+                  - checkbox " " [ref=e1985]
+                  - generic [ref=e1986] [cursor=pointer]:
+                    - generic [ref=e1987]: 
+                    - generic [ref=e1988]: 
+              - gridcell "D.優先ステータス" [ref=e1989]
+              - gridcell [ref=e1990]:
+                - textbox [ref=e1991]
+              - gridcell [ref=e1992]:
+                - combobox [ref=e1993]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  D.オーダーメモ" [ref=e1994]:
+              - gridcell " " [ref=e1995]:
+                - generic [ref=e1996]:
+                  - checkbox " " [ref=e1997]
+                  - generic [ref=e1998] [cursor=pointer]:
+                    - generic [ref=e1999]: 
+                    - generic [ref=e2000]: 
+              - gridcell "D.オーダーメモ" [ref=e2001]
+              - gridcell [ref=e2002]:
+                - textbox [ref=e2003]
+              - gridcell [ref=e2004]:
+                - combobox [ref=e2005]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  D.オーダー担当者" [ref=e2006]:
+              - gridcell " " [ref=e2007]:
+                - generic [ref=e2008]:
+                  - checkbox " " [ref=e2009]
+                  - generic [ref=e2010] [cursor=pointer]:
+                    - generic [ref=e2011]: 
+                    - generic [ref=e2012]: 
+              - gridcell "D.オーダー担当者" [ref=e2013]
+              - gridcell [ref=e2014]:
+                - textbox [ref=e2015]
+              - gridcell [ref=e2016]:
+                - combobox [ref=e2017]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  D.オーダー日時" [ref=e2018]:
+              - gridcell " " [ref=e2019]:
+                - generic [ref=e2020]:
+                  - checkbox " " [ref=e2021]
+                  - generic [ref=e2022] [cursor=pointer]:
+                    - generic [ref=e2023]: 
+                    - generic [ref=e2024]: 
+              - gridcell "D.オーダー日時" [ref=e2025]
+              - gridcell [ref=e2026]:
+                - textbox [ref=e2027]
+              - gridcell [ref=e2028]:
+                - combobox [ref=e2029]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  D.配膳済担当者" [ref=e2030]:
+              - gridcell " " [ref=e2031]:
+                - generic [ref=e2032]:
+                  - checkbox " " [ref=e2033]
+                  - generic [ref=e2034] [cursor=pointer]:
+                    - generic [ref=e2035]: 
+                    - generic [ref=e2036]: 
+              - gridcell "D.配膳済担当者" [ref=e2037]
+              - gridcell [ref=e2038]:
+                - textbox [ref=e2039]
+              - gridcell [ref=e2040]:
+                - combobox [ref=e2041]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  D.配膳済日時" [ref=e2042]:
+              - gridcell " " [ref=e2043]:
+                - generic [ref=e2044]:
+                  - checkbox " " [ref=e2045]
+                  - generic [ref=e2046] [cursor=pointer]:
+                    - generic [ref=e2047]: 
+                    - generic [ref=e2048]: 
+              - gridcell "D.配膳済日時" [ref=e2049]
+              - gridcell [ref=e2050]:
+                - textbox [ref=e2051]
+              - gridcell [ref=e2052]:
+                - combobox [ref=e2053]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  D.オーダーキャンセル担当者" [ref=e2054]:
+              - gridcell " " [ref=e2055]:
+                - generic [ref=e2056]:
+                  - checkbox " " [ref=e2057]
+                  - generic [ref=e2058] [cursor=pointer]:
+                    - generic [ref=e2059]: 
+                    - generic [ref=e2060]: 
+              - gridcell "D.オーダーキャンセル担当者" [ref=e2061]
+              - gridcell [ref=e2062]:
+                - textbox [ref=e2063]
+              - gridcell [ref=e2064]:
+                - combobox [ref=e2065]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  D.オーダーキャンセル日時" [ref=e2066]:
+              - gridcell " " [ref=e2067]:
+                - generic [ref=e2068]:
+                  - checkbox " " [ref=e2069]
+                  - generic [ref=e2070] [cursor=pointer]:
+                    - generic [ref=e2071]: 
+                    - generic [ref=e2072]: 
+              - gridcell "D.オーダーキャンセル日時" [ref=e2073]
+              - gridcell [ref=e2074]:
+                - textbox [ref=e2075]
+              - gridcell [ref=e2076]:
+                - combobox [ref=e2077]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+            - row "  D.オーダーステータス" [ref=e2078]:
+              - gridcell " " [ref=e2079]:
+                - generic [ref=e2080]:
+                  - checkbox " " [ref=e2081]
+                  - generic [ref=e2082] [cursor=pointer]:
+                    - generic [ref=e2083]: 
+                    - generic [ref=e2084]: 
+              - gridcell "D.オーダーステータス" [ref=e2085]
+              - gridcell [ref=e2086]:
+                - textbox [ref=e2087]
+              - gridcell [ref=e2088]:
+                - combobox [ref=e2089]:
+                  - option [selected]
+                  - option "1"
+                  - option "2"
+                  - option "3"
+                  - option "4"
+                  - option "5"
+    - generic [ref=e953]:
+      - generic [ref=e954]: カテゴリの選択
+      - text: "*カテゴリの選択…カテゴリのツリー階層の単位でグルーピングしたデータを出力します"
+      - generic [ref=e955]:
+        - generic [ref=e957]: カテゴリマスタ
+        - generic [ref=e958]:
+          - combobox [ref=e959]:
+            - option "--- select ---" [selected]
+            - option "店舗マスタ"
+          - text: "*カテゴリマスタを選択し、グリッドからカテゴリツリーを選択"
+      - text:    
+    - paragraph [ref=e961]:
+      - button "CSV出力" [ref=e962] [cursor=pointer]

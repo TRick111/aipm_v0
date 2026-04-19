@@ -32,7 +32,7 @@ import requests
 
 STORES = {
     "BFA": {
-        "store_code": "test-003",
+        "store_code": "bfa-001",
         "store_name": "BAR FIVE Arrows",
         "pos_type": "airregi",
         "file_pattern": "BAR FIVE Arrows",

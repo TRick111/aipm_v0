@@ -1,0 +1,542 @@
+- generic [ref=e2]:
+  - generic [ref=e9]:
+    - generic [ref=e10]:
+      - img [ref=e12]
+      - link "Airメイトでお店の状況を確認する" [ref=e14] [cursor=pointer]:
+        - /url: "#"
+        - text: Airメイトでお店の状況を確認する
+        - img [ref=e16]
+    - generic [ref=e20]:
+      - generic [ref=e21]:
+        - generic [ref=e23]: 集計対象
+        - generic [ref=e25]:
+          - combobox "集計期間" [ref=e26] [cursor=pointer]:
+            - option "時間別"
+            - option "日別" [selected]
+            - option "月別"
+            - option "年度別"
+          - generic:
+            - img
+        - generic [ref=e27]:
+          - generic [ref=e28]:
+            - combobox "対象年度" [ref=e29] [cursor=pointer]:
+              - option "2026年" [selected]
+              - option "2025年"
+              - option "2024年"
+              - option "2023年"
+              - option "2022年"
+              - option "2021年"
+              - option "2020年"
+              - option "2019年"
+              - option "2018年"
+              - option "2017年"
+            - generic:
+              - img
+          - generic [ref=e30]:
+            - combobox [ref=e31] [cursor=pointer]:
+              - option "1月"
+              - option "2月"
+              - option "3月" [selected]
+              - option "4月"
+              - option "5月"
+              - option "6月"
+              - option "7月"
+              - option "8月"
+              - option "9月"
+              - option "10月"
+              - option "11月"
+              - option "12月"
+            - generic:
+              - img
+        - button "表示する" [ref=e33] [cursor=pointer]
+      - generic [ref=e35]:
+        - text: ※会計明細CSVは、前月1日から当日分まで出力できます。
+        - link "詳しくはこちら新しいタブで開く" [ref=e36] [cursor=pointer]:
+          - /url: https://faq.airregi.jp/hc/ja/articles/202856654
+          - text: 詳しくはこちら
+          - link "新しいタブで開く" [ref=e37]:
+            - img "open_link" [ref=e38]
+    - generic [ref=e41]:
+      - generic [ref=e42]: 更新日時：2026/04/06 18:37:01
+      - generic "[object Object]" [ref=e44] [cursor=pointer]:
+        - img [ref=e46]
+    - generic [ref=e50]:
+      - generic [ref=e51]: 売上推移
+      - text: グラフ表示
+      - checkbox [checked] [ref=e53]
+    - generic [ref=e56]:
+      - generic [ref=e57]:
+        - generic [ref=e58]:
+          - generic [ref=e59]: 客数
+          - generic [ref=e60]: 売上(万円)
+        - img [ref=e62]:
+          - generic [ref=e63]:
+            - generic [ref=e102]:
+              - generic [ref=e105]: 1水
+              - generic [ref=e108]: 2木
+              - generic [ref=e111]: 3金
+              - generic [ref=e114]: 4土
+              - generic [ref=e117]: 5日
+              - generic [ref=e120]: 6月
+              - generic [ref=e123]: 7火
+              - generic [ref=e126]: 8水
+              - generic [ref=e129]: 9木
+              - generic [ref=e132]: 10金
+              - generic [ref=e135]: 11土
+              - generic [ref=e138]: 12日
+              - generic [ref=e141]: 13月
+              - generic [ref=e144]: 14火
+              - generic [ref=e147]: 15水
+              - generic [ref=e150]: 16木
+              - generic [ref=e153]: 17金
+              - generic [ref=e156]: 18土
+              - generic [ref=e159]: 19日
+              - generic [ref=e162]: 20月
+              - generic [ref=e165]: 21火
+              - generic [ref=e168]: 22水
+              - generic [ref=e171]: 23木
+              - generic [ref=e174]: 24金
+              - generic [ref=e177]: 25土
+              - generic [ref=e180]: 26日
+              - generic [ref=e183]: 27月
+              - generic [ref=e186]: 28火
+              - generic [ref=e189]: 29水
+              - generic [ref=e192]: 30木
+            - generic [ref=e193]:
+              - generic [ref=e195]: "0"
+              - generic [ref=e197]: "5"
+              - generic [ref=e199]: "10"
+              - generic [ref=e201]: "15"
+              - generic [ref=e203]: "20"
+              - generic [ref=e205]: "25"
+              - generic [ref=e207]: "30"
+            - generic [ref=e208]:
+              - generic [ref=e210]: "0.0"
+              - generic [ref=e212]: "2.0"
+              - generic [ref=e214]: "4.0"
+              - generic [ref=e216]: "6.0"
+              - generic [ref=e218]: "8.0"
+              - generic [ref=e220]: "10.0"
+              - generic [ref=e222]: "12.0"
+              - generic [ref=e224]: "14.0"
+              - generic [ref=e226]: "16.0"
+              - generic [ref=e228]: "18.0"
+              - generic [ref=e230]: "20.0"
+              - generic [ref=e232]: "22.0"
+              - generic [ref=e234]: "24.0"
+      - generic [ref=e235]:
+        - generic [ref=e236]: 売上
+        - generic [ref=e237]: 客数
+    - generic [ref=e238]:
+      - generic [ref=e239]: 売上集計
+      - button "CSVデータをダウンロードする" [ref=e240] [cursor=pointer]
+    - table [ref=e241]:
+      - rowgroup [ref=e242]:
+        - row "集計期間 来店日時を基準に集計しています。集計期間は、レジ基本設定画面で設定された「営業日の変更時刻」により切り替わります。 売上 割引・割増後、消費税込の売上です。会計修正、返品が行われた場合、その金額が反映されます。 [a] 会計数 [b] 会計単価 (a÷b) 客数 [c] 客単価 (a÷c) 商品数 支払い方法別売上 割引額 全体割引・割増、個別割引・割増、まとめ買い割引の合計(税込)です。 詳細" [ref=e243]:
+          - columnheader "集計期間 来店日時を基準に集計しています。集計期間は、レジ基本設定画面で設定された「営業日の変更時刻」により切り替わります。" [ref=e244]:
+            - generic [ref=e245]:
+              - generic [ref=e246]: 集計期間
+              - generic "来店日時を基準に集計しています。集計期間は、レジ基本設定画面で設定された「営業日の変更時刻」により切り替わります。" [ref=e248] [cursor=pointer]:
+                - img [ref=e250]
+          - columnheader "売上 割引・割増後、消費税込の売上です。会計修正、返品が行われた場合、その金額が反映されます。 [a]" [ref=e254]:
+            - generic [ref=e255]:
+              - generic [ref=e256]: 売上
+              - generic "割引・割増後、消費税込の売上です。会計修正、返品が行われた場合、その金額が反映されます。" [ref=e258] [cursor=pointer]:
+                - img [ref=e260]
+            - generic [ref=e264]: "[a]"
+          - columnheader "会計数 [b]" [ref=e265]:
+            - generic [ref=e266]:
+              - generic [ref=e267]: 会計数
+              - generic [ref=e268]: "[b]"
+          - columnheader "会計単価 (a÷b)" [ref=e269]:
+            - generic [ref=e270]:
+              - generic [ref=e271]: 会計単価
+              - generic [ref=e272]: (a÷b)
+          - columnheader "客数 [c]" [ref=e273]:
+            - generic [ref=e274]:
+              - generic [ref=e275]: 客数
+              - generic [ref=e276]: "[c]"
+          - columnheader "客単価 (a÷c)" [ref=e277]:
+            - generic [ref=e278]:
+              - generic [ref=e279]: 客単価
+              - generic [ref=e280]: (a÷c)
+          - columnheader "商品数" [ref=e281]:
+            - generic [ref=e282]: 商品数
+          - columnheader "支払い方法別売上" [ref=e283]:
+            - generic [ref=e284]: 支払い方法別売上
+          - columnheader "割引額 全体割引・割増、個別割引・割増、まとめ買い割引の合計(税込)です。" [ref=e285]:
+            - generic [ref=e286]:
+              - generic [ref=e287]: 割引額
+              - generic "全体割引・割増、個別割引・割増、まとめ買い割引の合計(税込)です。" [ref=e289] [cursor=pointer]:
+                - img [ref=e291]
+          - columnheader "詳細" [ref=e295]:
+            - generic [ref=e296]: 詳細
+        - row "現金 現金で支払われた金額です。会計修正、返品が行われた場合、その金額も含まれます。 その他 現金以外で支払われた金額です。返品が行われた場合、その金額も含まれます。" [ref=e297]:
+          - columnheader "現金 現金で支払われた金額です。会計修正、返品が行われた場合、その金額も含まれます。" [ref=e298]:
+            - generic [ref=e299]:
+              - generic [ref=e300]: 現金
+              - generic "現金で支払われた金額です。会計修正、返品が行われた場合、その金額も含まれます。" [ref=e302] [cursor=pointer]:
+                - img [ref=e304]
+          - columnheader "その他 現金以外で支払われた金額です。返品が行われた場合、その金額も含まれます。" [ref=e308]:
+            - generic [ref=e309]:
+              - generic [ref=e310]: その他
+              - generic "現金以外で支払われた金額です。返品が行われた場合、その金額も含まれます。" [ref=e312] [cursor=pointer]:
+                - img [ref=e314]
+      - rowgroup [ref=e318]:
+        - row "4/1 (水) ¥52,430 5 ¥10,486 8 ¥6,553 47 ¥7,200 ¥45,230 -¥2,570 詳細" [ref=e319]:
+          - cell "4/1 (水)" [ref=e320]:
+            - generic [ref=e321]:
+              - generic [ref=e322]: 4/1
+              - generic [ref=e323]: (水)
+          - cell "¥52,430" [ref=e324]:
+            - generic [ref=e325]: ¥52,430
+          - cell "5" [ref=e326]:
+            - generic [ref=e327]: "5"
+          - cell "¥10,486" [ref=e328]:
+            - generic [ref=e329]: ¥10,486
+          - cell "8" [ref=e330]:
+            - generic [ref=e331]: "8"
+          - cell "¥6,553" [ref=e332]:
+            - generic [ref=e334]: ¥6,553
+          - cell "47" [ref=e335]:
+            - generic [ref=e336]: "47"
+          - cell "¥7,200" [ref=e337]:
+            - generic [ref=e338]: ¥7,200
+          - cell "¥45,230" [ref=e339]:
+            - generic [ref=e340]: ¥45,230
+          - cell "-¥2,570" [ref=e341]:
+            - generic [ref=e342]: "-¥2,570"
+          - cell "詳細" [ref=e343]:
+            - link "詳細" [ref=e344] [cursor=pointer]:
+              - /url: "#/detail/year/2026/month/04/day/01"
+        - row "4/2 (木) ¥70,900 5 ¥14,180 12 ¥5,908 62 ¥0 ¥70,900 ¥0 詳細" [ref=e345]:
+          - cell "4/2 (木)" [ref=e346]:
+            - generic [ref=e347]:
+              - generic [ref=e348]: 4/2
+              - generic [ref=e349]: (木)
+          - cell "¥70,900" [ref=e350]:
+            - generic [ref=e351]: ¥70,900
+          - cell "5" [ref=e352]:
+            - generic [ref=e353]: "5"
+          - cell "¥14,180" [ref=e354]:
+            - generic [ref=e355]: ¥14,180
+          - cell "12" [ref=e356]:
+            - generic [ref=e357]: "12"
+          - cell "¥5,908" [ref=e358]:
+            - generic [ref=e360]: ¥5,908
+          - cell "62" [ref=e361]:
+            - generic [ref=e362]: "62"
+          - cell "¥0" [ref=e363]:
+            - generic [ref=e364]: ¥0
+          - cell "¥70,900" [ref=e365]:
+            - generic [ref=e366]: ¥70,900
+          - cell "¥0" [ref=e367]:
+            - generic [ref=e368]: ¥0
+          - cell "詳細" [ref=e369]:
+            - link "詳細" [ref=e370] [cursor=pointer]:
+              - /url: "#/detail/year/2026/month/04/day/02"
+        - row "4/3 (金) ¥227,900 3 ¥75,966 30 ¥7,596 82 ¥165,000 ¥62,900 ¥0 詳細" [ref=e371]:
+          - cell "4/3 (金)" [ref=e372]:
+            - generic [ref=e373]:
+              - generic [ref=e374]: 4/3
+              - generic [ref=e375]: (金)
+          - cell "¥227,900" [ref=e376]:
+            - generic [ref=e377]: ¥227,900
+          - cell "3" [ref=e378]:
+            - generic [ref=e379]: "3"
+          - cell "¥75,966" [ref=e380]:
+            - generic [ref=e381]: ¥75,966
+          - cell "30" [ref=e382]:
+            - generic [ref=e383]: "30"
+          - cell "¥7,596" [ref=e384]:
+            - generic [ref=e386]: ¥7,596
+          - cell "82" [ref=e387]:
+            - generic [ref=e388]: "82"
+          - cell "¥165,000" [ref=e389]:
+            - generic [ref=e390]: ¥165,000
+          - cell "¥62,900" [ref=e391]:
+            - generic [ref=e392]: ¥62,900
+          - cell "¥0" [ref=e393]:
+            - generic [ref=e394]: ¥0
+          - cell "詳細" [ref=e395]:
+            - link "詳細" [ref=e396] [cursor=pointer]:
+              - /url: "#/detail/year/2026/month/04/day/03"
+        - row "4/4 (土) ¥75,000 9 ¥8,333 18 ¥4,166 64 ¥0 ¥75,000 ¥0 詳細" [ref=e397]:
+          - cell "4/4 (土)" [ref=e398]:
+            - generic [ref=e399]:
+              - generic [ref=e400]: 4/4
+              - generic [ref=e401]: (土)
+          - cell "¥75,000" [ref=e402]:
+            - generic [ref=e403]: ¥75,000
+          - cell "9" [ref=e404]:
+            - generic [ref=e405]: "9"
+          - cell "¥8,333" [ref=e406]:
+            - generic [ref=e407]: ¥8,333
+          - cell "18" [ref=e408]:
+            - generic [ref=e409]: "18"
+          - cell "¥4,166" [ref=e410]:
+            - generic [ref=e412]: ¥4,166
+          - cell "64" [ref=e413]:
+            - generic [ref=e414]: "64"
+          - cell "¥0" [ref=e415]:
+            - generic [ref=e416]: ¥0
+          - cell "¥75,000" [ref=e417]:
+            - generic [ref=e418]: ¥75,000
+          - cell "¥0" [ref=e419]:
+            - generic [ref=e420]: ¥0
+          - cell "詳細" [ref=e421]:
+            - link "詳細" [ref=e422] [cursor=pointer]:
+              - /url: "#/detail/year/2026/month/04/day/04"
+        - row "4/5 (日) ¥18,100 2 ¥9,050 4 ¥4,525 13 ¥0 ¥18,100 ¥0 詳細" [ref=e423]:
+          - cell "4/5 (日)" [ref=e424]:
+            - generic [ref=e425]:
+              - generic [ref=e426]: 4/5
+              - generic [ref=e427]: (日)
+          - cell "¥18,100" [ref=e428]:
+            - generic [ref=e429]: ¥18,100
+          - cell "2" [ref=e430]:
+            - generic [ref=e431]: "2"
+          - cell "¥9,050" [ref=e432]:
+            - generic [ref=e433]: ¥9,050
+          - cell "4" [ref=e434]:
+            - generic [ref=e435]: "4"
+          - cell "¥4,525" [ref=e436]:
+            - generic [ref=e438]: ¥4,525
+          - cell "13" [ref=e439]:
+            - generic [ref=e440]: "13"
+          - cell "¥0" [ref=e441]:
+            - generic [ref=e442]: ¥0
+          - cell "¥18,100" [ref=e443]:
+            - generic [ref=e444]: ¥18,100
+          - cell "¥0" [ref=e445]:
+            - generic [ref=e446]: ¥0
+          - cell "詳細" [ref=e447]:
+            - link "詳細" [ref=e448] [cursor=pointer]:
+              - /url: "#/detail/year/2026/month/04/day/05"
+        - row "4/6 (月) ¥18,200 1 ¥18,200 6 ¥3,033 16 ¥0 ¥18,200 ¥0 詳細" [ref=e449]:
+          - cell "4/6 (月)" [ref=e450]:
+            - generic [ref=e451]:
+              - generic [ref=e452]: 4/6
+              - generic [ref=e453]: (月)
+          - cell "¥18,200" [ref=e454]:
+            - generic [ref=e455]: ¥18,200
+          - cell "1" [ref=e456]:
+            - generic [ref=e457]: "1"
+          - cell "¥18,200" [ref=e458]:
+            - generic [ref=e459]: ¥18,200
+          - cell "6" [ref=e460]:
+            - generic [ref=e461]: "6"
+          - cell "¥3,033" [ref=e462]:
+            - generic [ref=e464]: ¥3,033
+          - cell "16" [ref=e465]:
+            - generic [ref=e466]: "16"
+          - cell "¥0" [ref=e467]:
+            - generic [ref=e468]: ¥0
+          - cell "¥18,200" [ref=e469]:
+            - generic [ref=e470]: ¥18,200
+          - cell "¥0" [ref=e471]:
+            - generic [ref=e472]: ¥0
+          - cell "詳細" [ref=e473]:
+            - link "詳細" [ref=e474] [cursor=pointer]:
+              - /url: "#/detail/year/2026/month/04/day/06"
+    - generic [ref=e475]:
+      - generic [ref=e480]:
+        - heading "売上アップのヒント" [level=2] [ref=e481]
+        - generic [ref=e483]:
+          - generic [ref=e484]:
+            - generic [ref=e485]:
+              - heading "モバイルオーダーで、客単価を約110％※1にアップ" [level=3] [ref=e486]
+              - paragraph [ref=e487]: モバイルオーダーは、お客様自身が席からQRコードを読み取り、好きなタイミングで注文できるため、お客様が注文を諦めてしまう機会損失やオーダーミスを防ぐことができます。モバイルオーダーを導入するなら、注文情報をAirレジに連携できる「Airレジ オーダー」がおすすめです。
+              - link "Airレジ オーダーについて 詳しく見る新しいタブで開く" [ref=e489] [cursor=pointer]:
+                - /url: https://airregi.jp/order/?vos=otahdxototzzx00000187
+                - text: Airレジ オーダーについて 詳しく見る
+                - img "新しいタブで開く" [ref=e490]
+            - img "写真：店内でスマホから注文" [ref=e492]
+          - list [ref=e493]:
+            - listitem [ref=e494]:
+              - paragraph [ref=e495]: ※1 当社指定の条件（*1）を満たした飲食店を対象に、Airレジオーダー モバイルオーダー店内版（MO店内）の利用開始「前」の一定期間（*2）におけるAirレジオーダー ハンディ（ハンディ）伝票と、利用開始「後」の同期間（*2）におけるMO店内伝票の平均単価および平均注文点数の変化率を比較（当社調べ）。（*1）集計対象店舗：2021年3月～2025年9月の期間中にMO店内利用を開始し、17:00-翌朝10:59の時間帯に利用がある店舗。かつ、MO店内利用開始前の比較期間にハンディ伝票が160件以上、MO店内利用開始後の比較期間にMO店内伝票が160件以上ある店舗。（*2）比較期間：MO店内利用開始日を基点とした前後365日間。
+            - listitem [ref=e496]:
+              - paragraph [ref=e497]: ※ QRコードは株式会社デンソーウェーブの登録商標です。
+      - generic [ref=e498]:
+        - generic [ref=e500]: お店に役立つサービス紹介
+        - generic [ref=e501]:
+          - main [ref=e502]:
+            - generic [ref=e507]:
+              - link "Airキャッシュ Airペイ連携 資金調達 Airペイ利用者さま向け招待制資金調達サービス。入金は最短翌日、わずか2クリックで将来の売上を今のお金に。" [ref=e516] [cursor=pointer]:
+                - /url: https://airregi.jp/cash/?lid=airregi_backofficesaleslist_acs
+                - img [ref=e518]
+                - generic [ref=e519]:
+                  - paragraph [ref=e520]: Airキャッシュ Airペイ連携 資金調達
+                  - paragraph [ref=e521]: Airペイ利用者さま向け招待制資金調達サービス。入金は最短翌日、わずか2クリックで将来の売上を今のお金に。
+              - link "Airレジ オーダー Airレジ連携 オーダーシステム モバイルオーダー 飲食店の注文を一元管理し、最適なタイミングでの調理・提供をサポートするオーダーシステム。" [ref=e523] [cursor=pointer]:
+                - /url: https://airregi.jp/order/?lid=airregi_backofficesaleslist_oes
+                - img [ref=e525]
+                - generic [ref=e526]:
+                  - paragraph [ref=e527]: Airレジ オーダー Airレジ連携 オーダーシステム モバイルオーダー
+                  - paragraph [ref=e528]: 飲食店の注文を一元管理し、最適なタイミングでの調理・提供をサポートするオーダーシステム。
+              - link "Airメイト 店舗経営 Airレジ連携 お店の状況がひとめでわかる経営サポートサービス。売上やコストが自動集計され、日報・月次レポート、分析もカンタンに。" [ref=e537] [cursor=pointer]:
+                - /url: "https://app.adjust.com/1m4mv47k?label=arg&fallback=https%3A%2F%2Fairmate.jp%2Fstore%2F%3Flid%3Damt_airregi_app_banner&redirect_macos=https%3A%2F%2Fairmate.jp%2Fstore%2F%3Flid%3Damt_airregi_app_banner "
+                - img [ref=e539]
+                - generic [ref=e540]:
+                  - paragraph [ref=e541]: Airメイト 店舗経営 Airレジ連携
+                  - paragraph [ref=e542]: お店の状況がひとめでわかる経営サポートサービス。売上やコストが自動集計され、日報・月次レポート、分析もカンタンに。
+              - link "Airペイ ポイント Airレジ連携 集客 ポイントサービス 全国で利用されている共通ポイントをまとめて導入できる販促支援サービス。お店の新規集客・リピート促進をご支援します。" [ref=e544] [cursor=pointer]:
+                - /url: https://market.airregi.jp/service/details/00037?lid=airregi_backofficesaleslist_msc
+                - img [ref=e546]
+                - generic [ref=e547]:
+                  - paragraph [ref=e548]: Airペイ ポイント Airレジ連携 集客 ポイントサービス
+                  - paragraph [ref=e549]: 全国で利用されている共通ポイントをまとめて導入できる販促支援サービス。お店の新規集客・リピート促進をご支援します。
+              - link "Airシフト シフト管理 シフト作成はもちろん、スタッフとのやりとりや細かな調整もラクになるシフト管理サービス。" [ref=e551] [cursor=pointer]:
+                - /url: https://airregi.jp/shift/?lid=airregi_backofficesaleslist_sft
+                - img [ref=e553]
+                - generic [ref=e554]:
+                  - paragraph [ref=e555]: Airシフト シフト管理
+                  - paragraph [ref=e556]: シフト作成はもちろん、スタッフとのやりとりや細かな調整もラクになるシフト管理サービス。
+          - paragraph [ref=e557]:
+            - link "Airマーケットでもっと見る" [ref=e558] [cursor=pointer]:
+              - /url: https://market.airregi.jp?lid=wbregimkt
+  - generic [ref=e559]:
+    - generic:
+      - banner [ref=e560]:
+        - generic [ref=e562]:
+          - generic:
+            - link [ref=e563] [cursor=pointer]:
+              - /url: https://airregi.jp/CLP//view/top/
+              - img
+            - list [ref=e564]:
+              - listitem:
+                - link [ref=e565] [cursor=pointer]:
+                  - /url: https://airregi.jp/CLP//view/top/
+                  - generic:
+                    - img
+              - listitem [ref=e566]:
+                - img [ref=e568]
+                - heading "日別売上" [level=1] [ref=e570]
+                - generic [ref=e571] [cursor=pointer]:
+                  - generic:
+                    - img
+      - navigation [ref=e573]:
+        - list [ref=e574]:
+          - listitem [ref=e575]:
+            - generic [ref=e576]:
+              - generic: 4月6日(月)
+              - img "曇り" [ref=e577]
+          - listitem [ref=e578]:
+            - link "トップページ" [ref=e579] [cursor=pointer]:
+              - /url: https://airregi.jp/CLP//view/top/
+              - generic: トップページ
+          - listitem [ref=e580]:
+            - button "レジ" [expanded] [ref=e581] [cursor=pointer]:
+              - generic: レジ
+            - list [ref=e582]:
+              - listitem [ref=e583]:
+                - link "レジ点検・精算" [ref=e584] [cursor=pointer]:
+                  - /url: https://airregi.jp/CLP//view/salesRegiInfo/
+                  - generic: レジ点検・精算
+              - listitem [ref=e585]:
+                - link "レジ点検・精算履歴" [ref=e586] [cursor=pointer]:
+                  - /url: https://airregi.jp/CLP//view/salesRegiInspectHist/
+                  - generic: レジ点検・精算履歴
+              - listitem [ref=e587]:
+                - link "取引履歴" [ref=e588] [cursor=pointer]:
+                  - /url: https://airregi.jp/CLP//view/salesJournal/
+                  - generic: 取引履歴
+          - listitem [ref=e589]:
+            - button "売上・分析" [expanded] [ref=e590] [cursor=pointer]:
+              - generic: 売上・分析
+            - list [ref=e591]:
+              - listitem [ref=e592]:
+                - link "日別売上" [ref=e593] [cursor=pointer]:
+                  - /url: https://airregi.jp/CLP//view/salesList/
+                  - generic: 日別売上
+              - listitem [ref=e594]:
+                - link "商品別売上" [ref=e595] [cursor=pointer]:
+                  - /url: https://airregi.jp/CLP//view/salesListByMenu/
+                  - generic: 商品別売上
+              - listitem [ref=e596]:
+                - link "分析" [ref=e597] [cursor=pointer]:
+                  - /url: https://airregi.jp/CLP//view/mateAnalytics/
+                  - generic: 分析
+          - listitem [ref=e598]:
+            - button "顧客" [expanded] [ref=e599] [cursor=pointer]:
+              - generic: 顧客
+            - list [ref=e600]:
+              - listitem [ref=e601]:
+                - link "顧客一覧" [ref=e602] [cursor=pointer]:
+                  - /url: https://airregi.jp/CLP//view/customerList/
+                  - generic: 顧客一覧
+              - listitem [ref=e603]:
+                - link "顧客登録" [ref=e604] [cursor=pointer]:
+                  - /url: https://airregi.jp/CLP//view/customerList/#/new/
+                  - generic: 顧客登録
+              - listitem [ref=e605]:
+                - link "顧客統合" [ref=e606] [cursor=pointer]:
+                  - /url: https://cl.connect.airregi.jp/view/customer/customerUnion?redirect_uri=https://airregi.jp/CLP/view/platFormRelay/&client_id=ARG&customerDetailUri=https%3A%2F%2Fairregi.jp%2FCLP%2Fview%2FcustomerList%2F
+                  - generic: 顧客統合
+          - listitem [ref=e607]:
+            - button "商品" [expanded] [ref=e608] [cursor=pointer]:
+              - generic: 商品
+            - list [ref=e609]:
+              - listitem [ref=e610]:
+                - link "商品設定" [ref=e611] [cursor=pointer]:
+                  - /url: https://airregi.jp/CLP//view/settingMenu/
+                  - generic: 商品設定
+              - listitem [ref=e612]:
+                - link "カテゴリー設定" [ref=e613] [cursor=pointer]:
+                  - /url: https://airregi.jp/CLP//view/settingCategory/
+                  - generic: カテゴリー設定
+              - listitem [ref=e614]:
+                - link "在庫管理" [ref=e615] [cursor=pointer]:
+                  - /url: https://airregi.jp/CLP//view/settingMenuSkuStock/
+                  - generic: 在庫管理
+              - listitem [ref=e616]:
+                - link "バーコード印刷" [ref=e617] [cursor=pointer]:
+                  - /url: https://airregi.jp/CLP//view/printMenuBarcode/
+                  - generic: バーコード印刷
+          - listitem [ref=e618]:
+            - link "設定" [ref=e619] [cursor=pointer]:
+              - /url: https://airregi.jp/CLP//view/configuration/
+              - generic: 設定
+          - listitem [ref=e620]:
+            - link "連携サービス" [ref=e621] [cursor=pointer]:
+              - /url: https://airregi.jp/CLP//view/introduceService/
+              - generic: 連携サービス
+          - listitem [ref=e622]:
+            - link "レストラン ボード" [ref=e623] [cursor=pointer]:
+              - /url: https://restaurant-board.com/CLP/view/top/
+              - generic: レストラン ボード
+          - listitem [ref=e624]:
+            - button "ヘルプ" [expanded] [ref=e625] [cursor=pointer]:
+              - generic: ヘルプ
+            - list [ref=e626]:
+              - listitem [ref=e627]:
+                - link "トラブル解決 ガイド" [ref=e628] [cursor=pointer]:
+                  - /url: https://faq.airregi.jp/hc/ja/categories/360003012074
+                  - generic: トラブル解決 ガイド
+              - listitem [ref=e629]:
+                - link "使い方・よく あるご質問" [ref=e630] [cursor=pointer]:
+                  - /url: https://faq.airregi.jp/hc/ja/
+                  - generic: 使い方・よく あるご質問
+          - listitem [ref=e631]:
+            - link "お問い合わせ" [ref=e632] [cursor=pointer]:
+              - /url: https://faq.airregi.jp/hc/ja/articles/202228144
+              - generic: お問い合わせ
+          - listitem [ref=e633]:
+            - generic [ref=e634]:
+              - paragraph [ref=e635]: 電話でのサポートはこちら
+              - paragraph [ref=e636]: 0120-0404-17
+              - paragraph [ref=e637]: 受付時間 9:30〜23:00（年中無休）
+        - button [ref=e639] [cursor=pointer]
+      - list [ref=e642]:
+        - listitem [ref=e643] [cursor=pointer]:
+          - img [ref=e645]
+          - generic [ref=e648]: bar_five_arrows
+          - img [ref=e650]
+        - listitem [ref=e652] [cursor=pointer]:
+          - img [ref=e654]
+          - text: BAR FIVE Arrows
+          - img [ref=e659]
+        - listitem [ref=e661] [cursor=pointer]:
+          - img [ref=e663]
+          - text: サービス切り替え
+          - img [ref=e674]

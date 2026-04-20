@@ -1,0 +1,168 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e5]: ver 8.11.6
+      - list [ref=e6]:
+        - listitem [ref=e7]:
+          - generic [ref=e8]: "700600"
+          - text: ":"
+          - generic [ref=e9]: 麻布しき 旗の台店
+        - listitem [ref=e10]:
+          - generic [ref=e11]: "001"
+          - text: ":"
+          - generic [ref=e12]: 麻布しき 旗の台店
+        - listitem [ref=e13]:
+          - generic [ref=e14]: "0101"
+          - text: ":"
+          - generic [ref=e15]: オーナー
+  - generic [ref=e18]:
+    - heading "汎用検索" [level=1] [ref=e20]
+    - generic [ref=e21]: データの選択
+    - generic [ref=e22]:
+      - generic [ref=e24]: データ*
+      - combobox [ref=e26]:
+        - option "売上データ(伝票)"
+        - option "売上データ(伝票 + 伝票明細)" [selected]
+        - option "商品マスタ"
+        - option "店舗マスタ"
+        - option "担当者マスタ"
+        - option "顧客マスタ"
+        - option "入出金データ"
+        - option "金種別現金在高"
+        - option "売上データ(伝票+原価情報)"
+        - option "売上データ(伝票+伝票明細+原価情報)"
+        - option "売上データ(伝票 + 伝票明細 + 原価情報)定型フォーマット"
+        - option "売上データ詳細(伝票)"
+        - option "売上データ詳細(伝票 + 伝票明細)"
+        - option "アンケートデータ"
+        - option "売上データ(伝票 + 領収書発行履歴)"
+        - option "売上データ(伝票 + デリバリー情報)"
+        - option "調理時間"
+        - option "呼出時間"
+    - generic [ref=e28]:
+      - generic [ref=e30]: 店舗*
+      - generic [ref=e33]:
+        - generic [ref=e35]:
+          - generic [ref=e36]:
+            - generic [ref=e37]: 親カテゴリ
+            - combobox [ref=e38]:
+              - option "--- select ---" [selected]
+          - generic [ref=e39]:
+            - generic [ref=e40]: 子カテゴリ1
+            - combobox [ref=e41]:
+              - option "--- select ---" [selected]
+          - generic [ref=e42]:
+            - generic [ref=e43]: 子カテゴリ2
+            - combobox [ref=e44]:
+              - option "--- select ---" [selected]
+          - generic [ref=e45]:
+            - generic [ref=e46]: 子カテゴリ3
+            - combobox [ref=e47]:
+              - option "--- select ---" [selected]
+          - generic [ref=e48]:
+            - generic [ref=e49]: 子カテゴリ4
+            - combobox [ref=e50]:
+              - option "--- select ---" [selected]
+        - generic [ref=e51]:
+          - generic [ref=e52]:
+            - checkbox "  ALL" [ref=e53]
+            - generic [ref=e54] [cursor=pointer]:
+              - generic [ref=e55]: 
+              - generic [ref=e56]: 
+            - text: ALL
+          - generic [ref=e58]:
+            - generic [ref=e59]:
+              - generic [ref=e61]:
+                - checkbox "  000:管理者用店舗（日本）" [ref=e62]
+                - generic [ref=e63] [cursor=pointer]:
+                  - generic [ref=e64]: 
+                  - generic [ref=e65]: 
+                - text: 000:管理者用店舗（日本）
+              - generic [ref=e67]:
+                - checkbox "  001:麻布しき 旗の台店" [ref=e68]
+                - generic [ref=e69] [cursor=pointer]:
+                  - generic [ref=e70]: 
+                  - generic [ref=e71]: 
+                - text: 001:麻布しき 旗の台店
+            - generic [ref=e72]:
+              - generic [ref=e74]:
+                - checkbox "  002:麻布 しき 本店" [ref=e75]
+                - generic [ref=e76] [cursor=pointer]:
+                  - generic [ref=e77]: 
+                  - generic [ref=e78]: 
+                - text: 002:麻布 しき 本店
+              - generic [ref=e80]:
+                - checkbox "  003:健康弁当OHANA" [ref=e81]
+                - generic [ref=e82] [cursor=pointer]:
+                  - generic [ref=e83]: 
+                  - generic [ref=e84]: 
+                - text: 003:健康弁当OHANA
+            - generic [ref=e85]:
+              - generic [ref=e87]:
+                - checkbox "  004:健康弁当おはな" [ref=e88]
+                - generic [ref=e89] [cursor=pointer]:
+                  - generic [ref=e90]: 
+                  - generic [ref=e91]: 
+                - text: 004:健康弁当おはな
+              - generic [ref=e93]:
+                - checkbox "  005:一粒鰻盃" [ref=e94]
+                - generic [ref=e95] [cursor=pointer]:
+                  - generic [ref=e96]: 
+                  - generic [ref=e97]: 
+                - text: 005:一粒鰻盃
+    - generic [ref=e99]:
+      - generic [ref=e101]: 期間*
+      - generic [ref=e102]:
+        - generic [ref=e103]:
+          - spinbutton "" [ref=e104]: "20260420"
+          - generic: 
+        - text: ～
+        - generic [ref=e105]:
+          - spinbutton "" [ref=e106]: "20260420"
+          - generic: 
+    - generic [ref=e108]:
+      - generic [ref=e110]: 項目*
+      - generic [ref=e964]:
+        - grid [ref=e967]:
+          - rowgroup [ref=e117]:
+            - row "  項目名 項目別名 出力順序" [ref=e118]:
+              - columnheader " " [ref=e119]:
+                - generic [ref=e120]:
+                  - checkbox " " [checked] [ref=e121]
+                  - generic [ref=e122] [cursor=pointer]:
+                    - generic [ref=e123]: 
+                    - generic [ref=e124]: 
+              - columnheader "項目名" [ref=e125]
+              - columnheader "項目別名" [ref=e126]
+              - columnheader "出力順序" [ref=e127]
+        - grid [ref=e129]:
+          - rowgroup:
+            - row "  項目名 項目別名 出力順序":
+              - columnheader " ":
+                - generic [ref=e969]:
+                  - checkbox " " [checked] [ref=e970]
+                  - generic [ref=e971] [cursor=pointer]:
+                    - generic [ref=e972]: 
+                    - generic [ref=e973]: 
+              - columnheader "項目名":
+                - generic: 項目名
+              - columnheader "項目別名":
+                - generic: 項目別名
+              - columnheader "出力順序":
+                - generic: 出力順序
+          - rowgroup [ref=e135]:
+            - row "Loading..." [ref=e974]:
+              - gridcell "Loading..." [ref=e975]
+    - generic [ref=e953]:
+      - generic [ref=e954]: カテゴリの選択
+      - text: "*カテゴリの選択…カテゴリのツリー階層の単位でグルーピングしたデータを出力します"
+      - generic [ref=e955]:
+        - generic [ref=e957]: カテゴリマスタ
+        - generic [ref=e958]:
+          - combobox [ref=e959]:
+            - option "--- select ---" [selected]
+            - option "店舗マスタ"
+          - text: "*カテゴリマスタを選択し、グリッドからカテゴリツリーを選択"
+      - text:    
+    - paragraph [ref=e961]:
+      - button "CSV出力" [ref=e962] [cursor=pointer]

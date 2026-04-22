@@ -1,16 +1,15 @@
 # 並行タスク ダッシュボード — 2026-04-22
 
-最終更新: 2026-04-22 16:50（BL-0061 実装フェーズ ✅ 完了 / BL-0037 全Phase ✅ 完了）
+最終更新: 2026-04-22 17:20（BL-0062 実装フェーズ起動・background実行中）
 
 ## サマリ
 
 | 状態 | 件数 |
 |---|---|
-| 🟢 実行中 | 1 |
+| 🟢 実行中 | 2 |
 | ⏸ ユーザー対応待ち | 2 |
-| 🔵 計画完了 | 1 |
-| ✅ 完了 | 4 |
-| 合計 | 8 |
+| ✅ 完了 | 5 |
+| 合計 | 9 |
 
 ## タスク一覧
 
@@ -22,7 +21,8 @@
 | `86ab7e6d` | BL-0061 | AI-Core PL 計画      | ✅ 完了    | — 計画v2.1確定                                            | [✅ 完了](INBOX.md#-本日完了参考) |
 | `3b95ee3a` | BL-0061 | AI-Core PL **実装フェーズ** | ✅ 完了 | — 本番デプロイ + E2E動作確認まで完了 | [BL-0061](INBOX.md#bl-0061-ai-core-pl) |
 | `8aadf9da` | BL-0037 | PONチャット履歴ナレッジ化 | ✅ 完了 | — 残り田中さん側でPONさん招待のみ | [BL-0037](INBOX.md#bl-0037) |
-| `f96e4e36` | BL-0062 | 低速タキオン **要件詰め** | 🔵 計画完了（v1.0確定） | ❓ Notion DB作成依頼 → 「実装着手 BL-0062」待ち | [✅ BL-0062](INBOX.md) |
+| `f96e4e36` | BL-0062 | 低速タキオン **要件詰め** | ✅ 完了（v1.1確定） | — 実装フェーズへ引継ぎ済 | [🔵 BL-0062](INBOX.md) |
+| `a1a66ab9` | BL-0062 | 低速タキオン **実装フェーズ** | 🟢 実行中（background） | — 別エージェントで稼働中、完了通知待ち | [🔵 BL-0062](INBOX.md) |
 | `1ebd755a` | BL-0053 | AIOS+G-Brain統合 **要件詰め** | ⏸ ユーザー対応待ち | ❓ Q1〜Q5（スコープA/B/C / G-Brain所在 / 大地さん稼働 / 後方互換 / マルチリポ昇格） | [🟡 BL-0053](INBOX.md) |
 
 ### フェーズ凡例
@@ -51,6 +51,9 @@
 | 16:15 | INBOX運用 | プロジェクト別構造へ変更 | 田中さん方針: 緊急/確認/待機の優先度グループ化を廃止、BL ID順のプロジェクト別セクションに統一。状態は見出し横の状態タグで表示。`12_parallel_task_orchestration.mdc` と `INBOX.template.md` も更新 |
 | 16:45 | BL-0037 | ✅ 全Phase完了 | GitHub repo `pon-chatgpt-knowledge` (private) に push 完了。531ファイル/4 Programs/11 LLM合成。残りは田中さんがPONさんGHアカウント確認後に Collaborator 招待のみ |
 | 16:50 | BL-0061 | ✅ 実装フェーズ完了 | ユーザー指示で `3b95ee3a` を complete。本番URL https://ai-core-pl.vercel.app/ で稼働中 |
+| 17:00 | BL-0062 | 計画 v1.0 → v1.1（実行エンジン変更） | 田中さん指示「タスク実行のみClaude Code CLIで」→ 生成はSDK直接維持、実行を `@anthropic-ai/claude-agent-sdk` + bypassPermissions + allowedTools に変更。MCP/bash/gws/gh 利用可。工数 14〜17h → 17〜20h。Q10(allowedTools)/Q11(承認モード) を追加投入 |
+| 17:15 | BL-0062 | 🔵 計画 v1.1 確定 | Q10=B（中: fs+web+Bash+Notion MCP+Drive MCP）/ Q11=A（bypassPermissions 全自動）で確定。全ブロッカー解消、「実装着手 BL-0062」指示待ち |
+| 17:20 | BL-0062 | 実装フェーズ起動 | 別エージェント `a1a66ab9` を background で起動。作業場所 `~/tachyon-workspace/tachyon/`、Phase1工数 17〜20h見積、完了通知待ち。実装中の追加確認はINBOXに自動追記される |
 
 ---
 

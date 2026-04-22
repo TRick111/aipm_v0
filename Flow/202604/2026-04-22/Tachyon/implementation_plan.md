@@ -1,13 +1,19 @@
-# BL-0062 低速タキオン — Implementation Plan v1.0
+# BL-0062 低速タキオン — Implementation Plan v1.1
 
-最終更新: 2026-04-22 16:05 / **status: 🔵 計画確定（実装フェーズ起動待ち）**
+最終更新: 2026-04-22 17:15 / **status: 🔵 計画 v1.1 確定（実装フェーズ起動待ち）**
+
+## 変更履歴
+- **v1.1 (2026-04-22 17:15)**: Q10=B / Q11=A 回答反映 → v1.1 確定。allowedTools=中（fs+web+Bash+Notion MCP+Drive MCP）、承認モード=bypassPermissions 全自動
+- v1.1-draft (2026-04-22 17:00): Q8-a を (2) SDK直接 → ハイブリッド（生成=SDK / 実行=Claude Code CLI相当 Agent SDK + Tool Use）に変更。工数 +2〜3h
+- v1.0 (2026-04-22 16:05): Q1〜Q9 全回答反映、初期確定版
 
 ## 0. エグゼクティブサマリ
 
 - **目的**: 会議終了後に全トランスクリプトを解析して構造化ToDoを生成し、UIでレビュー→承認→AI実行→結果保存までを一気通貫で実現
 - **実装場所**: 既存Tachyon（`~/tachyon-workspace/tachyon/`）に機能追加（別リポ作らない）
 - **差別化**: リアルタイム版（部分発言反応・全文脈未読）との棲み分け。低速版は全文読み切り＆承認ワークフロー付き
-- **総工数見積**: **約14〜17h（Phase1 のみ）** / **Phase2 (Notion AI直接連携) は別送り**
+- **実行エンジン**: ToDo **生成**は Anthropic SDK 直接（高速）、ToDo **実行**は **Claude Code CLI 相当**（`@anthropic-ai/claude-agent-sdk` を `bypassPermissions` で起動）でMCP/bash/fs/各種CLIツール利用可
+- **総工数見積**: **約17〜20h（Phase1 のみ、v1.1）** / Phase2 (Notion AI直接連携) は別送り
 - **前提**: Notion DB・Integration の準備は別途必要（Q-notion-db に準ずる既存フロー流用）
 
 ## 1. 確定要件（Q1〜Q9 回答ベース）
@@ -22,7 +28,7 @@
 | 実装場所 | 既存Tachyonリポ | Q5 |
 | ToDoスキーマ | **title / 詳細 / 完了条件 / 関連プロジェクト / AI作業内容 / AI作業の完了条件** | Q7 |
 | レビューフロー | **案B: Tachyon UI事前レビュー** — ドラフト表示→承認/編集/スキップ/実行→承認でNotion投入 | Q6-rev=B |
-| 実行エンジン | **Tachyon内の軽量エージェント（Anthropic SDK直接呼び出し）** — 単一エンジン | Q8-a=(2) |
+| 実行エンジン | **ハイブリッド**: 生成=Anthropic SDK直接 / 実行=**Claude Code CLI相当（`@anthropic-ai/claude-agent-sdk` + bypassPermissions）** | Q8-a=(2)→(1')（v1.1で変更） |
 | 結果保存先 | **Tachyon内 + Notion 両方**（AIPM Flow配下には保存しない） | Q8-b=(3) |
 | 失敗時挙動 | UIにエラー表示 + 手動再実行（自動リトライなし） | Q8-c=(1) |
 | Notion URL取込 | Phase1では実装しない（Notion側エクスポートMarkdownを通常アップロードで投入） | Q9-c=(1) |
@@ -33,8 +39,9 @@
 - 会議close時の自動ToDo生成 + 手動再実行
 - テキスト（.md/.txt）アップロード → 新規会議として受付 → 通常フローで生成
 - Tachyon UIでのドラフト表示（承認/編集/スキップ/実行ボタン）
-- AI実行（Anthropic SDK経由）
+- **AI実行（Claude Code CLI相当、ツール権限あり）** — Notion更新 / Google Sheets書込 / ファイル生成 / MCP連携 / bash実行 など、tool allowlist で許可されたものに応じて（v1.1）
 - 結果の Tachyon + Notion 同期保存
+- 作業ディレクトリ隔離（`~/tachyon-workspace/projects/slow-exec-{todoId}/`）
 - エラー時のUI表示 + 手動再実行
 
 ### 含まない（Phase2 以降）
@@ -67,6 +74,7 @@
                          ↓
               ┌──────────────────────┐
               │ lib/slow-agent.ts    │
+              │ [生成: SDK直接 single]│
               │  1. live.md全文読込   │
               │  2. MasterIndex読込  │
               │  3. Claude Sonnet    │
@@ -83,28 +91,40 @@
        └───┬────────────┬─────────────────┘
            │ 承認         │ 実行
            ↓            ↓
-   ┌──────────┐    ┌──────────────────┐
-   │ Notion投入│    │ lib/slow-executor.ts │
-   │(notion-  │    │  - Anthropic SDK     │
-   │ client)  │    │  - 結果をJSONに書戻   │
-   └──────────┘    └─────────┬────────────┘
-                              ↓
+   ┌──────────┐    ┌──────────────────────────────┐
+   │ Notion投入│    │ lib/slow-executor.ts          │
+   │(notion-  │    │ 【v1.1】Claude Code CLI相当    │
+   │ client)  │    │  - @anthropic-ai/claude-      │
+   │          │    │    agent-sdk を spawn         │
+   │          │    │  - bypassPermissions          │
+   │          │    │  - allowedTools=[…]           │
+   │          │    │  - cwd=projects/slow-exec-{id}│
+   │          │    │  - MCP / bash / fs / gws      │
+   │          │    │    / gh / 各種CLI 利用可       │
+   │          │    │  - 完了時 result を JSON化    │
+   │          │    └─────────┬────────────────────┘
+   └──────────┘              ↓
                   ┌──────────────────────┐
                   │ 結果保存（両方）        │
                   │  - slow-todos.json   │
                   │  - Notion元レコードに │
                   │    result同期          │
+                  │  - 成果物ファイルは     │
+                  │    cwd配下に保存       │
                   └──────────────────────┘
                           ↓失敗時
                   UI: エラー表示 + [再実行]ボタン
+                  + 実行ログ (exec.log) リンク
 ```
 
 ### 3.2 モジュール構成
 
 | ファイル | 役割 | 新規/拡張 |
 |---|---|---|
-| `lib/slow-agent.ts` | 全文解析→ToDo構造化生成 | 新規 |
-| `lib/slow-executor.ts` | Anthropic SDK でタスク実行 | 新規 |
+| `lib/slow-agent.ts` | 全文解析→ToDo構造化生成（SDK直接・single-turn） | 新規 |
+| `lib/slow-executor.ts` | **Claude Code CLI相当で実行**（Agent SDK + bypassPermissions + allowedTools） | 新規 |
+| `lib/agent-launcher.ts` | Agent SDKプロセス起動・ログキャプチャ・タイムアウト・kill | 新規（v1.1） |
+| `lib/exec-logger.ts` | 実行ログ書出し（`exec.log`、UIからの参照用） | 新規（v1.1） |
 | `lib/notion-client.ts` | Notion DB書込 + 結果同期 | 新規 |
 | `lib/slow-todos.ts` | `slow-todos.json` CRUD | 新規 |
 | `app/api/slow-todos/generate/route.ts` | 生成トリガー（close時/手動） | 新規 |
@@ -184,11 +204,42 @@ export interface SlowTodoItem {
   - **「AI作業内容」「AI作業の完了条件」は具体的アクション形式**（曖昧さを残さない）
   - relatedProject は MasterIndex.yaml のProject名と照合、該当なければ null
 
-### 4.2 実行フェーズ（`lib/slow-executor.ts`）
-- **モデル**: Claude Sonnet 4.6（SDK直接、single-turn）
-- **入力**: `aiTaskContent` + `aiTaskCompletionCriteria` + 会議メタ + 必要に応じAIPMナレッジ参照
-- **出力形式**: Markdownテキスト or ドキュメント（ファイル出力が必要な場合は後送り）
-- **完了判定**: LLMが `aiTaskCompletionCriteria` を満たすと自己宣言 → `status: completed`
+### 4.2 実行フェーズ（`lib/slow-executor.ts`）【v1.1 更新】
+- **実行基盤**: `@anthropic-ai/claude-agent-sdk` の `query()` を `bypassPermissions` + `allowedTools` 指定で起動（既存 `~/tachyon-workspace/agent-sdk-runner.mjs` のパターンを踏襲）
+- **モデル**: Claude Sonnet 4.6（CLI相当モード、multi-turn、tool-use可）
+- **作業ディレクトリ**: `~/tachyon-workspace/projects/slow-exec-{todoId}/`（隔離、成果物はここに生成）
+- **入力（プロンプト）**:
+  - 会議メタ（title/date/参加者）+ 元発言（sourceText）
+  - `aiTaskContent`（何をするか）
+  - `aiTaskCompletionCriteria`（完了基準）
+  - 許可ツール一覧と使い方の注記
+  - Notion DB の該当レコードID（結果を書き戻す先）
+  - AIPMナレッジ参照が必要ならMasterIndex読込を指示
+- **出力形式**: 完了時に JSON で標準出力に `{result, filesCreated, notionUpdated, summary}` を書かせて capture（または最終メッセージから抽出）
+- **タイムアウト**: 既定 15分、超過で kill → failed ステータス（UIエラー表示）
+- **完了判定**: `aiTaskCompletionCriteria` をAIが満たすと自己宣言 → `status: completed`
+- **並行実行**: 同一会議内では1タスクずつ直列実行（CPU/API負荷・ログ混線回避）。Phase2で並列化検討
+
+### 4.3 許可ツール（allowedTools）【確定: Q10=B 中】
+採用ツール群（`@anthropic-ai/claude-agent-sdk` + MCP）:
+- **ファイル操作**（作業dir配下のみ推奨）: `Read` / `Write` / `Edit` / `Glob` / `Grep`
+- **Web調査**: `WebFetch` / `WebSearch`
+- **Shell**: `Bash`（`gws` CLI でSheets/Docs/Drive/Calendar、`gh` CLI でGitHub起票、`curl` 等）
+- **MCP**: Notion MCP（DB拡張操作）+ Google Drive MCP（Drive参照）
+
+除外（Phase1 では入れない）:
+- Figma / Canva / Playwright / Vercel 等のMCP — 必要になった時点で個別追加（Phase2）
+
+破壊的コマンドのブロック:
+- プロンプト規約で禁止（`rm -rf`、`git reset --hard`、`git push --force`、`DROP TABLE`、`sudo` 等）
+- pre-tool-use hook で主要パターンを正規表現マッチして拒否
+- 作業dir外への `Write` / `Edit` はパス検証で拒否
+
+### 4.4 承認モード【確定: Q11=A bypassPermissions 全自動】
+- Tachyon UIでタスク承認ボタン押下 = ツール使用も含めて完全自動で実行
+- 人間ゲートは Q6-rev=B の UI事前レビューに集約（AI作業内容・完了条件を承認した時点で実行委任）
+- 実行中の進捗はUIにストリーム表示、緊急停止は [kill] ボタン
+- 監査は `exec.log` で全ツール呼び出しを記録（後追い可能）
 
 ## 5. API 仕様（Phase1）
 
@@ -239,12 +290,13 @@ DB名: Meeting ToDos
 | P4 | テキストアップロード（`/api/slow-todos/import` + ダッシュボードUI） | 1.5h | P1 |
 | P5 | UI: SlowTodosPanel（一覧・編集モーダル・承認/スキップ/実行） | 3h | P2 |
 | P6 | Notion連携（`notion-client.ts` + 承認時投入） | 2h | P5, P0 |
-| P7 | 実行コア（`slow-executor.ts` + 結果書戻 + Notion同期） | 2h | P5, P6 |
-| P8 | エラーハンドリング（UIエラー表示 + 手動再実行） | 1h | P7 |
-| P9 | 実会議データでのE2Eテスト + プロンプト調整 | 1.5h | P7, P8 |
+| **P7** | **実行コア（`slow-executor.ts` + `agent-launcher.ts` + `exec-logger.ts`、Agent SDK起動・タイムアウト・ログ・プロセス管理）** | **4〜5h** | P5, P6, Q10/Q11 |
+| **P7.5** | **allowedTools設定 + 作業dir隔離 + 既存MCP接続確認** | **0.5〜1h** | P7 |
+| P8 | エラーハンドリング（UIエラー表示 + 実行ログリンク + 手動再実行） | 1h | P7 |
+| P9 | 実会議データでのE2Eテスト + プロンプト調整 + ツール動作確認 | 2h | P7, P8 |
 | P10 | Stock反映（README / ProjectIndex / log更新） | 0.5h | P9 |
 
-**合計**: **14〜17h**（実装側のみ、P0 除く）
+**合計**: **17〜20h**（v1.1、実装側のみ、P0 除く）
 
 ### 想定優先順: P1 → P2 → P3 → P5 → P6 → P7 → P8 → P4 → P9 → P10
 （アップロード機能P4は後ろにずらして、まずは既存録音→生成の本流を通す）
@@ -263,15 +315,24 @@ DB名: Meeting ToDos
 
 ## 9. リスク・留意点
 
-- **5分以内の制約**: 90分超会議で `live.md` が数万文字になった場合、Sonnetでも応答時間が微妙。対策: 超過時は「要約→抽出」2段パス or Haikuフォールバック（Phase1.5）
+- **5分以内の制約（生成のみ対象）**: Q1の5分要件は「ToDo一覧が出るまで」。**実行は対象外**（CLI実行は数秒〜15分、UIで進捗表示）
+- **生成時の長時間会議**: 90分超会議で `live.md` が数万文字になった場合、Sonnetでも応答時間が微妙。対策: 超過時は「要約→抽出」2段パス or Haikuフォールバック（Phase1.5）
 - **プロンプト精度**: リアルタイム版の「部分発言反応」問題を回避できるか、既存30+件の会議データで事前検証（プロンプト反復2〜3回を織り込み済）
 - **Notion APIレート**: 1会議で10+ToDoを一括書込する場合、429に注意。逐次投入＋150ms間隔を既定
-- **実行タスクの多様性**: Q8-a=(2) で SDK単一エンジンに絞ったため、「アプリ開発」のような大規模タスクは Phase1 では実行成功率が低い。プロンプトで「SDK単発で扱える粒度に分解する」誘導を入れる
-- **エラー復旧**: 手動再実行のみ（Q8-c=(1)）なので、エラー原因がUIで分かる診断ログが重要
+- **【v1.1】CLI実行時間の可変性**: 数秒〜10分以上と幅が大きい。UIには running 状態 + 経過時間 + kill ボタンを必ず用意。タイムアウト既定15分
+- **【v1.1】CLI実行コスト**: Sonnet を multi-turn + tool-use で走らせるため 1タスク $0.1〜$1 程度。月間ToDo数 × 平均実行時間で概算を定期モニタ
+- **【v1.1】並行実行制限**: 同時に複数タスクを走らせると API レート/CPU 負荷が急増。同一会議内は直列、複数会議またがる場合もグローバル並列数上限（既定2）を設ける
+- **【v1.1】セキュリティ（allowedTools）**: `Bash` を許可する場合、プロンプトで破壊的操作を禁止 + pre-tool-use hook で `rm -rf /`、`git push --force`、`DROP TABLE` などのパターンを弾く
+- **【v1.1】プロセス管理**: Agent SDK プロセスは kill 時に zombie にならないよう `SIGTERM → 5秒後 SIGKILL` の段階 kill
+- **【v1.1】作業ディレクトリの肥大**: `projects/slow-exec-{todoId}/` を30日後に自動cleanup（TTL cron or 手動スクリプト）
+- **エラー復旧**: 手動再実行のみ（Q8-c=(1)）なので、エラー原因がUIで分かる診断ログが重要。実行ログ `exec.log` をUIから参照できるリンクを用意
 - **既存リアルタイム版との併存**: 同じ会議で `todos.json`（リアルタイム）と `slow-todos.json`（低速）が両方存在するケースあり。UI上での見せ分けに注意
 
 ## 10. 未解決事項 / 次アクション
 
 - [x] Q1〜Q9 すべて回答受領・反映完了
-- [ ] **次アクション**: 実装フェーズタスクを起動（作業場所: `~/tachyon-workspace/tachyon/` / 前提: P0 Notion DB作成依頼）
-- [ ] Phase2 候補: Notion AI Meeting Notes 直接取込（Q2-rev=(a) の後続）、AIPM Flow連携 (Q8-b 関連、必要性を運用で判断)、confidenceベース自動承認（Q6-rev=C）
+- [x] v1.1 変更: 実行エンジンを Claude Code CLI 相当に変更（2026-04-22 17:00）
+- [x] **Q10=B 中** / **Q11=A bypassPermissions 全自動** 確定（2026-04-22 17:15）
+- [x] Notion Integration + DB 準備完了（田中さん側 `.env` に NOTION_TOKEN / NOTION_DB_ToDos 登録済み）
+- [ ] **次アクション**: 「実装着手 BL-0062」指示 → 別エージェントで実装タスク起動
+- [ ] Phase2 候補: Notion AI Meeting Notes 直接取込（Q2-rev=(a) の後続）、AIPM Flow連携 (Q8-b 関連、必要性を運用で判断)、confidenceベース自動承認（Q6-rev=C）、複数タスク並列実行、MCP拡張（Figma/Canva/Playwright 等）

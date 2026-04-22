@@ -1,6 +1,6 @@
 # 田中さんの未対応事項 — 2026-04-22
 
-最終更新: 2026-04-22 16:45（BL-0037 全Phase完了✅・残り田中さん側のPONさん招待のみ）
+最終更新: 2026-04-22 17:15（BL-0037 AIPM準拠修正完了・4コミット目push済・非md artifact prefix除去追加対応）
 - ✍️ 回答記入欄の `> ` の行に直接書き込んでください
 - 完了したらチェック `[x]` を入れてください
 - セクションは **BL ID 順**に並べ、状態を見出し横に明記
@@ -50,15 +50,25 @@
 
 ## BL-0037 PONチャット履歴ナレッジ化  [✅ 全Phase完了・残りPONさん招待のみ]
 
-### 🎯 完了した作業（2026-04-22 16:45時点）
+### 🎯 完了した作業（2026-04-22 17:00時点）
 
 - ✅ **Phase 1 完了**: Step4 process (25/25) + deploy → `Stock/.../ChatGPT移行/` (478 MD)
-- ✅ **Phase 2 再パッケージ完了**: AIOS Program `ChatGPT履歴/` 構築（4 Projects × 21 subcategories, 531ファイル）
+- ✅ **Phase 2 再パッケージ完了**: AIOS Program `ChatGPT履歴/` 構築（4カテゴリ × 21 subcategories, 531ファイル）
 - ✅ **機械生成完了**: `_overview/00_README.md` / `05_people_directory.md` / `06_artifacts_index.md`
 - ✅ **LLM合成完了**: Batch `msgbatch_01Y5wVxibtXrPGQLufPSmUbQ` 11/11成功 → `_overview/` に11ファイル追加
   - 01_PON_persona / 02_business_overview / 03_decisions_log / 04_open_ideas / themes×7
-- ✅ **GitHub push完了**: https://github.com/RestaurantAILab/pon-chatgpt-knowledge (private, 531ファイル, 6MB, 2 commits)
+- ✅ **GitHub push完了**: https://github.com/RestaurantAILab/pon-chatgpt-knowledge (private)
 - ✅ **田中さん側 Stock log更新**: `Stock/.../AIOS提供/log.md` にBL-0037作業を追記済
+- ✅ **AIPM準拠修正 (2026-04-22 17:00-17:15)**: ユーザー指摘を受けて以下を修正・再push
+  - 21 サブカテゴリを **AIPM Project 化**（`conversations_index.json` → `ProjectIndex.yaml` 変換、`log.md` 追加）
+  - `.cursor/rules/aios/templates/{ProjectIndex,log}.template.*` に準拠したフォーマット
+  - カテゴリ folder（美容室/美容専門店/自社ブランド/J-Beauty）の `ProjectIndex.yaml` / `log.md` を **削除**（Projectではなく単なる束ねフォルダのため）
+  - artifact ファイル名の `<8文字hex>_` プレフィックスを **439件全て除去**（md 431件＋docx/pdf/txt 8件、衝突回避のsuffix処理込み）
+  - `README.md` / `conversations_summary.md` / `ProjectIndex.yaml` / `_overview/06_artifacts_index.md` の artifact参照を新ファイル名に一括更新
+  - `MasterIndex_snippet.yaml` を Project=subcategory 単位（全21個）に再編
+  - 生成スクリプト `repackage_to_program.py` をAIPM方針に合わせて修正＋実行順序ドキュメント化（`fix_aipm_compliance.py` を新規追加、全拡張子対応）
+  - 検証: conversations_index.json=0 / hex prefix残=0 / category-level ProjectIndex.yaml=0 / Project-level ProjectIndex.yaml=21 ✅
+  - GitHub に追加commit push（`b68a99a` / `044351b`、合計 **4 commits**、最終 **544 tracked files / 6.5 MB**）
 
 ### 📍 残り作業（田中さん側で実施）
 
@@ -110,7 +120,10 @@ gh api -X POST \
 - **GitHub repo** (private): https://github.com/RestaurantAILab/pon-chatgpt-knowledge
 - **ローカル出力** (参考): `Flow/202604/2026-04-22/バンコクPonさん案件/output/pon-chatgpt-knowledge/`
 - **生成スクリプト**: `Flow/202604/2026-04-22/バンコクPonさん案件/scripts/`
-  - `repackage_to_program.py` / `generate_mechanical.py` / `build_overview_batch.py`
+  - `repackage_to_program.py` — Step4出力を AIOS Program 構造へ再パッケージ
+  - `generate_mechanical.py` — `_overview/00/05/06` を機械生成
+  - `build_overview_batch.py` — `_overview/01-04 + themes` を LLM合成 (Batch API)
+  - `fix_aipm_compliance.py` — サブカテゴリを AIPM Project 形式化（必須の後処理）
 - **Batch進捗**: `scripts/batch_work/batch_log.json`
 - **田中さん側 基盤素材**: `~/RestaurantAILab/Markdowns-1/Stock/バンコクPonさん案件/AIOS提供/ChatGPT移行/`
 - **v2計画書**: [implementation_plan.md](../バンコクPonさん案件/implementation_plan.md)
@@ -276,13 +289,15 @@ BL-0061（AI-Core PL）で発生した「aipm_v0 はメタ（Stock/README/Projec
 
 ---
 
-## BL-0062 低速タキオン（会議後ToDo生成）  [✅ 計画 v1.0 確定 → Notion DB 準備依頼中]
+## BL-0062 低速タキオン（会議後ToDo生成）  [🟢 実装中（background）]
 
-📌 状況: Q1〜Q9 全回答受領 → `implementation_plan.md` v1.0 確定完了。次は実装フェーズ起動（前提: Notion Integration + DB作成の準備）。
+📌 状況: **実装フェーズ起動済み**（2026-04-22 17:20、別エージェント `a1a66ab9` が `~/tachyon-workspace/tachyon/` で稼働中）。Phase1工数 17〜20h見積。完了通知を待機中。実装中に判断が必要な追加論点が出たら、このセクション下に `## BL-0062 低速タキオン 実装中の追加確認` 見出しで自動追記されます。
 
-📝 成果物: [Tachyon/implementation_plan.md](../Tachyon/implementation_plan.md)（Phase1工数 14〜17h）
+📝 進捗ログ: `Flow/202604/2026-04-22/Tachyon/implementation_log.md`（実装エージェントが各Phase完了時に追記）
 
-#### 🗂 確定サマリ（v1.0 要点）
+📝 成果物: [Tachyon/implementation_plan.md](../Tachyon/implementation_plan.md)（v1.1、Phase1工数 17〜20h）
+
+#### 🗂 確定サマリ（v1.1 要点）
 
 | 項目 | 決定 |
 |---|---|
@@ -292,19 +307,52 @@ BL-0061（AI-Core PL）で発生した「aipm_v0 はメタ（Stock/README/Projec
 | トリガー | close時自動 + 手動再実行（5分以内要件） |
 | ToDoスキーマ | title / 詳細 / 完了条件 / 関連プロジェクト / AI作業内容 / AI作業の完了条件 |
 | レビュー | **案B** Tachyon UI事前レビュー（承認/編集/スキップ/実行） |
-| 実行 | **Anthropic SDK直接**（Tachyon内軽量エージェント、単一エンジン） |
+| **実行（v1.1変更）** | **生成=SDK直接 / 実行=Claude Code CLI相当**（`@anthropic-ai/claude-agent-sdk` + bypassPermissions + allowedTools） |
 | 結果保存 | **Tachyon内 + Notion 両方**（AIPM Flowには保存しない） |
-| 失敗時 | UIエラー表示 + 手動再実行（自動リトライなし） |
+| 失敗時 | UIエラー表示 + 実行ログ参照 + 手動再実行（自動リトライなし） |
+| **作業ディレクトリ（v1.1追加）** | `~/tachyon-workspace/projects/slow-exec-{todoId}/`（隔離、30日TTL） |
+| **タイムアウト（v1.1追加）** | 実行既定15分、超過で kill |
 
-#### 🔜 次アクション依頼: Notion DB作成
+#### Q10. 実行時の allowedTools 範囲は？ ✅ B（中）
 
-実装着手前に、AI-Core PL と同じ段取りで以下をご準備ください（所要 10〜15分）:
+選択肢:
+- (a) **最小** — `Read` / `Write` / `Edit` / `Glob` / `Grep`（作業dir内fs操作） + `WebFetch` / `WebSearch` のみ。Bash/MCP無し
+- (b) **中（推奨）** — (a) + `Bash`（`gws` CLI / `gh` CLI 等を許可）+ Notion MCP + Google Drive MCP
+- (c) **フル** — (b) + 田中さん環境のMCP全部（Figma / Canva / Playwright / Vercel 等）+ Bash全権限
+- (d) **カスタム** — 欲しいツール/MCPを個別指定
 
-1. **Notion Integration** を作成（名前: `Tachyon Slow Todos`、Capabilities: Read/Update/Insert） → `secret_xxxx...` を控える
-2. **Notion DB「Meeting ToDos」** を作成（スキーマは計画書 §6 参照）
-3. DBにIntegrationをコネクション追加
+📌 AI推奨: **(b) 中**。理由:
+- スプレッドシート連携（gws sheets）・GitHub起票（gh）・Notion拡張操作・Drive参照が揃えば、会議ToDoの大半（調査・記録・連絡・リンク収集）は実行可能
+- Figma/Canva/Playwright は会議ToDoで使うケースが稀、Phase2 で個別追加が素直
+- `Bash` は破壊的コマンドをプロンプト + pre-tool-use hook でブロック
 
-✍️ 準備完了後 or 「実装着手 BL-0062」の指示をいただければ、実装タスクを別エージェントで起動します:
+✍️ 回答記入欄:
+> B
+
+#### Q11. 実行の承認モードは？ ✅ A（bypassPermissions 全自動）
+
+選択肢:
+- (a) **bypassPermissions 全自動** — 承認ボタン押下後はツール使用も自動（Q6-rev=B の UI事前レビューで人間ゲート済と見なす）
+- (b) **書込系のみ承認プロンプト** — `Bash`、ファイル `Write`、Notion書込、Sheets書込など副作用のあるツールだけ Tachyon UI で承認ステップ
+- (c) **全ツール承認プロンプト** — 安全最優先、体験は重い
+
+📌 AI推奨: **(a)**。理由:
+- Q6-rev=B で承認時点にすでに人間が「このAI作業内容・完了条件で実行してよい」と判断している
+- 実行後のツール呼び出しまで逐一承認すると会議後ToDoの意義（自動化）が薄れる
+- 安全は allowedTools 範囲 (Q10) + プロンプト + pre-tool-use hook で担保する設計
+
+✍️ 回答記入欄:
+> A
+
+#### ✅ 実装起動ブロッカー状況（全解消）
+
+- [x] Notion Integration + DB 準備（.envに NOTION_TOKEN / NOTION_DB_ToDos 登録済）
+- [x] v1.1 計画書 確定（Q10=B / Q11=A 反映済）
+- [x] Q10 回答（B 中）
+- [x] Q11 回答（A bypassPermissions 全自動）
+- [ ] **「実装着手 BL-0062」指示 → 別エージェント起動**
+
+✍️ 起動指示いただければ `~/tachyon-workspace/tachyon/` で実装フェーズを開始します:
 > 
 
 #### ✅ Q1〜Q9 回答済（アーカイブ）

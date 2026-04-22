@@ -1,25 +1,45 @@
 #!/usr/bin/env python3
 """Step4 deploy の出力を PONさん向け AIOS Program 構造に再パッケージする。
 
+【AIPM準拠の方針】
+- Program = `ChatGPT履歴/`
+- Project = 各サブカテゴリ（`美容室/BELL_otonagami/` 等 21個）
+- カテゴリフォルダ（`美容室/` 等）は Project を束ねる category folder で、README.md のみ配置
+  (ProjectIndex.yaml / log.md は持たない — これらは Project 固有)
+
+【重要】本スクリプトは Step4 出力をコピーするだけ。AIPM Project 化（各サブカテゴリへの
+ProjectIndex.yaml / log.md 追加、artifact filename prefix 除去）は
+`fix_aipm_compliance.py` を **このスクリプトの後に必ず実行** してください。
+
 入力: /Users/rikutanaka/RestaurantAILab/Markdowns-1/Stock/バンコクPonさん案件/AIOS提供/ChatGPT移行/
 出力: /Users/rikutanaka/aipm_v0/Flow/202604/2026-04-22/バンコクPonさん案件/output/pon-chatgpt-knowledge/
 
-構造:
+構造（最終形、fix_aipm_compliance.py 実行後）:
   pon-chatgpt-knowledge/
     README.md                      (repo-level, how-to-integrate)
+    MasterIndex_snippet.yaml       (for merging into PONさん's Stock/MasterIndex.yaml)
     ChatGPT履歴/                   (drop-in AIOS Program)
       README.md                    (Program README)
-      _overview/                   (cross-cutting knowledge — filled by batch)
+      _overview/                   (cross-cutting knowledge — filled by build_overview_batch.py)
         themes/
-      美容室/                       (Project)
-        README.md                  (Project README = Step4 category README)
-        ProjectIndex.yaml          (new, generated)
-        log.md                     (new, generated)
-        {subcategory}/ ...
-      美容専門店/ ...
-      自社ブランド/ ...
-      J-Beauty/ ...
-    MasterIndex_snippet.yaml       (for merging into PONさん's Stock/MasterIndex.yaml)
+      美容室/                       (category folder — README.md のみ)
+        README.md                  (Step4 category README を流用)
+        BELL_otonagami/            (Project, AIPM形式)
+          README.md
+          ProjectIndex.yaml
+          log.md
+          conversations_summary.md
+          artifacts/
+        ...(他7サブカテゴリ)
+      美容専門店/ ... (4 Projects)
+      自社ブランド/ ... (4 Projects)
+      J-Beauty/ ... (5 Projects)
+
+実行順序:
+  1. python3 scripts/repackage_to_program.py    (このファイル、構造のガワ)
+  2. python3 scripts/generate_mechanical.py     (_overview 機械生成分)
+  3. python3 scripts/build_overview_batch.py --prepare|--submit|--process  (LLM合成)
+  4. python3 scripts/fix_aipm_compliance.py     (AIPM準拠化：必須)
 """
 import json
 import shutil
@@ -402,8 +422,9 @@ def run():
     project_metas = []
     for cat in CATEGORIES:
         meta = copy_category(cat)
-        write_project_index_yaml(cat, meta["subcategories"])
-        write_project_log_md(cat, meta)
+        # AIPM準拠: カテゴリレベルには ProjectIndex.yaml / log.md を置かない
+        # （Project = サブカテゴリ単位。カテゴリは Project を束ねる folder）
+        # サブカテゴリの ProjectIndex.yaml / log.md は fix_aipm_compliance.py が生成
         project_metas.append(meta)
         print(f"  ✓ {cat}: {len(meta['subcategories'])} subcategories, {meta['md_count']} MD files")
 

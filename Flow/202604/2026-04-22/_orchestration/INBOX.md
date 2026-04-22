@@ -298,6 +298,18 @@ BL-0061（AI-Core PL）で発生した「aipm_v0 はメタ（Stock/README/Projec
 - **確認**: ローカル（390×844 / 1280×800 双方）と本番 https://ai-core-pl.vercel.app/ で default 折りたたみ・展開・バッジ表示・desktop 変化なし・console errors 0 を目視確認
 - 📝 詳細: `Flow/202604/2026-04-22/AI-Core/implementation_log.md` §PM3
 
+### 🔄 追加対応 (2026-04-22 PM4) — カテゴリ見出しを「トグル」と分かる形に整形 [waiting_confirmation]
+
+- **背景**: PM3 対応後、カテゴリヘッダ（`A 朝の経営ダッシュボード` 等）がケースカードと同じ白背景・同じ角丸で描画されており、「タップで開く」ことが分かりづらかった（田中さん指摘）
+- **実装**: `app/globals.css` のみ変更（構造・ロジック不変）
+  - closed 状態: `.cat-head` 背景を `gray-50` に切替え、白いケースカードと明確に差別化
+  - トグルアイコンを円形の枠つきコントロール（closed: 白塗り + brand-softer 枠 / open・hover: brand 塗り + 白矢印）に
+  - open 時: ヘッダを `brand-light` にして下角をフラット化、`.case-list` パネルと連続する "drawer" 表現
+  - mobile (`<600px`): ヘッダのパディング縮小・stat 文字列を非表示にしてタイトル領域確保
+- **commit**: `c898d47 style(cat-head): distinguish category toggles from case cards`
+- **確認**: ローカル・本番 https://ai-core-pl.vercel.app/ で closed/open 両状態の視覚差を目視確認
+- 📝 詳細: `Flow/202604/2026-04-22/AI-Core/implementation_log.md` §PM4
+
 ---
 
 ## BL-0062 低速タキオン（会議後ToDo生成）  [✅ Phase 1 完了 (2026-04-22)]

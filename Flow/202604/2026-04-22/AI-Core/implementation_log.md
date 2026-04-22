@@ -204,3 +204,27 @@
 - `e73bf41 feat(filter): collapsible filter bar on mobile`
 - committer: `RestaurantAILab <197918871+RestaurantAILab@users.noreply.github.com>`（Vercel GitHub committer policy 遵守）
 
+---
+
+## 2026-04-22 PM4: カテゴリ見出しを「トグル」とわかるようにUI調整
+
+**背景**: モバイルのフィルター折りたたみ対応後、`A 朝の経営ダッシュボード` などのカテゴリヘッダ (`.cat-head`) が各ケースカード (`.case`) と同じ白背景・同じ角丸・同じボーダーで描画されており、「タップで開く」アフォーダンスが弱かった（田中さん指摘）。
+
+### ✅ 実装（CSS のみ / 構造は不変）
+- `.cat-head` 背景を `bg-surface` (white) → `gray-50` に（closed 状態でケースカードと明確に差別化）
+- トグルアイコン (`▾`) を円形の枠つきコントロールに変更（closed: 白背景 + brand-softer 枠 / hover・open: brand 塗り + 白 arrow）
+- `.cat-block.open .cat-head` で背景を `brand-light` + 下の角を `border-radius: 0` + 下ボーダー透明にして、`.case-list` パネルと視覚的に連結
+- `.case-list` を `bg-surface` + `brand-softer` ボーダーで囲み、open 時のみ表示される「ドロワーパネル」の見た目に（上辺ボーダーなしでヘッダと結合）
+- mobile (`<600px`): `.cat-head` のパディング圧縮・`.cat-stat`（"5/5 事例 / 月 30–40h 削減"）を `display:none` にしてタイトル領域を確保
+
+### ✅ 動作確認
+- ローカル（`http://127.0.0.1:3100/`）:
+  - mobile 390×844: closed 状態（B/C/D/E …）は灰色バー + 右端に円形 ▾、open 状態（A）は peach 色のヘッダから下に drawer のように連続 — タップ対象と一目で判別可能
+  - desktop 1280×800: 同じ視覚的区別が成立。hover で brand-light プレビューが効く（アフォーダンス補強）
+- 本番:
+  - commit `c898d47` push → Vercel auto-deploy（deploy_id `ai-core-qexv5yq8v-restaurant-ai-lab`）
+
+### コミット
+- `c898d47 style(cat-head): distinguish category toggles from case cards`
+- committer: `197918871+RestaurantAILab@users.noreply.github.com`
+

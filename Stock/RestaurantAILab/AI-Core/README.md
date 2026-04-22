@@ -21,10 +21,14 @@
 - 50事例 × 11カテゴリの提供メニューを Web 上でクライアントに選択・登録してもらう
 - 起点: `~/Downloads/AI秘書事業_事例集_v1.html`（町田第一さん作成）
 - DB: Notion（事例一覧 / クライアント依頼）
-- デプロイ: Vercel（既存ダッシュボードと同 team）
-- リポジトリ: `RestaurantAILab/ai-core-pl`（予定）
+- デプロイ: Vercel（既存ダッシュボードと同 team / `restaurant-ai-lab`）
+- **公開URL（UI プレビュー・2026-04-22 初回デプロイ）**: https://ai-core-pl.vercel.app/
+- **リポジトリ**: https://github.com/RestaurantAILab/ai-core-pl
+- **ローカル**: `~/RestaurantAILab/ai-core-pl/`
 - 関連バックログ: BL-0061
-- 計画: `Flow/202604/2026-04-22/AI-Core/implementation_plan.md`
+- 計画: `Flow/202604/2026-04-22/AI-Core/implementation_plan.md` v2.1
+- 実装ログ: `Flow/202604/2026-04-22/AI-Core/implementation_log.md`
+- Phase 1 残タスク: Notion DB 2つ作成 + token 受領 → seed + Vercel env + 本番再デプロイ（INBOX Q-notion-db 回答待ち）
 
 ## 関係者
 
@@ -35,5 +39,6 @@
 | 田中利空 | Restaurant AI Lab 開発担当 | 開発・実装 |
 
 ## 現在の状況・ネクストアクション
-- 2026-04-22: PL 立ち上げ準備（HTML 受領 → 探索完了 → 実装計画 v2.0 確定）
-- ネクストアクション:（バックログ BL-0061 / BL-0054 で管理）
+- 2026-04-22 AM: PL 立ち上げ準備（HTML 受領 → 探索完了 → 実装計画 v2.0 → v2.1 Slack 削除）
+- 2026-04-22 PM: Phase 1 実装着手 → UI デプロイ完了（https://ai-core-pl.vercel.app/）
+- ネクストアクション: INBOX Q-notion-db 回答受領 → seed + 本番再デプロイで Phase 1 完了

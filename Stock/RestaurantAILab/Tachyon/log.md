@@ -10,3 +10,5 @@
 | 2026-03-22 | create | `README.md` | プロジェクト初期化 | |
 | 2026-03-22 | create | `ProjectIndex.yaml` | プロジェクト初期化 | |
 | 2026-03-22 | create | `log.md` | プロジェクト初期化 | |
+| 2026-04-22 | update | `README.md` | BL-0062 低速タキオン Phase1 完了の状況を追記 | 実装完了の反映 |
+| 2026-04-22 | update | `ProjectIndex.yaml` | keywords に低速タキオン関連語を追加 | AI参照時のマッチング改善 |

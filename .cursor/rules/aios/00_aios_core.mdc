@@ -128,7 +128,7 @@ AIは会議トランスクリプト/メモを受け取ったら:
   - keywordsは **最大20語・重複排除**
 
 ## 8. 運用フロー（AIの動きの型）
-ユーザーの依頼を、以下にマッピングして実行する。
+ユーザーの依頼を、以下にマッピングして実行する。**この表が運用ルートの唯一の入口**で、すべての `aios/ops/*.mdc` はここから到達できる必要がある。詳細マッピング（ユーザー意図の言い回し例も含む）は `aios/10_aios_ops_router.mdc` を参照。
 
 | ユーザー意図 | 適用する運用（詳細は必要時に参照） |
 |---|---|
@@ -138,10 +138,18 @@ AIは会議トランスクリプト/メモを受け取ったら:
 | 投稿案/集計/資料作成など作業 | `aios/ops/04_project_work.mdc` |
 | 確定反映/Stockに保存 | `aios/ops/05_finalize_to_stock.mdc` |
 | 会議反映/議事録アップ | `aios/ops/06_meeting_close.mdc` |
+| バックログ管理/横断タスク管理/タスク優先度・期日整理 | `aios/ops/07_backlog_management.mdc` |
 | 進捗報告/タスク完了/次のタスク | `aios/ops/08_progress_report.mdc` |
 | 今日の振り返り/終業 | `aios/ops/09_daily_review.mdc` |
 | 週次振り返り/今週のレビュー | `aios/ops/10_weekly_review.mdc` |
 | 月次振り返り/今月のレビュー | `aios/ops/11_monthly_review.mdc` |
+| **並行タスク運用**（複数エージェント並列実行 / 「STATUS」「INBOX」「<タスク名> 回答した」/ Cockpit通知受信時の状態反映 / クラスA複数同時着手） | `aios/ops/12_parallel_task_orchestration.mdc` |
+
+**新しい ops ルールを追加する際の必須手順**:
+1. `aios/ops/NN_<name>.mdc` を作成
+2. **本セクション（00 Section 8）に必ずエントリを追加**
+3. `aios/10_aios_ops_router.mdc` にも詳細マッピング（ユーザー意図の言い回し例つき）を追加
+4. これを怠ると `00` から到達不能なルールになり、誰にも呼ばれない
 
 ## 9. AIの出力スタイル（ユーザーの手を最小化）
 - AIは「実行したこと」を短く報告し、必要なら次の入力だけ求める。

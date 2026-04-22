@@ -33,6 +33,15 @@
 
 ## 現在の状況・ネクストアクション
 - 現状: 基本機能（録音→STT→transcript表示→エージェント提案→承認→実行）は動作する状態
+- 2026-04-22: **BL-0062 低速タキオン Phase1 完了**
+  - 会議close時に全文トランスクリプトを Claude Sonnet 4.6 で解析し、構造化ToDoを生成（5分以内）
+  - UIで承認/編集/スキップ/実行が可能、承認時に Notion DB `Tachyon ToDos` に自動投入
+  - 実行は `@anthropic-ai/claude-agent-sdk` を `bypassPermissions` + allowedTools=中（Read/Write/Edit/Glob/Grep/WebFetch/WebSearch/Bash）で起動
+  - 破壊的コマンド（rm -rf / / sudo / git push --force / DROP TABLE 等15パターン）を pre-tool-use hook で自動拒否
+  - 作業ディレクトリ `~/tachyon-workspace/projects/slow-exec-{todoId}/` に隔離、cwd外書込も拒否
+  - タイムアウト15分、実行ログ `data/meetings/{id}/slow-exec/{todoId}/exec.log` に記録
+  - テキスト（.md/.txt）アップロードから新規会議として取込→生成まで対応（Phase2で Notion AI Meeting Notes 直接取込予定）
 - ネクストアクション:
   - [ ] 実運用テスト（実際の会議で使ってフィードバックを得る）
   - [ ] エージェントの安定性改善（sleep後のwaiting_confirmation問題等）
+  - [ ] BL-0062 Phase2: Notion AI Meeting Notes 直接取込 / confidenceベース自動承認（Q6-rev=C） / Figma・Canva等MCP拡張

@@ -1,0 +1,39 @@
+version: 1
+
+# ProjectIndex.yaml（AI専用）
+# 目的:
+# - ユーザー入力に対してAIが「このプロジェクト内のどのファイルを参照すべきか」を判断するためのプロジェクト内インデックス。
+# ルール:
+# - Stockにファイルを追加/更新したら、AIが files を更新する。
+# - READMEは「状況/次アクション/会議リンク」などの入口。ProjectIndexは「参照ファイル選定」のためのカタログ。
+
+project: "AI-Core 飯武さん導入支援"
+root: "Stock/RestaurantAILab/AI-Core_飯武さん導入"
+
+canonical:
+  readme: "README.md"
+  log: "log.md"
+
+# プロジェクト内ファイルのカタログ
+files:
+  - path: "README.md"
+    summary: "プロジェクト概要・関係者・現在の状況・関連バックログ・AI-Core 関連兄弟プロジェクト"
+    keywords:
+      - 飯武
+      - AIコア
+      - 導入支援
+      - 概要
+      - 関係者
+      - ネクストアクション
+  - path: "log.md"
+    summary: "プロジェクト内ファイルの変更履歴"
+    keywords:
+      - 変更履歴
+      - log
+
+# 関連する外部リソース（AI が文脈把握用に参照）
+related:
+  - path: "Stock/RestaurantAILab/AI-Core/README.md"
+    note: "AI-Core 共通基盤（PL中心）。本プロジェクトの兄弟プロジェクト"
+  - path: "Stock/定型作業/バックログ/Backlog.md"
+    note: "BL-0066（直近）/ BL-0053 / BL-0054 / BL-0061 が関連"

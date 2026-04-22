@@ -10,3 +10,4 @@
 | 2026-04-22 | create | `README.md` / `ProjectIndex.yaml` / `log.md` | タスク管理用プロジェクト初期化 | BL-0061 着手に伴い、PONさん案件と同じパターンで Stock 登録（成果物本体は Markdowns-1 側） |
 | 2026-04-22 | update | `README.md` | PL プロジェクトに 公開URL / GitHub リポ URL / 進捗状況 を追記 | BL-0061 Phase 1 UI デプロイ完了（`https://ai-core-pl.vercel.app/`）。Notion 接続のみ残 |
 | 2026-04-22 | update | `README.md` | Phase 1 完全完了に更新 | Notion 接続 + 本番再デプロイ + E2E 動作確認まで完了。クライアント共有可能状態 |
+| 2026-04-22 | create | `implementation_plan_2026-04-22.md` / `implementation_log_2026-04-22.md` | Flow 原本を Stock にアーカイブ（サフィックス付与で混同回避） | BL-0061 Phase 1 完了に伴う Stock 反映 |

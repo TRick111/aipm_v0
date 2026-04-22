@@ -19,9 +19,20 @@
 - エージェント: Claude Code CLI / Agent SDK
 - ストレージ: ファイルベース
 
-## 開発場所
-- `~/Tachyon-Workspace/` で開発（このリポジトリ外）
-- 仕様書: `~/Tachyon-Workspace/SPEC.md`
+## 開発場所・リポジトリ
+- 実装場所: `~/tachyon-workspace/tachyon/`（独立リポジトリ、AIPM リポの外）
+- GitHub リポジトリ: 田中さん管理の GitHub リポに push 済（**URL 要追記**）
+- 仕様書: `~/tachyon-workspace/SPEC.md`
+
+## 実装フェーズ
+- **Phase 1 完了（2026-04-22）** — BL-0062 低速タキオン Phase1
+- 主要機能:
+  - 生成: Claude Sonnet 4.6 SDK 直接呼び出し
+  - 実行: `@anthropic-ai/claude-agent-sdk` を `bypassPermissions` + allowedTools=中（Read/Write/Edit/Glob/Grep/WebFetch/WebSearch/Bash）で起動
+  - Notion DB `Tachyon ToDos` への自動同期
+  - テキスト（.md/.txt）アップロードからの会議取込対応
+- Phase 1 詳細ログ: `Flow/202604/2026-04-22/Tachyon/implementation_log.md`
+- Phase 2 候補（別 BL 起票予定）: Notion AI Meeting Notes 直接取込 / confidence ベース自動承認 / MCP 拡張（Figma・Canva・Playwright・Vercel 等）
 
 ## 関係者
 

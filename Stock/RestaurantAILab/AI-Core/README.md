@@ -31,10 +31,10 @@
 - **公開URL（UI プレビュー・2026-04-22 初回デプロイ）**: https://ai-core-pl.vercel.app/
 - **リポジトリ**: https://github.com/RestaurantAILab/ai-core-pl
 - **ローカル**: `~/RestaurantAILab/ai-core-pl/`
-- 関連バックログ: BL-0061
-- 計画: `Flow/202604/2026-04-22/AI-Core/implementation_plan.md` v2.1
-- 実装ログ: `Flow/202604/2026-04-22/AI-Core/implementation_log.md`
-- Phase 1 残タスク: Notion DB 2つ作成 + token 受領 → seed + Vercel env + 本番再デプロイ（INBOX Q-notion-db 回答待ち）
+- 関連バックログ: BL-0061（Phase 1 完了 2026-04-22）
+- 計画（Flow 原本）: `Flow/202604/2026-04-22/AI-Core/implementation_plan.md` v2.1
+- 実装ログ（Flow 原本）: `Flow/202604/2026-04-22/AI-Core/implementation_log.md`
+- Stock アーカイブ: `implementation_plan_2026-04-22.md` / `implementation_log_2026-04-22.md`（本ディレクトリ）
 
 ## 関係者
 

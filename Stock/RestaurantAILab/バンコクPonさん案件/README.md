@@ -33,4 +33,15 @@
 | 町田大地 | Restaurant AI Lab AI担当 | AI活用/運用支援 |
 
 ## 現在の状況・ネクストアクション
+- 2026-04-22: **BL-0037 Phase 1〜3 着手**
+  - PONさんのChatGPT履歴を AIPM Program 形式にリパッケージ完了
+  - GitHub private repo に push 完了（独立リポジトリ）
+  - 残タスク: AIPM 準拠修正（`scripts_2026-04-22/fix_aipm_compliance.py`）/ PONさんを private repo に招待 / 送付文面確定
+- 関連バックログ:
+  - BL-0037: ChatGPT履歴整理（AIOS Program化） — 進行中
+  - BL-0068: **PayPal → WISE への請求方法切替検討**（新規・要検討）
+- Stock アーカイブ（本ディレクトリ）:
+  - `implementation_plan_2026-04-22.md` — BL-0037 Phase 1-3 計画書 v2
+  - `output_2026-04-22/` — 生成物一式（pon-chatgpt-knowledge）
+  - `scripts_2026-04-22/` — 生成・リパッケージ用スクリプト群
 - ネクストアクション:（バックログで管理）

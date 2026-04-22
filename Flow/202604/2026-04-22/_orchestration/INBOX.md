@@ -287,6 +287,17 @@ BL-0061（AI-Core PL）で発生した「aipm_v0 はメタ（Stock/README/Projec
 - 🔜 運用: Notion ClientRequests を `Status=未対応` でフィルタしたビューを朝開く運用（Slack 通知なし・v2.1 確定）
 - ✅ 過去回答: 計画 v2.0/v2.1 確定（Notion DB化 / Slack 削除 / PONさん案件方式）
 
+### 🔄 追加対応 (2026-04-22 PM3) — モバイルフィルター折りたたみ修正完了 [waiting_confirmation]
+
+- **背景**: モバイル表示で `.filter-box`（役割/ツール/頻度/難易度 チップ）がビューポートの約9割を埋めていた（田中さん指摘）
+- **実装**: `components/FilterBar.tsx` + `app/globals.css` のみ変更（フィルターロジック不変）
+  - mobile (`<768px`) は default 折りたたみ・タップで展開。トグル行に「絞り込み [適用中バッジ] · N/M 件 · ▼」を表示
+  - `aria-expanded` / `aria-controls` を付与（a11y）
+  - desktop (`≥768px`) は現状維持（toggle 非表示・常時展開）
+- **commit**: `e73bf41 feat(filter): collapsible filter bar on mobile`（committer: `197918871+RestaurantAILab@users.noreply.github.com`）
+- **確認**: ローカル（390×844 / 1280×800 双方）と本番 https://ai-core-pl.vercel.app/ で default 折りたたみ・展開・バッジ表示・desktop 変化なし・console errors 0 を目視確認
+- 📝 詳細: `Flow/202604/2026-04-22/AI-Core/implementation_log.md` §PM3
+
 ---
 
 ## BL-0062 低速タキオン（会議後ToDo生成）  [✅ Phase 1 完了 (2026-04-22)]

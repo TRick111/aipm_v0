@@ -174,3 +174,33 @@
 | 確認済 | UI / 50事例カタログ / フィルタ / 選択 / 送信 / Notion Insert / Status=未対応 / Relations |
 | 残スコープ | Phase 2 候補（PDF出力 / 認証 / 集計 / 通知復活 / HTML v2 差分）は別バックログ |
 
+---
+
+## 2026-04-22 PM3: モバイルフィルター折りたたみ修正
+
+**背景**: 本番モバイル表示で `.filter-box` が 役割/ツール/頻度/難易度 チップを全展開しており、ビューポートの約9割を埋めてケースカードに到達しにくかった（田中さん指摘）。
+
+### ✅ 実装（UI のみ / ロジック不変）
+- `components/FilterBar.tsx`:
+  - `useState` で `open` 制御（default `false`）、適用中フィルター数を数える `activeCount` を算出
+  - 「絞り込み [バッジ] · N/M件 · ▼」のトグル行を先頭に追加（`aria-expanded` / `aria-controls` / `useId`）
+  - 既存のフィルター行 + `.filter-actions` を `.filter-content` にラップ
+- `app/globals.css`:
+  - `.filter-toggle` は desktop で `display:none`（mobile `max-width:767px` で `display:flex`）
+  - `.filter-box.is-collapsed .filter-content { display:none }` を mobile 限定で適用
+  - `.filter-toggle-badge` をブランドオレンジ pill で表示、`.filter-toggle-icon` は open 時 180°回転
+- `data-open` ではなく class (`is-open` / `is-collapsed`) を使う形にし、React の状態に関係なくデスクトップでは常に全展開される設計
+
+### ✅ 動作確認
+- ローカル（`npm run dev` / 127.0.0.1:3100）:
+  - iPhone 14 Pro 相当（390×844）: default 折りたたみ / toggle tap で展開・再 tap で折り畳み / 営業責任者 chip tap で visibleCount 50→12 & badge "1" 表示
+  - デスクトップ（1280×800）: toggle 非表示・従来どおり全チップ可視・Reset リンクも右に表示
+  - console errors なし / 選択 → 「選択中 1 件」反映
+- 本番（https://ai-core-pl.vercel.app/）:
+  - commit `e73bf41` push → Vercel auto-deploy Ready（15s）
+  - モバイル 390px で default 折りたたみを目視確認、ケースカード「朝の経営ダッシュボード」がファーストビュー内に入るようになった
+
+### コミット
+- `e73bf41 feat(filter): collapsible filter bar on mobile`
+- committer: `RestaurantAILab <197918871+RestaurantAILab@users.noreply.github.com>`（Vercel GitHub committer policy 遵守）
+

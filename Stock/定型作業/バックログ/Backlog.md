@@ -49,7 +49,7 @@
 | BL-0025 | todo | P2 |  | Tachyon: 吉田への展開 | RestaurantAILab | Tachyon | tachyon,吉田,展開 | 実運用テスト含む |
 | BL-0026 | todo | P2 |  | 会議議事録の自動反映: 文字起こし→AIPM反映フロー設計 | 作業効率化 | 会議議事録の自動反映 | omi,文字起こし,フロー設計 | BL-0023（OMI受け取り）完了後 |
 | BL-0027 | done | P3 | 2026-04-05 | 健康管理: 目標値の設定 | ゴール管理 | 健康管理 | 健康,目標,体脂肪率 | 4/12完了。目標: 体脂肪率14%（ベースライン15.9%） |
-| BL-0028 | doing | P1 | 2026-03-29 | 健康管理: 睡眠計測デバイスの購入（Oura Ring / Garmin等） | ゴール管理 | 健康管理 | 健康,睡眠,デバイス,購入 | 睡眠の質を記録・向上するため。2026-04-22 Oura Ring 4 確定（Q1=A 自動連携必達）。次アクション: Sizing Kit発注→1週間で到着→24h試着→本体注文。手順詳細: Flow/202604/2026-04-22/健康管理/sleep_device_comparison.md |
+| BL-0028 | doing | P1 | 2026-03-29 | 健康管理: 睡眠計測デバイスの購入（Oura Ring / Garmin等） | ゴール管理 | 健康管理 | 健康,睡眠,デバイス,購入 | 睡眠の質を記録・向上するため。2026-04-22 Oura Ring 4 / Garmin Vivoactive 6・Venu 4 の複数案で検討。2026-04-23 **結論は一晩寝かせて決定**（Backlog内の「Oura Ring 4 確定」と daily_tasks の「Vivoactive 6 推奨・Venu 4 検討」が未整合のため、翌日田中さん判断）。手順詳細: Flow/202604/2026-04-22/健康管理/sleep_device_comparison.md |
 | BL-0029 | todo | P1 | 2026-04-30 | 健康管理: 睡眠の質の記録運用を開始 | ゴール管理 | 健康管理 | 健康,睡眠,記録,トラッキング | BL-0028完了後。デバイスで日々の睡眠データを記録 |
 | BL-0030 | todo | P1 | 2026-04-30 | 健康管理: 睡眠データのAIOS自動連携の構築 | ゴール管理 | 健康管理 | 健康,睡眠,自動連携,API | BL-0028完了後。デバイスAPIからAIOSへ睡眠スコア等を自動取り込み。4月中完成目標 |
 | BL-0031 | todo | P2 |  | LINE連携: LINE APIの調査・技術選定・通知送信の実装 | 作業効率化 | LINE連携 | LINE,通知,API,自動化 | AIOSからLINEへ通知を飛ばす仕組み。リマインド・日次サマリー等 |
@@ -83,9 +83,10 @@
 | BL-0060 | todo | P1 |  | Claude Code アップデート | 作業効率化 | 環境整備 | claude-code,アップデート,環境 | Claude Codeの最新バージョンへのアップデートと設定見直し |
 | BL-0061 | done | P1 | 2026-04-22 | AIコア PL作成 | RestaurantAILab | AI-Core | ai-core,PL,price-list,提供メニュー,notion | **Phase 1 完了 ✅ (2026-04-22)** 公開URL: https://ai-core-pl.vercel.app/ ／ GitHub: RestaurantAILab/ai-core-pl ／ Vercel: restaurant-ai-lab/ai-core-pl ／ Notion: ServiceCases(50件 seed済) + ClientRequests ／ E2E動作確認済(Status=未対応 + Relations付与)。詳細: Flow/202604/2026-04-22/AI-Core/implementation_log.md。Phase 2候補(PDF/認証/集計/通知復活/HTML v2)は別BL起票で対応 |
 | BL-0062 | done | P1 | 2026-04-22 | 低速タキオン: 会議終了後に全トランスクリプトからToDo生成 | RestaurantAILab | Tachyon | tachyon,低速,トランスクリプト,todo,生成,notion,agent-sdk | **Phase 1 完了 ✅ (2026-04-22)** 実装場所: ~/tachyon-workspace/tachyon/（独立repo）。7 commits (7e1f284〜c548019)。生成=Claude Sonnet 4.6 SDK直接／実行=@anthropic-ai/claude-agent-sdk bypassPermissions+allowedTools=B（Read/Write/Edit/Glob/Grep/WebFetch/WebSearch/Bash）／破壊的コマンドブロック＋cwd隔離／Notion DB 'Tachyon ToDos' 同期／テキストアップロード対応。E2E動作確認3会議以上。詳細: Flow/202604/2026-04-22/Tachyon/implementation_log.md。Phase2候補(Notion Meeting Notes直接取込/confidence自動承認/MCP拡張)は別起票予定 |
-| BL-0063 | todo | P1 |  | OMI と AIOS の統合検討 | 作業効率化 | 会議議事録の自動反映 | omi,aios,統合,検討 | OMIデバイスで取得した音声・文字起こしをAIOSに連携する方式を検討。BL-0026（議事録自動反映フロー設計）と関連 |
-| BL-0064 | todo | P1 |  | Vercel アカウント整理 | 作業効率化 | 環境整備 | vercel,アカウント,整理 | Vercelの複数アカウント・プロジェクトを整理 |
-| BL-0065 | todo | P1 |  | リライフメディカル予約システム デモ作成 | リライフメディカル | 予約システム | 予約,カレンダー,LP,デモ,スタッフ運用 | リライフメディカルの新規予約システム。LPデザインは仮だが、カレンダー／予約／スタッフ運用は動作する状態でデモ化する |
+| BL-0063 | blocked | P1 |  | OMI と AIOS の統合検討 | 作業効率化 | 会議議事録の自動反映 | omi,aios,統合,検討 | OMIデバイスで取得した音声・文字起こしをAIOSに連携する方式を検討。BL-0026（議事録自動反映フロー設計）と関連。**2026-04-23 OMIデバイスが電池切れで故障。BL-0069（返品作業）が前提のため一旦 blocked** |
+| BL-0064 | done | P1 | 2026-04-22 | Vercel アカウント整理 | 作業効率化 | 環境整備 | vercel,アカウント,整理 | 2026-04-22 完了。Vercelの複数アカウント・プロジェクトを整理 |
+| BL-0065 | doing | P1 |  | リライフメディカル予約システム デモ作成 | リライフメディカル | 予約システム | 予約,カレンダー,LP,デモ,スタッフ運用 | リライフメディカルの新規予約システム。LPデザインは仮だが、カレンダー／予約／スタッフ運用は動作する状態でデモ化する。**2026-04-22 実装完了、テスト残（次アクション: テスト実施）** |
 | BL-0066 | todo | P1 | 2026-04-30 | 飯武さんAIコア導入支援 第1回（4/30） 提供内容・資料準備 | RestaurantAILab | AI-Core_飯武さん導入 | 飯武,AIコア,導入支援,第1回,提供内容,資料,2026-04-30 | **議事録待ち**（議事録到着後に詳細サブタスク起票）。第1回セッション 2026-04-30 の提供内容と資料を準備。前提タスク: BL-0053（AIOS+G-Brain統合）/ BL-0054（共用リポ設計）。プロジェクト: `Stock/RestaurantAILab/AI-Core_飯武さん導入/` |
 | BL-0067 | todo | P2 |  | INBOX設計の再検討（Cockpit統合＋対応優先度の可視化） | 作業効率化 | AIOS | inbox,aios,cockpit,ux,可視化,検討 | 現状INBOXは見出しにステータス付与で俯瞰可能だが、自分に聞かれている項目が一覧でパッと見づらい。Cockpit統合、または「上から順に回答していくとFIFO的に積み上がる」仕組み等を検討したい。背景: 2026-04-22 振り返り — エージェントが自分の回答待ちで止まっているのに意識から外れて進まないケースが発生（プロジェクト跨ぎの切替コストが要因） |
 | BL-0068 | todo | P1 |  | PONさんへの請求方法の検討（PayPal→WISE切替） | RestaurantAILab | バンコクPonさん案件 | 請求,支払い,wise,paypal,タイ | 当初PayPalで支払い依頼していたが、タイではPayPalが使えないため WISE 等に切替予定。切替先の選定と請求フロー再設計が必要 |
+| BL-0069 | todo | P1 |  | OMIデバイスの返品作業 | 作業効率化 | 会議議事録の自動反映 | omi,返品,デバイス,故障 | 2026-04-23 OMIデバイスが電池切れで故障（起動不可）。購入元への返品手続きが必要。BL-0063（OMI×AIOS統合検討）のブロッカー |

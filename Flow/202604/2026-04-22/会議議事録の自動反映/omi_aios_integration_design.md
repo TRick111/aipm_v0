@@ -189,7 +189,12 @@ OMI ペンダント → iPhone OMI アプリ → OMI Cloud
   set +a
   exec .venv/bin/python -m uvicorn src.main:app --host 127.0.0.1 --port 8787
   ```
-- **Tailscale Funnel ポート制約**: Funnel が対応するのは 443/8443/10000。omi-bridge が :8787 で listen し、`tailscale funnel 443 http://localhost:8787` でマップ。OMI には `https://<mac-ts-name>.ts.net/omi/webhook` を登録。
+- **Tailscale Funnel ポート制約**: Funnel が対応するのは 443/8443/10000。omi-bridge が :8787 で listen し、`tailscale funnel 443 http://localhost:8787` でマップ。OMI には `https://rikus-mac-mini-3.tailad7d87.ts.net/omi/webhook` を登録（Week 0 実測で tailnet DNS 名確定）。
+- **Tailscale CLI パス（Week 0 発見）**: Tailscale は App Store 版で `tailscale` コマンドは PATH に無い。Makefile や launch.sh 内では絶対パス `/Applications/Tailscale.app/Contents/MacOS/Tailscale` を使うか、以下で symlink 作成:
+  ```bash
+  sudo ln -sf /Applications/Tailscale.app/Contents/MacOS/Tailscale /usr/local/bin/tailscale
+  ```
+- **tailnet クリーンアップ**: `rikus-mac-mini`（182日offline）が tailnet に残っている。Funnel URL 曖昧性排除のため Tailscale 管理画面で削除推奨（Week 0 副次発見）。
 
 ### モジュール構成（omi-bridge 内、Python + FastAPI）
 
@@ -266,11 +271,15 @@ OMI ペンダント → iPhone OMI アプリ → OMI Cloud
 
 ## Next Steps
 
-### Week 0（着手1時間以内）— ブロッカー確認
+### Week 0（完了 2026-04-22） — ブロッカー確認
 
-1. **Cockpit CLI の大容量 `--instruction` 受理確認**: `subprocess.run(["./cockpit","task","create","--instruction",<13KB文字列>,"--directory","...","--agent-type","claude"])` がエラーなく task を生成するか確認。失敗したら設計見直し（stdin 渡し等）。
-2. **OMI ダッシュボードからサンプル transcript 取得**: 過去メモリ1件のテキストをコピーし、句読点・表記揺れを目視。トリガー句 regex の形を決める。
-3. **Tailscale 使用状況確認**: `tailscale status` を叩き、Funnel 有効化可能か確認。未導入なら cloudflared に切替判断。
+実施結果: `~/aipm_v0/Flow/202604/2026-04-22/会議議事録の自動反映/week0_blocker_check.md`
+
+1. **Cockpit CLI の大容量 `--instruction` 受理確認**: ✅ PASS（14,203 bytes 受理、taskId 取得可）
+2. **OMI ダッシュボードからサンプル transcript 取得**: ⏳ 田中さん手動アクション待ち（`omi_transcript_sample.txt` 保存）
+3. **Tailscale 使用状況確認**: ✅ 有（v1.96.2、`rikus-mac-mini-3.tailad7d87.ts.net` active、Funnel 有効化可能）
+
+**判定**: Week 1 着手 OK。設計見直し不要。ただし Tailscale CLI パス（App Store 版）の micro-finding を上記「重要な実装詳細」に反映済み。
 
 ### Week 1 — Approach A MVP
 

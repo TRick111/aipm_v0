@@ -116,3 +116,61 @@
 5. Backlog BL-0061 を `done` に、INBOX を ✅ 完了セクションへ移動
 
 ---
+
+## 2026-04-22 PM2: 田中さんから .env 受領 → Phase 1 完全完了 🎉
+
+### ✅ Notion seed 実行
+- `.env` を `.env.local` にコピー → `npm run seed`
+- 50 事例すべて create（updated=0, created=50）
+- `data/case-page-map.json` 生成（52行 / 50 ID → page_id）
+
+### ✅ Vercel env 投入
+- `vercel env add NOTION_TOKEN production --sensitive`
+- `vercel env add NOTION_DB_CASES production`
+- `vercel env add NOTION_DB_REQUESTS production`
+- 全て `Encrypted` で保存確認
+
+### ⚠️ → ✅ 本番 deploy: Vercel committer policy で 30 分ハマり
+
+**症状**: 新規 push / `vercel deploy --prod` がすべて **0 ms で deploy_failed**。 build container すら立ち上がらない。  
+**原因**: Vercel API v13 の `readyStateReason` を直接読んで判明 →
+> "The Deployment was blocked because GitHub could not associate the committer with a GitHub user."
+
+`git commit` の committer email が `setup@restaurantailab.core-driven.com` で、これが GitHub の RestaurantAILab user に紐づいていなかった（noreply 形式でも公開メールでもなかった）。  
+最初の MVP デプロイは `vercel deploy` の **CLI ローカルアップロード** だったため git committer 検証を経ず成功していた。GitHub integration が一度動き出してから検証が掛かるようになった。
+
+**解決**:
+1. `git config user.email` を `197918871+RestaurantAILab@users.noreply.github.com`（RestaurantAILab user の GitHub noreply 形式）に変更
+2. `GIT_COMMITTER_EMAIL` env を明示して `git commit --amend --reset-author --allow-empty`
+3. `git push --force-with-lease` で再 push
+4. 自動デプロイがビルド開始（commit `af777a644...`） → Ready (16秒)
+
+**今後の予防**: 当 repo に `.gitconfig` 同等を設定するか、AI-CoreプロジェクトのDevDocs に「committer email は GitHub noreply を使うこと」と明記。
+
+### ✅ 本番 E2E 動作確認
+- `POST https://ai-core-pl.vercel.app/api/submit` → Notion に Insert 成功
+- 検証ペイロード: 5 事例選択（#1, #12, #22, #36, #45）
+- Notion 側で確認:
+  - Title: `【本番テスト2/最終】田中エージェント Phase1完了確認 / 2026-04-22 15:22`
+  - Status: **未対応** ✅
+  - Segment: b2b_saas
+  - SelectedCases (relation): **5 件** すべてリンク済 ✅
+
+### ✅ AIOS 反映
+- INBOX `BL-0061` を ✅ 完了セクションに移動
+- 完了サマリ + Vercel committer policy の知見も併せて記録
+- README / log は前段で更新済み
+
+---
+
+## ✅ Phase 1 最終成果物
+
+| 項目 | 内容 |
+|---|---|
+| 公開URL | https://ai-core-pl.vercel.app/ |
+| GitHub | https://github.com/RestaurantAILab/ai-core-pl (private) |
+| Vercel | `restaurant-ai-lab/ai-core-pl`（既存ダッシュボードと同 team） |
+| Notion DBs | ServiceCases（50件 seed 済）/ ClientRequests |
+| 確認済 | UI / 50事例カタログ / フィルタ / 選択 / 送信 / Notion Insert / Status=未対応 / Relations |
+| 残スコープ | Phase 2 候補（PDF出力 / 認証 / 集計 / 通知復活 / HTML v2 差分）は別バックログ |
+

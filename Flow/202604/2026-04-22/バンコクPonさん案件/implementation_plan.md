@@ -1,187 +1,171 @@
-# BL-0037 Implementation Plan — PONさんChatGPT履歴整理
+# BL-0037 Implementation Plan v2 — PONさんChatGPT履歴整理（AIOS Program化）
 
-最終更新: 2026-04-22
+最終更新: 2026-04-22 15:30（ユーザー回答 Q1-Q4 反映、AIOS前提にピボット）
 
-## 0. 前提
-- Discovery: `discovery_notes.md` 参照
-- 作業ディレクトリ（Flow）: `Flow/202604/2026-04-22/バンコクPonさん案件/`
-- 成果物本体の出力先: `~/RestaurantAILab/Markdowns-1/Stock/バンコクPonさん案件/AIOS提供/ChatGPT移行/` (パイプラインのDEPLOY_DIR)
-- ナレッジソース（PONさん向け追加成果物）の出力先: 同じく `ChatGPT移行/for_PON/` を予定（命名は確認事項）
+## 0. 前提の再確認（Q1-Q4 回答反映）
 
-## 1. 実行計画ざっくり（3フェーズ）
-
-### Phase 1: Step4 完走（Stock基盤の確定）
-現状 submit 済みのバッチを process → deploy し、AIOSナレッジベース構造を完成させる。
-
-### Phase 2: PONさん向けナレッジソース生成
-Stock配下の構造を素材に、PONさんが「ChatGPT等で過去の文脈を再利用できる」形式のファイル群を作る。
-
-### Phase 3: 案内ドキュメント作成・送付
-PONさん向けREADMEを書き、合意した方法で送付（実送付は田中さん本人の可能性あり）。
-
----
-
-## 2. Phase 1 — Step4 完走（所要 15〜20分）
-
-### 2.1 作業手順
-
-```bash
-# 作業ディレクトリ
-cd ~/RestaurantAILab/Markdowns-1/Stock/バンコクPonさん案件/AIOS提供/ChatGPT分析
-
-# ステータス再確認（バッチがまだ取得可能か）
-python pipeline.py step4 --process   # ← ここでバッチ結果取得 + README生成
-# 成功すると pipeline/step4_output/output/ 配下にREADME群が出る
-
-python pipeline.py step4 --deploy    # ← Stock配下に配置
-# Stock/バンコクPonさん案件/AIOS提供/ChatGPT移行/ ができる
-```
-
-### 2.2 成果物
-
-- `Stock/…/ChatGPT移行/README.md`（トップ）
-- `Stock/…/ChatGPT移行/ProjectIndex.yaml`
-- `Stock/…/ChatGPT移行/log.md`
-- `Stock/…/ChatGPT移行/{カテゴリ}/README.md` × 4
-- `Stock/…/ChatGPT移行/{カテゴリ}/{サブカテゴリ}/README.md` × 21
-- 各サブカテゴリに `conversations_summary.md` / `conversations_index.json` / `artifacts/` もコピーされる
-
-### 2.3 リスクと対策
-
-- **バッチ結果が取得不可**: 再 `--prepare → --submit` で再生成（コスト約$2、所要1〜数時間）。事前にユーザーに確認済み「取得可能」だが、process実行時にエラー出たら即ユーザーへ報告
-- **process失敗**: 詳細ログを discovery_notes.md に追記して報告
-
-### 2.4 Stock更新（AIOSルール6.1より必須）
-
-deploy後、以下4ファイルを同時更新:
-- `Stock/MasterIndex.yaml`（バンコクPonさん案件配下に ChatGPT移行 プロジェクト追加 — 既に親プログラムに載っている場合は files 追記のみ）
-- `Stock/バンコクPonさん案件/AIOS提供/ChatGPT移行/ProjectIndex.yaml`（step4が自動生成）
-- `Stock/バンコクPonさん案件/AIOS提供/ChatGPT移行/README.md`（step4が自動生成）
-- `Stock/バンコクPonさん案件/log.md`（ChatGPT移行プロジェクト配置を1行追記）
-
----
-
-## 3. Phase 2 — ナレッジソース生成（所要 60〜120分、ハイブリッド方式）
-
-### 3.1 設計方針
-
-**目的**: PONさんがChatGPT等に「過去の文脈をコピペ/アップロードするだけで、過去の相談・決定を踏まえて対話できる」状態。
-
-**推奨方式: ハイブリッド (C)**
-- ペルソナ・業務全体像・テーマ別ナレッジ → LLM合成（既存conversations_summary.mdを再編集・統合）
-- 決定事項ログ・未実行アイデア → LLM抽出（各サマリの「重要な決定事項」から構造化）
-- 人物表・成果物インデックス → 機械的マージ（スクリプトでJSON/YAMLから生成）
-
-**出力先案**: `Stock/バンコクPonさん案件/AIOS提供/ChatGPT移行/for_PON/`
-- PONさん専用の長期記憶ファイル群
-- 「ChatGPTに貼り付ける」「ChatGPT Projects に登録する」前提の粒度
-- 各ファイル先頭にコンテキスト説明のメタヘッダを付ける（AIが一読で役割を理解できる）
-
-### 3.2 生成するファイル群（7種）
-
-| # | ファイル | 生成方法 | 所要 |
+| # | 項目 | 回答 | 影響 |
 |---|---|---|---|
-| ① | `01_PON_persona.md` | LLM（全サブカテゴリ人物表＋README統合） | 10分 |
-| ② | `02_business_overview.md` | LLM（4カテゴリREADMEから俯瞰図を合成） | 10分 |
-| ③ | `03_themes/{7テーマ}.md` | LLM（サマリを「給与/プロモ/商品開発/人事/競合/海外展開/経営管理」7軸に再編） | 30〜60分 |
-| ④ | `04_decisions_log.md` | LLM抽出（各サマリの「重要な決定事項」を時系列にマージ） | 15分 |
-| ⑤ | `05_open_ideas.md` | LLM抽出（未決/検討中/アイデア止まりの項目を抽出） | 15分 |
-| ⑥ | `06_people_directory.md` | 機械生成（conversations_index.json / 人物表を集約） | 10分 |
-| ⑦ | `07_artifacts_index.md` | 機械生成（439件の成果物をカテゴリ別に目次化） | 10分 |
+| Q1 | 投入先AIツール | **Cursor + AI-PM (AIOS) システム** / ゴールは Stock の Program+Project 形式 | 出力はChatGPT Project向けファイル群ではなく、**AIOS Program/Project構造** |
+| Q2 | 送付方法 | **(3) GitHub private repo + PONさん招待** | 独立リポジトリ or 既存repoへpushが必要 |
+| Q3 | 秘匿性 | **(a) マスキング不要** | 原文のまま使える |
+| Q4 | 本日スコープ | **(A) Phase1+2+3 全部今日中** | 時間効率優先・Batch APIは並行待機 |
 
-### 3.3 生成スクリプトの置き場所
+**Phase 1 (Step4 deploy) は完了済み** (2026-04-22 15:30):
+- `Stock/バンコクPonさん案件/AIOS提供/ChatGPT移行/` に 478 Markdown + 1 YAML を配置
+- これは **田中さん側AIOSに配置された基盤素材**。ここからPONさん向けに再パッケージする
 
-- 追加する合成スクリプトは **Flow** に置いて作業する（AIOSルール2.1）
-- 場所: `Flow/202604/2026-04-22/バンコクPonさん案件/scripts/`
-  - `build_for_pon.py` — Batch API 呼び出し + 機械マージを一括実行
-  - `for_pon_prompts.py` — 各ファイル用のシステムプロンプト定義
-- 確定・再利用したくなったら後日 `Stock/…/ChatGPT分析/` へ移送
+## 1. 改訂方針
 
-### 3.4 LLM合成はBatch APIを使う
+### 1.1 出力物の再定義
 
-- ファイル数 = ③の7テーマ + ①②④⑤の4ファイル = 計11リクエスト
-- Sonnet中心、俯瞰系①②のみOpusで品質担保を検討
-- 3フェーズ（prepare/submit/process）で進め、submit後はバッチ待機
-- コスト見積: 約$1〜2（Batch割引込み）
+旧計画（ChatGPT Projects前提）:
+- `for_PON/` フォルダに 13 ファイル（persona / themes / decisions_log ほか）
 
-### 3.5 秘匿性の扱い（※確認事項に依存）
+新計画（AIOS Stock前提）:
+- **独立した AIOS Program「ChatGPT履歴」**を作り、PONさん側 Stock に drop-in 可能な形で出力
+- 横断ナレッジ（persona / themes / decisions_log 等）はProgram直下の「_overview/」配下に配置
+- カテゴリは**Project**として構造化（4 Projects）
+- サブカテゴリは各Project内のサブディレクトリ
 
-- デフォルト: PONさん本人への返却なのでマスキングなし（=原文のまま）
-- ユーザー指示があれば: スタッフ名を伏字化するポストプロセス層を入れる
+### 1.2 ターゲット構造（AI提案）
 
----
+```
+<PONさんのStock配下に配置する単体Program>
+Stock/
+└── ChatGPT履歴/                   ← Program (新規)
+    ├── README.md                   ← Program README（背景/目的/使い方）
+    ├── ProgramIndex.yaml           ← オプション：MasterIndex追加用のスニペット
+    │
+    ├── _overview/                  ← Program横断ナレッジ（LLM合成）
+    │   ├── 00_README.md            ← overview の使い方
+    │   ├── 01_PON_persona.md       ← AIに最初に渡すペルソナ
+    │   ├── 02_business_overview.md ← 事業全体像
+    │   ├── 03_decisions_log.md     ← 決定事項の時系列
+    │   ├── 04_open_ideas.md        ← 未実行アイデア集
+    │   ├── 05_people_directory.md  ← 登場人物（機械生成）
+    │   ├── 06_artifacts_index.md   ← 成果物目次（機械生成）
+    │   └── themes/                 ← テーマ別ナレッジ（LLM合成）
+    │       ├── 給与制度とスタッフマネジメント.md
+    │       ├── プロモーション・マーケティング.md
+    │       ├── 商品開発・ブランド戦略.md
+    │       ├── 人事評価・採用.md
+    │       ├── 競合分析と市場対応.md
+    │       ├── 海外展開とJ-Beauty.md
+    │       └── 経営指標・財務管理.md
+    │
+    ├── 美容室/                     ← Project（カテゴリ）
+    │   ├── README.md
+    │   ├── ProjectIndex.yaml
+    │   ├── log.md
+    │   ├── 全般/
+    │   │   ├── README.md           ← サブカテゴリREADME（Step4生成済み）
+    │   │   ├── conversations_summary.md
+    │   │   ├── conversations_index.json
+    │   │   └── artifacts/          ← 105件
+    │   ├── Rapi-rabi/ ...           (以下21サブカテゴリ分)
+    ├── 美容専門店/                 ← Project
+    ├── 自社ブランド/               ← Project
+    └── J-Beauty/                   ← Project
+```
 
-## 4. Phase 3 — 案内ドキュメント作成と送付（所要 30〜45分）
+- 4 Programs でなく **1 Program × 4 Projects** を推奨: PONさん既存Stockとの名前衝突を避ける（Rapi-rabi 等の Project 名は彼の既存Stockに存在する可能性が高いため、「ChatGPT履歴」配下にネストして隔離）
 
-### 4.1 `for_PON/README.md` の内容
+### 1.3 重要な仕様上のポイント
 
-- このディレクトリの目的（「過去ChatGPT会話を踏まえた対話を実現するためのコンテキストパック」）
-- ファイル一覧と各ファイルの役割
-- 3つの使い方シナリオ（ChatGPT Projects / NotebookLM / 都度コピペ）
-  - 例: **ChatGPT Projects の場合**: このフォルダ一式を zip でアップロード → 新規スレッドで質問すればOK
-  - 例: **NotebookLMの場合**: 01〜07のmdを全ソースとしてアップ → 「テーマXについて過去の議論を踏まえて提案して」と聞く
-  - 例: **Claude Projects の場合**: 同様の手順
-- 更新方法のメモ（今後ChatGPTを使い続けるなら、一定期間ごとに再エクスポート→同じパイプラインで更新できる）
+- **Project の README / ProjectIndex.yaml / log.md は追加で生成が必要**（Step4出力はカテゴリ/サブカテゴリREADMEのみ。AIOS Project レベルのメタファイルは無い）
+- `ProgramIndex.yaml` は MasterIndex に統合すべきエントリのスニペット（PONさんが merge）
+- PONさんの Stock/ に新規ディレクトリ追加なので、**既存Stockとの衝突なし**で drop-in 可能
 
-### 4.2 送付（確認事項に依存）
+## 2. 実行手順
 
-候補別の作業量:
-- (1) Google Drive 共有: フォルダアップロード → 共有設定 → URL発行（5分。gws CLI でやってもよい）
-- (2) Zip添付: `tar czf for_PON_20260422.tgz for_PON/` → 田中さん経由で送信（5分）
-- (3) GitHub private: 新規repo作成 → push → PONさん招待（15分）
-- (4) Notion: gws CLI or手動で各mdをNotion化（30分〜）
+### Phase 1 ✅ (完了)
 
-AI推奨は **(1) Google Drive**。理由: ファイル多数（75+ファイル）、今後の更新配布もURL再共有で済む、zipより閲覧が楽、田中さん経由の手間が少ない。
+- Step4 process: 25/25 成功、README生成 OK
+- Step4 deploy: `Stock/…/ChatGPT移行/` に 478 MD + 1 YAML 配置
 
-## 5. タスク分解（並行タスク運用ルール準拠）
+### Phase 2A — AIOS構造への再パッケージング（スクリプト実行、所要30分）
 
-### 5.1 クラス分類
-- **クラスA（実装）**: Phase 1（Step4完走）、Phase 2（ナレッジソース生成）、Phase 3（案内ドキュメント）
-- **クラスB（確認）**: 不明点4件（INBOX起票済み）
+1. `Flow/202604/2026-04-22/バンコクPonさん案件/scripts/repackage_to_program.py` を作成
+   - 入力: `Stock/…/ChatGPT移行/` 全件
+   - 出力: `Flow/202604/2026-04-22/バンコクPonさん案件/output/ChatGPT履歴/` (ワーク領域)
+   - 動作:
+     - ルートに `ChatGPT履歴/README.md`（Program README, 新規作成）
+     - カテゴリ4つを Project として整形（`README.md`を流用 + `ProjectIndex.yaml`・`log.md`を新規生成）
+     - サブカテゴリ以下は既存ファイルをコピー
+2. 人物表・成果物目次の機械生成（`06_artifacts_index.md`, `05_people_directory.md`）
+   - Step3 の `conversations_index.json` をパースして自動生成
 
-### 5.2 サブタスク一覧
+### Phase 2B — LLM合成（Batch API、所要3〜60分＋待機）
 
-| ID | サブタスク | フェーズ | 状態 | 依存 |
+3. `scripts/build_overview_batch.py` を作成
+   - 11リクエスト（persona/business_overview/decisions_log/open_ideas + themes×7）
+   - Sonnet 中心、一部 Opus（persona / business_overview）
+4. Batch API に submit、待機
+5. 結果を process → `_overview/` 配下に配置
+
+**Phase 2A と 2B は並行実行**（2A は即着手、2B は submit後バッチ待ち）
+
+### Phase 3 — 案内ドキュメント + 送付（所要45〜60分）
+
+6. `ChatGPT履歴/README.md`（Program README）を最終化
+   - 使い方（Cursor + AIOS前提の具体シナリオ）
+   - MasterIndex への追加方法
+   - ディレクトリマップ
+7. GitHub private repo 作成（`gh repo create` を使用）
+   - repo名候補: `pon-chatgpt-knowledge` / `pon-aios-chatgpt-archive`
+   - 初期化は Flow の output/ をそのままコピー
+   - PONさんを Collaborator として招待
+8. 送付メッセージ文面を作成（田中さんが PON さんへ送る想定）
+
+### Phase 4 — Stock反映（田中さん側 AIOS）
+
+9. MasterIndex/ProjectIndex/log の更新
+   - 今回作業のログを `Stock/バンコクPonさん案件/AIOS提供/log.md` に追記
+   - ChatGPT移行 プロジェクトを MasterIndex に追加（既存なら files 追記のみ）
+
+## 3. タスク分解
+
+| ID | サブタスク | 状態 | 依存 | ブロッカー |
 |---|---|---|---|---|
-| S1 | Step4 --process 実行 | Phase 1 | 未着手 | (なし) |
-| S2 | Step4 --deploy 実行 | Phase 1 | 未着手 | S1 |
-| S3 | MasterIndex/log更新 | Phase 1 | 未着手 | S2 |
-| S4 | for_pon_prompts.py + build_for_pon.py 作成 | Phase 2 | 未着手 | S2 |
-| S5 | Batch API prepare → submit | Phase 2 | 未着手 | S4 |
-| S6 | Batch 結果 process（7テーマ+4俯瞰） | Phase 2 | 未着手 | S5 |
-| S7 | 人物表・artifacts目次の機械生成 | Phase 2 | 未着手 | S2 |
-| S8 | for_PON/README.md 案内ドキュメント作成 | Phase 3 | 未着手 | S6, S7 |
-| S9 | 送付方法確定 + 実施 | Phase 3 | 未着手 | S8 + 不明点Q2 |
+| S1 | Step4 --process 実行 | ✅ 完了 | - | - |
+| S2 | Step4 --deploy 実行 | ✅ 完了 | S1 | - |
+| S3 | repackage_to_program.py 作成＋実行 | 未着手 | S2 | - |
+| S4 | 人物表・artifacts目次の機械生成 | 未着手 | S3 | - |
+| S5 | build_overview_batch.py 作成＋prepare | 未着手 | S3 | - |
+| S6 | Batch API submit | 未着手 | S5 | - |
+| S7 | Batch 結果 process → _overview/ 配置 | 未着手 | S6 | Batch待機 |
+| S8 | Program README 最終化 | 未着手 | S4, S7 | - |
+| S9 | GitHub private repo 作成＋push | 未着手 | S8 | **Q5確認**: repo名 |
+| S10 | PONさんを Collaborator 招待 | 未着手 | S9 | **Q6確認**: PONさんのGitHubアカウント |
+| S11 | 送付メッセージ文面作成 | 未着手 | S10 | - |
+| S12 | Stock (田中さん側) log/MasterIndex更新 | 未着手 | S2 | - |
 
-S1〜S3 は不明点なしで即着手可能。S4以降は **不明点Q1（投入先ツール）とQ3（秘匿性）** の回答があれば品質を最適化できる。
+## 4. 確認事項（追加）
 
-## 6. 実装ゲート（ユーザー承認ポイント）
+Q1-Q4 への回答で大枠固まりましたが、Phase 3 の送付実行時に以下2点が必要:
 
-- **ゲート1**: 本計画書の承認 → Phase 1 着手
-- **ゲート2**: Phase 1 完了報告 + 不明点4件回答 → Phase 2 着手
-- **ゲート3**: ナレッジソース生成物の目視確認 → Phase 3（送付）着手
+- **Q5**: GitHub リポジトリ名（推奨: `pon-chatgpt-knowledge` private）
+- **Q6**: PONさんのGitHubアカウント（username or email で招待可能）
 
-## 7. 想定アウトプットサマリ
+どちらも最後の送付直前に確認すれば十分なので、先行する S3〜S8 は並行で進められる。
 
-最終的にPONさんに届くもの:
+## 5. タイムライン（本日完了想定）
 
-```
-for_PON/
-├── README.md                      # 案内（使い方）
-├── 01_PON_persona.md              # AIに最初に渡すペルソナ定義
-├── 02_business_overview.md        # 事業全体像俯瞰
-├── 03_themes/
-│   ├── 給与制度とスタッフマネジメント.md
-│   ├── プロモーション・マーケティング.md
-│   ├── 商品開発・ブランド戦略.md
-│   ├── 人事評価・採用.md
-│   ├── 競合分析と市場対応.md
-│   ├── 海外展開とJ-Beauty.md
-│   └── 経営指標・財務管理.md
-├── 04_decisions_log.md            # 時系列決定ログ
-├── 05_open_ideas.md               # 未実行アイデア集
-├── 06_people_directory.md         # 登場人物一覧
-└── 07_artifacts_index.md          # 成果物439件の目次
-```
+| 時刻目安 | 作業 |
+|---|---|
+| 15:30 ✅ | Phase 1 完了 |
+| 15:30-16:00 | S3 repackage + S4 機械生成 |
+| 16:00-16:15 | S5 Batch prepare + S6 submit（非同期で submit 完了） |
+| 16:15-17:30 | S6 のバッチ待ち時間に S8 (Program README 骨組み) 並行執筆 |
+| 17:30-18:00 | S7 Batch結果受領 + _overview/ 配置 |
+| 18:00-18:30 | S8 最終化 + S9 repo作成 + S10 招待 + S11 送付文面 |
+| 18:30-19:00 | S12 Stock反映 + 完了報告 |
 
-計 **13ファイル**。各ファイル2,000〜8,000字想定。zip合計 <1MB。
+合計 約3.5時間。Batch待ちが長引けば翌日への持ち越しの可能性あり。
+
+## 6. ゲート
+
+- **ゲート1**: 本 v2 計画書承認 → S3着手（現在のゲート）
+- **ゲート2**: S7まで完了 + 生成物の目視確認 → S9 (GitHub push) 着手
+- **ゲート3**: S11 送付文面確認 → 送付実行

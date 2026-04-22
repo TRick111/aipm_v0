@@ -81,7 +81,7 @@
 | BL-0058 | todo | P2 | 2026-05-02 | ワカナさん: ビリヤード当日対応 | 生活管理 | 恋愛 | ビリヤード,予定 | 5/2にビリヤード。店予約は不要 |
 | BL-0059 | todo | P1 | 2026-05-06 | サトコさん: ドライブ計画（車予約・行き先決定） | 生活管理 | 恋愛 | ドライブ,車予約,行き先 | 5/6実施に向けて車予約と行き先の決定が必要 |
 | BL-0060 | todo | P1 |  | Claude Code アップデート | 作業効率化 | 環境整備 | claude-code,アップデート,環境 | Claude Codeの最新バージョンへのアップデートと設定見直し |
-| BL-0061 | doing | P1 |  | AIコア PL作成 | RestaurantAILab | AI-Core | ai-core,PL,price-list,提供メニュー,notion | PL=Price List（提供サービス選択ツール）。町田第一さん作成の50事例HTML（~/Downloads/AI秘書事業_事例集_v1.html）をWeb化。2026-04-22 計画v2.1確定（DB=Notion、リポ=RestaurantAILab/ai-core-pl、Vercel=既存ダッシュボードと同team）。Stock登録済（PONさん案件方式・Markdowns-1がmaster）。2026-04-22 Slack通知削除（Notion運用のみ、Status=未対応で捌く）。2026-04-22 実装着手GO・別タスク起動（作業ディレクトリ=~/RestaurantAILab/ai-core-pl/）。詳細: Flow/202604/2026-04-22/AI-Core/implementation_plan.md §⭐実装エージェントへの引き継ぎ事項 |
+| BL-0061 | done | P1 | 2026-04-22 | AIコア PL作成 | RestaurantAILab | AI-Core | ai-core,PL,price-list,提供メニュー,notion | **Phase 1 完了 ✅ (2026-04-22)** 公開URL: https://ai-core-pl.vercel.app/ ／ GitHub: RestaurantAILab/ai-core-pl ／ Vercel: restaurant-ai-lab/ai-core-pl ／ Notion: ServiceCases(50件 seed済) + ClientRequests ／ E2E動作確認済(Status=未対応 + Relations付与)。詳細: Flow/202604/2026-04-22/AI-Core/implementation_log.md。Phase 2候補(PDF/認証/集計/通知復活/HTML v2)は別BL起票で対応 |
 | BL-0062 | todo | P1 |  | 低速タキオン: 会議終了後に全トランスクリプトからToDo生成 | RestaurantAILab | Tachyon | tachyon,低速,トランスクリプト,todo,生成 | リアルタイムではなく、会議終了後に全文トランスクリプトを使ってToDoを生成するモード。BL-0048（リアルタイムのタスク生成精度向上）とは別タスク |
 | BL-0063 | todo | P1 |  | OMI と AIOS の統合検討 | 作業効率化 | 会議議事録の自動反映 | omi,aios,統合,検討 | OMIデバイスで取得した音声・文字起こしをAIOSに連携する方式を検討。BL-0026（議事録自動反映フロー設計）と関連 |
 | BL-0064 | todo | P1 |  | Vercel アカウント整理 | 作業効率化 | 環境整備 | vercel,アカウント,整理 | Vercelの複数アカウント・プロジェクトを整理 |

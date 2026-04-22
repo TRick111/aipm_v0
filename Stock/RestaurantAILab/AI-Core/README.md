@@ -40,5 +40,8 @@
 
 ## 現在の状況・ネクストアクション
 - 2026-04-22 AM: PL 立ち上げ準備（HTML 受領 → 探索完了 → 実装計画 v2.0 → v2.1 Slack 削除）
-- 2026-04-22 PM: Phase 1 実装着手 → UI デプロイ完了（https://ai-core-pl.vercel.app/）
-- ネクストアクション: INBOX Q-notion-db 回答受領 → seed + 本番再デプロイで Phase 1 完了
+- 2026-04-22 PM: Phase 1 完全完了 ✅
+  - UI / API / Notion 接続 / 本番デプロイ / E2E 動作確認 すべて完了
+  - 公開URL（クライアント共有可）: https://ai-core-pl.vercel.app/
+  - 50 事例を Notion ServiceCases に seed 済、ClientRequests への送信が `Status=未対応` で確実に入ることを検証
+- ネクストアクション: 関係者に URL 共有 → 実クライアント運用開始。Phase 2 候補（PDF出力・認証・集計・通知復活・HTML v2 差分）は別バックログ起票で対応。

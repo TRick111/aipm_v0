@@ -1,6 +1,6 @@
 # 田中さんの未対応事項 — 2026-04-22
 
-最終更新: 2026-04-22 15:30（BL-0053 AIOS+G-Brain統合 要件詰め：スコープ案+質問を🟡に追加）
+最終更新: 2026-04-22 16:00（BL-0037 Q1-Q4回答反映・Phase1完了・v2計画でPhase2着手中・Q5/Q6追加）
 - ✍️ 回答記入欄の `> ` の行に直接書き込んでください
 - 完了したらチェック `[x]` を入れてください
 
@@ -8,15 +8,69 @@
 
 ## 🔴 緊急（今日中）
 
-### BL-0037 PONチャット履歴: 計画完了 → 実装前に4点確認 🆕 2026-04-22 15:15
+### BL-0037 PONチャット履歴: Phase1完了→Phase2実行中・送付時にQ5/Q6必要 🔄 2026-04-22 16:00
 
-📌 状況: 計画ドキュメント完成（`Flow/202604/2026-04-22/バンコクPonさん案件/implementation_plan.md`）。Step4バッチは ended / 25 succeeded 待機中。ユーザー承認 + 下記4点回答で即着手できます。
+📌 **状況サマリ**:
+- Q1-Q4 回答反映済み（Q1=Cursor+AIOS / Q2=GitHub private / Q3=マスク無し / Q4=今日中）
+- **Phase 1 完了**: Step4 process (25/25成功) → deploy 済み（`Stock/.../ChatGPT移行/` に 478 MD 配置）
+- **計画を v2 にピボット**: ChatGPT Projects向け → **AIOS Program「ChatGPT履歴」×4 Projects** 構造へ
+- **Phase 2 着手中**（AIOS再パッケージ + LLM合成バッチ送信予定）
 
 📝 関連ファイル:
-- 計画書: [implementation_plan.md](../バンコクPonさん案件/implementation_plan.md)
+- v2計画書: [implementation_plan.md](../バンコクPonさん案件/implementation_plan.md)
 - 背景メモ: [discovery_notes.md](../バンコクPonさん案件/discovery_notes.md)
 
-#### Q1-target-tool. PONさんが使う想定のAIツールは？ [設計に影響] 🆕
+以下 Q5/Q6 は **Phase 3（送付）直前**に必要。先行タスク (S3〜S8) は回答待たずに並行で進めます。
+
+#### Q5-repo-name. GitHub private リポジトリ名 [送付時必要] 🆕
+
+AIOS Program「ChatGPT履歴」を丸ごと入れる private repo を作成します。
+
+選択肢:
+- (a) `pon-chatgpt-knowledge` （英語・明確）
+- (b) `pon-aios-chatgpt-archive` （AIOS標準を強調）
+- (c) `rios-innovation-knowledge-base` （会社名・拡張性）
+- (d) その他 → 記入
+
+📌 AI推奨: (c) `rios-innovation-knowledge-base`。理由: 今後のAIOS拡張（ChatGPT以外の知識も入る）を考えると会社名ベースが長期的に便利。
+
+✍️ 回答記入欄:
+> 
+
+---
+
+#### Q6-gh-invite. PONさんのGitHubアカウント [送付時必要] 🆕
+
+PONさんの GitHub username / email を教えてください（Collaborator招待に使用）。
+
+選択肢:
+- (a) username を知っている → 記入
+- (b) email を知っている → 記入（GitHub招待メール送信）
+- (c) PONさんに直接聞いてから回答
+- (d) 田中さん所有 repo にpush、田中さんから PONさんへZIP/リンクで送付（運用を一部変更）
+
+✍️ 回答記入欄:
+> 
+
+---
+
+#### 以前の Q1-Q4（✅ 回答済み 2026-04-22 15:45 受領）
+
+| Q | 回答 |
+|---|---|
+| Q1 投入先 | **Cursor + AIOS** / Stock の Program+Project 形式で保存 |
+| Q2 送付 | **(3)** GitHub private repo + 招待 |
+| Q3 秘匿 | **(a)** マスキング不要 |
+| Q4 スコープ | **(A)** Phase1+2+3 今日中 |
+
+→ v2計画書に反映済み。詳細回答は下部アーカイブ参照。
+
+---
+
+<details>
+<summary>Q1-Q4 回答詳細（クリックで展開）</summary>
+
+#### Q1-target-tool. PONさんが使う想定のAIツールは？ [設計に影響] ✅
 
 ファイルの粒度・命名・まとめ方が変わります。
 
@@ -81,52 +135,11 @@
 ✍️ 回答記入欄:
 > A
 
----
-
-### マイナンバー: 発見したオンライン申請URLの正体確認（申請実行の前段） 🆕 2026-04-22 14:00
-
-- 📌 状況: 以前発行のURLにアクセス済。ただし「失効後再交付」に使えるかはURL種別・発行時期で決まる。以下3問で判定可能
-- 📌 回答後: URLで申請OKと確認できれば、スマホ約20分で申請完了（写真撮影5分 + 入力10分 + 完了）
-
-#### Q-url-domain. URLのドメインは何ですか？ [ブロッカー] 🆕
-
-URLの先頭部分（例: `https://net.kojinbango-card.go.jp/...`）だけでOK
-
-選択肢:
-- (a) `net.kojinbango-card.go.jp` → J-LIS公式申請サイト（本命）
-- (b) `mynumbercard.point.soumu.go.jp` → マイナポイント用（**申請には使えない**）
-- (c) `myna.go.jp` → マイナポータル（**申請には使えない**）
-- (d) その他 → URLを貼ってください
-
-✍️ 回答記入欄:
->オンライン申請完了しました net.kojinbango-card.go.jp
+</details>
 
 ---
 
-#### Q-url-screen. URLにアクセスして、最初に表示された画面は？ [ブロッカー] 🆕
-
-選択肢:
-- (a) メールアドレス入力画面（申請開始できる画面）→ ✅ そのまま申請実行OK
-- (b) 申請書ID入力画面
-- (c) 「すでに申請済」「受付終了」などのエラー画面 → 別ルート必要
-- (d) その他 → スクショ or 画面の文言を教えてください
-
-✍️ 回答記入欄:
->完了済みです
-
----
-
-#### Q-url-date. URLはいつ発行されたものですか？ [参考] 🆕
-
-前回のカード作成時のURL/QRコードか、最近マイナポータル等で発行したものか
-
-✍️ 回答記入欄:
->ー
-
----
-
-- 📝 関連ファイル: [雑事/mynumber_renewal_action.md](../雑事/mynumber_renewal_action.md)
-- 📌 副次: BL-0014 確定申告は新カード到着まで1〜2ヶ月かかるので**書面提出**に切替を強く推奨
+（マイナンバー申請完了 ✅ — `net.kojinbango-card.go.jp` でオンライン申請済み。新カード到着待ち。詳細は ✅ 完了セクション参照。副次対応: BL-0014 確定申告は新カード到着まで1〜2ヶ月かかるので書面提出を強く推奨）
 
 ---
 
@@ -167,174 +180,186 @@ URLの先頭部分（例: `https://net.kojinbango-card.go.jp/...`）だけでOK
 
 ---
 
-### BL-0061 AI-Core PL 実装: Notion DB 2つ作成 + Integration 接続 依頼 🔄 2026-04-22 15:30（UI デプロイ完了・Notion 接続待ち）
+### BL-0062 低速タキオン（会議後ToDo生成）要件詰め ✅ 完了 2026-04-22 16:05（全Q回答済 → 計画 v1.0 確定）
 
-📌 **現在の状況**: Phase 1 の コード＋UI デプロイまで完了。🎉
-- **公開URL（UIプレビュー）**: https://ai-core-pl.vercel.app/
-- GitHub: https://github.com/RestaurantAILab/ai-core-pl
-- Vercel: `restaurant-ai-lab/ai-core-pl` （既存ダッシュボードと同 team）
-- 動作確認済:
-  - ✅ トップページ / 50事例カタログ表示 / フィルタ / チェック選択 / 送信バー
-  - ✅ `/api/cases` → 50件の JSON を返す
-  - ⚠️ `/api/submit` → `NOTION_TOKEN is not set` で 500（期待動作・下記 Notion 接続で解消）
+📌 状況: **Q1〜Q9 全回答受領 → `implementation_plan.md` v1.0 確定完了**。次は実装フェーズ起動（前提: Notion Integration + DB作成の準備）。
 
-📌 **次にお願いしたいこと**: Notion 側の DB 2 つを作成 → 発行された token / DB ID を下に貼り付け → 受領後エージェントが seed + env 投入 + 本番再デプロイ（残 1h 程度）。
+📝 成果物: [Tachyon/implementation_plan.md](../Tachyon/implementation_plan.md)（Phase1工数 14〜17h）
 
-#### Q-notion-db. Notion 側の DB 作成 + Integration Connect [ブロッカー] 🆕
+#### 🗂 確定サマリ（v1.0 要点）
 
-以下 3 ステップで所要 15〜20 分程度です（計画書 §4 にスキーマあり）。
+| 項目 | 決定 |
+|---|---|
+| 実装場所 | 既存Tachyon (`~/tachyon-workspace/tachyon/`) に機能追加 |
+| 入力(Phase1) | `live.md` + テキストアップロード(.md/.txt) |
+| 入力(Phase2) | Notion AI Meeting Notes 直接取込 |
+| トリガー | close時自動 + 手動再実行（5分以内要件） |
+| ToDoスキーマ | title / 詳細 / 完了条件 / 関連プロジェクト / AI作業内容 / AI作業の完了条件 |
+| レビュー | **案B** Tachyon UI事前レビュー（承認/編集/スキップ/実行） |
+| 実行 | **Anthropic SDK直接**（Tachyon内軽量エージェント、単一エンジン） |
+| 結果保存 | **Tachyon内 + Notion 両方**（AIPM Flowには保存しない） |
+| 失敗時 | UIエラー表示 + 手動再実行（自動リトライなし） |
 
-**ステップ 1. Internal Integration を作成**
-1. https://www.notion.so/my-integrations を開く
-2. 「新しいインテグレーション」→ 名前: `AI-Core PL`、関連付けるワークスペースを選択
-3. Capabilities: Read / Update / Insert content にチェック
-4. 発行される `secret_xxxx...` を控える（これが `NOTION_TOKEN`）
+#### 🔜 次アクション依頼: Notion DB作成
 
-**ステップ 2. 2つの DB を作成（計画書 §4.1 / §4.2 のスキーマで）**
+実装着手前に、AI-Core PL と同じ段取りで以下をご準備ください（所要 10〜15分）:
 
-- **事例一覧 (ServiceCases)**: Title / ID(Number) / Category(Select) / Status(Select) / Difficulty(Number) / Roles(Multi-select) / Tools(Multi-select) / Frequency(Multi-select) / Pain(Rich text) / WhatAIDoes(Rich text) / DataFlow(Rich text) / FrequencyLabel(Rich text) / Effect(Rich text) / ToolsLabel(Rich text) / PriceJpy(Number)
-- **クライアント依頼 (ClientRequests)**: Title / SubmittedAt(Date) / ClientName(Rich text) / Contact(Rich text) / Segment(Select: restaurant/b2b_saas/other) / Notes(Rich text) / SelectedCases(Relation → 事例一覧) / Status(Select: 未対応/対応中/提案済み/完了/クローズ) / InternalNote(Rich text)
+1. **Notion Integration** を作成（名前: `Tachyon Slow Todos`、Capabilities: Read/Update/Insert） → `secret_xxxx...` を控える
+2. **Notion DB「Meeting ToDos」** を作成（スキーマは計画書 §6 参照）
+3. DBにIntegrationをコネクション追加
 
-※ Select の選択肢は空でOK（値投入時に自動追加される。ただし Status の「未対応」だけ先に作っておくと安全）。
-
-**ステップ 3. 両 DB に Integration を接続**
-各 DB のページを開き、右上「・・・」→「コネクション」→「AI-Core PL」を追加。
-
-**ステップ 4. 以下 3 点を回答記入欄に貼り付け**（`database_id` は DB フルページを開いた URL の `https://www.notion.so/<workspace>/XXXXXXXXXXXXXXXX?v=...` の `XXXXXXXXXXXXXXXX` 32桁）
-
-✍️ 回答記入欄:
-> NOTION_TOKEN=（secret_... を貼り付け）
-> NOTION_DB_CASES=（事例一覧 DB の ID を貼り付け）
-> NOTION_DB_REQUESTS=（クライアント依頼 DB の ID を貼り付け）
-
-📌 受領後のエージェント側作業: `npm run seed`（50事例を Notion に upsert）→ Vercel に env 投入 → `vercel deploy --prod` で本番再デプロイ → 送信ボタンが Notion に Insert することを確認してお渡し（残 1h 想定）
-
-📝 参考ファイル:
-- 計画書: `Flow/202604/2026-04-22/AI-Core/implementation_plan.md` §4, §6
-- 実装コード: `~/RestaurantAILab/ai-core-pl/scripts/seed-notion.mjs`
-- 進捗ログ: `Flow/202604/2026-04-22/AI-Core/implementation_log.md`
-
----
-
-### BL-0062 低速タキオン（会議後ToDo生成）要件詰め 🆕 2026-04-22 15:00
-
-📌 状況: 既存Tachyon資産の棚卸し完了（discovery_notes.md）。要件確定のため以下7問にご回答ください。実装計画は回答受領後に確定版を出します。
-
-📝 関連ファイル: [Tachyon/discovery_notes.md](../Tachyon/discovery_notes.md)
-
-#### Q1. 「低速」の遅延許容度は？ [設計前提] 🆕
-
-選択肢:
-- (a) 会議close直後に自動起動（数分以内に出る）
-- (b) 時間単位でOK（当日中に出れば良い）
-- (c) 翌営業日でOK（夜間バッチでも可）
-
-📌 AI推奨: **(a)**。close時自動起動の方がユーザー体験が連続的で忘れにくい。バッチ化は後からいつでもできる。
-
-✍️ 回答記入欄:
+✍️ 準備完了後 or 「実装着手 BL-0062」の指示をいただければ、実装タスクを別エージェントで起動します:
 > 
 
 ---
 
-#### Q2. 入力ソースは？ [ブロッカー] 🆕
+（質問詳細アーカイブ: 以下 ✅ 回答済み Q1〜Q9 を保存。過去参照用）
 
-「Notion Meeting連携が理想」のメモがあったため、「Notion Meeting」が何を指すかも併せて教えてください。
+#### ✅ Q1〜Q9 回答一覧（アーカイブ）
 
-選択肢:
-- (a) 既存Tachyonの `live.md` を使う（STTで生成済みトランスクリプト）
-- (b) Notion Meeting から取得する（→ Notion Meeting の正体を以下で補足）
-- (c) (a)(b) の両対応（抽象レイヤーを作る）
-
-📌 AI推奨: **(a) をまず実装 → 動作確認後に (b) を追加**。既存資産を最大活用できる最短ルート。
-
-**「Notion Meeting」の正体（該当するものにチェック）:**
-- [ ] Notion AI Meeting Notes（Notion公式AIの議事録機能）
-- [ ] 手動で運用しているNotion DBのページ（自分で書く議事録）
-- [ ] BL-0063 OMI連携で将来Notionに入ってくるもの
-- [ ] その他（欄に記入）
-
-✍️ 回答記入欄（Q2選択 + Notion Meeting正体）:
-> 選択: 
-> Notion Meetingの正体: 
+| # | 質問 | 回答 |
+|---|---|---|
+| Q1 | 遅延許容 | 会議終了後5分以内 |
+| Q2 | 入力ソース | Notion Meeting = Notion AI Meeting Notes、提案希望 → Q2-revへ |
+| Q3 | 出力先 | Tachyon UI + 実行ボタン + 結果保存、最終Notion or AIPM → Q8/Q6-revへ |
+| Q4 | トリガー | 自動＋アップロード、提案希望 → Q9へ |
+| Q5 | 実装場所 | 既存Tachyonに機能追加 |
+| Q6 | レビュー | 案比較希望 → Q6-revへ |
+| Q7 | メタ情報 | title / 詳細 / 完了条件 / 関連プロジェクト / AI作業内容 / AI作業の完了条件 |
+| Q2-rev | Notion AI連携時期 | OK（(a) Phase1はアップロード経由、Phase2でNotion直接連携） |
+| Q6-rev | レビューフロー | B（Tachyon UI事前レビュー） |
+| Q8-a | 実行エンジン | 2（SDK直接、単一エンジン） |
+| Q8-b | 結果保存先 | 3（Tachyon + Notion 両方） |
+| Q8-c | 失敗時挙動 | 1（UIエラー + 手動再実行） |
+| Q9-a | アップロード形式 | 1（テキストのみ） |
+| Q9-b | アップロードUI | 1（新規会議として作成） |
+| Q9-c | Notion URL取込 | 1（当面なし、エクスポートMDを通常アップロードで） |
 
 ---
 
-#### Q3. ToDoの出力先は？ [ブロッカー] 🆕
+#### Q2-rev. Notion AI Meeting Notes の連携タイミング [方針] ✅ (a)=OK
+
+（詳細は上の ✅ Q1〜Q9 回答一覧に集約。元の選択肢は履歴アーカイブとして以下に残置）
 
 選択肢:
-- (a) Notion DB のみ（チーム共有はNotionで）
-- (b) AIPM Backlog.md のみ（AIOSで一元管理）
-- (c) Notion DB + AIPM Backlog 両方（マスターはどちらか決める必要あり）
-- (d) Notion DB + 既存Tachyonの `todos.json` にも（UI表示用）
+- (a) **Phase1 は `live.md`+アップロードのみ → Phase2 で Notion AI Meeting Notes 追加**（段階導入）
+- (b) **最初から Notion AI Meeting Notes もサポート**（実装コスト +1〜2h、Notion API の議事録取得実装が必要）
+- (c) **Notion AI Meeting Notes をメイン入力にする**（Tachyon録音は補助。既存アーキテクチャと役割が逆転）
 
-📌 AI推奨: **(c) Notion DB をマスター、AIPM Backlog にミラー（日次で同期）**。チーム視認性（Notion）とAIOS運用（Backlog）を両立。ただし同期設計がやや重い。シンプルにいくなら (a)。
+📌 AI推奨: **(a)**。理由:
+- Q4の回答で「既存ツールの文字起こしアップロード」が要件化されたため、アップロード機能は必須→ Notion AI Meeting Notes の中身（マークダウン）もアップロードで代用可能
+- Notion AI Meeting Notes の API 取得は「Notion Meeting ページ」の構造に依存（AIブロックのプロパティ探索が必要）、実装が重め
+- まず `live.md` + アップロードで動かし、運用で Notion AI 連携の優先度を見極めるのが効率的
 
 ✍️ 回答記入欄:
-> 
+> OK
 
 ---
 
-#### Q4. 起動トリガーは？ [設計前提] 🆕
+#### Q6-rev. タスクレビューフロー 3案比較 ✅ B
 
-選択肢:
-- (a) 会議close時に自動起動（Tachyonの `/api/close` がフックする）
-- (b) 手動キック（UIにボタン or CLIコマンド）
-- (c) cron定期実行（1日1回、closed未処理会議をまとめて）
-- (d) (a)+(b) 併用（通常は自動、失敗時に手動再実行）
+| 案 | フロー | 長所 | 短所 |
+|---|---|---|---|
+| **A: Notion投入後レビュー** | LLM生成 → 即Notion投入（Status=未レビュー） → Notionで田中さんが approve / edit / delete → approveで Status=未着手 | チーム共有がシンプル（投入時点で可視化）、Notion運用に馴染む | Notionを開かないとレビューできない、却下タスクがNotionに履歴として残る、実行ボタンをNotion上に作るのは困難 |
+| **B: Tachyon UI事前レビュー** | LLM生成 → Tachyon UIにドラフトカード表示 → 田中さんが approve / edit / skip / 実行 → approveでNotion投入、skipは破棄 | 会議直後にTachyon UIで完結、不要タスクはNotionに流れない、**実行ボタンもTachyon UIに統合しやすい（Q3との親和性高）** | Tachyon UIを開く必要、チーム共有は approve後 |
+| **C: ハイブリッド（高confidenceのみ自動）** | confidence≥0.8 → Notion自動投入 / <0.8 → Tachyon UIでレビュー必須 | 手間最小、重要タスクは必ず人間チェック | 閾値調整が必要、confidence精度の初期検証が必要（数回運用してから決めるのが現実的） |
 
-📌 AI推奨: **(d)**。自動で走りつつ、落ちたら手動で再走できる安全網。実装量は (a) 単独とほぼ変わらず。
+📌 AI推奨: **案B で開始 → 精度が安定したら案C へ進化**。理由:
+- Q3で「Tachyon UIで実行／しない選択 → 実行 → 結果保存」が要件化されているため、UIに集約する案Bが最も自然
+- Notionを「既に人間レビュー済みの確定ToDoリスト」として扱えるので意味付けがシンプル
+- 案A は Notion側にワークフロー（Status遷移＋実行ボタン）を組む必要があり、Tachyon UI と Notion の責務分離が曖昧になる
 
 ✍️ 回答記入欄:
-> 
+> Bでいきます。
 
 ---
 
-#### Q5. 実装場所は？ [ブロッカー] 🆕
+#### Q8. タスク実行フロー詳細設計 ✅ (a=2 / b=3 / c=1)
+
+Q3で新要件として「実行ボタン → AIがタスク実行 → 結果保存」が追加された。既存Tachyonのリアルタイム版は `projects/` 配下にNext.jsアプリを作る方式だが、低速タキオンのタスクは会議後のToDoなので**性質が異なる**（調査・ドキュメント作成・メール文面など非開発系も多い）。
+
+##### Q8-a. タスクを実行するのは誰（どのエージェント）？
 
 選択肢:
-- (a) 既存Tachyonリポ内の新モジュール（`~/tachyon-workspace/tachyon/lib/slow-agent.ts` + 新API）
-- (b) `~/tachyon-workspace/projects/slow-tachyon/` として独立Next.jsアプリ
-- (c) AIPMリポ内のCLI/スクリプト（Next.js不要、Node.jsバッチ）
+- (1) **既存 Claude Code CLI モード**（現在のTachyonの実行エージェントと同じ、CockPit経由）
+- (2) **Tachyon内の新しい軽量エージェント（Anthropic SDK直接呼び出し）** — 短時間・単発タスク向け
+- (3) **AGI Cockpit経由で別タスク起動**（`./task create`）— 大規模・多段階タスク向け
+- (4) **(2)+(3) ハイブリッド**（短時間系はSDK直接、大規模系はCockpit）
 
-📌 AI推奨: **(a)**。データ所在が同一で実装最短。既存UIに自然統合できる。Notion連携も既存設定（`settings.json`）を拡張する形で入れやすい。
+📌 AI推奨: **(4)**。ToDoの `category`（text/document/code/app/research）で自動振り分け。Q7のスキーマに `executionMode` フィールドを追加。短時間調査はSDKで即結果、アプリ開発はCockpitへ。
 
 ✍️ 回答記入欄:
-> 
+> ２
 
----
-
-#### Q6. ToDo投入前の人間レビューは？ [運用設計] 🆕
+##### Q8-b. 実行結果の保存先
 
 選択肢:
-- (a) LLMが生成したら即Notionに投入（自動運用、誤抽出は人間が後から削除）
-- (b) ドラフト状態でUIに表示 → ユーザーが承認したものだけNotionへ（リアルタイム版と同じフロー）
-- (c) 一次レビューは田中さん、その後Notionに入って町田・吉田共有
+- (1) **Tachyon内のみ**（`data/meetings/{id}/todos.json` に result 追記、タスク結果ページで表示）
+- (2) **Notionの元ToDoレコードに紐付け**（Notionページ本体に結果を書き込み、またはrelation）
+- (3) **(1) と (2) の両方**（Tachyonが一次保存、Notionに同期）
+- (4) **AIPMのFlow配下に成果物として保存**（`Flow/YYYYMM/YYYY-MM-DD/MeetingTodos/{todoId}/`）
 
-📌 AI推奨: **(b) → 数回回して精度を見たら (a) に緩める**。最初は既存Tachyonのapprove/skipフローを再利用、安定したら自動投入に。
+📌 AI推奨: **(3) + (4) 条件付き**。短時間テキスト結果は (3)（TachyonとNotionに同期）、AIPMに関わる成果物（設計ドキュメント等）は (4) にも保存してFlowに入れる。
 
 ✍️ 回答記入欄:
-> 
+> ３
 
----
-
-#### Q7. ToDoのメタ情報はどこまで抽出する？ [スコープ] 🆕
-
-既存ToDoスキーマ: title / description / priority / category / assignee? / recommendedAction / sourceText
+##### Q8-c. 実行失敗時の挙動
 
 選択肢:
-- (a) 最小限（title / description / sourceText / priority のみ）
-- (b) 担当者 (assignee) + 期限 (dueDate) も抽出（会議発言から推定）
-- (c) (b) + プロジェクト分類（AIPM MasterIndex.yamlと照合して Program/Project を付与）
-- (d) (c) + AIPM Backlogのフォーマット（BL-ID / Program / Project / keywords）に整形
+- (1) UIにエラー表示、手動で再実行
+- (2) 自動リトライ3回 → 失敗で (1)
+- (3) エラーをNotionに別レコードとして起票（人間に知らせる）
 
-📌 AI推奨: **(c)**。担当者・期限は会議発言から十分に抽出可能で価値が高い。MasterIndex照合はAIPMナレッジ参照モードが既にあるため実装コスト低。BL-ID発番 (d) は BL-0049（タスク管理システム接続）のスコープとして後送りが整理しやすい。
+📌 AI推奨: **(1)**。最初はシンプルに。運用で再実行率が高ければ (2) を追加。
 
 ✍️ 回答記入欄:
-> 
+> １
 
 ---
 
-（回答後、`implementation_plan.md` を確定版にします。追加の前提質問が出たら同じセクションに🆕で追記します）
+#### Q9. 文字起こしアップロード機能 仕様提案 ✅ (a=1 / b=1 / c=1)
+
+Q4で「外部の文字起こしツールの結果もアップロードで実行できるようにしたい」との要望。以下の仕様を提案します。
+
+##### Q9-a. 受付ファイル形式
+
+選択肢:
+- (1) **テキスト（.md/.txt）のみ**（外部ツールで既に文字起こし済みのものを投入）
+- (2) **音声ファイル（.m4a/.mp3/.wav）も受付**→Tachyon内部で OpenAI STT にかけてテキスト化
+- (3) **両対応**（テキストが最優先、音声はバックアップ）
+
+📌 AI推奨: **(3)**。テキストなら即処理（5分要件に余裕）、音声もSTTパイプラインが既にあるので追加コスト低。ただし音声は長時間だとSTT時間が5分を超える可能性あり → 音声アップロードは「ToDo生成完了までの時間保証なし」と注記。
+
+✍️ 回答記入欄:
+> １
+
+##### Q9-b. UIとデータモデル
+
+選択肢:
+- (1) **新規「会議」として作成**（status=closed即設定、live.mdにtranscript投入、meta.jsonに `source: "upload"` を記録）→ 通常の会議と同じ「close後ToDo生成」フローに合流
+- (2) **既存会議に追加**（transcript差し替え / 追記）
+- (3) **専用の「外部取り込み」タブを分離**（UIを別にし、会議とは別の一覧で管理）
+
+📌 AI推奨: **(1)**。既存フローと合流できるので実装最小、履歴もダッシュボードで一覧できる。`meta.json.source` で区別すれば運用上困らない。
+
+✍️ 回答記入欄:
+> １
+
+##### Q9-c. Notion AI Meeting Notes からのインポート機能は？（Q2-revと連動）
+
+選択肢:
+- (1) **当面なし**（Notion側でエクスポートしたMarkdownをQ9の通常アップロードで投入）
+- (2) **Notion URL 貼り付けで自動取得**（Notion API でページ取得→transcript化）
+
+📌 AI推奨: **(1)**。Q2-rev Phase1 と整合。(2) は Phase2 で追加。
+
+✍️ 回答記入欄:
+> １
+
+---
+
+（4件（Q2-rev / Q6-rev / Q8a/b/c / Q9a/b/c）回答後、`implementation_plan.md` を v1.0 に書き換えます）
 
 ---
 
@@ -451,6 +476,19 @@ BL-0061（AI-Core PL）で発生した「aipm_v0 はメタ（Stock/README/Projec
 ---
 
 ## ✅ 本日完了（参考）
+
+### BL-0061 AI-Core PL: ✅ Phase 1 完全完了（Notion 接続 + 本番デプロイ + E2E 動作確認）🎉
+- ✍️ 回答: `.env` に NOTION_TOKEN / NOTION_DB_CASES / NOTION_DB_REQUESTS を格納済み
+- 📌 反映:
+  - **公開URL（本番）**: https://ai-core-pl.vercel.app/  ← クライアント共有可
+  - GitHub: https://github.com/RestaurantAILab/ai-core-pl（private）
+  - Vercel: `restaurant-ai-lab/ai-core-pl`（既存ダッシュボードと同 team）
+  - `npm run seed` で 50 事例を Notion ServiceCases に create 完了 / `data/case-page-map.json` をコミット
+  - Vercel 本番に NOTION_TOKEN（sensitive）/ NOTION_DB_CASES / NOTION_DB_REQUESTS を投入
+  - 本番 `/api/submit` → Notion ClientRequests へ Status=未対応 + SelectedCases relation 5件 で Insert を確認（page_id: 34abf91a-5716-81b0-...）
+- ⚠️ 知見: Vercel は git commit の `committer` email が GitHub user に紐づかないと auto-deploy をブロックする（`readyStateReason: "GitHub could not associate the committer with a GitHub user"`）。`197918871+RestaurantAILab@users.noreply.github.com` を committer に設定して解決。今後の git push は同じ committer email を使用すること。
+- 📝 ログ: `Flow/202604/2026-04-22/AI-Core/implementation_log.md`（全工程記録）
+- 🔜 運用: Notion ClientRequests を `Status=未対応` でフィルタしたビューを朝開く運用（Slack 通知なし・v2.1 確定）
 
 ### BL-0017 マイナンバー: ✅ オンライン申請完了
 - ✍️ 回答: net.kojinbango-card.go.jp で申請済み

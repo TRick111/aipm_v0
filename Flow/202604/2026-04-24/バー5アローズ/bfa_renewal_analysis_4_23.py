@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""BAR FIVE Arrows リニューアル前後比較分析（2026-04-01〜2026-04-18 / 4/23版）
+"""BAR FIVE Arrows リニューアル前後比較分析（2026-04-01〜2026-04-23 / 4/23版）
 
-- After（POS）: 2026-04-01 〜 2026-04-18（18日）  ※4/19-4/23 はDB未連携で欠損
-- Before同ウィンドウ: 2026-03-01 〜 2026-03-18（18日）
+- After（POS）: 2026-04-01 〜 2026-04-23（23日）  ※4/19, 4/22 は休業
+- Before同ウィンドウ: 2026-03-01 〜 2026-03-23（23日）
 - Before月全体: 2026-03-01 〜 2026-03-31（31日）
-- YoY同ウィンドウ: 2025-04-01 〜 2025-04-18（18日）
+- YoY同ウィンドウ: 2025-04-01 〜 2025-04-23（23日）
 
 出力:
   output_data/  ← 集計CSV / JSON
@@ -67,16 +67,16 @@ def time_slot(h: int) -> str:
 df["time_slot"] = df["entry_hour"].apply(time_slot)
 
 PERIODS = {
-    "after":     ("2026-04-01", "2026-04-18", 18),
-    "before_w":  ("2026-03-01", "2026-03-18", 18),
+    "after":     ("2026-04-01", "2026-04-23", 23),
+    "before_w":  ("2026-03-01", "2026-03-23", 23),
     "before_m":  ("2026-03-01", "2026-03-31", 31),
-    "yoy_w":     ("2025-04-01", "2025-04-18", 18),
+    "yoy_w":     ("2025-04-01", "2025-04-23", 23),
 }
 LABELS = {
-    "after":    "After (4/1-4/18)",
-    "before_w": "Before同窓 (3/1-3/18)",
+    "after":    "After (4/1-4/23)",
+    "before_w": "Before同窓 (3/1-3/23)",
     "before_m": "Before月 (3/1-3/31)",
-    "yoy_w":    "YoY (2025/4/1-4/18)",
+    "yoy_w":    "YoY (2025/4/1-4/23)",
 }
 
 
@@ -178,7 +178,7 @@ for p in PERIODS:
 pd.DataFrame(daily_rows).to_csv(f"{DATA}/A_daily_raw.csv", index=False, encoding="utf-8-sig")
 
 # 2026 週次推移 (W10〜W17)
-weekly_2026 = df[(df["biz_date"] >= "2026-03-02") & (df["biz_date"] <= "2026-04-18")].copy()
+weekly_2026 = df[(df["biz_date"] >= "2026-03-02") & (df["biz_date"] <= "2026-04-26")].copy()
 weekly_2026["iso"] = weekly_2026["biz_date"].dt.strftime("%G-W%V")
 wk_acct = weekly_2026.groupby(["iso", "account_id"], as_index=False).agg(
     account_total=("account_total", "first"),
@@ -502,7 +502,7 @@ for p, color in [("after", "#d9534f"), ("before_w", "#5bc0de"), ("yoy_w", "#9999
     daily = a.groupby("biz_date")["account_total"].sum().reset_index()
     daily["day_idx"] = (daily["biz_date"] - daily["biz_date"].min()).dt.days + 1
     ax.plot(daily["day_idx"], daily["account_total"], marker="o", label=LABELS[p], color=color, linewidth=2)
-ax.set_xlabel("Day index (1〜18)")
+ax.set_xlabel("Day index (1〜23)")
 ax.set_ylabel("日次売上（¥）")
 ax.set_title("BFA 日次売上推移：After vs Before同窓 vs YoY")
 ax.legend()

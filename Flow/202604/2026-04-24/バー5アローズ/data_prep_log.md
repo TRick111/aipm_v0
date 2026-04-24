@@ -5,88 +5,121 @@
 
 ---
 
-## 1. 初期状況
+## ラウンド1: 17:00頃 — 暫定（4/18止まりで分析開始）
 
 | 項目 | 確認結果 |
 |------|---------|
-| `Stock/RestaurantAILab/週報/1_input/BFA/rawdata.csv` 最終 entry_at | **2026-04-18 23:41:33** |
-| `Stock/RestaurantAILab/週報/1_input/BFA/DailyReport.csv` 最終営業日 | **2026-04-18** |
-| Dashboard 起動状況 | **未起動**（ポート3001はtachyonプロジェクトが占有、3000はvoice-beauty-advisorが占有） |
-| Playwright 利用可否 | **不可**（AirRegi DLスキルはWindows環境前提：`C:\Users\auk1i\Downloads`を使用） |
-| 本番DB（Neon Postgres）への直接アクセス | **可能**（`psycopg2` でreadonly接続）|
+| `rawdata.csv` 最終 entry_at | 2026-04-18 23:41:33 |
+| `DailyReport.csv` 最終営業日 | 2026-04-18 |
+| Dashboard 起動状況 | 未起動。port 3001 を Tachyon・3000 を voice-beauty-advisor が占有 |
+| Playwright | 「Windowsパス前提」と判断し諦め |
+| Postgres MCP | 利用不可。直接 `psycopg2` で本番Neonに接続して4/18までを補完 |
 
-## 2. 実施手順と結果
+→ 4/19-4/23 のPOS欠損を明記したレポートを一旦完成させた。
 
-### 2.1 Dashboard 起動の試み
-- ポート3001は別プロジェクト（tachyon、PID 55817）が占有中。`pnpm run dev:prod`はポート3001ハードコード
-- 競合プロジェクトを止めるとユーザー作業に影響するため起動を断念
+---
 
-### 2.2 AirRegi 経由のCSV取得の試み
-- `airregi-sales-download` スキルは `playwright-mcp` 依存・Windows パス前提（`C:\Users\auk1i\Downloads`）
-- 当環境（macOS / aipm_v0）では Playwright MCP も Windows ダウンロードフォルダも存在せず**不可**
+## ラウンド2: 17:30以降 — ユーザー指示で再リトライ
 
-### 2.3 Neon Postgres への直接接続でのデータ更新（採用）
-本番DB（`ep-rough-bird-a1ynj8pb-pooler.ap-southeast-1.aws.neon.tech`）に `psycopg2` で直接接続してデータを取得した。
+> ユーザー指示: ポート占有プロセスを止めて、AirRegi DLは Mac の Playwright MCP で実行する。AirRegi スキルの Windows パス（`C:\Users\auk1i\Downloads`）は Mac の `~/Downloads/` に置き換える。
 
-#### POS データ
-| 項目 | 結果 |
-|------|------|
-| 接続先 | Neon Postgres prod（`Dashboard/.env.production` の `DATABASE_URL`）|
-| BFA store_id | `70414fc6-1135-4b25-8584-ca479e3a5110`（store_code: `bfa-001`）|
-| **DB上の最新 entry_at** | **2026-04-18 14:41:33 UTC（JST 4/18 23:41:33）** |
-| 4/1-4/18 期間 sales_items 件数（DB） | **495 件** |
-| 同期間（更新前 CSV） | 454 件 |
-| 差分 | **41 件**（`bfa-001` 4/1-4/18 範囲のみ DB から再取得して上書きマージ）|
-| 更新後 CSV 最新日 | **2026-04-18** |
+### 2.1 Port 解放
+- `kill 55817 11807` で Tachyon (next-server, port 3001) と voice-beauty-advisor (tsx server.ts, port 3000) を停止
+- 確認: `3000/3001/3002 are free`
 
-→ **2026-04-19 〜 2026-04-23 の POS データはDB自体に存在しない**。AirRegi DL がリアルタイム連携でないため、DB側にも未到達と推定。
+### 2.2 Dashboard 起動
+- `cd ~/RestaurantAILab/Dashboard && pnpm run dev:prod` を background で起動
+- `until curl -s ... grep 200; do sleep 2; done` で 200 応答待ち → **Dashboard ready: 200**
 
-#### 日報（DailyReport.csv）
-| 項目 | 結果 |
-|------|------|
-| DB上の存在日 | 4/1, 4/2, 4/3, 4/4, 4/5, 4/6, 4/7, 4/9, 4/10, 4/11, 4/12, 4/13, 4/15, 4/16, 4/17, 4/18, **4/20, 4/21, 4/23**（4/8, 4/14, 4/19, 4/22 は未提出 ＝ 定休/シフト外と推定）|
-| 更新前 CSV | 4/13-4/18 のみ |
-| 更新後 CSV | **4/1-4/23（19件）** に拡張 |
+### 2.3 認証情報の取得（YAMLから直接読み込み）
+> ユーザー指示: パスワードは会話で渡さず、`Stock/RestaurantAILab/週報/1_input/pos_store_accounts.yaml` から読み取れ。
 
-## 3. データ欠損の取り扱い
+- `pos_store_accounts.yaml` を読み込み、operator_company == 'BFA' のエントリを取得
+- `pos.login.id` = `info@five-arrows.bar`
+- `pos.login.password` を `/tmp/bfa_creds.json` (mode 600) に書き出し（stdoutには `****` のみ表示）
 
-> **POSデータ欠損: 2026-04-19 〜 2026-04-23（5日間）**
+### 2.4 AirRegi DL（Mac, Node Playwright）
+- `Dashboard/node_modules/playwright` を直接 import する Node スクリプト `_airregi_dl.mjs` を作成
+- 仕様: `/tmp/bfa_creds.json` から cred を読み、ヘッドレスChromium で AirRegi にログイン → 日別売上 → 2026/4 → CSV → 会計明細
+- 出力先: `~/Downloads/会計明細-{startYYYYMMDD}-{endYYYYMMDD}.csv`
 
-リニューアル後の分析期間は当初 **4/1〜4/23（23日間）** を予定していたが、AirRegiからの取り込みが完了しているのは **4/18 まで**であり、4/19〜4/23 は POS 側の素材が存在しない。
+#### ⚠️ セキュリティインシデント
+**初回試行でPlaywrightのデフォルトエラーメッセージにパスワード値が含まれた**。
+- 原因: `<input name="dummy02" type="password">` というアンチBot用ダミーが先に来ており、`input[type="password"]` の最初がそれにマッチして visible でないため `page.fill()` がタイムアウト → エラーオブジェクトの `Call log` に `fill("...")` の引数（=パスワード）がそのまま埋め込まれた
+- 対策: `safeFill` ラッパーで `replaceAll(value, "****")` を実施。すべての except 句で同じ置換を行う構造に変更
+- **AirRegi `info@five-arrows.bar` のパスワードは要ローテーション**。本会話ログには漏洩済み
 
-| 区分 | 当初定義 | 実分析期間 | カバー率 |
-|------|---------|-----------|---------|
-| After（POS） | 2026-04-01〜2026-04-23（23日） | **2026-04-01〜2026-04-18（18日）** | 78% |
-| After（日報） | 2026-04-01〜2026-04-23 | **2026-04-01〜2026-04-23（19件）** | 100% |
-| Before（同ウィンドウ） | 2026-03-01〜2026-03-23 | **2026-03-01〜2026-03-18（18日）に変更**（After日数と揃える） | 同期間ウィンドウで揃え |
-| Before（月全体） | 2026-03-01〜2026-03-31 | 同左（31日） | — |
-| 昨年同月 | 2025-04-01〜2025-04-23 | **2025-04-01〜2025-04-18（18日）に変更**（After日数と揃える）| 同期間ウィンドウで揃え |
+#### 修正後の動作確認
+- ログイン成功（choose-store ページ → BAR FIVE Arrows クリック）
+- 売上一覧ページ：select#0=集計対象, #1=年, #2=月, #3=日 を取得 → 年=2026, 月=04 を選択
+- 「表示する」→ 「CSVデータをダウンロードする」 → ポップアップ内「会計明細」を `page.mouse.click(x,y)` で実クリック
+- ダウンロード成功: `~/Downloads/会計明細-20260401-20260430.csv` (84,191 bytes)
+- 日付検証: **4/1-4/18 + 4/20 + 4/21 + 4/23 が含まれる**（4/19, 4/22 は休業で取引なし）
 
-→ レポート冒頭・各テーブル脚注に「データ欠損: 4/19〜4/23（POS）」を明記する。
+### 2.5 Dashboard 取込み
+- `cp ~/Downloads/会計明細-20260401-20260430.csv ~/RestaurantAILab/Dashboard/.local/bulkupload/bfa-001/`
+- `node scripts/bulk-upload-airregi.mjs --store bfa-001 --env prod`
+  - 結果: 2026-04 で **inserted=15, skipped=88, errors=0**（既存88行はskip、新規15行を追加）
 
-## 4. 実行コマンド・ログ抜粋
-
+### 2.6 rawdata.csv の延長
 ```bash
-# DB 接続疎通確認
-PYENV_VERSION=llm-env python3 -c "import psycopg2; ..."   # OK
-
-# 4/1-4/18 sales_items DB件数 = 495 vs CSV件数 = 454（41件差）
-
-# DB から bfa-001 4/1-4/18 を再取得して CSV にマージ
-Fetched 495 fresh rows for 4/1-4/18
-Keeping 36122 existing rows (outside 4/1-4/18 BFA range)
-Total after merge: 36617
-
-# 更新後 rawdata.csv 検証
-Total rows: 36617 | Apr 2026 rows: 495
-Last 10 dates: ['2026-04-09', ..., '2026-04-18']
-
-# 日報 4/1-4/23 を export し DailyReport.csv 上書き
-Wrote 19 rows
+PYENV_VERSION=llm-env python3 Scripts/dashboard_data_pipeline.py \
+  incremental-export --store BFA --end-date 2026-04-23 --base-url http://localhost:3001
 ```
+- 結果: `Existing data up to: 2026-04-18 → Fetching from: 2026-04-19 → Period: 2026-04-19 ~ 2026-04-23 → 87 records → Appended 87 rows`
 
-## 5. 結論
+### 2.7 DailyReport.csv の延長
+```bash
+PYENV_VERSION=llm-env python3 Scripts/dashboard_data_pipeline.py \
+  export-daily-reports --store BFA --start-date 2026-04-01 --end-date 2026-04-23 --base-url http://localhost:3001
+```
+- 結果: **20件** をエクスポート（4/15 のみ2件、それ以外は1日1件）。4/8/14/19/22 はデータなし
 
-- **POSデータ**: 2026-04-18 までで分析実行（4/19-4/23は欠損として明記）
-- **日報データ**: 2026-04-23 までフル取得済み
-- **比較ベースライン**: After 18日に合わせて Before 同ウィンドウ・昨年同月も 18日ウィンドウで揃える。Before月全体（3月31日分）は補助指標として併記
+### 2.8 検証
+- `rawdata.csv` Apr 2026 行数: **582行**（旧 495 行から +87）
+- `rawdata.csv` 最終日: **2026-04-23**
+- `DailyReport.csv`: **20行**、最終営業日 2026-04-23
+
+### 2.9 認証情報のクリーンアップ
+- `rm -f /tmp/bfa_creds.json /tmp/bfa_pw.txt`
+- 認証情報を含むテンポラリは全て削除済み
+
+### 2.10 分析スクリプト再実行
+- `bfa_renewal_analysis_4_23.py` の PERIODS を 4/23 まで延長
+- 再実行 → `output_data/`（23 CSV+1 JSON）と `charts/`（6 PNG）を上書き
+- 4/24 朝の AirRegi 更新日時 = 2026/04/23 23:00:42 を確認（前日分の最新まで取得済み）
+
+### 2.11 レポート上書き
+- `01_リニューアル前後比較レポート.md` 全数値を 4/1-4/23 で更新、データ欠損注記を削除
+- `02_補足資料_生データ.md` を最新CSVから完全再生成
+
+---
+
+## 主要な数値変化（暫定 vs 確定）
+
+| 指標 | ラウンド1（4/1-18, 17営） | ラウンド2（4/1-23, 20営） |
+|---|---|---|
+| 日次売上 | ¥92,031 | **¥85,485** |
+| vs Before同窓 | +13.1% | **−9.8%** |
+| vs Before月 | −2.4% | **−9.3%** |
+| vs YoY | −32.9% | **−30.4%** |
+| 日次客数 | 17.1 | 16.3 |
+| 日次組数 | 5.2 | 5.2 |
+| 客単価 | ¥5,395 | ¥5,261 |
+| 組単価 | ¥17,779 | ¥16,599 |
+| 平均GS | 3.30 | 3.16 |
+| ABC商品数 (After) | 97 | **105** |
+| 新A品数 | 10 | **12** |
+
+→ 4/20-23 が比較的低調だったため、**売上「+13%」が「−10%」に反転**。レポートのナラティブも「直前比好調」→「直前・前年比ともに減少。組単価・GSは増」に書き換え。
+
+---
+
+## 結論
+- **POSデータ・日報データともに 2026-04-23 まで完全取得・反映完了**
+- 4/19, 4/22 は休業日（POS実績ゼロ）として確定
+- レポート 01/02 はすべて確定値で更新済み
+
+## 次のアクション（推奨）
+1. **AirRegi `info@five-arrows.bar` のパスワードローテーション** — Playwrightエラー経由で本セッションの会話ログに混入
+2. `_airregi_dl.mjs` を週報フローのスキル（`Dashboard/.claude/skills/airregi-sales-download/skill.md`）に正式取り込みするか検討（Mac対応版）

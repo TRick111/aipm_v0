@@ -1,6 +1,6 @@
 schema_version: 2
 id: BL-TBD-002
-title: "ミニタキオン Phase 2: 書き込み機能"
+title: "ミニタキオン Phase 2: 書き込み機能 + クリーンアップ"
 project: ミニタキオン
 category: 作業効率化
 state: pending
@@ -8,33 +8,109 @@ state_emoji: 🆕
 priority: high
 
 created_at: 2026-04-25T20:10:00+09:00
-updated_at: 2026-04-25T20:10:00+09:00
+updated_at: 2026-04-25T22:00:00+09:00
 created_by: master-agent
 
 description: |
   ## 背景
 
-  Phase 1 の view-only MVP は完了。次は書き込み機能を追加し、iPhone から実際にレビュー状態変更・AI への返信ができるようにする。これでモバイルの core loop が完成する。
+  Phase 1 の view-only MVP + UI デザイン磨き込みが完了 (BL-TBD-001 / BL-TBD-003)。次は実際の書き込み機能を実装し、iPhone から AI へのフィードバック送信、レビュー状態変更、決定事項追記が core loop として完結する状態を作る。
+
+  田中さんからの追加要望2点も含める:
+  - 「全会話を見る」モーダルは利用頻度が低く、複雑度を上げる割に価値がない → 削除してコードをスリム化
+  - **「done + コメント」で AI に完了時フィードバックを送れる** UX を追加
 
   ## タスク詳細
 
-  1. lib/cockpit.ts (構造化エラー、Eng Review 1B): NotFound/Timeout/Parse/Exit/FallbackExhausted
-  2. lib/lock.ts (proper-lockfile + optimistic check、Eng Review 1C): stale 30s, retries 5
-  3. lib/merge.ts: Flow → Stock マージロジック
-  4. app/actions.ts: updateReviewState / replyToBL Server Actions (新スキーマ v2 対応: pending_questions consume + decisions append)
-  5. 画面3 (BL詳細) の入力 UI: textarea + iOS マイクボタン + 送信
-  6. 画面4 (成果物詳細) の入力 UI: コメント + 「送信→needs_revision」「✓ done」
-  7. useOptimistic で楽観的更新
-  8. lib/__tests__/* に Critical path テスト 8 個 (vitest)
+  ### A. クリーンアップ (削除)
+
+  「全会話を見る」関連の以下4箇所を削除:
+  - `components/cockpit-task-modal.tsx` (Dialog コンポーネント)
+  - `app/api/cockpit/task/[id]/route.ts` (API Route)
+  - `lib/cockpit.ts` の **read-only wrapper** (Phase 2 で構造化エラー版に置換するので一旦消す)
+  - BL 詳細画面の「全会話を見る」ボタン + 関連 props
+
+  関連 Cockpit タスク chip (cockpit_task_ids[] 表示) も削除して良い。データは BL.yaml に残るが UI には出さない。
+
+  ### B. ファイルロック実装 (Eng Review 1C)
+
+  `lib/lock.ts`:
+  - `proper-lockfile` で `withLock(absPath, fn)` ヘルパー
+  - 設定: `stale: 30000, retries: 5, retryWait: 200`
+  - `Result<T, OptimisticLockConflictError | LockError>` 型で返す
+  - **Optimistic check**: 読込時に updated_at memo、書き出し前に再読込して比較、不一致なら conflict
+
+  ### C. Cockpit subprocess wrapper (Eng Review 1B、構造化エラー)
+
+  `lib/cockpit.ts` を Phase 2 仕様で全面書き直し:
+  - エラー型階層: `CockpitError` (base) → `CockpitNotFoundError` / `CockpitTimeoutError` / `CockpitParseError` / `CockpitExitError` / `CockpitFallbackExhaustedError`
+  - 起動時 `which cockpit` で PATH 確認、見つからなければ webapp 起動拒否 (process.exit(1))
+  - 全 spawn に AbortController + 30秒 timeout
+  - JSON parse 失敗時は raw stdout/stderr を `error.detail` に格納
+  - **三重 fallback**: `taskSend(id, text)` → 失敗で `taskResume(id)` → 失敗で `taskCreate(template)` → それでも失敗なら `CockpitFallbackExhaustedError` throw
+
+  ### D. Server Actions
+
+  `app/actions.ts`:
+
+  ```typescript
+  'use server'
+
+  // 成果物のレビュー状態変更
+  // - newState='done': review_log に append、コメントが空でなければ AI にも送信 ([完了承認] prefix)
+  // - newState='needs_revision': review_log に append + コメントを AI に送信 ([要修正] prefix)
+  // - その他 (unreviewed/reviewing): review_log に append のみ
+  async function updateReviewState(
+    deliverableId: string,
+    newState: ReviewState,
+    comment?: string
+  ): Promise<Result<void, ConflictError | CockpitError>>
+
+  // BL の AI フィードバック textarea からの送信
+  // - 内容を Cockpit task に send (三重 fallback)
+  // - 該当 BL の pending_questions[] が non-empty なら、最古のものを consume → decisions に append (type: 'answer', by: 'user')
+  // - pending_questions[] が空なら decisions に append のみ
+  async function replyToBL(
+    blId: string,
+    content: string
+  ): Promise<Result<void, ConflictError | CockpitError>>
+  ```
+
+  両方:
+  - `withLock` でファイル更新をシリアライズ
+  - 楽観的更新失敗時は ConflictError を返し、UI で「他から更新あり、最新を見て再送信」trigger
+  - 成功後 `revalidatePath('/bl/[id]', '/projects/[slug]', '/')`
+
+  ### E. UI mutation 化
+
+  - 成果物詳細の `[✓ done]` `[要修正]` ボタンを実機能化:
+    - `[✓ done]` (textarea 空) → `updateReviewState(id, 'done')`
+    - `[✓ done]` (textarea に文字あり) → `updateReviewState(id, 'done', comment)` で **AI に [完了承認] コメント送信** + done
+    - `[要修正]` (textarea 必須) → `updateReviewState(id, 'needs_revision', comment)` で AI に [要修正] コメント送信
+  - BL 詳細の AI フィードバック送信 → `replyToBL(blId, comment)` 実機能化
+  - useOptimistic で楽観的更新 (送信中は disabled、成功で localStorage 下書きクリア + toast、失敗で復元 + エラー toast)
+
+  ### F. テスト (Eng Review 戦略、Critical path 8 個)
+
+  vitest 導入 + テスト:
+  - `lib/__tests__/lock.test.ts`: stale 挙動、retry、optimistic conflict 検知
+  - `lib/__tests__/cockpit.test.ts`: NotFound / Timeout / Parse / Exit / FallbackExhausted の各分岐 (subprocess mock)
+  - `lib/__tests__/stock.test.ts`: STATUS.md frontmatter parse, BL.yaml v1/v2 互換、schema_version 分岐
+  - `lib/__tests__/flow.test.ts`: deliverables.yaml parse, 不存在時の挙動
+  - `lib/__tests__/migrate.test.ts`: v1 → v2 変換のヒューリスティック
+  - `app/__tests__/actions.test.ts`: updateReviewState 競合検知 + revalidate, replyToBL 三重 fallback
 
   ## 完了条件
 
-  - [ ] iPhone から成果物のレビュー状態を変更できる
-  - [ ] iPhone から BL に返信送信、cockpit task に流れる
-  - [ ] 送信時、対応する pending_question を consume + decisions に append
-  - [ ] 三重 fallback (send → resume → create) が動作
-  - [ ] Optimistic conflict 検知 + UI 表示
-  - [ ] vitest Critical path 8 テスト全 pass
+  - [ ] 「全会話を見る」関連コード4箇所削除 (cockpit-task-modal / api route / read-only wrapper / UI ボタン)
+  - [ ] `lib/lock.ts` 実装 + テスト
+  - [ ] `lib/cockpit.ts` 構造化エラー版に書き直し + テスト
+  - [ ] `app/actions.ts` updateReviewState / replyToBL 実装
+  - [ ] 成果物詳細の `[✓ done]` `[要修正]` が実機能 (done + コメント = AI 送信パターン含む)
+  - [ ] BL 詳細の AI フィードバック送信が実機能
+  - [ ] vitest Critical path 8 テスト 全 pass
+  - [ ] iPhone から実際にコメント送信 → Cockpit task に届く動作確認
+  - [ ] 既存の Phase 1 view 機能を破壊しない
 
 cockpit_task_ids: []
 

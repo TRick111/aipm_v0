@@ -3,12 +3,13 @@ id: BL-TBD-003
 title: "ミニタキオン UI デザイン改善 (web designer agent)"
 project: ミニタキオン
 category: 作業効率化
-state: looping
-state_emoji: 🔄
+state: completed
+state_emoji: ✅
 priority: high
 
 created_at: 2026-04-25T20:10:00+09:00
-updated_at: 2026-04-25T21:00:00+09:00
+updated_at: 2026-04-25T22:00:00+09:00
+completed_at: 2026-04-25T22:00:00+09:00
 created_by: master-agent
 
 description: |
@@ -41,9 +42,10 @@ description: |
   ## 完了条件
 
   - [x] v1 デザインシステム + 4 画面 + AI フィードバック (2026-04-25 20:40)
-  - [ ] v2 修正 (プロジェクト別折りたたみ / STATUS markdown / 色削減 / glassmorphism 廃止) ← 進行中
-  - [ ] v3 schema v2 対応 (lib/types.ts / pending_questions UI / decisions UI / cockpit task get モーダル)
-  - [ ] 田中さん iPhone 実機確認で「これなら毎日使える」OK
+  - [x] v2 修正 (プロジェクト別折りたたみ / STATUS markdown / 色削減 / glassmorphism 廃止) (2026-04-25 21:30)
+  - [x] v3 schema v2 対応 (lib/types.ts / pending_questions UI / decisions UI / cockpit task get モーダル) (2026-04-25 21:30)
+  - [x] v4 修正 (「私の番」→「レビュー待ち」/ markserv リンク / @tailwindcss/typography / BL 詳細リデザイン / UI 密度向上) (2026-04-25 21:55)
+  - [x] 田中さん iPhone 実機確認 — 「UI は思います」(良いと思います) 判定
 
 cockpit_task_ids:
   - "7d51e727"
@@ -63,5 +65,13 @@ decisions:
     type: scope_change
     by: user
     content: "v3 schema 変更: BL.yaml の thread を廃止、cockpit_task_ids + pending_questions + decisions に分離 (Cockpit を会話の単一 source of truth に)"
+  - at: 2026-04-25T21:50:00+09:00
+    type: scope_change
+    by: user
+    content: "v4 フィードバック: 「私の番」→「レビュー待ち」rename / markserv リンク併設 / @tailwindcss/typography 導入 / BL 詳細を「AI からの成果物 → AI へのフィードバック」hero に / UI 密度向上"
+  - at: 2026-04-25T22:00:00+09:00
+    type: answer
+    by: user
+    content: "v4 実機確認 OK。「UI は思います」(良いと思います)。Phase 1 完了マーク → Phase 2 へ"
 
 deliverable_refs: []

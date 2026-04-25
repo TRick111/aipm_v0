@@ -3,12 +3,13 @@ id: BL-TBD-002
 title: "ミニタキオン Phase 2: 書き込み機能 + クリーンアップ"
 project: ミニタキオン
 category: 作業効率化
-state: pending
-state_emoji: 🆕
+state: completed
+state_emoji: ✅
 priority: high
 
 created_at: 2026-04-25T20:10:00+09:00
-updated_at: 2026-04-25T22:00:00+09:00
+updated_at: 2026-04-25T23:15:00+09:00
+completed_at: 2026-04-25T22:30:00+09:00
 created_by: master-agent
 
 description: |
@@ -112,10 +113,25 @@ description: |
   - [ ] iPhone から実際にコメント送信 → Cockpit task に届く動作確認
   - [ ] 既存の Phase 1 view 機能を破壊しない
 
-cockpit_task_ids: []
+cockpit_task_ids:
+  - "88973dd5"
 
 pending_questions: []
 
-decisions: []
+decisions:
+  - at: '2026-04-25T22:30:00+09:00'
+    type: commitment
+    by: ai
+    content: |
+      Cockpit task 88973dd5 で Phase 2 全完了:
+      - A. 「全会話を見る」関連 4 箇所削除
+      - B. lib/lock.ts (proper-lockfile + optimistic check)
+      - C. lib/cockpit.ts 構造化エラー版 + 三重 fallback
+      - D. app/actions.ts (updateReviewState / replyToBL)
+      - E. UI mutation 実機能化 (done + コメント = [完了承認] 送信)
+      - F. vitest 6 files / 37 tests pass
+      - G. マイクボタン削除 (キーボードのマイクキー利用)
+      iPhone 実機 dogfooding で BL-TBD-004 のレビュー → コメント → AI 自動改訂が core loop として成功。
+      launchd 本番化済 (PID 91285、port 3000)。
 
 deliverable_refs: []

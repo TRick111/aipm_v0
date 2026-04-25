@@ -263,10 +263,16 @@ BL-0061（AI-Core PL）で発生した「aipm_v0 はメタ（Stock/README/Projec
 
 ---
 
-## BL-0060 Claude Code アップデート  [🟢 実行中]
+## BL-0060 Claude Code アップデート  [✅ Mac完了・Win手順書あり]
 
-- 📌 現在の状況: Native Installer 切替を実施中（待つだけ）
-- 📝 関連ファイル: 環境整備/（作業中）
+- 📌 結果: npm版 `2.1.117`（Homebrew node経由）→ **Native Installer版 `2.1.119`** に切替完了
+- 📌 配置: `/opt/homebrew/bin/claude` → `~/.local/bin/claude`、自動更新ON
+- 📌 設定ファイル無傷確認済（`~/.claude/settings.json` ほか）。バックアップ: `環境整備/claude_backup/`
+- 📌 配布形態の状況: npmは廃止ではないが**推奨ではなくなった**。公式setupページの最初は Native Installer。npm版も内部は同じ native binary、違いは自動更新の有無
+- 📝 関連ファイル:
+  - 実施ログ: [環境整備/claude_code_update_log.md](../環境整備/claude_code_update_log.md)
+  - Windows手順書: [環境整備/claude_code_update_windows.md](../環境整備/claude_code_update_windows.md)
+- 📌 残: **Windows端末側のアップデート**は本人手元作業（手順書あり）
 - ✅ 過去回答: Q1=(1) Native Installer / Q2=(a) 手順書のみ
 
 ---

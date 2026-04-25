@@ -1,0 +1,74 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "AGI_COCKPIT_HOOK=1; if [ -n \"$AGI_COCKPIT_STATUS_FILE\" ]; then SID=$(echo \"$CLAUDE_ENV_FILE\" | sed -n \"s|.*/session-env/\\([^/]*\\)/.*|\\1|p\"); mkdir -p \"$(dirname \"$AGI_COCKPIT_STATUS_FILE\")\"; TMP=\"${AGI_COCKPIT_STATUS_FILE}.tmp\"; if [ -f \"$AGI_COCKPIT_STATUS_FILE\" ]; then jq --arg sid \"$SID\" '.sessionId = $sid' \"$AGI_COCKPIT_STATUS_FILE\" > \"$TMP\"; else jq -n --arg sid \"$SID\" '.sessionId = $sid' > \"$TMP\"; fi; if [ -s \"$TMP\" ]; then mv \"$TMP\" \"$AGI_COCKPIT_STATUS_FILE\"; else rm -f \"$TMP\"; fi; fi"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "AGI_COCKPIT_HOOK=1; if [ -n \"$AGI_COCKPIT_STATUS_FILE\" ]; then mkdir -p \"$(dirname \"$AGI_COCKPIT_STATUS_FILE\")\"; TMP=\"${AGI_COCKPIT_STATUS_FILE}.tmp\"; if [ -f \"$AGI_COCKPIT_STATUS_FILE\" ]; then jq  '.status = \"running\"' \"$AGI_COCKPIT_STATUS_FILE\" > \"$TMP\"; else jq -n  '.status = \"running\"' > \"$TMP\"; fi; if [ -s \"$TMP\" ]; then mv \"$TMP\" \"$AGI_COCKPIT_STATUS_FILE\"; else rm -f \"$TMP\"; fi; fi"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "idle_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "AGI_COCKPIT_HOOK=1; if [ -n \"$AGI_COCKPIT_STATUS_FILE\" ]; then SID=$(echo \"$CLAUDE_ENV_FILE\" | sed -n \"s|.*/session-env/\\([^/]*\\)/.*|\\1|p\"); mkdir -p \"$(dirname \"$AGI_COCKPIT_STATUS_FILE\")\"; TMP=\"${AGI_COCKPIT_STATUS_FILE}.tmp\"; if [ -f \"$AGI_COCKPIT_STATUS_FILE\" ]; then jq --arg sid \"$SID\" '.status = \"waiting_confirmation\" | .sessionId = $sid' \"$AGI_COCKPIT_STATUS_FILE\" > \"$TMP\"; else jq -n --arg sid \"$SID\" '.status = \"waiting_confirmation\" | .sessionId = $sid' > \"$TMP\"; fi; if [ -s \"$TMP\" ]; then mv \"$TMP\" \"$AGI_COCKPIT_STATUS_FILE\"; else rm -f \"$TMP\"; fi; fi"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "AGI_COCKPIT_HOOK=1; if [ -n \"$AGI_COCKPIT_STATUS_FILE\" ]; then mkdir -p \"$(dirname \"$AGI_COCKPIT_STATUS_FILE\")\"; TMP=\"${AGI_COCKPIT_STATUS_FILE}.tmp\"; if [ -f \"$AGI_COCKPIT_STATUS_FILE\" ]; then jq  '.status = \"waiting_confirmation\"' \"$AGI_COCKPIT_STATUS_FILE\" > \"$TMP\"; else jq -n  '.status = \"waiting_confirmation\"' > \"$TMP\"; fi; if [ -s \"$TMP\" ]; then mv \"$TMP\" \"$AGI_COCKPIT_STATUS_FILE\"; else rm -f \"$TMP\"; fi; fi"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "AskUserQuestion",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "AGI_COCKPIT_HOOK=1; if [ -n \"$AGI_COCKPIT_STATUS_FILE\" ]; then mkdir -p \"$(dirname \"$AGI_COCKPIT_STATUS_FILE\")\"; TMP=\"${AGI_COCKPIT_STATUS_FILE}.tmp\"; if [ -f \"$AGI_COCKPIT_STATUS_FILE\" ]; then jq  '.status = \"waiting_confirmation\"' \"$AGI_COCKPIT_STATUS_FILE\" > \"$TMP\"; else jq -n  '.status = \"waiting_confirmation\"' > \"$TMP\"; fi; if [ -s \"$TMP\" ]; then mv \"$TMP\" \"$AGI_COCKPIT_STATUS_FILE\"; else rm -f \"$TMP\"; fi; fi"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "AskUserQuestion",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "AGI_COCKPIT_HOOK=1; if [ -n \"$AGI_COCKPIT_STATUS_FILE\" ]; then mkdir -p \"$(dirname \"$AGI_COCKPIT_STATUS_FILE\")\"; TMP=\"${AGI_COCKPIT_STATUS_FILE}.tmp\"; if [ -f \"$AGI_COCKPIT_STATUS_FILE\" ]; then jq  '.status = \"running\"' \"$AGI_COCKPIT_STATUS_FILE\" > \"$TMP\"; else jq -n  '.status = \"running\"' > \"$TMP\"; fi; if [ -s \"$TMP\" ]; then mv \"$TMP\" \"$AGI_COCKPIT_STATUS_FILE\"; else rm -f \"$TMP\"; fi; fi"
+          }
+        ]
+      }
+    ]
+  },
+  "skipDangerousModePermissionPrompt": true,
+  "enabledPlugins": {
+    "vercel@claude-plugins-official": true
+  }
+}

@@ -1,0 +1,68 @@
+schema_version: 1
+id: BL-0028
+title: "睡眠デバイス比較 (Garmin Vivoactive 6 vs Venu 4)"
+project: 健康管理
+category: 生活管理
+state: awaiting_user
+state_emoji: ⏸
+priority: high
+
+created_at: 2026-04-15T10:00:00+09:00
+updated_at: 2026-04-22T17:55:00+09:00
+created_by: master-agent
+
+description: |
+  ## 背景
+
+  田中さんは睡眠の質を長期トラッキングしたいが、現状スマートウォッチを持っていない。
+  AIOS パイプラインに健康データを集約する一環として、Garmin と Apple Watch、Oura Ring を比較した結果、Apple は数日に1回の充電が要るためボツ、Oura はサブスク制で却下、Garmin の2機種 (Vivoactive 6, Venu 4) に絞り込み済み。最後の選定が今のブロッカー。
+
+  ## タスク詳細
+
+  1. Vivoactive 6 と Venu 4 のスペック比較 (重量、バッテリー、センサー、価格)
+  2. AIOS パイプラインへのデータ連携可否確認 (特に体温センサーが Apple Health に同期されるか)
+  3. 5年TCO 算出 (本体価格 + 周辺アクセサリ + 故障リスク)
+  4. 田中さんの優先軸 (コスト > 連携 > 精度) で推奨選定
+  5. 最終決定 → 購入手配
+
+  ## 完了条件
+
+  - [x] スペック比較表完成
+  - [x] AIOS データ連携の調査完了 (Garmin → Apple Health は steps/HR/sleep/workouts のみ、体温は同期されない)
+  - [x] TCO 比較 (Vivoactive 6: 5年 ¥49,800 / Venu 4: 5年 ¥89,800、+¥40k 差)
+  - [x] AI 推奨提示: Vivoactive 6 (Q6 優先軸に最適)
+  - [ ] 田中さんの最終決定
+  - [ ] 購入
+
+deliverable_refs:
+  - d-20260422-001
+
+thread:
+  - at: 2026-04-22T14:30:00+09:00
+    role: ai
+    content: |
+      Vivoactive 6 で確定でよろしいですか？
+
+      📌 推奨理由:
+      - Q6 優先軸 (コスト > 連携 > 精度) に最も整合
+      - 5年TCO で ¥40,000 安い
+      - 23g 軽量、24h 装着が苦にならない
+      - AIOS パイプライン上、Venu 4 と差なし (体温は Apple Health に同期されない)
+
+      💭 Venu 4 を選ぶ場合の理由:
+      - Garmin Connect 内で体温トレンドを目で見たい
+      - AMOLED 画面の所有感
+      - +¥40k の予算に余裕があれば
+    cockpit_task_id: 64100
+  - at: 2026-04-22T15:45:00+09:00
+    role: user
+    content: "Venuが欲しいけど、一旦考えを寝かせます（決定は明日以降）"
+    sent_to_cockpit_task: 64100
+  - at: 2026-04-22T16:00:00+09:00
+    role: ai
+    content: |
+      了解しました。デバイス確定を待たず、他3点 (iPhone / Vercel / HAE許容) の前提で BL-0030 の事前準備を進めます。
+      事前準備設計書: `Flow/202604/2026-04-22/健康管理/bl0030_integration_prep.md`
+      Health Auto Export 設定 / Vercel Webhook 雛形 / DB候補 (推奨: GitHub commit) / 動作確認手順 を整備済み。
+      デバイス到着後すぐ連携開始可能です。
+    cockpit_task_id: 64100

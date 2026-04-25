@@ -1,0 +1,49 @@
+schema_version: 1
+id: BL-TBD-003
+title: "ミニタキオン UI デザイン改善 (web designer agent)"
+project: ミニタキオン
+category: 作業効率化
+state: awaiting_user
+state_emoji: ⏸
+priority: high
+
+created_at: 2026-04-25T20:10:00+09:00
+updated_at: 2026-04-25T20:15:00+09:00
+created_by: master-agent
+
+description: |
+  ## 背景
+
+  Phase 1 の view-only MVP が動いたが、田中さん iPhone 実機確認の結果「デザインが全く良くない」とフィードバック。
+  shadcn/ui のデフォルトをそのまま使っただけでは個人の毎日使うツールとしての魅力が無い。Linear / Notion / iOS native 級の見栄えと使いやすさが必要。
+
+  併せて以下も実装:
+  - 各 BL アイテムに「背景 / タスク詳細 / 完了条件」の3 section 表示
+  - AI フィードバック欄 (textarea + Send、Phase 2 までは visual only)
+  - 例データ (4プロジェクト、複数BL) で実際にダッシュボードが「生きている」状態
+
+  バックログ構造は変えず、フロントエンドのみ改善。
+
+  ## タスク詳細
+
+  1. shadcn/ui のテーマカスタマイズ (色・タイポ・spacing・radius)
+  2. ダークモードを default、生地感のある背景
+  3. ホーム画面: 「私の番」を hero 級に、プロジェクト別カードのデザイン
+  4. BL 詳細: description を markdown parse → 3 section (背景/タスク詳細/完了条件) に視覚分離
+  5. AI フィードバック UI: textarea (iOSマイク対応) + Send ボタン (Phase 2 で実装と toast、localStorage に下書き保存)
+  6. Loading / empty / error state を shadcn のスケルトンで品よく
+  7. iPhone 425px viewport で実機相当の手触り確認
+  8. 例データ4プロジェクト (ミニタキオン / 健康管理 / 麻布しき / バー5アローズ) で動作確認
+
+  ## 完了条件
+
+  - [ ] ホーム画面が Linear / Notion 級の視覚クオリティ
+  - [ ] 各 BL ページに「背景 / タスク詳細 / 完了条件」が綺麗に分かれて見える
+  - [ ] AI フィードバック textarea + Send が見える (動作は Phase 2)
+  - [ ] 例データ 4プロジェクト・6BL で「生きてる」ダッシュボード
+  - [ ] バックエンド (lib/*) と YAML schema は変更なし
+  - [ ] 田中さん iPhone 実機確認で「これなら毎日使える」OK
+
+deliverable_refs: []
+
+thread: []

@@ -1,8 +1,11 @@
 # Daily Loop 設計 — ミニタキオンを 1 日の運用ハブにする
 
 Generated: 2026-04-25 22:30
-Status: DRAFT (田中さんレビュー待ち)
+Revised: 2026-04-25 23:00 (田中さんフィードバック反映)
+Status: REVISED — 田中さん再レビュー待ち
 BL: BL-TBD-004 (ミニタキオン Phase 3: Daily Loop)
+
+---
 
 ## 何をしたいか
 
@@ -35,18 +38,18 @@ BL: BL-TBD-004 (ミニタキオン Phase 3: Daily Loop)
 ## 提案フロー (Daily Loop)
 
 ```
-☀️ 朝
+☀️ 朝 (8:30 までに開始)
   田中さん [☀️ 今日を始める] → ミニタキオンが
-    1. BL-DAILY-{YYYYMMDD} 自動作成
-    2. 固定プロンプトで Cockpit task 起動 (朝の整理エージェント)
-    3. AI が今日のタスク案 .md を生成
-    4. BL-DAILY のレビュー物として ミニタキオンに登場
+    1. 固定プロンプトで Cockpit task 起動 (朝の整理エージェント)
+    2. AI が「今日のタスク案.md」を生成
+    3. その日の Flow フォルダに deliverable として登録
+       → ミニタキオンの「📅 今日の運用」セクションに登場
   ↓
-  田中さんが iPhone で BL-DAILY をタップ
-    → 「AIからの成果物」=「今日のタスク案」を読む
+  田中さんが iPhone で「今日のタスク案」をタップ
+    → 内容を読む
     → コメント or 修正依頼 → 承認 [✓ done]
   ↓
-  AI が承認に基づき各 BL の priority/state を更新
+  AI が承認に基づき各 BL の priority/state を自動更新
   → 1日が始まる
 
 🟢 日中 (既存通り)
@@ -55,43 +58,53 @@ BL: BL-TBD-004 (ミニタキオン Phase 3: Daily Loop)
 
 🌙 夜
   田中さん [🌙 今日を締める] → ミニタキオンが
-    1. BL-WRAPUP-{YYYYMMDD} 自動作成
-    2. 固定プロンプトで Cockpit task 起動 (振り返りエージェント)
-    3. AI が今日の振り返り .md を生成
-       - 今日完了したこと
-       - 残課題
-       - 翌日への申し送り
+    1. 固定プロンプトで Cockpit task 起動 (振り返りエージェント)
+    2. AI が「今日の振り返り.md」を生成
+       - 今日完了したこと / 残課題 / 翌日への申し送り
+    3. その日の Flow フォルダに deliverable として登録
     4. STATUS.md を Flow → Stock にマージ (既存 Phase 5 設計と統合)
   ↓
-  田中さんが BL-WRAPUP を読んで承認 → 1日終了
+  田中さんが「今日の振り返り」を読んで承認 → 1日終了
 
 🔄 翌朝
-  朝の整理エージェントが前日の振り返りを読んで、今日のタスク案を作成
-  → ループ
+  朝の整理エージェントが前日 (なければ前々日…最大 7 日) の振り返りを読んで、
+  今日のタスク案を作成 → ループ
 ```
 
-「☀️ / 🌙」ボタンを忘れた場合のセーフティネット:
+セーフティネット:
 - **03:00 cron** が走り、未締めなら自動で 🌙 を実行 (既設計)
 - 翌朝のエージェントが「昨日締めずに走り抜けたよね」を検知してリマインド
+- ☀️ を 8:30 までに押し忘れた場合: ホームに「☀️ まだ今日を始めてません」のリマインド表示 (UI 上の警告のみ、自動実行はしない)
+
+スキップ運用:
+- 旅行や会議の日も普通に [☀️ 今日を始める] を押す
+- 起動した整理エージェントに「今日はスキップ」と伝えれば、AI が短い案 (今日は休 / 重要レビュー無し等) を出す
+- 専用「スキップ」ボタンは作らない
 
 ---
 
-## 朝の整理エージェントの固定プロンプト (案)
+## 朝の整理エージェントの固定プロンプト
 
 ```
 あなたは ミニタキオン の「朝の整理」担当エージェントです。
 
 # やること (順番)
 
-1. 全 Stock プロジェクトの STATUS.md を読む
-   ~/aipm_v0/Stock/*/*/STATUS.md
+1. 「アクティブなプロジェクト」を抽出
+   - ~/aipm_v0/Stock/*/*/backlog/ ディレクトリが存在し、
+     そこに state ≠ done の BL が 1 件以上ある プロジェクトのみを対象にする
+   - backlog を持たないプロジェクトは無視 (静的リファレンス・完了済アーカイブ等)
 
-2. 各プロジェクトの active な BL を確認
-   - state, priority, pending_questions, decisions
-   - 当日 Flow に deliverables.yaml があれば読む
+2. 抽出したプロジェクトについて、以下を読む
+   - STATUS.md (現状)
+   - backlog/*.yaml の active な BL
+     (state, priority, pending_questions, decisions)
+   - 当日 Flow に <today>/<project>/deliverables.yaml があれば読む
 
-3. 前日の Daily Wrap-up を読む (もしあれば)
-   ~/aipm_v0/Flow/<前日>/_orchestration/今日の振り返り.md
+3. 前日の Daily Wrap-up を読む
+   - ~/aipm_v0/Flow/<前日>/_orchestration/今日の振り返り.md
+   - 無ければ前々日…と最大 7 日前まで遡って 直近のものを 1 件読む
+   - 7 日遡っても無ければ「履歴なし」として進める
 
 4. 以下を含む「今日のタスク案」を Markdown で出力
 
@@ -106,7 +119,7 @@ BL: BL-TBD-004 (ミニタキオン Phase 3: Daily Loop)
 
    ## 🟢 AI 進行リスト
    <今日 AI が進める BL、目安時間付き>
-   - **BL-XXX (project)**: <今日やる予定の作業>
+   - **BL-XXX (project)**: <今日やる予定の作業 1-2 行>
 
    ## 💡 提案
    <新規 BL 案 / scope 変更 / 中止すべき BL>
@@ -117,15 +130,23 @@ BL: BL-TBD-004 (ミニタキオン Phase 3: Daily Loop)
 5. 出力先: ~/aipm_v0/Flow/<today>/_orchestration/今日のタスク案.md
 
 6. ミニタキオン に成果物として登録:
-   - deliverables.yaml に entry 追加
-   - BL-DAILY-{YYYYMMDD} の deliverable_refs に append
+   - ~/aipm_v0/Flow/<today>/_orchestration/deliverables.yaml に entry 追加
+   - review_state: unreviewed
+   - cockpit_task_id をエントリに記録 (BL は作らないので deliverable 単独で紐付け)
 
-7. BL-DAILY の state を awaiting_user に
+7. 田中さんに通知 (ミニタキオン上で「📅 今日の運用」に登場)
+
+# 田中さんが done で承認したら
+
+8. AI が以下を自動実行:
+   - 「AI 進行リスト」に挙げた BL の priority/state を案どおりに更新
+   - 「提案」が承認されたら新規 BL を作成
+   - 更新内容を deliverables.yaml の decisions[] に追記
 ```
 
 ---
 
-## 夜の振り返りエージェントの固定プロンプト (案)
+## 夜の振り返りエージェントの固定プロンプト
 
 ```
 あなたは ミニタキオン の「夜の振り返り」担当エージェントです。
@@ -137,7 +158,7 @@ BL: BL-TBD-004 (ミニタキオン Phase 3: Daily Loop)
    - 今日 review_state が done に変わったもの
    - 今日 created_at の新規 deliverable
 
-2. 各プロジェクトの BL.yaml decisions[] から:
+2. アクティブなプロジェクト (backlog/*.yaml に active BL を持つ) の BL.yaml decisions[] から:
    - 今日 (created_at が today) の decisions
 
 3. 残課題の集計:
@@ -168,12 +189,43 @@ BL: BL-TBD-004 (ミニタキオン Phase 3: Daily Loop)
 
 5. 出力先: ~/aipm_v0/Flow/<today>/_orchestration/今日の振り返り.md
 
-6. STATUS.md を Flow から Stock にマージ
+6. ~/aipm_v0/Flow/<today>/_orchestration/deliverables.yaml に entry 追加
+   - review_state: unreviewed
+   - cockpit_task_id をエントリに記録
+
+7. STATUS.md を Flow から Stock にマージ
    - 各プロジェクトの Flow/<today>/<project>/STATUS.md を Stock の永続版にマージ
    - 履歴 append、完了済 union、次アクション 上書き
 
-7. ミニタキオンに登録、BL-WRAPUP-{YYYYMMDD} の deliverable_refs に append、awaiting_user に
+# 田中さんが done で承認したら
+
+8. AI が以下を自動実行:
+   - 翌日への申し送りを 翌朝の整理エージェントが読みやすい形にして保存済み
+   - 必要なら新規 BL の作成
+   - その日の Flow をクローズ (cron が代行する場合もあり)
 ```
+
+---
+
+## ファイル配置
+
+朝/夜の整理結果は **その日の Flow フォルダ直下の `_orchestration/`** にまとめる。
+プロジェクトごとに分けず、その日の運用はその日に紐づく形。
+
+```
+~/aipm_v0/Flow/202604/2026-04-25/
+├── _orchestration/                  ← その日の運用ハブ (朝/夜共通)
+│   ├── deliverables.yaml            ← 朝/夜 deliverable を 2 件保持
+│   ├── 今日のタスク案.md             ← ☀️ 朝の成果物
+│   └── 今日の振り返り.md             ← 🌙 夜の成果物
+├── ミニタキオン/                     ← 通常プロジェクトの作業
+│   └── deliverables.yaml
+└── ... (他プロジェクト)
+```
+
+- BL-DAILY / BL-WRAPUP のような専用 BL は **作らない** (Stock を汚さない)
+- 過去分は Flow フォルダ構造の中にそのまま蓄積され、日付フォルダを辿れば見られる
+- 専用「アーカイブ」処理は不要 (どんどん貯まる方針)
 
 ---
 
@@ -182,23 +234,30 @@ BL: BL-TBD-004 (ミニタキオン Phase 3: Daily Loop)
 ### A. UI 変更
 - ホーム画面の上部に **「☀️ 今日を始める」「🌙 今日を締める」** ボタン
   - 時間帯で強調を切り替え (朝は ☀️ 大、夜は 🌙 大)
-  - 既に当日の BL-DAILY / BL-WRAPUP があれば、ボタンは「📅 今日の運用へ」リンクに変わる
-- ホーム上部に「📅 今日の運用」セクション (BL-DAILY / BL-WRAPUP 専用、既存プロジェクト一覧の上)
+  - 既に当日の朝/夜 deliverable があれば、ボタンは「📅 今日の運用へ」リンクに変わる
+  - 8:30 までに ☀️ を押していなければ、ホームに警告バッジを出す
+- ホーム上部に **「📅 今日の運用」セクション** (既存プロジェクト一覧の上)
+  - `Flow/<today>/_orchestration/deliverables.yaml` を直接読み、朝/夜 deliverable をカード表示
+  - BL に紐づかない deliverable を ミニタキオン UI で表示できるようにするのが要点
+- ホーム下部に **「📚 過去の運用」リンク** (Flow の日付フォルダを日付降順でリスト)
 
 ### B. Server Actions
 ```typescript
 // app/actions.ts に追加
-async function startDailyLoop(): Promise<Result<{ blId: string }, ...>> {
-  // 1. BL-DAILY-{YYYYMMDD}.yaml を Stock に作成
-  // 2. Cockpit task を起動 (固定プロンプト + bl_id 渡す)
-  // 3. cockpit_task_ids[] に append
+async function startDailyLoop(): Promise<Result<{ deliverableId: string }, ...>> {
+  // 1. Flow/<today>/_orchestration/ ディレクトリを作成 (なければ)
+  // 2. Cockpit task を起動 (固定プロンプト daily-start.md)
+  // 3. AI が deliverable を作成 → deliverables.yaml に entry 追記
+  //    (cockpit_task_id を deliverable entry に直接保存)
   // 4. revalidatePath
 }
 
-async function endDailyLoop(): Promise<Result<{ blId: string }, ...>> {
-  // 似たフロー、BL-WRAPUP 作成
+async function endDailyLoop(): Promise<Result<{ deliverableId: string }, ...>> {
+  // 似たフロー、daily-wrapup.md で起動
 }
 ```
+
+BL を作らないので、cockpit_task_ids は **deliverable entry に直接持たせる** スキーマ変更を入れる。
 
 ### C. 固定プロンプトファイル
 ```
@@ -207,71 +266,45 @@ async function endDailyLoop(): Promise<Result<{ blId: string }, ...>> {
 └── daily-wrapup.md    # 夜の振り返りプロンプト
 ```
 
-### D. BL-DAILY / BL-WRAPUP の置き場所
-**提案: 専用プロジェクト「朝の整理」を Stock に作る**
-```
-~/aipm_v0/Stock/作業効率化/朝の整理/
-├── STATUS.md
-└── backlog/
-    ├── BL-DAILY-20260426.yaml
-    ├── BL-DAILY-20260427.yaml
-    ├── BL-WRAPUP-20260426.yaml
-    └── ...
-```
-
-UI:
-- ホームの「📅 今日の運用」セクションは「朝の整理」プロジェクトの BL のうち今日のものだけを抽出して見せる
-- 過去のは「朝の整理」プロジェクトページで日付順に並べる
-- 30 日以前は collapsed (古いものから)
+### D. deliverables.yaml スキーマの軽微な拡張
+- `_orchestration/deliverables.yaml` 用に、entry 単位で `cockpit_task_id` (単数) を持つ形を追加
+- `bl_id` は省略可 (Daily Loop deliverable は紐付け先 BL がない)
 
 ### E. 03:00 cron との統合
 既設計の Phase 5 cron に「未締めなら 🌙 endDailyLoop を実行」を追加。
 
-### F. テスト
-- Server Actions のテスト (BL-DAILY 作成、Cockpit fallback 各分岐、revalidatePath)
+### F. 承認後の自動更新ロジック
+- 田中さんが「今日のタスク案」の deliverable を done に変えたら、
+  AI が「AI 進行リスト」に書かれた BL の priority/state を自動更新
+- 自動更新はサーバーアクションから Cockpit task に投げる形 (既存ハンドオフを再利用)
+
+### G. テスト
+- Server Actions のテスト (deliverable 作成、Cockpit fallback 各分岐、revalidatePath)
+- `_orchestration` deliverables.yaml が UI に表示されること
 
 ### 工数見積
-- Phase 3a: ☀️ ボタン + 朝の整理 + BL-DAILY 作成 (1-2 日)
+- Phase 3a: ☀️ ボタン + 朝の整理エージェント + `_orchestration` deliverable 作成 (1-2 日)
 - Phase 3b: 🌙 ボタン + 夜の振り返り + Stock マージ (1 日)
-- Phase 3c: 03:00 cron との統合 (半日)
-- Phase 3d: 「📅 今日の運用」専用 UI、past archive (半日)
+- Phase 3c: 03:00 cron との統合 + 承認後自動更新 (半日 + 半日)
+- Phase 3d: 「📅 今日の運用」UI + 「📚 過去の運用」リンク (半日)
 
 **合計 3-4 日 (1-2 週末)**
 
 ---
 
-## 田中さんに確認したいこと (Open Questions)
+## 決定事項 (旧 Open Questions の回答)
 
-### Q1: BL-DAILY / BL-WRAPUP の置き場所
-- (a) 推奨: 専用プロジェクト「朝の整理」を Stock に作る (例: `Stock/作業効率化/朝の整理/`)
-- (b) `_orchestration/` 直下に置く (各 Flow フォルダ直下)
-- (c) 各プロジェクトに分散 (各 STATUS.md にメタとして記録)
-
-### Q2: 1日 1 BL or 2 BL?
-- (a) 推奨: BL-DAILY (朝) + BL-WRAPUP (夜) = 2 個 / 日 → 月 60 BL
-- (b) 1 BL に統合 (`BL-DAILY-{date}` に朝の案 + 夜の振り返りを両方ぶら下げる) = 月 30 BL
-
-### Q3: タスク案の粒度
-- (a) 推奨: BL 一覧の優先順位 + 各 BL で「今日 AI が進める」内容を1-2行
-- (b) 各 BL で具体タスクを細かく出す (時間配分まで)
-- (c) 一言の概要だけ (シンプル運用)
-
-### Q4: 承認後の AI の権限
-- (a) 推奨: 田中さんが done で承認したら、AI が各 BL の priority/state を自動更新
-- (b) 案は出すだけ、実際の更新は田中さんが ミニタキオン UI で手動
-
-### Q5: アーカイブ
-- (a) 推奨: 30 日前から collapsed、90 日前から非表示 (検索のみ)
-- (b) 全期間表示 (どんどん増える)
-- (c) 7 日で削除 (履歴は git で十分)
-
-### Q6: 「今日を始める」を何時までに押す想定?
-- 朝のうち (起きてすぐ) に押す前提でいいか?
-- 押し忘れたら 朝の整理は走らないが、田中さんは普通に作業を進めて OK?
-
-### Q7: 「タスク整理」スキップ機能
-- 旅行や会議の日など、Daily Loop をスキップしたい時用に「今日はスキップ」ボタンも欲しい?
-- それとも単に 🌙 を押さなければ自動的に skip 扱いになる?
+| # | 論点 | 決定 |
+|---|------|------|
+| D1 | 朝/夜 deliverable の置き場所 | Stock に専用プロジェクトを作らず、`Flow/<date>/_orchestration/` に保存 |
+| D2 | 1日に作る成果物の数 | 朝 + 夜 で 2 件 (deliverable として) |
+| D3 | タスク案の粒度 | BL 優先順位 + 各 BL「今日 AI が進める」内容 1-2 行 |
+| D4 | 承認後の AI 権限 | done 承認で AI が priority/state を自動更新 |
+| D5 | アーカイブ | なし。Flow フォルダ構造にどんどん貯める。「📚 過去の運用」リンクから日付降順で参照 |
+| D6 | ☀️ を押す目標時刻 | **8:30 まで**。朝のうちにやる前提。それ以降はホームに警告バッジ |
+| D7 | スキップ機能 | なし。スキップしたい日も ☀️ を押し、エージェントに「今日はスキップ」と伝える |
+| D8 | 朝のエージェントの読み込み対象 | **backlog/ に active な BL を持つプロジェクトのみ**。全 Stock 走査ではない |
+| D9 | 前日履歴の参照 | 前日 → なければ前々日 → 最大 7 日遡る |
 
 ---
 
@@ -280,4 +313,4 @@ UI:
 - AIPM の 3 ファイル同期 (STATUS / INBOX / daily_tasks) は **既に廃止** 決定 (Phase 4 で実施予定)
 - 「daily_tasks.md」を作る役割は **「今日のタスク案.md」が引き継ぐ**
 - INBOX は ミニタキオン 自体が引き継ぎ済 (pending_questions[])
-- だから Phase 3 完了で AIPM 散文 3ファイルから完全離脱できる
+- Phase 3 完了で AIPM 散文 3ファイルから完全離脱できる

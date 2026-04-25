@@ -1,15 +1,40 @@
 schema_version: 1
 project: ミニタキオン
-date: 2026-04-25
-
+date: '2026-04-25'
 deliverables:
   - id: d-20260425-daily-loop-001
     file: daily_loop_design.md
     bl_id: BL-TBD-004
-    title: "Daily Loop 設計 — ミニタキオンを 1 日の運用ハブに"
-    created_at: 2026-04-25T22:30:00+09:00
+    title: Daily Loop 設計 — ミニタキオンを 1 日の運用ハブに
+    created_at: '2026-04-25T22:30:00+09:00'
     created_by: master-agent
     created_by_agent: claude
-    review_state: unreviewed
-    review_log: []
-    last_modified: 2026-04-25T22:30:00+09:00
+    review_state: done
+    review_log:
+      - at: '2026-04-25T13:47:32.690Z'
+        action: state_change
+        from: unreviewed
+        to: needs_revision
+        comment: >-
+          朝の整理エージェントのプロンプトの中で、全ストックプロジェクトのステータスを読むとありますが、そうではなくて、バックログの中にあるプロジェクトだけを抽出して、そのプロジェクトのステータスを確認するという流れにしてください。デイリーとラップアップは専用のストックではなく、フローのその日の作業フォルダの中に入れておくのがいいかなと思ってますが、なんか不都合ありますかね。プロジェクトに分散というより、デイリーとラップアップはプロジェクトごとに分けずに、その日の内容がその日に紐づくのかなと思ってます。
+
+
+          デイリーとラップアップで2つ朝夕で作りたいです。タスク誘導は一旦推奨のものでOKです。承認後の更新はAI側でやってほしいです。アーカイブが何を指しているのか分かりませんが、バックログのデイリーとラップアップの話なのであれば、フローにどんどん貯めておきたいです。
+
+
+          確認するのは前日、または前日のがなければその前の日とかでいいかなと思ってます。今日を始めるは8時半までにやりたいです。朝のうちにやる前提でお願いします。スキップ機能は一旦なくて大丈夫です。スキップしたいときはデイリーを始めて、そのときにその日はスキップする旨伝えます。
+      - at: '2026-04-25T23:00:00+09:00'
+        action: revised
+        from: needs_revision
+        to: unreviewed
+        comment: >-
+          フィードバックを反映して改訂。主な変更: (1) 朝のエージェントは backlog に active BL を持つプロジェクトのみを対象に変更、 (2) BL-DAILY/BL-WRAPUP は作らず
+          Flow/<date>/_orchestration/ に deliverable として保存 (Stock に専用プロジェクトは作らない)、 (3) 朝/夜 2 deliverable 構成、タスク粒度は推奨案、承認後
+          AI が priority/state 自動更新、 (4) 前日履歴は最大 7 日遡る、 (5) 8:30 までに ☀️ を押す前提、間に合わなければホームに警告バッジ、スキップ専用ボタンは廃止 (☀️
+          起動時に伝える)、 (6) アーカイブ概念は廃止 — Flow フォルダにどんどん蓄積。 Open Questions は「決定事項」セクションに置き換え。
+      - at: '2026-04-25T14:05:57.500Z'
+        action: state_change
+        from: unreviewed
+        to: done
+        comment: これでオッケーです
+    last_modified: '2026-04-25T14:05:57.500Z'

@@ -1,0 +1,47 @@
+schema_version: 2
+id: BL-TBD-006
+title: "ミニタキオン Phase 3c: 03:00 cron + 承認後自動更新"
+project: ミニタキオン
+category: 作業効率化
+state: pending
+state_emoji: 🆕
+priority: normal
+
+created_at: 2026-04-26T00:10:00+09:00
+updated_at: 2026-04-26T00:10:00+09:00
+created_by: master-agent
+
+description: |
+  ## 背景
+
+  Daily Loop のセーフティネット + 自動化。Phase 3b 完了後に着手。
+
+  - 田中さんが 🌙 を押し忘れた日 (旅行・体調不良など) でも、深夜 03:00 cron で自動的に Stock マージが走り、データが整合する
+  - 朝の整理で田中さんが done で承認したタスク案について、AI が各 BL の priority/state を自動更新する (D4 仕様)
+
+  ## タスク詳細
+
+  1. 既存の 03:00 cron (Phase 5 設計) に「未締め日があれば自動 endDailyLoop」を統合
+     - `./cockpit autorun create --type cron --expression "0 3 * * *"` 既設の場合は instruction を更新
+     - 当日 Flow の `今日の振り返り.md` が無ければ自動生成
+  2. 朝のタスク案承認時の自動更新ロジック:
+     - 田中さんが「今日のタスク案」deliverable を done で承認した時
+     - app/actions.ts の updateReviewState() で trigger
+     - AI に「承認内容を読み、各 BL の priority/state を更新してください」と指示するエージェント起動
+  3. vitest テスト追加 (cron 入口 / 自動更新 ロジック の各分岐)
+
+  ## 完了条件
+
+  - [ ] 03:00 cron スクリプト/instruction が「未締め自動 endDailyLoop」をカバー
+  - [ ] 朝のタスク案 done 承認 → AI が各 BL を自動更新するパイプライン
+  - [ ] 自動更新後の BL.yaml が schema 厳守 (decisions[] に append、type/by/content 正しい)
+  - [ ] vitest テスト pass
+  - [ ] 1 週間運用してマージ漏れなし、自動更新で BL.yaml 破損なし
+
+cockpit_task_ids: []
+
+pending_questions: []
+
+decisions: []
+
+deliverable_refs: []

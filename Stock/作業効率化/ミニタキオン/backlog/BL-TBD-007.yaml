@@ -1,0 +1,47 @@
+schema_version: 2
+id: BL-TBD-007
+title: "ミニタキオン Phase 3d: 「📅 今日の運用」UI 拡張 + 「📚 過去の運用」リンク"
+project: ミニタキオン
+category: 作業効率化
+state: pending
+state_emoji: 🆕
+priority: normal
+
+created_at: 2026-04-26T00:10:00+09:00
+updated_at: 2026-04-26T00:10:00+09:00
+created_by: master-agent
+
+description: |
+  ## 背景
+
+  Daily Loop の UI 仕上げ。Phase 3a/3b の deliverable (朝のタスク案 / 夜の振り返り) が日々生成される運用が始まった後、それらを ミニタキオン UI で気持ちよく辿れる状態にする。
+
+  Phase 3a で「📅 今日の運用」セクションは仮実装 (placeholder + 当日 deliverable のみ表示)。これを本格化 + 過去日の振り返りも一覧から辿れるように。
+
+  ## タスク詳細
+
+  1. ホーム「📅 今日の運用」セクションの拡張:
+     - 朝の deliverable と夜の deliverable を 2 並び表示
+     - 各 deliverable の review_state バッジ
+     - 押下で deliverable 詳細へ
+  2. ホーム下部に「📚 過去の運用」リンク追加:
+     - `~/aipm_v0/Flow/*/_orchestration/` を日付降順でスキャン
+     - 各日のサムネイル (今日のタスク案 / 今日の振り返り の冒頭抜粋)
+     - 押下で過去日の deliverables を見られる
+  3. ページネーション or 30 日カットオフ (アーカイブ概念は廃止 D5、ただし UI 上は適度に折り畳む)
+  4. vitest テスト追加 (UI レンダリング、過去日スキャン)
+
+  ## 完了条件
+
+  - [ ] ホーム「📅 今日の運用」が朝/夜 2 deliverable を見やすく表示
+  - [ ] 「📚 過去の運用」リンクと一覧ページ
+  - [ ] iPhone で過去 1 週間分の振り返りを 3 タップ以内に開ける
+  - [ ] vitest テスト pass
+
+cockpit_task_ids: []
+
+pending_questions: []
+
+decisions: []
+
+deliverable_refs: []

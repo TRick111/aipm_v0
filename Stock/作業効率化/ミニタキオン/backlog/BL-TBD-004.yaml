@@ -1,77 +1,59 @@
 id: BL-TBD-004
-title: 'ミニタキオン Phase 3: Daily Loop (朝の始まり / 夜の締め)'
+title: 'ミニタキオン Phase 3a: ☀️ 朝の整理'
 project: ミニタキオン
 category: 作業効率化
-state: planned
-state_emoji: 🔵
+state: awaiting_user
+state_emoji: ⏸
 priority: high
 created_at: '2026-04-25T22:30:00+09:00'
-updated_at: '2026-04-25T23:10:00+09:00'
+updated_at: '2026-04-26T00:00:00+09:00'
 created_by: master-agent
 description: >
   ## 背景
 
 
-  Phase 1 (view-only) と Phase 2 (書き込み機能) で「AI 成果物のレビュー → 次指示」の core loop は完成。次は **1日の運用そのもの (朝のタスク整理 + 夜の振り返り)
-  をミニタキオンに統合** する。
+  ミニタキオンを「1日の運用ハブ」に進化させる Phase 3 の最初のマイルストーン。**☀️ 今日を始める** ボタンと、それを押した時に走る朝のタスク整理エージェントを実装する。
 
 
-  田中さんは毎朝、複数プロジェクトを横断して「今日何をやるか」を整理しているが、現状は属人化 (頭の中 + AIPM ファイル確認)。これを ミニタキオン上の固定フロー (☀️ 今日を始める / 🌙 今日を締める ボタン)
-  に置き換え、AI が整理案を出して田中さんが承認する形に。
-
-
-  これで AIPM 散文 3 ファイル (STATUS / INBOX / daily_tasks) のうち最後の `daily_tasks.md` も廃止できる (今日のタスク案.md が引き継ぐ)。
+  Phase 3 全体は a/b/c/d の 4 段に分かれており、本 BL は **3a (朝の整理) のみ** を扱う。3b/3c/3d は別 BL (BL-TBD-005/006/007) に切り出し済。
 
 
   ## タスク詳細
 
 
-  詳細は成果物 `daily_loop_design.md` (改訂版) を参照。要点:
+  1. ホーム画面に「☀️ 今日を始める」ボタン (8:30 過ぎ警告バッジ付き)
 
+  2. 「📅 今日の運用」セクションをホーム最上部に追加
 
-  1. ホーム画面に「☀️ 今日を始める / 🌙 今日を締める」ボタン追加 (時間帯で強調切替、8:30 までの ☀️ 押し忘れ警告バッジ)
+  3. Server Action `startDailyLoop()` (idempotent、cockpit task 起動)
 
-  2. Server Actions: `startDailyLoop()` / `endDailyLoop()`
+  4. 固定プロンプト `lib/prompts/daily-start.md`:
+     - データソース: `Stock/定型作業/バックログ/Backlog.md` 中央台帳 (canonical)
+     - mini-tachyon per-project BL は補助
+     - 出力形式: `Flow/202604/2026-04-24/0424_planning.md` 4/24 planning スタイル
+     - 案件 (Project) ごとのグルーピング + 状況サマリー + 期日順テーブル
+     - クラス ABC (🟢A AIで即実行可 / 🟡B 要件詰めればA化 / 🔴C 本人実行 / ⏸️保留)
+     - AI 回答ルール + schema 厳守ルール (再発防止)
 
-  3. 固定プロンプト 2 種: `lib/prompts/daily-start.md` `daily-wrapup.md`
-
-  4. 朝/夜の整理結果は `Flow/<date>/_orchestration/` に deliverable として保存 (専用 BL は作らない)
-
-  5. 朝のエージェントは backlog/ に active BL を持つプロジェクトのみを対象に走査
-
-  6. 既存 03:00 cron に未締め自動実行を統合
-
-  7. 「📅 今日の運用」専用 UI セクション + 「📚 過去の運用」リンク (Flow フォルダ日付降順)
-
-  8. 承認後 AI が各 BL の priority/state を自動更新
-
-  9. テスト
-
-
-  実装は Phase 3a / 3b / 3c / 3d に分割、合計 3-4 日。
+  5. vitest テスト追加
 
 
   ## 完了条件
 
 
-  - [x] 田中さんが改訂版設計書 `daily_loop_design.md` を再レビュー、承認 (2026-04-25 done)
+  - [x] v1 実装完了 (UI ボタン / セクション / Server Action / vitest 47 pass)
 
-  - [ ] 設計確定後、Phase 3a (☀️ + 朝の整理 + `_orchestration` deliverable 作成) 実装
+  - [x] v2 プロンプト書き直し (4/24 形式 + 中央 Backlog.md ベース)
 
-  - [ ] Phase 3b (🌙 + 夜の振り返り + Stock マージ) 実装
+  - [ ] **4/26 朝の実機テスト**: 田中さんが iPhone で ☀️ 押下 → AI が中央 Backlog から全 Project の active BL を抽出 → 4/24 形式で `今日のタスク案.md` を生成 → ミニタキオン UI で表示・レビュー可能
 
-  - [ ] Phase 3c (03:00 cron 統合 + 承認後自動更新) 実装
-
-  - [ ] Phase 3d (UI セクション + 過去の運用リンク) 実装
-
-  - [ ] iPhone 実機で実際に「☀️ 今日を始める」を押して 1 日が回る動作確認
-
-  - [ ] 1 週間運用してフローに違和感がないか検証
+  - [ ] 実機運用で違和感なし (案件別グルーピング、クラス ABC、期日表示が正しい)
 deliverable_refs:
   - d-20260425-daily-loop-001
 schema_version: 2
 cockpit_task_ids:
   - 717658ce
+  - 83948eeb
 pending_questions: []
 decisions:
   - at: '2026-04-25T23:00:00+09:00'
@@ -89,6 +71,7 @@ decisions:
       D7: スキップ機能は作らない。スキップしたい日も ☀️ を押し、エージェントに「今日はスキップ」と伝える
       D8: 朝のエージェントは backlog/ に active BL を持つプロジェクトのみを走査対象とする (全 Stock 走査ではない)
       D9: 前日履歴は前日 → なければ前々日 → 最大 7 日遡って直近の振り返りを 1 件読む
+    answers_question_id: q-20260425-design-review-001
   - at: '2026-04-25T23:00:00+09:00'
     type: commitment
     by: ai
@@ -104,21 +87,8 @@ decisions:
     type: commitment
     by: ai
     content: |
-      質問への回答 (cockpit task 717658ce で答えた内容を BL に転記、UI 可視化のため):
-
-      バックログはプロジェクトごとに分散しています。実態は:
-      `Stock/<カテゴリ>/<プロジェクト>/backlog/BL-XXX.yaml`
-      = 1 プロジェクト = 1 backlog/ ディレクトリ、BL ごとに 1 yaml ファイル。
-
-      現在 backlog/ を持つのは 5 プロジェクト:
-      - 作業効率化/ミニタキオン/backlog/ (BL-TBD-001〜004)
-      - RestaurantAILab/麻布しき/backlog/ (BL-MAS-001, 002)
-      - RestaurantAILab/HACCPアプリ開発/3_planning/backlog/
-      - 本業/バー5アローズ/backlog/
-      - 生活管理/健康管理/backlog/
-
-      これは ミニタキオン v2 設計時 (前セッション Q4-B 確定) に「Stock 直接編集 + プロジェクト別」で決めた構造。
-      AIPM に「Backlog 1 ファイル」は存在しない。「Stock/定型作業/バックログ/」フォルダは別物 (定型タスクの台帳、BL とは無関係)。
+      質問への回答: バックログはプロジェクトごとに分散。`Stock/<カテゴリ>/<プロジェクト>/backlog/BL-XXX.yaml`。
+      ただし中央 Backlog.md (`Stock/定型作業/バックログ/Backlog.md`) も並存。Phase 3a v2 で中央 Backlog を朝の整理エージェントの主データソースに採用。
   - at: '2026-04-25T14:05:00+09:00'
     type: scope_change
     by: user
@@ -128,4 +98,26 @@ decisions:
   - at: '2026-04-25T14:06:22.890Z'
     type: answer
     by: user
-    content: オッケーです
+    content: オッケーです (v1 設計承認、Phase 3a 着手)
+  - at: '2026-04-25T23:30:00+09:00'
+    type: commitment
+    by: ai
+    content: |
+      Phase 3a v1 実装完了 (Cockpit task 83948eeb): UI ボタン / 「📅 今日の運用」セクション / Server Action startDailyLoop / 固定プロンプト / vitest 47 pass / launchd 本番化。
+      田中さんが iPhone で初テスト (cockpit task 1c34ac45) → v1 出力は per-project BL のみ参照、形式が好みでないとフィードバック。
+  - at: '2026-04-26T00:00:00+09:00'
+    type: scope_change
+    by: user
+    content: |
+      Phase 3a v2 修正指示: (1) データソースを中央 Backlog.md に切替、(2) 出力を 4/24 planning 形式に、(3) 案件別グルーピング + 状況サマリー + クラス ABC。
+  - at: '2026-04-26T00:05:00+09:00'
+    type: commitment
+    by: ai
+    content: |
+      Phase 3a v2 プロンプト書き直し完了 (305 行): 中央 Backlog.md を主データソース、4/24 形式準拠、案件別グルーピング、クラス ABC 採用。AI 回答ルール / schema 厳守ルール 維持。vitest 47 pass。
+      田中さん 4/26 朝の実機テスト待ち。
+  - at: '2026-04-26T00:10:00+09:00'
+    type: scope_change
+    by: user
+    content: |
+      BL を Phase 単位で分割: BL-TBD-004 を Phase 3a 専用に圧縮 (タイトル変更)、BL-TBD-005 (3b 夜の振り返り) / BL-TBD-006 (3c cron+自動更新) / BL-TBD-007 (3d UI+過去の運用) を新規作成。

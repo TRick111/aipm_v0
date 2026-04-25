@@ -1,0 +1,33 @@
+id: BL-TBD-001
+title: "ミニタキオン Phase 1: View-only MVP"
+project: ミニタキオン
+category: 作業効率化
+state: pending
+state_emoji: "🆕"
+priority: high
+
+created_at: 2026-04-25T18:35:00+09:00
+updated_at: 2026-04-25T18:35:00+09:00
+created_by: office-hours-session-64027
+
+description: |
+  iPhone から Tailscale 越しに ミニタキオン webapp で AIPM の Stock/Flow を読み取り表示できる
+  状態を作る。書き込み機能なし、view-only。
+
+  完了基準:
+  - http://rikus-mac-mini-3.tailad7d87.ts.net:3000/ を iPhone Safari で開ける
+  - ホーム画面で全プロジェクトの「私の番/AIの番/完了/ブロック」を BL 単位で見える
+  - プロジェクトをタップ → STATUS.md と BL 一覧が見える
+  - BL をタップ → Q&A スレッドと成果物リストが見える
+  - 成果物をタップ → markdown がレンダリングされて読める
+  - launchd で Mac 起動時に webapp が自動起動する
+
+tech_stack:
+  framework: "Next.js 15+ (App Router)"
+  runtime: "Bun"
+  ui: "Tailwind CSS + shadcn/ui"
+  port: 3000
+
+deliverable_refs: []
+
+thread: []

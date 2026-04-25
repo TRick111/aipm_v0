@@ -1,0 +1,71 @@
+schema_version: 2
+id: BL-TBD-004
+title: "ミニタキオン Phase 3: Daily Loop (朝の始まり / 夜の締め)"
+project: ミニタキオン
+category: 作業効率化
+state: awaiting_user
+state_emoji: ⏸
+priority: high
+
+created_at: 2026-04-25T22:30:00+09:00
+updated_at: 2026-04-25T22:30:00+09:00
+created_by: master-agent
+
+description: |
+  ## 背景
+
+  Phase 1 (view-only) と Phase 2 (書き込み機能) で「AI 成果物のレビュー → 次指示」の core loop は完成。次は **1日の運用そのもの (朝のタスク整理 + 夜の振り返り) をミニタキオンに統合** する。
+
+  田中さんは毎朝、複数プロジェクトを横断して「今日何をやるか」を整理しているが、現状は属人化 (頭の中 + AIPM ファイル確認)。これを ミニタキオン上の固定フロー (☀️ 今日を始める / 🌙 今日を締める ボタン) に置き換え、AI が整理案を出して田中さんが承認する形に。
+
+  これで AIPM 散文 3 ファイル (STATUS / INBOX / daily_tasks) のうち最後の `daily_tasks.md` も廃止できる (今日のタスク案.md が引き継ぐ)。
+
+  ## タスク詳細
+
+  詳細は成果物 `daily_loop_design.md` を参照。要点:
+
+  1. ホーム画面に「☀️ 今日を始める / 🌙 今日を締める」ボタン追加 (時間帯で強調切替)
+  2. Server Actions: `startDailyLoop()` / `endDailyLoop()`
+  3. 固定プロンプト 2 種: `lib/prompts/daily-start.md` `daily-wrapup.md`
+  4. BL-DAILY-{YYYYMMDD} / BL-WRAPUP-{YYYYMMDD} を Stock に自動作成
+  5. 専用プロジェクト「朝の整理」を Stock に新設 (案)
+  6. 既存 03:00 cron に未締め自動実行を統合
+  7. 「📅 今日の運用」専用 UI セクション + past archive
+  8. テスト
+
+  実装は Phase 3a / 3b / 3c / 3d に分割、合計 3-4 日。
+
+  ## 完了条件
+
+  - [ ] 田中さんが設計書 `daily_loop_design.md` をレビュー、Q1-Q7 に回答
+  - [ ] 設計確定後、Phase 3a (☀️ + 朝の整理) 実装
+  - [ ] Phase 3b (🌙 + 夜の振り返り + Stock マージ) 実装
+  - [ ] Phase 3c (03:00 cron 統合) 実装
+  - [ ] Phase 3d (UI セクション + archive) 実装
+  - [ ] iPhone 実機で実際に「☀️ 今日を始める」を押して 1 日が回る動作確認
+  - [ ] 1 週間運用してフローに違和感がないか検証
+
+cockpit_task_ids: []
+
+pending_questions:
+  - id: q-20260425-design-review-001
+    at: 2026-04-25T22:30:00+09:00
+    cockpit_task_id: master-agent
+    content: |
+      Daily Loop の設計書 (daily_loop_design.md) を作成しました。
+      以下 7 つの Open Questions に回答お願いします:
+
+      Q1: BL-DAILY / BL-WRAPUP の置き場所 (専用プロジェクト「朝の整理」推奨 / _orchestration 直下 / 各プロジェクトに分散)
+      Q2: 1日 2 BL (DAILY + WRAPUP) vs 1 BL (DAILY に統合)
+      Q3: タスク案の粒度 (推奨: BL 優先順位 + 各 BL の今日の作業 1-2行)
+      Q4: 承認後の AI 権限 (推奨: priority/state 自動更新)
+      Q5: アーカイブポリシー (推奨: 30日前 collapsed / 90日前 非表示)
+      Q6: 「今日を始める」を何時までに押す想定?
+      Q7: 「今日はスキップ」ボタン要る?
+
+      回答 OK だったら設計確定 → Phase 3a 着手します。
+
+decisions: []
+
+deliverable_refs:
+  - d-20260425-daily-loop-001

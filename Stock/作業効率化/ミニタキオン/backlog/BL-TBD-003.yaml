@@ -1,14 +1,14 @@
-schema_version: 1
+schema_version: 2
 id: BL-TBD-003
 title: "ミニタキオン UI デザイン改善 (web designer agent)"
 project: ミニタキオン
 category: 作業効率化
-state: awaiting_user
-state_emoji: ⏸
+state: looping
+state_emoji: 🔄
 priority: high
 
 created_at: 2026-04-25T20:10:00+09:00
-updated_at: 2026-04-25T20:15:00+09:00
+updated_at: 2026-04-25T21:00:00+09:00
 created_by: master-agent
 
 description: |
@@ -21,29 +21,47 @@ description: |
   - 各 BL アイテムに「背景 / タスク詳細 / 完了条件」の3 section 表示
   - AI フィードバック欄 (textarea + Send、Phase 2 までは visual only)
   - 例データ (4プロジェクト、複数BL) で実際にダッシュボードが「生きている」状態
+  - **(v3 反映)** トップページをプロジェクト別折りたたみに変更
+  - **(v3 反映)** STATUS.md の markdown レンダリング
+  - **(v3 反映)** 色を状態色のみに削減
+  - **(v3 反映)** glassmorphism 廃止
+  - **(v3 反映)** BL データモデルを schema v2 化 (thread → cockpit_task_ids + pending_questions + decisions)
 
-  バックログ構造は変えず、フロントエンドのみ改善。
+  バックログ構造は変えず (schema は v2 で再設計しスリム化)、フロントエンドのみ改善。
 
   ## タスク詳細
 
-  1. shadcn/ui のテーマカスタマイズ (色・タイポ・spacing・radius)
-  2. ダークモードを default、生地感のある背景
-  3. ホーム画面: 「私の番」を hero 級に、プロジェクト別カードのデザイン
-  4. BL 詳細: description を markdown parse → 3 section (背景/タスク詳細/完了条件) に視覚分離
-  5. AI フィードバック UI: textarea (iOSマイク対応) + Send ボタン (Phase 2 で実装と toast、localStorage に下書き保存)
-  6. Loading / empty / error state を shadcn のスケルトンで品よく
-  7. iPhone 425px viewport で実機相当の手触り確認
-  8. 例データ4プロジェクト (ミニタキオン / 健康管理 / 麻布しき / バー5アローズ) で動作確認
+  1. デザインシステム (CSS variables、ダーク default、状態色のみ、生地感は控えめ)
+  2. ホーム画面: プロジェクト別折りたたみ、各プロジェクトに件数メタ、内部は状態順ソート
+  3. プロジェクト詳細: STATUS.md frontmatter ヘッダ + 本文 markdown レンダリング (テーブル含む)
+  4. BL 詳細: 3 section カード + pending_questions リスト + decisions タイムライン + 「全会話を見る」ボタン (cockpit task get モーダル)
+  5. AI フィードバック UI (visual only、localStorage 下書き)
+  6. 成果物詳細: markdown レンダリング + コメント送信 UI
 
   ## 完了条件
 
-  - [ ] ホーム画面が Linear / Notion 級の視覚クオリティ
-  - [ ] 各 BL ページに「背景 / タスク詳細 / 完了条件」が綺麗に分かれて見える
-  - [ ] AI フィードバック textarea + Send が見える (動作は Phase 2)
-  - [ ] 例データ 4プロジェクト・6BL で「生きてる」ダッシュボード
-  - [ ] バックエンド (lib/*) と YAML schema は変更なし
+  - [x] v1 デザインシステム + 4 画面 + AI フィードバック (2026-04-25 20:40)
+  - [ ] v2 修正 (プロジェクト別折りたたみ / STATUS markdown / 色削減 / glassmorphism 廃止) ← 進行中
+  - [ ] v3 schema v2 対応 (lib/types.ts / pending_questions UI / decisions UI / cockpit task get モーダル)
   - [ ] 田中さん iPhone 実機確認で「これなら毎日使える」OK
 
-deliverable_refs: []
+cockpit_task_ids:
+  - "7d51e727"
 
-thread: []
+pending_questions: []
+
+decisions:
+  - at: 2026-04-25T20:40:00+09:00
+    type: commitment
+    by: ai
+    content: "v1 デザイン完了 (デザインシステム / 4画面 / AIフィードバック)、Linear/Notion 級の品質"
+  - at: 2026-04-25T20:50:00+09:00
+    type: scope_change
+    by: user
+    content: "v2 フィードバック: プロジェクト別折りたたみ / STATUS markdown レンダリング / 色削減 / glassmorphism 廃止"
+  - at: 2026-04-25T21:00:00+09:00
+    type: scope_change
+    by: user
+    content: "v3 schema 変更: BL.yaml の thread を廃止、cockpit_task_ids + pending_questions + decisions に分離 (Cockpit を会話の単一 source of truth に)"
+
+deliverable_refs: []

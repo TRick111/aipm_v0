@@ -1,4 +1,4 @@
-schema_version: 1
+schema_version: 2
 id: BL-0030
 title: "Health Auto Export → Vercel → AIOS 連携基盤"
 project: 健康管理
@@ -32,12 +32,15 @@ description: |
   - [ ] 動作確認 (ダミーデータでの E2E)
   - [ ] 本番デバイス連携 (BL-0028 完了後)
 
-deliverable_refs: []
+cockpit_task_ids:
+  - "64101"
 
-thread:
+pending_questions: []
+
+decisions:
   - at: 2026-04-22T16:30:00+09:00
-    role: ai
-    content: |
-      事前準備の設計書を `Flow/202604/2026-04-22/健康管理/bl0030_integration_prep.md` に整備しました。
-      DB 候補 3 つの比較も入れています。デバイス到着後すぐ連携可能な状態です。
-    cockpit_task_id: 64101
+    type: commitment
+    by: ai
+    content: "事前準備設計書を整備済 (Flow/202604/2026-04-22/健康管理/bl0030_integration_prep.md)。デバイス到着後すぐ連携可能"
+
+deliverable_refs: []

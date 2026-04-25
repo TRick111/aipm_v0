@@ -302,9 +302,12 @@ iPhoneがTailscaleにログインしているか未確認
 - 設計書: Flow/202604/2026-04-25/ミニタキオン/design_mobile_review_hub.md
 ```
 
-#### BL-XXXX.yaml スキーマ (Stock 直接編集)
+#### BL-XXXX.yaml スキーマ v2 (Stock 直接編集)
+
+**v1 との差分**: `thread:` を廃止し、`cockpit_task_ids` + `pending_questions` + `decisions` の3層に分離。全会話履歴は Cockpit が単一の source of truth として保持、ミニタキオンは「意思決定に必要なサマリー」だけ持つ。
 
 ```yaml
+schema_version: 2
 id: BL-TBD-001
 title: ミニタキオン Day1 実装
 project: ミニタキオン
@@ -316,29 +319,64 @@ updated_at: 2026-04-25T15:30:00+09:00
 created_by: cockpit-task-64027
 priority: normal         # urgent | high | normal | low
 
-# AI ↔ ユーザーの会話スレッド (フラット時系列)
-thread:
-  - at: 2026-04-25T15:30:00+09:00
-    role: ai
+# 関連 Cockpit タスク (1〜複数、寿命中に増える可能性)
+# UI で「全会話を見る」を押した時に cockpit task get で fetch する対象
+cockpit_task_ids:
+  - "64200"
+  - "64500"  # Phase をまたぐと task が切り替わる
+
+# 私への保留中 AI 質問 (回答すると consume されて decisions に移る)
+pending_questions:
+  - id: q-20260425-001
+    at: 2026-04-25T15:30:00+09:00
+    cockpit_task_id: "64200"
     content: |
       Bun のバージョン何を使いますか？ 1.1.x or 1.2.x?
-    cockpit_task_id: 64200
-  - at: 2026-04-25T15:32:00+09:00
-    role: ai
-    content: |
-      Hono のバージョン pin する？
-    cockpit_task_id: 64200
-  # ユーザーが返信したらここに追加される
-  # - at: ...
-  #   role: user
-  #   content: ...
-  #   sent_to_cockpit_task: 64200
+
+# 決定事項ログ (append-only、curated、durable)
+# pending_questions への回答、用方針変更、commitment などを残す
+decisions:
+  - at: 2026-04-25T15:45:00+09:00
+    type: answer       # answer | commitment | scope_change | deferred
+    by: user           # user | ai
+    content: "1.3.x で行く (最新)"
+  - at: 2026-04-25T16:00:00+09:00
+    type: scope_change
+    by: user
+    content: "Hono は捨てて Next.js Route Handler に切り替え"
 
 # このBL に紐づく成果物の参照 (deliverable id, deliverables.yaml の id を指す)
 deliverable_refs:
   - d-20260425-001
   - d-20260425-002
 ```
+
+**設計上の判断:**
+
+- **全会話を BL.yaml に持たない理由**: Cockpit task が既に持っている。二重管理は整合性が壊れた時に死ぬ。BL寿命中に Cockpit task が複数になる場合 (Phase切替等)、BL.yaml に集約する仕様だと誰がどの会話を持つかメタが必要、結局 Cockpit を見るのと変わらない
+- **pending_questions が「キュー」になる理由**: AI が複数質問を一度に出すケースがある (例: BL-0028 で「機種は？」「色は？」「保証は？」)。各質問を id で識別、回答済が consume されて decisions に移る
+- **decisions が curated な理由**: 流れた会話を全部 dump するのではなく、durable な決定 (機種選定、納期決定、scope 変更等) だけを残す。append-only で時系列の decision log になる
+- **「全会話を見る」UI**: BL 詳細画面のボタン → モーダルで `cockpit task get <ids>` を call、一時的に表示 (BL.yaml には保存しない)
+
+#### スキーマ migration (v1 → v2)
+
+`lib/migrate.ts` で v1 を読み込んだ時に自動変換:
+
+```typescript
+function migrateBLv1tov2(v1: BLv1): BLv2 {
+  const cockpit_task_ids = unique(v1.thread?.map(t => t.cockpit_task_id ?? t.sent_to_cockpit_task).filter(Boolean) ?? [])
+  // v1 thread の最後の AI message が role=ai で終わってたら pending_questions に
+  const lastAi = findLastAiMessage(v1.thread)
+  const pending_questions = (lastAi && !hasUserResponseAfter(v1.thread, lastAi))
+    ? [{ id: generateId(), at: lastAi.at, cockpit_task_id: lastAi.cockpit_task_id, content: lastAi.content }]
+    : []
+  // user の発話で「決定」と読めるものを decisions に curate (heuristic、雑な v1 移行ロジック)
+  const decisions = (v1.thread ?? []).filter(t => t.role === 'user').map(t => ({ at: t.at, type: 'answer' as const, by: 'user' as const, content: t.content }))
+  return { ...v1, schema_version: 2, cockpit_task_ids, pending_questions, decisions, thread: undefined }
+}
+```
+
+例データ (8 BL) は既に v2 で保存済み (master が手動 migration 完了 2026-04-25 21:00)。
 
 #### deliverables.yaml スキーマ (当日 Flow のみ)
 

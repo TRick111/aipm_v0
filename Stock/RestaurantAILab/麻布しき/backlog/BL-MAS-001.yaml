@@ -1,4 +1,4 @@
-schema_version: 1
+schema_version: 2
 id: BL-MAS-001
 title: "メニュー画像生成パイプライン"
 project: 麻布しき
@@ -35,14 +35,23 @@ description: |
   - [ ] シェフ最終承認
   - [ ] Web メニュー差し替え
 
-deliverable_refs:
-  - d-20260425-002
+cockpit_task_ids:
+  - "64500"
 
-thread:
-  - at: 2026-04-25T12:30:00+09:00
-    role: ai
+pending_questions:
+  - id: q-20260425-001
+    at: 2026-04-25T12:30:00+09:00
+    cockpit_task_id: "64500"
     content: |
       v3 でメニュー画像 30 品 × 3 案 = 90 画像を生成完了しました。
-      `Flow/202604/2026-04-25/麻布しき/menu_images_v3.md` に全画像のグリッド + プロンプト付きで整理してあります。
+      Flow/202604/2026-04-25/麻布しき/menu_images_v3.md にグリッド + プロンプト付きで整理してあります。
       レビューお願いします。
-    cockpit_task_id: 64500
+
+decisions:
+  - at: 2026-04-20T10:00:00+09:00
+    type: commitment
+    by: user
+    content: "プロンプトテンプレ v1 で OK、全メニュー 30 品の画像生成に進む"
+
+deliverable_refs:
+  - d-20260425-002

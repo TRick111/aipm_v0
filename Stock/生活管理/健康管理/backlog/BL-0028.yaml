@@ -1,4 +1,4 @@
-schema_version: 1
+schema_version: 2
 id: BL-0028
 title: "睡眠デバイス比較 (Garmin Vivoactive 6 vs Venu 4)"
 project: 健康管理
@@ -34,35 +34,28 @@ description: |
   - [ ] 田中さんの最終決定
   - [ ] 購入
 
-deliverable_refs:
-  - d-20260422-001
+cockpit_task_ids:
+  - "64100"
 
-thread:
-  - at: 2026-04-22T14:30:00+09:00
-    role: ai
+pending_questions:
+  - id: q-20260422-001
+    at: 2026-04-22T14:30:00+09:00
+    cockpit_task_id: "64100"
     content: |
       Vivoactive 6 で確定でよろしいですか？
 
-      📌 推奨理由:
-      - Q6 優先軸 (コスト > 連携 > 精度) に最も整合
-      - 5年TCO で ¥40,000 安い
-      - 23g 軽量、24h 装着が苦にならない
-      - AIOS パイプライン上、Venu 4 と差なし (体温は Apple Health に同期されない)
+      📌 推奨理由: Q6 優先軸 (コスト > 連携 > 精度) に最も整合、5年TCO ¥40k 安、23g 軽量、AIOS 上 Venu と差なし。
+      💭 Venu 4 を選ぶ理由: Garmin Connect 内で体温トレンドを目で見たい、AMOLED 所有感、+¥40k 許容なら。
 
-      💭 Venu 4 を選ぶ場合の理由:
-      - Garmin Connect 内で体温トレンドを目で見たい
-      - AMOLED 画面の所有感
-      - +¥40k の予算に余裕があれば
-    cockpit_task_id: 64100
+decisions:
   - at: 2026-04-22T15:45:00+09:00
-    role: user
-    content: "Venuが欲しいけど、一旦考えを寝かせます（決定は明日以降）"
-    sent_to_cockpit_task: 64100
+    type: deferred
+    by: user
+    content: "Venuが欲しいけど一旦考えを寝かせる。決定は明日以降。AI推奨は Vivoactive 6 で AIOS パイプライン上の差なしと確認済"
   - at: 2026-04-22T16:00:00+09:00
-    role: ai
-    content: |
-      了解しました。デバイス確定を待たず、他3点 (iPhone / Vercel / HAE許容) の前提で BL-0030 の事前準備を進めます。
-      事前準備設計書: `Flow/202604/2026-04-22/健康管理/bl0030_integration_prep.md`
-      Health Auto Export 設定 / Vercel Webhook 雛形 / DB候補 (推奨: GitHub commit) / 動作確認手順 を整備済み。
-      デバイス到着後すぐ連携開始可能です。
-    cockpit_task_id: 64100
+    type: scope_change
+    by: ai
+    content: "デバイス確定を待たず、他3点 (iPhone / Vercel / HAE許容) の前提で BL-0030 の事前準備を並行進行することに変更"
+
+deliverable_refs:
+  - d-20260422-001

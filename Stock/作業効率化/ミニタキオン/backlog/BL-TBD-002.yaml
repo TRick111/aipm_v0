@@ -1,4 +1,4 @@
-schema_version: 1
+schema_version: 2
 id: BL-TBD-002
 title: "ミニタキオン Phase 2: 書き込み機能"
 project: ミニタキオン
@@ -21,7 +21,7 @@ description: |
   1. lib/cockpit.ts (構造化エラー、Eng Review 1B): NotFound/Timeout/Parse/Exit/FallbackExhausted
   2. lib/lock.ts (proper-lockfile + optimistic check、Eng Review 1C): stale 30s, retries 5
   3. lib/merge.ts: Flow → Stock マージロジック
-  4. app/actions.ts: updateReviewState / replyToBL Server Actions
+  4. app/actions.ts: updateReviewState / replyToBL Server Actions (新スキーマ v2 対応: pending_questions consume + decisions append)
   5. 画面3 (BL詳細) の入力 UI: textarea + iOS マイクボタン + 送信
   6. 画面4 (成果物詳細) の入力 UI: コメント + 「送信→needs_revision」「✓ done」
   7. useOptimistic で楽観的更新
@@ -31,10 +31,15 @@ description: |
 
   - [ ] iPhone から成果物のレビュー状態を変更できる
   - [ ] iPhone から BL に返信送信、cockpit task に流れる
+  - [ ] 送信時、対応する pending_question を consume + decisions に append
   - [ ] 三重 fallback (send → resume → create) が動作
   - [ ] Optimistic conflict 検知 + UI 表示
   - [ ] vitest Critical path 8 テスト全 pass
 
-deliverable_refs: []
+cockpit_task_ids: []
 
-thread: []
+pending_questions: []
+
+decisions: []
+
+deliverable_refs: []

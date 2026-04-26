@@ -1,0 +1,55 @@
+schema_version: 1
+project: AIOS
+date: '2026-04-26'
+deliverables:
+  - id: d-aios-20260426-inbox-redesign
+    file: inbox_redesign_proposal.md
+    bl_id: BL-0067
+    title: INBOX 設計の再検討 — Cockpit 統合 + 対応優先度の可視化
+    created_at: '2026-04-26T18:35:00+09:00'
+    created_by: master-agent
+    created_by_agent: claude
+    review_state: unreviewed
+    review_log:
+      - at: '2026-04-26T18:35:00+09:00'
+        action: created
+        to: unreviewed
+        comment: |-
+          BL-0067 今日着手。6章構成のドラフト作成:
+          1. 現状INBOX分析 (7か所分散の棚卸し + 見出しベースの限界5点)
+          2. 課題定式化 (P1〜P4 + 要件 R1〜R6)
+          3. 設計案 A (Cockpit統合) / B (FIFO Markdown) / C (ハイブリッド)
+          4. メリ/デメ + 実装コスト比較
+          5. 推奨: 案C を Phase 0〜4 で段階導入
+          6. ミニタキオン BL-TBD-005/006/007/008/009/010 との整合性整理
+          付録: schema v2.1 差分 / 解凍 for ループ / 田中さんレビュー観点
+    last_modified: '2026-04-26T18:35:00+09:00'
+    cockpit_task_id: null
+  - id: d-aios-20260426-gbrain-research
+    file: g_brain_research.md
+    bl_id: BL-0053
+    title: G-Brain 調査レポート — 仕様/ユースケース/AIOS統合形態の前提整理
+    created_at: '2026-04-26T18:55:00+09:00'
+    created_by: master-agent
+    created_by_agent: claude
+    review_state: unreviewed
+    review_log:
+      - at: '2026-04-26T18:55:00+09:00'
+        action: created
+        to: unreviewed
+        comment: |-
+          BL-0053 田中さん指示「まずはエージェントで Gbrain の仕様やユースケース、何に使えるのかを調べてまとめて」を受けた先行調査レポート。
+          8章構成:
+          1. G-Brain の正体 (リポ位置 / 運用形態 — 4/22+4/26 二度の探索結果)
+          2. 仕様 (タクソノミー α〜ε で整理、確定情報なし)
+          3. ユースケース (大地さん関与案件の棚卸しから推定)
+          4. AIOS から何に使えるか (タクソノミー別の寄与パターン)
+          5. 統合形態の検討メモ (案A: import / 案B: 一部参照 / 案C: ルール翻訳取込 / 案D: ハイブリッド)
+          6. 田中さんへの確認事項 (Q-G1〜G5、大地さん 15分ヒアリングのスクリプト粒度)
+          7. 完了条件 / 次アクション (BL-0053 を Phase 1/2 に分割推奨)
+          8. 参照ファイル一覧 + 限界
+
+          【重要】G-Brain 本体にアクセスできず実体特定は不可。本レポートは「田中さん→大地さんヒアリング」の叩き台として書いた。
+          確認事項.md B2 セクションと連動。Q-G1 (リポ所在) が最大ブロッカー。
+    last_modified: '2026-04-26T18:55:00+09:00'
+    cockpit_task_id: null

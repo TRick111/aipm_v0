@@ -1,0 +1,151 @@
+schema_version: 1
+project: RestaurantAILab/バンコクPonさん案件
+date: '2026-04-26'
+deliverables:
+  - id: d-bl0074-20260426-sales-data-ai-security
+    file: sales_data_ai_security_design.md
+    bl_id: BL-0074
+    title: PONさん 売上データAIアクセス設計・IT担当者向け説得資料 (ドラフト v1)
+    created_at: '2026-04-26T19:00:00.000Z'
+    created_by: bl-0074-agent
+    created_by_agent: claude
+    review_state: unreviewed
+    review_log:
+      - at: '2026-04-26T19:00:00.000Z'
+        action: created
+        to: unreviewed
+        comment: |-
+          BL-0074 (P0, Due 2026-04-27 セッション本番) のドラフト v1 を作成。
+          5 章構成: 懸念リスト 8 項目 / セキュア構成案 4 案 (A:ローカルLLM, B:API+マスキング, C:VPC+Bedrock, D:集計値のみ) / コスト・期間比較 / 推奨「案D→案B 2段階導入」+ 説得ロジック / 想定 Q&A 8 件。
+          月曜セッションで IT 担当者を説得するための材料。Q&A は読み上げ可能形式。
+          要レビュー: 推奨案 (案D→案B) で田中さん OK か、コスト数値の精度、ZDR 契約条件の最新状況確認。
+    last_modified: '2026-04-26T19:00:00.000Z'
+    cockpit_task_id: null
+  - id: d-bl0070-20260426-jbeauty-signage-requirements
+    file: jbeauty_signage_requirements.md
+    bl_id: BL-0070
+    title: JBeauty デジタルサイネージ 要件一覧（叩き台 v0.1）
+    created_at: '2026-04-26T19:30:00.000Z'
+    created_by: bl-0070-agent
+    created_by_agent: claude
+    review_state: unreviewed
+    review_log:
+      - at: '2026-04-26T19:30:00.000Z'
+        action: created
+        to: unreviewed
+        comment: |-
+          BL-0070 (P1, Due 2026-04-26) の要件叩き台 v0.1 を作成。
+          5 章構成:
+            1. 機能要件 (商品レコメンド / 顧客属性別出し分け / 多言語対応)
+            2. UI 要件 (画面サイズ / レイアウト / 動画静止画 / アニメーション・アバター候補)
+            3. データ連携要件 (商品DB / 在庫 / 価格更新 / 顧客属性入力)
+            4. 運用要件 (コンテンツ更新フロー / 監視 / トラブル対応 L1-L3)
+            5. 関連 BL 接続点 (BL-0044 / BL-0071 / BL-0072 / BL-0042 / BL-0043)
+          + 6.Pon さん確認事項 6 件 / 7.ネクストアクション。
+          Pon さんチームへの送付前に田中さんレビュー待ち。送付メッセージドラフトは別途作成予定。
+    last_modified: '2026-04-26T19:30:00.000Z'
+    cockpit_task_id: null
+  - id: d-bl0068-20260426-payment-switch-comparison
+    file: payment_switch_comparison.md
+    bl_id: BL-0068
+    title: PONさんへの請求方法切替 — 5 候補比較 (PayPal→WISE 等)
+    created_at: '2026-04-26T20:00:00.000Z'
+    created_by: bl-0068-agent
+    created_by_agent: claude
+    review_state: unreviewed
+    review_log:
+      - at: '2026-04-26T20:00:00.000Z'
+        action: created
+        to: unreviewed
+        comment: |-
+          BL-0068 (P1, Due 2026-04-26) の AI 調査ドラフト v1 を作成。
+          5 候補 (① WISE 個人 / ② WISE Business / ③ Payoneer / ④ Revolut Business / ⑤ 銀行 SWIFT) を
+          6 軸 (手数料 / 為替マークアップ / 着金スピード / タイ→日本対応 / 開設KYC所要 / 上限・コンプラ) で比較。
+          コスト試算 (5,000 USD × 12 ヶ月) では WISE 系が年 4.5〜8 万円、Payoneer が 18〜45 万円、SWIFT が 18〜35 万円。
+          Revolut Business は日本居住者の Business 受取が不可で実質除外。
+          推奨: 第一 = WISE Business (法人 → 個人、開設 1〜2 週)、第二 = WISE 個人 (即運用可)、
+          バックアップ = SWIFT (大口・緊急時のみ)。
+          実装は Phase A (初回個人 WISE で即時運用開始) → Phase B (継続 Business 化) → Phase C (SWIFT バックアップ整備)。
+          田中さん最終選定ポイント Q-A〜Q-F (送金者名義 / 初回タイミング / 月次想定額 / 受取口座 / PONさん側決裁者 / SWIFT 整備優先度) を末尾に明記。
+          確認事項.md B1 に要約を流し込み予定。
+    last_modified: '2026-04-26T20:00:00.000Z'
+    cockpit_task_id: 89196e3c
+  - id: d-bl0073-20260426-session6-outline
+    file: session6_outline.md
+    bl_id: BL-0073
+    title: 第6回セッション 章立て (outline) — ドラフト v1
+    created_at: '2026-04-26T20:30:00.000Z'
+    created_by: bl-0073-agent
+    created_by_agent: claude
+    review_state: unreviewed
+    review_log:
+      - at: '2026-04-26T20:30:00.000Z'
+        action: created
+        to: unreviewed
+        comment: |-
+          BL-0073 (P0, Due 2026-04-26 / 本番 2026-04-27) の章立てドラフト v1。
+          講義テーマ 3 本柱を網羅:
+            Part 2. 繰り返しタスクの設定 (Stock/定型作業/ にファイル化、起動は一言)
+            Part 3. iCloud カレンダー連携 (Apple MCP 推奨、CalDAV/Google Cal 経由は代替)
+            Part 4. 会話履歴のインポート (BL-0037 の pon-chatgpt-knowledge 資産を活用)
+          + Part 0 振り返り / Part 1 全体像 / Part 5 まとめ・宿題・次回予告。
+          90 分版 / 120 分版のタイムライン両対応。各 Part に想定質問あり。
+          磨き込み余地は文末に明記:
+            - PONさん実タスクで Demo 2-A 置換、Apple MCP 正式パッケージ名確認
+            - BL-0074 (売上データAI) との内容擦り合わせ
+            - 第5回 (MCP活用) の実態確認 → Part 0 振り返り精緻化
+            - 「待合音声」(BL-0043) との紐付け確認
+            - PONさんへ ChatGPT エクスポート前日リクエスト連絡 (田中タスク)
+            - pon-chatgpt-knowledge repo への PONさん招待状況確認
+    last_modified: '2026-04-26T20:30:00.000Z'
+    cockpit_task_id: bl-0073-agent
+  - id: d-bl0073-20260426-session6-content-draft
+    file: session6_content_draft.md
+    bl_id: BL-0073
+    title: 第6回セッション 内容ドラフト (content draft) — v1
+    created_at: '2026-04-26T20:30:00.000Z'
+    created_by: bl-0073-agent
+    created_by_agent: claude
+    review_state: unreviewed
+    review_log:
+      - at: '2026-04-26T20:30:00.000Z'
+        action: created
+        to: unreviewed
+        comment: |-
+          BL-0073 (P0, Due 2026-04-26 / 本番 2026-04-27) の内容ドラフト v1。
+          各 Part に以下を完備:
+            - 説明スライド構成 (見出し + 要点 + 図示)
+            - デモ手順 (Mac/Cursor + iPhone 想定。Demo 2-A 〜 4-D で計 6 シナリオ)
+            - 想定質問 + 回答テンプレ (各 Part 5〜6 件)
+            - 進行台本 (田中向けの語りかけメモ)
+          補足資料も同梱:
+            - A. 定型タスク命名ルール (週次 / 月次 / イベント駆動)
+            - B. iCloud カレンダー連携 トラブルシューティング 4 項目
+            - C. ChatGPT 履歴インポートのファイル配置例 (BL-0037 の分類体系準拠)
+          BL-0037 の既存資産 (pon-chatgpt-knowledge repo + step1-4 スクリプト + pipeline.py) を活用する構成。
+          磨き込み余地は文末「メモ・未確定事項」にチェックリスト化 (8 項目)。
+    last_modified: '2026-04-26T20:30:00.000Z'
+    cockpit_task_id: bl-0073-agent
+  - id: d-bl0042-20260426-thai-text-review
+    file: thai_text_review.md
+    bl_id: BL-0042
+    title: PONさん バーチャル美容アドバイザーPOC タイ語テキスト確認 (v1)
+    created_at: '2026-04-26T20:45:00.000Z'
+    created_by: bl-0042-agent
+    created_by_agent: claude
+    review_state: unreviewed
+    review_log:
+      - at: '2026-04-26T20:45:00.000Z'
+        action: created
+        to: unreviewed
+        comment: |-
+          BL-0042 (P1, 親 BL-0041 バーチャル美容アドバイザーPOC) のタイ語テキスト精度確認 v1。
+          探索結果: PONさん案件配下のタイ語ファイルは BG_Plexment_Training_TH.md (Rapi-rabi スタッフ講習資料) のみ。
+          POC 本体 (~/RestaurantAILab/voice-beauty-advisor/) の system prompt (mia-prompt.ts) は 100% 日本語、タイ語版は不在。
+          → BL-0042 の正式対象が「対話 POC のタイ語スクリプト」だとすると、現リポジトリには素材が存在しない。
+          総合判定: ⚠️ 保留 (要田中さん確認 Q1-Q4)。
+          参考として BG_Plexment_Training_TH.md のセクション別精度レビュー (1-5 スコア) と修正提案を本文に記載。
+          【必須修正】末尾に ChatGPT 出力時の日本語フッター 2 行が残置 (LINE 配布前削除必須)。
+          【高優先】声かけ例 #2 の成分不整合 (卵 vs ケラチン) と敬語粒子 (ค่ะ/ครับ) の統一。
+    last_modified: '2026-04-26T20:45:00.000Z'
+    cockpit_task_id: bd0d17f3

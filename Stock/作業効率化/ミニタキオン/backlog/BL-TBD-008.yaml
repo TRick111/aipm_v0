@@ -1,0 +1,116 @@
+schema_version: 2
+id: BL-TBD-008
+title: "ミニタキオン Phase 3a v3 修正 (運用フィードバック反映)"
+project: ミニタキオン
+category: 作業効率化
+state: in_progress
+state_emoji: 🟢
+priority: high
+
+created_at: 2026-04-26T09:30:00+09:00
+updated_at: 2026-04-26T09:30:00+09:00
+created_by: master-agent
+
+description: |
+  ## 背景
+
+  4/26 朝の Phase 3a 初運用で 3 つの問題が発覚:
+  1. 「今日のタスク案」レビューコメント送信時、create-fallback で spawn される新エージェントにコンテキストが無く、INBOX 更新みたいな旧運用を勝手に始める (本来はテーブルの [x] 行を Cockpit task で並列起動 + decisions 追記すべき)
+  2. ☀️ 押下直後に deliverable が「レビュー中」状態で表示され「ファイルが見つかりません」エラーが見える (placeholder を `reviewing` で upsert している意味のオーバーロード)
+  3. needs_revision コメント送信後も deliverable が「レビュー待ち」グループに残る (本来は AIの番に移動すべき)
+
+  3 つとも core loop の実用性を損なうので Phase 3b 着手前に直す。
+
+  ## タスク詳細
+
+  ### Fix 1 (P0): needs_revision コメント送信時のコンテキスト同梱
+
+  `app/actions.ts` の `updateReviewState()` で:
+  - 既存タスクへの taskSend / taskResume が成功する場合は今のままで OK (元のコンテキスト活きてる)
+  - **create-fallback** が走る場合のみ、enriched instruction を組み立てて spawn する:
+
+  ```typescript
+  function buildFallbackInstructionForDeliverable(d: Deliverable, comment: string, blRef?: BL): string {
+    return `あなたは ミニタキオン deliverable のフィードバック処理担当エージェントです。
+
+  # コンテキスト
+  - 対象 deliverable: ${absolutePath(d)}
+  - 種別: ${d.bl_id ? 'BL紐付き成果物' : '_orchestration deliverable (朝のタスク案 / 夜の振り返り 等)'}
+  ${blRef ? '- 関連 BL: ' + blRef.id + ' ' + blRef.title : ''}
+  - 対象ファイル内容: 直接読み込んでください
+
+  # 田中さんからのフィードバック
+  """
+  ${comment}
+  """
+
+  # やること
+  1. 対象 deliverable ファイルを読む
+  2. フィードバックを解釈し、以下のパターンで対応:
+     - **朝のタスク案承認 (テーブル [x] 行あり)**: クラスA行ごとに cockpit task create で並列起動 (各 BL 単位)、見送り行は何もしない、回答欄は decisions[] に append
+     - **設計・成果物の改訂依頼**: 対象 markdown を編集 + decisions[] に commitment append + review_state を unreviewed に戻す
+     - **質問への回答**: 該当 BL.yaml の decisions[] に append (type: commitment, by: ai)
+     - **新規 BL 提案承認**: 中央 Backlog.md に追記 (id 自動採番、status: todo)
+
+  # AI 回答ルール (絶対遵守)
+  応答は必ず BL.yaml decisions[] / pending_questions[] / 該当 markdown 更新 のいずれかで mini-tachyon UI に反映されるように書き戻す。
+  「会話で答えるだけ」は禁止。
+
+  # schema 厳守ルール
+  BL.yaml decisions[]: at, type, by, content, answers_question_id? のみ。
+  type: answer | commitment | scope_change | deferred のみ。
+  by: user | ai のみ。
+  独自フィールド禁止。
+
+  # 完了時
+  対象 deliverable の review_state を以下に更新:
+  - 朝のタスク案承認 → done
+  - 設計改訂 → unreviewed (再レビュー待ち)
+  - 質問回答 → done
+  ` }
+  ```
+
+  - lib/cockpit.ts には変更不要 (taskCreate は instruction を引数で受け取る既存設計)
+  - actions.ts の `updateReviewState` で create-fallback 直前に上記 helper を呼んで instruction を拡張
+  - vitest テスト追加: enriched instruction の生成、create-fallback シナリオ全体
+
+  ### Fix 2 (P1): `generating` review_state を追加
+
+  schema 拡張 (v3 にせず additive):
+  - `lib/types.ts`: `ReviewStateSchema = z.enum(['unreviewed', 'reviewing', 'done', 'needs_revision', 'generating'])`
+  - `lib/visual.ts`: `REVIEW_TONE` に `generating: 'info'` (青系) または専用色追加、emoji は `🟢` (回転スピナーアイコンか動作中表現)
+  - `lib/orchestration.ts` の placeholder 作成箇所: `review_state: 'reviewing'` → `review_state: 'generating'`
+  - 朝の整理エージェント (daily-start.md prompt) の出力ステップ: deliverable を `unreviewed` に上書きする (既に書いてあるはずだが念のため確認)
+  - UI: `generating` 状態の deliverable は通常カードではなく **スピナーカード**「🟢 AI が今日のタスク案を生成中...」の表示にする (タップ無効、または「進捗を見る」リンクで cockpit task 詳細)
+  - vitest テスト追加: generating 状態の挙動
+
+  ### Fix 3 (P1): グルーピング条件の修正
+
+  `lib/triage.ts` (or 該当ロジック):
+  - 「私の番」: `review_state in ['unreviewed', 'reviewing']` (needs_revision を除外)
+  - 「AIの番」: `review_state === 'needs_revision'` を含める (プラス generating も AI が動いてる)
+  - 完了は `done` のまま
+  - vitest テスト追加: 各 review_state でのグルーピング確認
+
+  ## 完了条件
+
+  - [ ] needs_revision の create-fallback で spawn される新タスクに enriched instruction が渡る
+  - [ ] 新エージェントが対象 deliverable + AI 回答ルール + schema 厳守ルールを context として持つ
+  - [ ] `generating` 状態が schema/UI で動作 (☀️ 押下直後 = 「AI 生成中」スピナー、ファイル無しエラーが見えない)
+  - [ ] needs_revision 送信後、該当 deliverable は「AIの番」グループに移動
+  - [ ] vitest 既存テスト全 pass + 新テスト pass
+  - [ ] iPhone で実機テスト: ☀️ → スピナー表示 → 完了で deliverable へ → コメント送信 → AIの番に移動 → enriched-context エージェントが BL 作成や decisions 追記を実行
+
+cockpit_task_ids: []
+
+pending_questions: []
+
+decisions:
+  - at: '2026-04-26T09:30:00+09:00'
+    type: scope_change
+    by: user
+    content: |
+      4/26 朝の Phase 3a 初運用で 3 問題発覚 → Phase 3b 着手前に直すと判断 (option A 採用)。
+      P0 = create-fallback コンテキスト同梱、P1 = generating state + グルーピング修正。
+
+deliverable_refs: []

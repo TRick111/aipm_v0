@@ -1,24 +1,25 @@
-schema_version: 2
 id: BL-TBD-010
-title: "ミニタキオン ホームを「今日の選択」BLにフィルタ + 「全バックログ」別ページ"
+title: ミニタキオン ホームを「今日の選択」BLにフィルタ + 「全バックログ」別ページ
 project: ミニタキオン
 category: 作業効率化
-state: awaiting_user
+state: completed
 state_emoji: 🟡
 priority: high
-
-created_at: 2026-04-26T14:30:00+09:00
-updated_at: 2026-04-26T14:35:00+09:00
+created_at: '2026-04-26T14:30:00+09:00'
+updated_at: '2026-04-26T14:40:27.937Z'
 created_by: master-agent
-
-description: |
+description: >
   ## 背景
+
 
   BL-TBD-009 で中央 Backlog.md の 43 active BL がホームに全部表示されるようになったが、田中さんから「今日やると決めたものだけ見たい」とフィードバック。情報過多で daily focus を妨げている。
 
+
   ホームを「今日の選択」(= 今日のタスク案で [x] 採択された BL + 今日アクティビティのある BL + システム系タスク) のみに絞り込み、全 BL は別ページで参照可能にする。
 
+
   ## タスク詳細
+
 
   1. **`lib/today-selected.ts` 新規** — 今日の morning deliverable をパースして「今日の選択」BL IDs を抽出
      - `Flow/<today>/_orchestration/今日のタスク案.md` を読む
@@ -54,23 +55,34 @@ description: |
 
   ## 完了条件
 
+
   - [ ] `lib/today-selected.ts` 実装、[x] パース正常
+
   - [ ] ホームが「今日の選択」のみ表示 (最大十数件、43 件全表示は無し)
+
   - [ ] `/backlog` ページで全 20 project + 52 BL アクセス可能
+
   - [ ] 空状態の UX が親切 (☀️ 押下を促す)
+
   - [ ] ミニタキオン own BL (TBD-XXX) は in_progress/awaiting_user なら常時表示
+
   - [ ] vitest 全 pass + 新規テスト
+
   - [ ] 既存 Phase 1/2/3a v3 / 3b 機能は破壊しない
+
 
   ## ファイルテリトリー (BL-TBD-009 と BL-TBD-005 は完了済み、コンフリクト無し)
 
-  - 触る (OWN): lib/today-selected.ts (新規)、lib/index-store.ts (フィルタ取得 helper 追加)、app/page.tsx (ホーム filter)、app/backlog/page.tsx (新規)、components/projects-list.tsx or 同等 (フィルタ条件適用)、lib/__tests__/today-selected.test.ts (新規)
+
+  - 触る (OWN): lib/today-selected.ts (新規)、lib/index-store.ts (フィルタ取得 helper 追加)、app/page.tsx (ホーム
+  filter)、app/backlog/page.tsx (新規)、components/projects-list.tsx or 同等 (フィルタ条件適用)、lib/__tests__/today-selected.test.ts
+  (新規)
+
   - 触らない: lib/cockpit.ts、lib/lock.ts、app/actions.ts、lib/prompts/、lib/merge.ts、lib/backlog-md.ts (read のみ)
-
+deliverable_refs: []
+schema_version: 2
 cockpit_task_ids: []
-
 pending_questions: []
-
 decisions:
   - at: '2026-04-26T14:30:00+09:00'
     type: scope_change
@@ -116,5 +128,4 @@ decisions:
       morning data 不在のため、現状の「今日の選択 (5)」は (b) 今日 decisions あり = 4 件
       (BL-TBD-005/008/009/010) + ミニタキオン own + (a 該当無し)。
       朝の整理を起動すれば morning [x] 採択分が加わる。
-
-deliverable_refs: []
+completed_at: '2026-04-26T14:40:27.937Z'

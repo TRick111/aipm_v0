@@ -1,26 +1,29 @@
-schema_version: 2
 id: BL-TBD-005
-title: "ミニタキオン Phase 3b: 🌙 夜の振り返り"
+title: 'ミニタキオン Phase 3b: 🌙 夜の振り返り'
 project: ミニタキオン
 category: 作業効率化
-state: in_progress
+state: completed
 state_emoji: 🟢
 priority: high
-
-created_at: 2026-04-26T00:10:00+09:00
-updated_at: 2026-04-26T13:35:00+09:00
+created_at: '2026-04-26T00:10:00+09:00'
+updated_at: '2026-04-26T14:40:27.633Z'
 created_by: master-agent
-
-description: |
+description: >
   ## 背景
+
 
   Daily Loop の夜半分。Phase 3a (☀️ 朝の整理) が確定したら着手する。
 
-  田中さんが「🌙 今日を締める」を押すと、その日の deliverables / decisions / 残課題を集約した「今日の振り返り.md」を AI が生成、`Flow/<today>/_orchestration/` に保存。STATUS.md を Flow → Stock にマージする (Phase 5 設計と統合)。
+
+  田中さんが「🌙 今日を締める」を押すと、その日の deliverables / decisions / 残課題を集約した「今日の振り返り.md」を AI が生成、`Flow/<today>/_orchestration/`
+  に保存。STATUS.md を Flow → Stock にマージする (Phase 5 設計と統合)。
+
 
   ## タスク詳細
 
+
   1. ホーム画面に「🌙 今日を締める」ボタン (時間帯で目立たせる、夜は ☀️ より目立つ)
+
   2. Server Action `endDailyLoop()`:
      - Cockpit task 起動 (固定プロンプト daily-wrapup.md)
      - `Flow/<today>/_orchestration/今日の振り返り.md` の placeholder を deliverable として upsert
@@ -37,22 +40,30 @@ description: |
      - 出力先: `Flow/<today>/_orchestration/今日の振り返り.md`
      - AI 回答ルール / schema 厳守ルール (Phase 3a と同じく末尾に組み込み)
   4. STATUS.md を Flow → Stock にマージするロジック (Phase 5 設計の lib/merge.ts を参考)
+
   5. vitest テスト追加
+
 
   ## 完了条件
 
+
   - [ ] 「🌙 今日を締める」ボタン UI
+
   - [ ] Server Action `endDailyLoop()` 実装
+
   - [ ] 固定プロンプト `daily-wrapup.md` 作成
+
   - [ ] AI が 4/24 風の「今日の振り返り.md」を生成
+
   - [ ] STATUS.md の Flow → Stock マージが動く
+
   - [ ] vitest テスト pass
+
   - [ ] iPhone で「🌙 今日を締める」を実際に押して 1 日を締めるテスト
-
+deliverable_refs: []
+schema_version: 2
 cockpit_task_ids: []
-
 pending_questions: []
-
 decisions:
   - at: '2026-04-26T09:15:00+09:00'
     type: scope_change
@@ -92,5 +103,4 @@ decisions:
       残: 田中さんによる確認 + iPhone 実機での「🌙 今日を締める」タップ動作確認。
       ファイルテリトリー遵守: BL-TBD-009 owned (lib/backlog-md.ts, lib/index-store.ts,
       components/bl-card.tsx) は触っていない。
-
-deliverable_refs: []
+completed_at: '2026-04-26T14:40:27.633Z'

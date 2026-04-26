@@ -1,24 +1,26 @@
-schema_version: 2
 id: BL-TBD-009
-title: "ミニタキオン UI 拡張: 中央 Backlog.md を読み全 active BL をホームに表示"
+title: 'ミニタキオン UI 拡張: 中央 Backlog.md を読み全 active BL をホームに表示'
 project: ミニタキオン
 category: 作業効率化
-state: in_progress
+state: completed
 state_emoji: 🟢
 priority: high
-
-created_at: 2026-04-26T11:30:00+09:00
-updated_at: 2026-04-26T11:30:00+09:00
+created_at: '2026-04-26T11:30:00+09:00'
+updated_at: '2026-04-26T14:40:27.858Z'
 created_by: master-agent
-
-description: |
+description: >
   ## 背景
 
-  現状 mini-tachyon UI のプロジェクト一覧は `Stock/<cat>/<proj>/backlog/*.yaml` だけ読んでいて、中央 `Stock/定型作業/バックログ/Backlog.md` の ~44 active BL は invisible。朝のタスク案 deliverable には登場するが、ホームに表示されないため「ミニタキオンしか見えない」状態になる。
+
+  現状 mini-tachyon UI のプロジェクト一覧は `Stock/<cat>/<proj>/backlog/*.yaml` だけ読んでいて、中央 `Stock/定型作業/バックログ/Backlog.md` の ~44
+  active BL は invisible。朝のタスク案 deliverable には登場するが、ホームに表示されないため「ミニタキオンしか見えない」状態になる。
+
 
   本 BL で中央 Backlog.md を mini-tachyon UI のもう一つの BL データソースとして統合する。BL-TBD-006 (Phase 3c) が承認後の自動展開を実装する前に、まず可視化を達成する。
 
+
   ## タスク詳細
+
 
   1. **`lib/backlog-md.ts` 新規作成**: 中央 Backlog.md の `## Tasks` テーブルをパースして BL[] を返す
      - 各 row → BL オブジェクト ({id, title, status, priority, due, program, project, tags, notes})
@@ -43,23 +45,35 @@ description: |
 
   ## 完了条件
 
+
   - [ ] `lib/backlog-md.ts` 実装完了 + テスト
+
   - [ ] `lib/index-store.ts` で central BL もマージ
+
   - [ ] mini-tachyon ホームで 中央 Backlog.md の active BL が project別グルーピングで表示
+
   - [ ] BL 詳細ページが central BL を開いて表示できる (read-only)
+
   - [ ] 既存 ミニタキオン own BL (BL-TBD-XXX) も従来通り表示維持
+
   - [ ] vitest 全 pass
+
 
   ## ファイルテリトリー (BL-TBD-005 と並列実行のため明確化)
 
-  - **本 BL の owned files**: lib/backlog-md.ts (新規)、lib/index-store.ts (extension)、components/bl-card.tsx (read-only表示分岐 only)、lib/__tests__/backlog-md.test.ts (新規)、lib/__tests__/index-store.test.ts (extension)
-  - **触らない**: app/actions.ts、lib/prompts/、lib/merge.ts、components/start-daily-loop-button.tsx、components/end-daily-loop-button.tsx (← Phase 3b territory)
+
+  - **本 BL の owned files**: lib/backlog-md.ts (新規)、lib/index-store.ts (extension)、components/bl-card.tsx (read-only表示分岐
+  only)、lib/__tests__/backlog-md.test.ts (新規)、lib/__tests__/index-store.test.ts (extension)
+
+  - **触らない**:
+  app/actions.ts、lib/prompts/、lib/merge.ts、components/start-daily-loop-button.tsx、components/end-daily-loop-button.tsx
+  (← Phase 3b territory)
+
   - **共有 (additive only)**: lib/types.ts (新規 type 追加 OK、既存 export 変更禁止)
-
+deliverable_refs: []
+schema_version: 2
 cockpit_task_ids: []
-
 pending_questions: []
-
 decisions:
   - at: '2026-04-26T11:30:00+09:00'
     type: scope_change
@@ -74,5 +88,4 @@ decisions:
       朝のタスク案 done 承認時に「あとはミニタキオンアップデートは全部やります」とコメント。
       本BL も承認対象 — Cockpit b0c9e231 で完了報告済 (waiting_confirmation)、
       田中さん再 dogfood 後に completed マーク予定。BL-TBD-010 で「情報過多」課題が改善中。
-
-deliverable_refs: []
+completed_at: '2026-04-26T14:40:27.858Z'

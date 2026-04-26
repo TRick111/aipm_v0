@@ -1,0 +1,154 @@
+schema_version: 2
+id: BL-TBD-011
+title: "ミニタキオン Phase 4a: API 化 + CLI wrapper (`mt`)"
+project: ミニタキオン
+category: 作業効率化
+state: in_progress
+state_emoji: 🟢
+priority: high
+
+created_at: 2026-04-26T18:30:00+09:00
+updated_at: 2026-04-26T18:30:00+09:00
+created_by: master-agent
+
+description: |
+  ## 背景
+
+  4/26 dogfood で 4 回以上の drift (schema違反 / 文脈喪失 / 副作用なし) が観測された。原因はエージェントが「rule-following」(プロンプトに書かれたルールを忠実に守る) 前提で動いてること。プロンプト 305 行渡しても 2 回違反した。
+
+  ルールベースは指針、API ベースは強制。**API 層で zod validate + atomic write** する方が堅い。エージェントを「skill-calling agent」に転換する。
+
+  ミニタキオンは既に Next.js HTTP server で Server Actions を持っているので、外向き API として公開し直すだけで土台はある。
+
+  ## タスク詳細
+
+  本 BL は **Phase 4a (API + CLI wrapper)** のみ。Phase 4b (prompt 移行) は BL-TBD-012 で別途。
+
+  ### 1. HTTP API 実装 (`app/api/...` route handlers)
+
+  全 endpoint zod validate、proper-lockfile で書込シリアライズ、エラーは構造化 (400 = schema 違反、409 = optimistic conflict、404 = 該当無し)。Server Actions のロジックを再利用する薄いラッパで OK。
+
+  必要 endpoint:
+
+  ```
+  # BL 操作
+  POST   /api/bl                              新規 BL 作成 (Backlog.md or per-project YAML)
+  PATCH  /api/bl/:id                          state/priority/due/title 更新
+  POST   /api/bl/:id/decisions                decisions[] に append
+  POST   /api/bl/:id/pending-questions        pending_questions[] に append
+  DELETE /api/bl/:id/pending-questions/:qid   consume された質問を削除
+  GET    /api/bl                              BL リスト (filter: state, project, ids, today_selected)
+  GET    /api/bl/:id                          特定 BL の詳細
+
+  # Deliverable 操作
+  PATCH  /api/deliverables/:id/state          review_state 更新 (5値)
+  POST   /api/deliverables/:id/comments       review_log にコメント追記
+  GET    /api/deliverables/:id                deliverable 詳細
+
+  # Cockpit 連携
+  POST   /api/cockpit/tasks                   タスク作成 (related_bl_id を渡せば自動 cockpit_task_ids 連携)
+  POST   /api/cockpit/tasks/:tid/send         メッセージ送信 (3 段 fallback 内蔵)
+
+  # Daily Loop 操作
+  POST   /api/morning/start                   ☀️ 起動 (既存 startDailyLoop ラップ)
+  POST   /api/morning/finalize                [x] 採択を atomic に処理 (BL状態更新 + クラスA spawn 一括)
+  POST   /api/evening/start                   🌙 起動 (既存 endDailyLoop ラップ)
+
+  # クエリ
+  GET    /api/today/selected                  「今日の選択」リスト
+  GET    /api/projects                        全 project + active BL 数
+  ```
+
+  ### 2. CLI wrapper `mt` (Bun で実装)
+
+  `~/.agi-tools/mini-tachyon/cli/mt.ts` (or `bin/mt`) を新規作成。各 endpoint を `fetch http://localhost:3000/api/...` で呼ぶ薄い CLI。
+
+  ```bash
+  # BL
+  mt bl create --title <T> --project <P> --category <C> [--priority high] [--due 2026-04-30]
+  mt bl update <id> --state in_progress
+  mt bl add-decision <id> --type answer --by user --content "..."
+  mt bl add-question <id> --content "..." [--from-task <task_id>]
+  mt bl consume-question <id> <qid>
+  mt bl list [--state X] [--project Y] [--ids id1,id2] [--today-selected]
+  mt bl get <id>
+
+  # Deliverable
+  mt deliverable update-state <id> --state done
+  mt deliverable add-comment <id> --content "..."
+  mt deliverable get <id>
+
+  # Cockpit
+  mt cockpit spawn --instruction <I> --directory <D> [--bl <id>]
+  mt cockpit send <task_id> <text>
+
+  # Daily Loop
+  mt morning start
+  mt morning finalize <deliverable_id> --selections '[{"bl":"BL-0073","action":"approve"},...]'
+  mt evening start
+
+  # Query
+  mt today selected
+  mt projects list
+  ```
+
+  ### 3. CLI 規約
+
+  - 出力: デフォルト JSON (machine 向け)、`--human` で人間用整形
+  - エラー: 非ゼロ exit + stderr に JSON `{error: code, message, detail?}`
+  - PATH: `~/.agi-tools/mini-tachyon/bin/mt` を `chmod +x`、田中さんの PATH に追加 (もしくは ln -s で /usr/local/bin/mt)
+  - 認証なし (tailscale 内に閉じてる)
+  - localhost only (0.0.0.0 ではなく 127.0.0.1 listen を検討、ただし mini-tachyon は 0.0.0.0 で listen してるので OK、CLI は localhost に向ける)
+
+  ### 4. テスト
+
+  - `lib/__tests__/api/*.test.ts` 各 endpoint の happy path + 各エラーパターン
+  - `lib/__tests__/cli.test.ts` CLI コマンドのスモーク (subprocess 起動)
+  - 既存 112 テスト全 pass 維持
+  - 新規 20+ テスト
+
+  ### 5. ドキュメント (簡易)
+
+  - `~/.agi-tools/mini-tachyon/docs/API.md` 新規 — 全 endpoint の入出力例
+  - `~/.agi-tools/mini-tachyon/docs/CLI.md` 新規 — 全 mt コマンドの例
+  - エージェント prompt から参照可能な状態に
+
+  ## 完了条件
+
+  - [ ] 全 13+ endpoint 実装、zod validate、structured error
+  - [ ] `mt` CLI 全コマンド動作、JSON / human 両モード
+  - [ ] vitest 既存 112 + 新規 20+ pass
+  - [ ] `mt --help` で全コマンド一覧表示
+  - [ ] `mt bl get BL-0028` 等で動作確認
+  - [ ] docs/API.md と docs/CLI.md 整備
+  - [ ] launchd 再起動、prod 反映
+
+  ## ファイルテリトリー
+
+  - **OWN**:
+    - `app/api/**/*.ts` (新規 route handlers)
+    - `cli/` or `bin/mt` (新規 CLI 実装)
+    - `lib/__tests__/api/*.test.ts` (新規)
+    - `lib/__tests__/cli.test.ts` (新規)
+    - `docs/API.md`, `docs/CLI.md` (新規)
+  - **既存ロジック再利用** (既存 Server Actions ロジックを share):
+    - `app/actions.ts` の関数群 → API ハンドラから呼ぶ (signature 不変)
+    - `lib/lock.ts` / `lib/cockpit.ts` / `lib/orchestration.ts` etc. はそのまま使う
+  - **触らない**:
+    - 既存 UI コンポーネント (UI から API を呼ぶ未来形は Phase 4b/4c)
+    - `lib/prompts/` (Phase 4b で別 BL から触る)
+
+cockpit_task_ids: []
+
+pending_questions: []
+
+decisions:
+  - at: '2026-04-26T18:30:00+09:00'
+    type: scope_change
+    by: user
+    content: |
+      4/26 dogfood で「rule-following agent」が drift 多発 → API 化 + skill 化に方向転換決定。
+      Phase 4 として正式着手、4a (API + CLI) → 4b (prompt 移行) → 4c (本格 dogfood) の3段。
+      本 BL は Phase 4a のみ。
+
+deliverable_refs: []

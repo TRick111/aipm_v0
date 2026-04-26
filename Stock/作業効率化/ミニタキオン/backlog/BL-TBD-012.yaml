@@ -1,0 +1,91 @@
+schema_version: 2
+id: BL-TBD-012
+title: "ミニタキオン Phase 4b: エージェント prompt の skill 化移行"
+project: ミニタキオン
+category: 作業効率化
+state: pending
+state_emoji: 🆕
+priority: high
+
+created_at: 2026-04-26T18:30:00+09:00
+updated_at: 2026-04-26T18:30:00+09:00
+created_by: master-agent
+
+description: |
+  ## 背景
+
+  Phase 4a (BL-TBD-011) で API + CLI (`mt`) が完成したら、既存のエージェント prompt を「rule-following」から「skill-calling」に書き直す。
+
+  ## タスク詳細
+
+  本 BL は **BL-TBD-011 完了後に着手**。
+
+  ### 1. 移行対象 prompt
+
+  - `~/.agi-tools/mini-tachyon/lib/prompts/daily-start.md` (305 行 → 大幅短縮、mt CLI 呼ぶだけに)
+  - `~/.agi-tools/mini-tachyon/lib/prompts/daily-wrapup.md` (Phase 3b で作成済 → mt CLI に移行)
+  - `~/.agi-tools/mini-tachyon/lib/fallback-instruction.ts` (Phase 3a v3 で作成済 → mt CLI 使用に書換)
+
+  ### 2. 新 prompt の方針
+
+  ```markdown
+  あなたは ミニタキオン スキルを使うエージェントです。
+
+  # 利用可能スキル (mt CLI)
+
+  詳細: docs/CLI.md
+  代表例:
+  - mt bl add-decision <id> --type answer --by user --content "..."
+  - mt cockpit spawn --instruction "..." --directory ~/aipm_v0 --bl BL-XXXX
+  - mt morning finalize <deliverable_id> --selections '[...]'
+
+  # やること (例: 朝の整理)
+
+  1. 中央 Backlog.md を読む
+  2. 各 active プロジェクトの STATUS.md を読む
+  3. 「今日のタスク案.md」を 4/24 形式で生成、_orchestration/ に保存
+  4. (mt CLI で) deliverable を register、review_state を unreviewed に
+
+  # ルール
+
+  - YAML を直接編集しない (mt CLI 経由のみ)
+  - schema 違反は CLI が 400 エラーで教える、修正して再試行
+  - 質問あれば mt bl add-question で記録、会話で完結禁止
+  ```
+
+  ### 3. fallback-instruction.ts の改訂
+
+  既存の enriched instruction (Fix 1) を **mt CLI 呼び出しベース** に書き換え:
+  - 「テーブルの [x] 行ごとに cockpit task spawn」→ `mt morning finalize <id> --selections '...'` 1 コマンドに集約
+  - 「decisions に append」→ `mt bl add-decision ...`
+  - 「設計改訂」→ md 編集 + `mt deliverable update-state ... --state unreviewed`
+
+  ### 4. drift 検証 (P5 = 本格 dogfood)
+
+  - 朝の整理を新 prompt で再走 (☀️ 押下)
+  - schema drift / 文脈喪失が起きないか観測
+  - エージェントが mt CLI を正しく使うか
+  - エラーが起きた時の retry が機能するか
+
+  ## 完了条件
+
+  - [ ] 3 prompts 全部 mt CLI ベースに書き換え
+  - [ ] vitest 関連テスト pass (prompt smoke test)
+  - [ ] 田中さん iPhone で ☀️ → 新エージェント動作確認
+  - [ ] 「採択 [x] を一括処理」が `mt morning finalize` 1 回で完結
+  - [ ] 朝のレビューコメント送信 → 新エージェントが mt CLI で BL/deliverable 更新を行う
+  - [ ] schema drift がゼロ (zod 違反 reject されたら CLI が分かるように教える)
+
+  ## 制約
+
+  - BL-TBD-011 完了後に着手 (依存)
+  - 既存 mini-tachyon UI 機能は不変
+  - schema_version: 2 維持
+
+cockpit_task_ids: []
+
+pending_questions: []
+
+decisions: []
+
+deliverable_refs: []

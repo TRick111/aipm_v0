@@ -8,7 +8,7 @@ state_emoji: 🟢
 priority: high
 
 created_at: 2026-04-26T00:10:00+09:00
-updated_at: 2026-04-26T09:15:00+09:00
+updated_at: 2026-04-26T13:35:00+09:00
 created_by: master-agent
 
 description: |
@@ -61,5 +61,29 @@ decisions:
       Phase 3a (BL-TBD-004) 完了承認に伴い、本BLを pending → planned に昇格。
       田中さん「夜の振り返りも今日タスクとして終わらせたい」との指示。
       本日 (2026-04-26) 中に着手予定。エージェント起動は別途指示待ち。
+  - at: '2026-04-26T13:35:00+09:00'
+    type: commitment
+    by: ai
+    content: |
+      Phase 3b 実装完了 (waiting_confirmation)。
+      実装内容:
+        - app/actions.ts に endDailyLoop() Server Action を追加 (startDailyLoop と同パターン)
+        - lib/prompts/daily-wrapup.md 新規 (4/24 形式 + 振り返り版、AI回答ルール / schema厳守末尾組み込み)
+        - lib/merge.ts 新規 (Flow→Stock STATUS.md マージ。frontmatter は Flow 上書き、
+          履歴 append、完了 BL-ID union、その他は Flow 上書き)
+        - lib/orchestration.ts に hasEveningDeliverable() を追加 (additive)
+        - components/end-daily-loop-button.tsx 新規 (Moon icon、青系パレット、
+          17:00 以降は emphasize で目立たせる)
+        - components/daily-loop-section.tsx に 🌙 配置を additive 追加
+        - app/__tests__/end-daily-loop.test.ts (4 件) + lib/__tests__/merge.test.ts (7 件) 追加
+      検証:
+        - bun run test: 89 / 89 pass (既存 78 + 新規 11)
+        - bun run build 成功
+        - launchctl bootout/bootstrap で再起動、pid 62079 で稼働
+        - curl smoke: home / 4 project / 8 own BL すべて 200
+        - home に「今日を始める (☀️)」「今日を締める (🌙)」両ボタン render 確認
+      残: 田中さんによる確認 + iPhone 実機での「🌙 今日を締める」タップ動作確認。
+      ファイルテリトリー遵守: BL-TBD-009 owned (lib/backlog-md.ts, lib/index-store.ts,
+      components/bl-card.tsx) は触っていない。
 
 deliverable_refs: []

@@ -1,0 +1,83 @@
+schema_version: 2
+id: BL-TBD-010
+title: "ミニタキオン ホームを「今日の選択」BLにフィルタ + 「全バックログ」別ページ"
+project: ミニタキオン
+category: 作業効率化
+state: in_progress
+state_emoji: 🟢
+priority: high
+
+created_at: 2026-04-26T14:30:00+09:00
+updated_at: 2026-04-26T14:30:00+09:00
+created_by: master-agent
+
+description: |
+  ## 背景
+
+  BL-TBD-009 で中央 Backlog.md の 43 active BL がホームに全部表示されるようになったが、田中さんから「今日やると決めたものだけ見たい」とフィードバック。情報過多で daily focus を妨げている。
+
+  ホームを「今日の選択」(= 今日のタスク案で [x] 採択された BL + 今日アクティビティのある BL + システム系タスク) のみに絞り込み、全 BL は別ページで参照可能にする。
+
+  ## タスク詳細
+
+  1. **`lib/today-selected.ts` 新規** — 今日の morning deliverable をパースして「今日の選択」BL IDs を抽出
+     - `Flow/<today>/_orchestration/今日のタスク案.md` を読む
+     - 4/24 形式の Project別テーブルから `[x]` (採択) 行の BL ID を抽出
+     - 今日の morning deliverable が無い (まだ ☀️ 押されてない) → 空リスト
+     - review_state が unreviewed (まだ承認されてない) → 全 [x] 候補を pre-selection 扱い (まだ未決状態として)
+
+  2. **「今日の選択」の判定ロジック (拡張)**:
+     - (a) 今日のタスク案の [x] 採択 BL
+     - (b) 今日 decisions[] に新規エントリがある BL (今日 active な BL)
+     - (c) ミニタキオン own BL (BL-TBD-XXX) で state が in_progress / awaiting_user (システム系は常に見える)
+
+  3. **ホーム (`app/page.tsx` or `components/projects-list.tsx`) のフィルタ**:
+     - 「📅 今日の運用」セクション: 今日の morning + wrap-up deliverable
+     - 「🔥 今日の選択」セクション: 今日の選択 BL のみ project別グルーピングで表示
+     - 空 (= morning deliverable 無し or [x] 0 件) の時: 「☀️ 朝の整理を始めましょう」プロンプト
+     - 既存「📚 過去の運用」「全 20 プロジェクト一覧」は、ホーム下部の小さなリンク → 別ページ `/backlog`
+
+  4. **`app/backlog/page.tsx` 新規** — 全 BL ビュー
+     - 既存のホーム表示 (20 project + 52 BL の project別折りたたみ) をここに移植
+     - フィルタ・検索 (option) 後で追加可能
+     - ホームから「🗂 全バックログを見る」リンクで遷移
+
+  5. **空状態 UX**:
+     - morning deliverable 無し → 「☀️ 今日を始める」ボタンが目立つ + 「朝の整理を始めると今日のタスクが決まります」案内
+     - morning deliverable unreviewed → 「📋 今日のタスク案がレビュー待ちです」+ deliverable へリンク
+     - morning deliverable done で [x] 0 件 → 「今日は休みです」or 「☀️ で再整理可能」
+
+  6. **vitest テスト**:
+     - `lib/__tests__/today-selected.test.ts` — [x] パース、pre-selection ロジック、空ケース
+     - 既存 89 テスト全 pass 維持
+     - 新規 5+ テスト
+
+  ## 完了条件
+
+  - [ ] `lib/today-selected.ts` 実装、[x] パース正常
+  - [ ] ホームが「今日の選択」のみ表示 (最大十数件、43 件全表示は無し)
+  - [ ] `/backlog` ページで全 20 project + 52 BL アクセス可能
+  - [ ] 空状態の UX が親切 (☀️ 押下を促す)
+  - [ ] ミニタキオン own BL (TBD-XXX) は in_progress/awaiting_user なら常時表示
+  - [ ] vitest 全 pass + 新規テスト
+  - [ ] 既存 Phase 1/2/3a v3 / 3b 機能は破壊しない
+
+  ## ファイルテリトリー (BL-TBD-009 と BL-TBD-005 は完了済み、コンフリクト無し)
+
+  - 触る (OWN): lib/today-selected.ts (新規)、lib/index-store.ts (フィルタ取得 helper 追加)、app/page.tsx (ホーム filter)、app/backlog/page.tsx (新規)、components/projects-list.tsx or 同等 (フィルタ条件適用)、lib/__tests__/today-selected.test.ts (新規)
+  - 触らない: lib/cockpit.ts、lib/lock.ts、app/actions.ts、lib/prompts/、lib/merge.ts、lib/backlog-md.ts (read のみ)
+
+cockpit_task_ids: []
+
+pending_questions: []
+
+decisions:
+  - at: '2026-04-26T14:30:00+09:00'
+    type: scope_change
+    by: user
+    content: |
+      朝の dogfood 後フィードバック: ホームに 43 BL 全表示は情報過多、「今日やると決めたものだけ」が見たい。
+      A (morning data リセット) + C (フィルタ UI) を並列で進めることに決定。
+      morning data は ~/aipm_v0/Flow/202604/2026-04-26/_orchestration.bak-20260426-am に backup 済。
+
+deliverable_refs: []

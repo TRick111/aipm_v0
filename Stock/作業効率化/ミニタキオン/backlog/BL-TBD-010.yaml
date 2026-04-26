@@ -3,12 +3,12 @@ id: BL-TBD-010
 title: "ミニタキオン ホームを「今日の選択」BLにフィルタ + 「全バックログ」別ページ"
 project: ミニタキオン
 category: 作業効率化
-state: in_progress
-state_emoji: 🟢
+state: awaiting_user
+state_emoji: 🟡
 priority: high
 
 created_at: 2026-04-26T14:30:00+09:00
-updated_at: 2026-04-26T14:30:00+09:00
+updated_at: 2026-04-26T14:35:00+09:00
 created_by: master-agent
 
 description: |
@@ -79,5 +79,36 @@ decisions:
       朝の dogfood 後フィードバック: ホームに 43 BL 全表示は情報過多、「今日やると決めたものだけ」が見たい。
       A (morning data リセット) + C (フィルタ UI) を並列で進めることに決定。
       morning data は ~/aipm_v0/Flow/202604/2026-04-26/_orchestration.bak-20260426-am に backup 済。
+  - at: '2026-04-26T14:35:00+09:00'
+    type: commitment
+    by: ai
+    content: |
+      実装完了 (waiting_confirmation)。
+
+      実装内容:
+        - lib/today-selected.ts 新規 — morning deliverable .md パース ([x] 行抽出)、
+          isMiniTachyonOwnBLActive / hasTodayDecision / isTodaySelected / selectTodayBLs、
+          readTodayMorningState (review_state を MorningState で kind 化)
+        - app/page.tsx 大幅リファクタ — selectedBLs フィルタ → project別グルーピング、
+          DailyLoopSection 上部維持、空状態 4 パターン (missing/unreviewed/done無採択/needs_revision)、
+          下部に「🗂 全バックログを見る」リンク
+        - app/backlog/page.tsx 新規 — 旧ホームの全 20 project / 53 BL を移植、
+          live と dormant 別建て、Header「🗂 全バックログ」+ ホームへ戻るリンク
+        - lib/__tests__/today-selected.test.ts 新規 (23 ケース) — パース 6 / own active 4 /
+          decisions today 3 / 統合判定 5 / selectTodayBLs 1 / file-system integration 4
+
+      検証:
+        - bun run test: 112 / 112 pass (既存 89 + 新規 23)
+        - bun run build 成功 (Route /backlog が dynamic で登録)
+        - launchd 再起動、prod 稼働中
+        - curl smoke: home 200 + 「🔥 今日の選択 (5)」 + ミニタキオン グループ表示、
+          /backlog 200 + 「🗂 全バックログ」 + 全プロジェクト active count badge 描画
+
+      ファイルテリトリー遵守: 触らない指定 (cockpit/lock/actions/prompts/merge/backlog-md) は read のみ。
+
+      残: 田中さんが iPhone でホーム動作確認 → done 化。
+      morning data 不在のため、現状の「今日の選択 (5)」は (b) 今日 decisions あり = 4 件
+      (BL-TBD-005/008/009/010) + ミニタキオン own + (a 該当無し)。
+      朝の整理を起動すれば morning [x] 採択分が加わる。
 
 deliverable_refs: []

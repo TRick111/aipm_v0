@@ -6,7 +6,7 @@ state: awaiting_user
 state_emoji: 🟢
 priority: high
 created_at: '2026-04-22T00:00:00+09:00'
-updated_at: '2026-04-27T00:49:09.893Z'
+updated_at: '2026-04-27T01:08:09.765Z'
 created_by: master-agent
 description: >
   ## 背景
@@ -43,33 +43,9 @@ description: >
   - [ ] Phase 2（gbrain MCP 並走）を実装（5 月以降）
 deliverable_refs: []
 schema_version: 2
-cockpit_task_ids: []
+cockpit_task_ids:
+  - e6906556
 pending_questions:
-  - id: q-BL-0053-1-20260427004830
-    at: '2026-04-27T00:48:30.416Z'
-    cockpit_task_id: e3fc0291
-    content: >-
-      【Q1・最優先・確定確認】"G-Brain" は `garrytan/gbrain` で合っているか
-
-
-      4/27 田中さん前提（GitHub にある / 長期記憶）+ 4/26 / 4/27 検索結果から、`garrytan/gbrain` (OSS / MIT / 11.5k★、Y Combinator CEO Garry
-      Tan が 2026-04-05 公開した Personal Knowledge Brain) で確定濃厚です。1 行確認をお願いします。
-
-
-      選択肢:
-
-      - (a) そう、これで合っている → 統合案 v1 §推奨案 (E) を進める
-
-      - (b) 違う、別のリポ → 大地さんから URL を教えてもらう
-
-      - (c) 大地さんに聞かないと分からない → 1 行確認をお願いします（"gbrain って github.com/garrytan/gbrain のこと？"）
-
-
-      📌 AI推奨: (a)。理由 (1) 田中さんの「GitHub にある + 長期記憶」の 2 条件を完全充足するリポはこれ以外に該当なし、(2) 11.5k★ で 4 月時点の話題の OSS、(3) Claude Code /
-      Cursor / MCP 連携が AIPM 環境と相性最良。
-
-
-      参照: Flow/202604/2026-04-27/作業効率化/AIOS/g_brain_investigation_v1.md
   - id: q-BL-0053-2-20260427004841
     at: '2026-04-27T00:48:41.497Z'
     cockpit_task_id: e3fc0291
@@ -108,4 +84,11 @@ pending_questions:
 
 
       参照: Flow/202604/2026-04-27/作業効率化/AIOS/g_brain_aios_integration_options_v1.md §3.3
-decisions: []
+decisions:
+  - at: '2026-04-27T01:08:09.765Z'
+    type: answer
+    by: user
+    content: >-
+      Gbrain と言っているのは、今言っている GitHub のリポジトリであっています。統合方針はハイブリッドがいけるのかな？正直、その gbrain
+      の内容次第かなと思っています。可能であれば、第一回から組み込みたいので、まずは調査をお願いします。
+    answers_question_id: q-BL-0053-1-20260427004830

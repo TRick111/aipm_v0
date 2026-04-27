@@ -126,3 +126,53 @@ deliverables:
         action: created
         to: unreviewed
         comment: BL-0068 完全手順 §5 の付属テンプレ。v2 で確定値（住所・受取メール等）埋込予定。
+      - at: '2026-04-27T10:50:00+09:00'
+        action: superseded
+        to: needs_revision
+        comment: 田中さん回答 (Q-A〜Q-G) で LINE 送付に確定 → wise_invoice_template_v2.md で置換
+  - id: d-bl0068-20260427-wise-billing-full-procedure-v2
+    file: wise_billing_full_procedure_v2.md
+    bl_id: BL-0068
+    title: PONさん月次請求 — Wise 完全運用手順 v2（確定版・LINE 送付・遡及3件）
+    created_at: '2026-04-27T10:50:00+09:00'
+    created_by: bl-0068-agent
+    created_by_agent: claude
+    review_state: unreviewed
+    summary: >-
+      田中さん 2026-04-27 回答 (Q-A〜Q-G) を反映した v2 確定版。送金経路= Pon さん個人 Wise → 田中さん個人 Wise の単一ルート、
+      受取口座= みずほメインバンク、請求書送付= LINE トーク (メール非採用)、SWIFT バックアップ削除、
+      初回バッチ= 2 月稼働分 (2/19-3/18) + 3 月稼働分 (3/19-4/18) + 4 月稼働分 (4/19-5/18) の遡及 3 件まとめ発行 (合計 750,000 JPY)。
+      9 章構成: §0 v1→v2 差分／§1 ロードマップ Phase A〜E／§2 田中さん側 Wise 開設＋みずほ出金先／§3 Pon さん側 Wise 開設＋
+      LINE 依頼メッセージ／§4 顧客登録／§5 Phase D 遡及 3 件発行＋LINE 送付テンプレ (日英併記)／§6 入金確認・みずほ出金・記帳／
+      §7 Phase E 月次運用カレンダー／§8 リスク／§9 ネクストアクション。
+    related_files:
+      - wise_invoice_template_v2.md
+      - wise_billing_full_procedure_v1.md
+      - ../../2026-04-26/RestaurantAILab/バンコクPonさん案件/payment_switch_comparison.md
+    review_log:
+      - at: '2026-04-27T10:50:00+09:00'
+        action: created
+        to: unreviewed
+        comment: BL-0068 v2 確定版作成。田中さん 7 問回答消費済 + scope_change 1 件。次は田中さん本人 Phase A 着手。
+  - id: d-bl0068-20260427-wise-invoice-template-v2
+    file: wise_invoice_template_v2.md
+    bl_id: BL-0068
+    title: PONさん向け 月次請求書テンプレ v2 — Wise Invoice + LINE 送付（25万円固定）
+    created_at: '2026-04-27T10:55:00+09:00'
+    created_by: bl-0068-agent
+    created_by_agent: claude
+    review_state: unreviewed
+    summary: >-
+      v2 完全手順 §5 の付属テンプレ (LINE 送付対応版)。6 章構成:
+      §1 初回バッチ Phase D 遡及 3 件 (RAL-2026-02 / 03 / 04 各 250,000 JPY、合計 750,000 JPY)／
+      §2 Wise Invoice Generator 入力フィールド対応表 (Bill to= Pon さん個人 単一)／§3 LINE 送付テンプレ
+      (Phase D 4 通構成: 説明テキスト + PDF 3 ファイル / Phase E 月次 2 通構成: テキスト + PDF 1 ファイル、日英併記)／
+      §4 月次運用 5 分チェックリスト (複製→3 点更新→PDF→LINE)／§5 年次更新の注意／§6 LINE 送付運用の注意点
+      (1:1 トーク限定 / 既読確認 / PDF 開けない時の対処 等)。
+    related_files:
+      - wise_billing_full_procedure_v2.md
+    review_log:
+      - at: '2026-04-27T10:55:00+09:00'
+        action: created
+        to: unreviewed
+        comment: BL-0068 v2 完全手順 §5 の付属テンプレ。LINE 1:1 送付運用に確定。

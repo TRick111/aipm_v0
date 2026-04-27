@@ -39,6 +39,14 @@ NO_REPLY_SUBJECT_HINTS = (
     "ワンタイム",
 )
 
+NO_REPLY_BODY_HINTS = (
+    "本メールは配信専用",
+    "本メールは送信専用",
+    "ご返信を承ることができません",
+    "返信いただいても回答できません",
+    "直接返信いただいても回答できません",
+)
+
 REPLY_NEEDED_SUBJECT_HINTS = (
     "ご確認",
     "確認お願いします",
@@ -141,6 +149,20 @@ def read_message(message_id: str) -> Dict[str, Any]:
 
 
 def header_value(message: Dict[str, Any], key: str) -> str:
+    direct_key = key.lower()
+    if direct_key == "from":
+        sender = message.get("from")
+        if isinstance(sender, dict):
+            name = str(sender.get("name", "")).strip()
+            email = str(sender.get("email", "")).strip()
+            return f"{name} <{email}>".strip() if name else email
+        if isinstance(sender, str):
+            return sender.strip()
+    if direct_key in {"subject", "date"}:
+        value = message.get(direct_key)
+        if isinstance(value, str):
+            return value.strip()
+
     headers = message.get("headers")
     if isinstance(headers, dict):
         return str(headers.get(key, "")).strip()
@@ -160,6 +182,8 @@ def classify_message(sender: str, subject: str, snippet: str) -> Tuple[bool, str
         return False, "差出人が自動送信系"
     if any(hint in subject_l for hint in NO_REPLY_SUBJECT_HINTS):
         return False, "件名が通知/案内系"
+    if any(hint.lower() in snippet_l for hint in NO_REPLY_BODY_HINTS):
+        return False, "本文に返信不可の記載"
     if any(hint in subject_l for hint in REPLY_NEEDED_SUBJECT_HINTS):
         return True, "件名に返信要求の示唆"
     if any(word in snippet_l for word in ("返信", "ご確認", "ご連絡", "please reply", "let me know")):
@@ -171,7 +195,8 @@ def to_mail_record(message_id: str, message: Dict[str, Any]) -> MailRecord:
     sender = header_value(message, "From")
     subject = header_value(message, "Subject")
     received_date = header_value(message, "Date")
-    snippet = str(message.get("snippet", "")).replace("\n", " ").strip()
+    raw_snippet = message.get("snippet") or message.get("body_text") or ""
+    snippet = " ".join(str(raw_snippet).split())[:240]
     needs_reply, reason = classify_message(sender=sender, subject=subject, snippet=snippet)
     return MailRecord(
         message_id=message_id,

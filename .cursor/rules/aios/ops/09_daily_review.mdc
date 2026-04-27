@@ -1,6 +1,26 @@
 ---
-description: "AIOS Ops: 終業時の日次振り返り — 予実確認・目標ログ・申し送り"
+description: "[DEPRECATED 2026-04-26] AIOS Ops: 終業時の日次振り返り — ミニタキオン Daily Loop 🌙 (rule 13) に移行済"
 alwaysApply: false
+---
+
+# ⚠️ DEPRECATED — 2026-04-26 廃止
+
+夜の振り返りは **ミニタキオン Daily Loop 🌙** に移行しました。`daily_tasks.md` への振り返り追記は新規には行いません。
+
+## 新しい正規ルート
+
+→ **`aios/ops/13_mini_tachyon_protocol.mdc`** の「## 3.2 夜の振り返り (🌙)」を参照。
+
+### 概要
+- 田中さんが iPhone で `🌙 今日を締める` を押下 (or `mt evening start` を実行)
+- 夜の振り返りエージェントが当日 deliverables / decisions / 残課題を集計
+- `Flow/<today>/_orchestration/今日の振り返り.md` を生成
+- `lib/merge.ts` で Flow → Stock STATUS.md マージ
+
+## 過去のルール本文 (アーカイブ・参考のみ)
+
+⚠️ 以下は履歴目的のアーカイブです。**新規運用には使わないでください**。
+
 ---
 
 # 運用フロー: 終業時の日次振り返り

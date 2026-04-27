@@ -1,0 +1,47 @@
+%% PONさん 売上データ AI アクセス設計 v2 — アーキテクチャ図
+%% BL-0074 / 2026-04-27
+%% 同梱資料: sales_data_ai_security_design_v2.md
+
+flowchart LR
+  subgraph PONsLocal["PON さんローカル PC（業務 PC）"]
+    Cursor["Cursor IDE<br/>(Privacy Mode)"]
+    MCPClient["MCP クライアント<br/>または PAC CLI"]
+    LocalCache["暗号化ローカルキャッシュ<br/>（FileVault / BitLocker）"]
+  end
+
+  subgraph Entra["Microsoft Entra ID（PON さんテナント）"]
+    SP["サービスプリンシパル<br/>svc-ai-readonly-pon<br/>（証明書認証推奨）"]
+    AppRole["アプリ権限<br/>Dataverse User /<br/>Sites.Selected"]
+  end
+
+  subgraph PowerPlatform["Power Platform（PON さんテナント・本番環境）"]
+    SecRole["セキュリティロール<br/>『AI Read-Only』<br/>Read のみ・PII 列除外"]
+    Dataverse[("Dataverse<br/>(売上テーブル)")]
+    SharePoint[("SharePoint<br/>(売上 Excel/CSV)")]
+    AuditLog[("Dataverse 監査ログ<br/>+ Purview Activity Log")]
+  end
+
+  subgraph LLM["LLM プロバイダ（Anthropic Claude API）"]
+    Claude["Claude Sonnet 4.6<br/>ZDR 契約"]
+  end
+
+  Cursor -->|プロンプト（PII リダクション後）| Claude
+  Claude -->|回答| Cursor
+  Cursor --> MCPClient
+  MCPClient -->|証明書 / クライアントシークレット| SP
+  SP --> AppRole
+  AppRole --> SecRole
+  SecRole -->|SELECT only| Dataverse
+  SecRole -->|read scope| SharePoint
+  Dataverse --> AuditLog
+  SharePoint --> AuditLog
+  Cursor -.->|一時保存（暗号化）| LocalCache
+
+  classDef pon fill:#e3f2fd,stroke:#1565c0
+  classDef entra fill:#fff3e0,stroke:#ef6c00
+  classDef pp fill:#e8f5e9,stroke:#2e7d32
+  classDef llm fill:#fce4ec,stroke:#ad1457
+  class PONsLocal pon
+  class Entra entra
+  class PowerPlatform pp
+  class LLM llm

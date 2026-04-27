@@ -134,16 +134,17 @@ AIは会議トランスクリプト/メモを受け取ったら:
 |---|---|
 | プログラムを作る/初期化 | `aios/ops/01_program_init.mdc` |
 | プロジェクトを作る/初期化 | `aios/ops/02_project_init.mdc` |
-| 今日のタスク作成/朝の計画/作業開始 | `aios/ops/03_daily_task_planning.mdc` |
+| **今日のタスク作成 / 朝の整理 ☀️** | `aios/ops/13_mini_tachyon_protocol.mdc` (canonical) ※旧 `03_daily_task_planning.mdc` は廃止扱い |
 | 投稿案/集計/資料作成など作業 | `aios/ops/04_project_work.mdc` |
 | 確定反映/Stockに保存 | `aios/ops/05_finalize_to_stock.mdc` |
 | 会議反映/議事録アップ | `aios/ops/06_meeting_close.mdc` |
-| バックログ管理/横断タスク管理/タスク優先度・期日整理 | `aios/ops/07_backlog_management.mdc` |
+| バックログ管理/横断タスク管理/タスク優先度・期日整理 | `aios/ops/07_backlog_management.mdc` (要 mini-tachyon 連携、`mt bl create` / `mt bl update` 等を使う) |
 | 進捗報告/タスク完了/次のタスク | `aios/ops/08_progress_report.mdc` |
-| 今日の振り返り/終業 | `aios/ops/09_daily_review.mdc` |
+| **今日の振り返り / 終業 🌙** | `aios/ops/13_mini_tachyon_protocol.mdc` (canonical) ※旧 `09_daily_review.mdc` は廃止扱い |
 | 週次振り返り/今週のレビュー | `aios/ops/10_weekly_review.mdc` |
 | 月次振り返り/今月のレビュー | `aios/ops/11_monthly_review.mdc` |
-| **並行タスク運用**（複数エージェント並列実行 / 「STATUS」「INBOX」「<タスク名> 回答した」/ Cockpit通知受信時の状態反映 / クラスA複数同時着手） | `aios/ops/12_parallel_task_orchestration.mdc` |
+| **並行タスク運用 / 状態管理 / Cockpit 通知受信** (「STATUS」「INBOX」「今日の選択」「<タスク名> 回答した」/ クラスA複数同時着手) | **`aios/ops/13_mini_tachyon_protocol.mdc`** (canonical、`mt` CLI / API 経由) ※旧 `12_parallel_task_orchestration.mdc` は **DEPRECATED 2026-04-26** |
+| **ミニタキオン (mt CLI / API) プロトコル** (タスク状態管理の単一情報源、YAML 直接編集禁止、Daily Loop) | **`aios/ops/13_mini_tachyon_protocol.mdc`** |
 
 **新しい ops ルールを追加する際の必須手順**:
 1. `aios/ops/NN_<name>.mdc` を作成

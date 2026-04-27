@@ -1,0 +1,39 @@
+- generic [ref=e2]:
+  - generic [ref=e5]:
+    - heading "AirIDでAirレジにログイン" [level=1] [ref=e6]
+    - generic [ref=e7]:
+      - textbox "AirIDまたはメールアドレス" [ref=e9]: info@five-arrows.bar
+      - textbox "パスワード" [ref=e11]
+      - generic [ref=e13] [cursor=pointer]:
+        - checkbox "次回からAirIDまたはメールアドレスの入力を省略" [checked] [ref=e14]
+        - text: 次回からAirIDまたはメールアドレスの入力を省略
+      - button "ログイン" [ref=e17] [cursor=pointer]
+      - list [ref=e19]:
+        - listitem [ref=e20]:
+          - link "AirIDを忘れた方" [ref=e21] [cursor=pointer]:
+            - /url: https://connect.airregi.jp/view/account/forgot/account?redirect_uri=https%3A%2F%2Fconnect.airregi.jp%2Flogin%3Fclient_id%3DARG%26redirect_uri%3Dhttps%253A%252F%252Fconnect.airregi.jp%252Foauth%252Fauthorize%253Fclient_id%253DARG%2526redirect_uri%253Dhttps%25253A%25252F%25252Fairregi.jp%25252FCLP%25252Fview%25252FcallbackForPlfLogin%25252Fauth%2526response_type%253Dcode&client_id=ARG
+        - listitem [ref=e22]:
+          - link "パスワードを忘れた方" [ref=e23] [cursor=pointer]:
+            - /url: https://connect.airregi.jp/view/account/forgot/password?redirect_uri=https%3A%2F%2Fconnect.airregi.jp%2Foauth%2Fauthorize%3Fclient_id%3DARG%26redirect_uri%3Dhttps%253A%252F%252Fairregi.jp%252FCLP%252Fview%252FcallbackForPlfLogin%252Fauth%26response_type%3Dcode&client_id=ARG
+      - generic [ref=e24]:
+        - heading "はじめての方はこちら" [level=2] [ref=e25]
+        - link "AirIDの新規登録" [ref=e27] [cursor=pointer]:
+          - /url: https://connect.airregi.jp/view/signup?client_id=ARG&redirect_uri=https%3A%2F%2Fconnect.airregi.jp%2Foauth%2Fauthorize%3Fclient_id%3DARG%26redirect_uri%3Dhttps%253A%252F%252Fairregi.jp%252FCLP%252Fview%252FcallbackForPlfLogin%252Fauth%26response_type%3Dcode&adjust_network&adjust_campaign&adjust_adgroup&adjust_creative&is_oauth=1
+    - generic [ref=e28]:
+      - list
+  - contentinfo [ref=e29]:
+    - generic [ref=e30]:
+      - list [ref=e31]:
+        - listitem [ref=e32]:
+          - link "Airサービス共通利用約款" [ref=e33] [cursor=pointer]:
+            - /url: https://cdn.p.recruit.co.jp/terms/apf-t-1002/index.html
+        - listitem [ref=e34]:
+          - link "プライバシーポリシー" [ref=e35] [cursor=pointer]:
+            - /url: https://cdn.p.recruit.co.jp/terms/clu-t-1001/index.html
+        - listitem [ref=e36]:
+          - link "よくあるご質問" [ref=e37] [cursor=pointer]:
+            - /url: https://faq.airid.airregi.jp/hc/ja
+      - link "(C) Recruit Co., Ltd.(C) Recruit Co., Ltd." [ref=e39] [cursor=pointer]:
+        - /url: https://www.recruit.co.jp/
+        - img "(C) Recruit Co., Ltd." [ref=e40]
+        - text: (C) Recruit Co., Ltd.

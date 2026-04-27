@@ -1,0 +1,217 @@
+---
+description: "AIOS Ops: ミニタキオン (mt CLI / API) を介したタスク状態管理の正規プロトコル。INBOX/daily_tasks 廃止後の単一情報源"
+alwaysApply: false
+---
+
+# 運用フロー: ミニタキオン プロトコル (canonical)
+
+## 目的
+
+田中さんの個人 AIPM 運用ハブ「**ミニタキオン**」(`http://localhost:3000`) を **タスク状態管理の単一情報源** とする。エージェントは YAML を直接編集せず、`mt` CLI (HTTP API のラッパ) 経由で状態を遷移させる。これにより:
+
+- スキーマ違反を **API 層 (zod)** で機械的に reject (rule-following のドリフトを構造的に防ぐ)
+- atomic write (proper-lockfile) で並行書き込みを安全化
+- mini-tachyon UI に変更が即時反映される (chokidar 監視)
+- 旧 `INBOX.md` / `mmdd_daily_tasks.md` の 3 ファイル散文同期は **廃止**
+
+> **重要 (廃止情報)**: `_orchestration/INBOX.md` と `_orchestration/mmdd_daily_tasks.md` の運用は **廃止 (2026-04-26 完了)**。本 rule (13) と ミニタキオン UI / mt CLI を canonical として運用する。詳細は本ルールの「## 旧運用との対応関係」参照。
+
+---
+
+## 1. ミニタキオンの構成
+
+### 1.1 サービス
+- **Web UI / HTTP API**: `http://localhost:3000` (Mac mini 上で launchd 常駐、Tailscale 経由で iPhone からアクセス可)
+- **CLI**: `~/.agi-tools/mini-tachyon/bin/mt` (`mt --help` で全コマンド一覧)
+  - シンボリックリンク: `/usr/local/bin/mt` (PATH 通っていれば `mt ...` で実行可)
+- **データソース (Source of Truth)**:
+  - 中央 Backlog 台帳: `~/aipm_v0/Stock/定型作業/バックログ/Backlog.md`
+  - per-project YAML: `~/aipm_v0/Stock/<category>/<project>/backlog/BL-XXX.yaml`
+  - プロジェクト STATUS: `~/aipm_v0/Stock/<category>/<project>/STATUS.md`
+  - 当日 Flow: `~/aipm_v0/Flow/YYYYMM/YYYY-MM-DD/<project>/`
+  - 朝/夜 Orchestration: `~/aipm_v0/Flow/YYYYMM/YYYY-MM-DD/_orchestration/`
+
+### 1.2 仕様書
+
+詳細仕様: `~/aipm_v0/Flow/202604/2026-04-26/ミニタキオン/spec_2026-04-26.md` を参照。
+API 詳細: `~/.agi-tools/mini-tachyon/docs/API.md`
+CLI 詳細: `~/.agi-tools/mini-tachyon/docs/CLI.md`
+
+---
+
+## 2. 絶対遵守ルール (再発防止)
+
+### 2.1 YAML を直接編集しない
+
+`Stock/<...>/backlog/BL-*.yaml` や `Flow/.../deliverables.yaml` を **エディタや echo / sed / awk で直接書き換えてはならない**。必ず `mt` CLI 経由で API を叩く。
+
+理由: 直接編集はスキーマ違反 (例: `decisions[].by: 田中` のような独自値、`id/summary/items` の独自フィールド) を引き起こし、mini-tachyon の zod 検証で reject されて UI から消失する。
+
+例外: 既存ファイルの **読み取り** はファイル直接でも可。書き込みは必ず CLI。
+
+### 2.2 質問は必ず BL に書き戻す
+
+田中さんから AI フィードバック経由で質問・指示を受け取ったら、応答は必ず以下のいずれかで mini-tachyon UI に反映する:
+
+| 応答パターン | 使うコマンド |
+|---|---|
+| 短い factual 回答 | `mt bl add-decision <id> --type commitment --by ai --content "..."` |
+| 別の質問が必要 | `mt bl add-question <id> --content "..."` |
+| 設計や成果物を改訂 | 該当 markdown を編集 + `mt deliverable update-state <id> --state unreviewed` |
+| 朝のタスク案承認の処理 | `mt morning finalize <deliverable_id> --selections '...'` |
+| 新規 BL 作成 | `mt bl create --title ... --project ... --category ...` |
+
+「会話で答えるだけ」は禁止 (UI に反映されないため、田中さんから見えない)。
+
+### 2.3 スキーマ厳守
+
+mt CLI の引数は API の zod スキーマと完全に一致させる:
+
+- BL.yaml `decisions[]` のフィールド: `at`, `type`, `by`, `content`, `answers_question_id?` のみ
+- `type`: `answer | commitment | scope_change | deferred` のみ
+- `by`: `user | ai` のみ (「田中」「master」等の独自値禁止)
+- 独自フィールド (`id`, `summary`, `items` 等) を勝手に追加しない
+- ReviewState enum: `unreviewed | reviewing | done | needs_revision | generating` の 5 値
+
+スキーマ違反は API が 400 で reject、エラーメッセージで再試行できる。
+
+---
+
+## 3. Daily Loop (☀️ 朝 / 🌙 夜)
+
+### 3.1 朝の整理 (☀️)
+
+田中さんが iPhone で「☀️ 今日を始める」を押下 → mini-tachyon が朝の整理エージェントを cockpit task として spawn。
+
+**朝のエージェントの役割** (固定プロンプト `~/.agi-tools/mini-tachyon/lib/prompts/daily-start.md` で規定):
+1. 中央 Backlog.md を読んで active な BL を抽出
+2. backlog/ がある active プロジェクトのみ対象 (全 Stock 走査ではない)
+3. 前日 (最大 7 日遡る) の `Flow/<前日>/_orchestration/今日の振り返り.md` を読む
+4. 4/24 形式の Project別テーブルで「今日のタスク案」を生成
+5. `Flow/<today>/_orchestration/今日のタスク案.md` に保存
+6. `mt deliverable update-state <id> --state unreviewed` で完了登録
+
+**承認後の動作 (田中さんが done で承認 + コメント送信)**:
+- mini-tachyon が `lib/fallback-instruction.ts` 経由でフィードバック処理エージェントを spawn
+- エージェントは `mt morning finalize <deliverable_id> --selections '[{"bl":"BL-XXXX","action":"approve","spawn_class":"A"}]'` を呼ぶ
+- API が atomic に: 採択 BL の state 更新 + クラス A の cockpit spawn + cockpit_task_ids 連携
+
+### 3.2 夜の振り返り (🌙)
+
+田中さんが「🌙 今日を締める」を押下 → 夜の振り返りエージェントが spawn。
+
+固定プロンプト `~/.agi-tools/mini-tachyon/lib/prompts/daily-wrapup.md` の規定通り:
+- 当日完了したこと / 残課題 / 翌日への申し送りを集計
+- `Flow/<today>/_orchestration/今日の振り返り.md` に保存
+- `lib/merge.ts` で Flow → Stock STATUS.md マージ
+
+### 3.3 田中さんの voice command
+
+| 言い回し | 動作 |
+|---|---|
+| 「今日のタスク」「朝の整理」「☀️」 | `mt morning start` または UI で ☀️ 押下を促す |
+| 「今日の振り返り」「終業」「🌙」 | `mt evening start` または UI で 🌙 押下を促す |
+| 「今日の選択」「今やること」「次なに」 | `mt today selected --human` で田中さんが今日 [x] 採択した BL を表示 |
+| 「STATUS」「状況」「進捗一覧」 | `mt projects list --human` または UI ホームを参照 |
+| 「<BL ID>」「<タスク名> 進捗」 | `mt bl get <id> --human` で詳細表示 |
+
+### 3.4 セーフティネット
+
+- `☀️` を 8:30 までに押し忘れ → ホームに警告バッジ (UI のみ、自動実行しない)
+- `🌙` 押し忘れ → 03:00 cron が autorun で自動 endDailyLoop (Phase 3c で実装予定)
+- 翌朝の整理エージェントが「前日 wrap-up なし」を検知して履歴なしモードで進行
+
+---
+
+## 4. mt CLI クイックリファレンス
+
+詳細は `~/.agi-tools/mini-tachyon/docs/CLI.md`。エージェントが頻繁に使うものを抜粋:
+
+```bash
+# BL 操作
+mt bl create --title <T> --project <P> --category <C> [--id <ID>] [--priority high|normal|low|urgent]
+mt bl update <id> --state in_progress|completed|...|blocked
+mt bl add-decision <id> --type answer|commitment|scope_change|deferred --by user|ai --content "..."
+mt bl add-question <id> --content "..." [--from-task <task_id>]
+mt bl list [--state X] [--project Y] [--ids id1,id2] [--today-selected] [--human]
+mt bl get <id> [--human]
+
+# Deliverable
+mt deliverable update-state <id> --state unreviewed|reviewing|done|needs_revision|generating [--comment "..."]
+mt deliverable add-comment <id> --content "..." [--by user|ai]
+mt deliverable get <id> [--human]
+
+# Cockpit
+mt cockpit spawn --instruction <I> [--directory <D>] [--agent-type claude|codex|...] [--bl <id>]
+mt cockpit send <task_id> --text "..." [--fallback-instruction <I>]
+
+# Daily Loop
+mt morning start
+mt morning finalize <deliverable_id> --selections '[{"bl":"BL-XXXX","action":"approve","spawn_class":"A"}]'
+mt evening start
+
+# クエリ
+mt today selected [--human]
+mt projects list [--human]
+```
+
+### 出力規約
+- デフォルト: stdout に JSON
+- `--human`: 人間向け整形
+- エラー: stderr に `{error, message, detail?}` の JSON、exit 1
+- エラーは zod validate / not_found / conflict / cockpit / io 等の構造化された code を返す
+
+---
+
+## 5. 旧運用との対応関係 (廃止後の置き換え)
+
+| 旧 (廃止) | 新 (canonical) | 備考 |
+|---|---|---|
+| `_orchestration/INBOX.md` | mini-tachyon UI ホームの「📅 今日の運用」/「🔥 今日の選択」 | 新規質問は `mt bl add-question`、回答は `mt bl add-decision` |
+| `mmdd_daily_tasks.md` | `Flow/<today>/_orchestration/今日のタスク案.md` (deliverable) | 朝のエージェントが生成、田中さんが [x] で採択 |
+| 3 ファイル同期ルール (STATUS+INBOX+daily_tasks) | mt CLI 経由で API が atomic 更新 | 散文同期の認知負荷を解消 |
+| `questions_to_user.md` | BL.yaml `pending_questions[]` (mt CLI で append) | mini-tachyon UI で project 横断表示 |
+| 「INBOX」voice command → INBOX.md を読む | 「今日の選択」「INBOX」voice command → `mt today selected` | 同義語として両方ヒットさせて良い |
+| マスターが手書きで daily_tasks.md 状態列を更新 | `mt bl update <id> --state ...` | 機械化 |
+
+### INBOX.md / daily_tasks.md が既存ファイルに残っている場合
+
+- **過去日 (Flow/<過去日>/) の INBOX.md / daily_tasks.md は触らない** (履歴アーカイブとして残す)
+- **当日以降は新規作成しない** (作成しようとすると無駄、mini-tachyon UI と二重になる)
+- マスターは「INBOX」「daily_tasks」と言われても、新ルートに案内する
+
+---
+
+## 6. AIPM プロジェクトで動くエージェント全般への要請
+
+Cursor / Claude Code / Codex / Cockpit から AIPM プロジェクト (`~/aipm_v0/`) で動くエージェントは、以下を遵守:
+
+1. **タスク状態を変更したい時** → `mt bl update` / `mt bl add-decision`
+2. **新規 BL を作りたい時** → `mt bl create` (Backlog.md に追加 or per-project YAML 自動採番)
+3. **田中さんに質問したい時** → `mt bl add-question` (会話だけで終わらせない)
+4. **成果物を出した時** → `Flow/<today>/<project>/deliverables.yaml` を直接編集する **代わりに** `mt deliverable add-comment` 等を使うか、書込後に `mt deliverable update-state --state unreviewed` で登録する
+
+エージェントが mini-tachyon (ローカル port 3000) に到達できない環境 (例: 別 Mac、出先など) は **読み取り専用 mode** で動作: `Stock/` の YAML を読むのは可、書き込みは禁止 → 必要なら作業メモを Flow に残し、後で田中さんが mini-tachyon で取り込む。
+
+---
+
+## 7. デバッグ / トラブルシュート
+
+| 症状 | 対応 |
+|---|---|
+| `mt: command not found` | `~/.agi-tools/mini-tachyon/bin/mt` を絶対パスで使う、または `sudo ln -s ~/.agi-tools/mini-tachyon/bin/mt /usr/local/bin/mt` |
+| `error: network` | mini-tachyon が落ちてる → `launchctl list jp.agi-tools.mini-tachyon` で確認、必要なら `launchctl kickstart -k gui/$(id -u)/jp.agi-tools.mini-tachyon` |
+| `error: validation` 400 | スキーマ違反 → エラーメッセージで違反フィールド特定、引数を修正して再試行 |
+| `error: conflict` 409 | optimistic lock → `mt bl get <id>` で最新 `updated_at` を取得し、`--expected-updated-at` を指定して再送 |
+| `error: cockpit` 502 | cockpit binary 経路で失敗 → 三段 fallback (send → resume → create) 全滅、`detail.attempts[]` で失敗履歴確認 |
+| 何度押しても deliverable が「AI 生成中」のまま | エージェントが interrupted で state 更新できなかった可能性 → `mt deliverable update-state <id> --state unreviewed` で手動補正 |
+
+---
+
+## 8. このルールが追加された経緯
+
+- 2026-04-25 ミニタキオン V2 設計確定 (INBOX/daily_tasks 廃止スコープ)
+- 2026-04-26 Phase 4 完了 (HTTP API + mt CLI + skill-calling prompt)
+- 2026-04-26 田中さんからの指示で本ルール作成 — Cursor 経由で動くエージェントが旧 INBOX 運用に戻らないよう構造化
+
+詳細経緯は `~/aipm_v0/Flow/202604/2026-04-25/ミニタキオン/design_mobile_review_hub.md` 参照。

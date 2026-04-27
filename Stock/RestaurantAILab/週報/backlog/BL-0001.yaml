@@ -1,0 +1,43 @@
+id: BL-0001
+title: 週報 2026-W17 作成 (BFA / 麻布しき)
+project: 週報
+category: RestaurantAILab
+state: completed
+priority: high
+created_at: '2026-04-26T23:52:57.725Z'
+updated_at: '2026-04-27T00:19:09.022Z'
+created_by: mt-cli
+deliverable_refs:
+  - d-bl0001-20260427-bfa-w17
+  - d-bl0001-20260427-shiki-w17
+schema_version: 2
+cockpit_task_ids:
+  - 971faff0
+  - fd7a17e4
+  - 759a6974
+pending_questions: []
+decisions:
+  - at: '2026-04-26T23:54:38.721Z'
+    type: commitment
+    by: ai
+    content: 'Phase1 (POSデータ準備: BFA→麻布しき) を Cockpit task 971faff0 で進行中。完了後マスターが Phase2 (BFA/麻布しき週報作成) を並列起動予定。'
+  - at: '2026-04-26T23:55:15.286Z'
+    type: commitment
+    by: ai
+    content: >-
+      Phase1 完了報告を確認 (Cockpit 971faff0 = waiting_confirmation)。BFA: 1_input/BFA/rawdata.csv 36,813行 / W17 195件
+      (4/22休業)。麻布しき: 1_input/麻布しき/rawdata.csv 49,476行 / W17 766件 (全7日)。マスターに Phase2 起動可を通知。
+  - at: '2026-04-26T23:55:54.644Z'
+    type: commitment
+    by: ai
+    content: >-
+      Phase2 並列タスク2本を BL に紐付け: fd7a17e4 (BFA週報作成) / 759a6974 (麻布しき週報作成)。両方とも running。Phase1 (971faff0) は
+      waiting_confirmation のまま保留 (master指示)。
+  - at: '2026-04-27T00:19:02.585Z'
+    type: commitment
+    by: ai
+    content: >-
+      両店舗の週報完成・Dashboard アップロード成功 (HTTP 200 確認済み)。BFA: ¥678,080 (前週比-13.3%, 客数+17.4% 5週最高), 35スライド / 麻布しき: ¥1,565,230
+      (前週比+72.6%, 金曜V字), 32スライド。Deliverable 2件登録 (d-bl0001-20260427-bfa-w17 / d-bl0001-20260427-shiki-w17)。Cockpit 3
+      task は waiting_confirmation のまま保留 (master指示)。
+completed_at: '2026-04-27T00:19:09.022Z'

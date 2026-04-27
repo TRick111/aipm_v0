@@ -1,0 +1,31 @@
+schema_version: 1
+project: 生活管理/恋愛
+date: '2026-04-27'
+deliverables:
+  - id: d-bl0078-20260427-hina-0501-reservation
+    file: hina_0501_reservation.md
+    bl_id: BL-0078
+    title: ひなさん 5/1夜 デート店予約 — 手順書 + 予約結果テンプレ (v1)
+    created_at: '2026-04-27T09:00:00+09:00'
+    created_by: bl-0078-agent
+    created_by_agent: claude
+    review_state: waiting_confirmation
+    review_log:
+      - at: '2026-04-27T09:00:00+09:00'
+        action: created
+        to: waiting_confirmation
+        comment: |-
+          BL-0078 (P1, Due 2026-04-27 本日中) の予約実行フェーズ着手。
+          前段 BL-0076 (店決定) は 2026-04-27 田中さん完了承認 → done。後続として BL-0078 が新規起票。
+          AIOS 内に店情報 (店名 / 連絡先 / 予約サイト / 希望時間) の記録なし
+          (Backlog Notes / Flow / Stock / 4/26 確認事項 / 4/27 タスク案 を全件 grep 済) → 田中さん回答待ち。
+          v1 として用意:
+          - 予約に必要な情報チェックリスト
+          - 予約方法判定フロー (オンライン / 電話 / LINE)
+          - オンライン予約手順テンプレ
+          - 電話予約スクリプト + 確認項目チェックリスト + 営業時間帯ガイド
+          - 予約結果テンプレ (§6)
+          INBOX.md BL-0078 セクションに Q1 (店情報共有) / Q2 (希望時間+予算+席指定) / Q3 (代行スタンス) を起票。
+          回答到着後、店情報埋め込み + (オンラインなら) 予約フォーム下書きまで AI、(電話なら) スクリプト確定 → 田中さん架電。
+    last_modified: '2026-04-27T09:00:00+09:00'
+    cockpit_task_id: 6ce50e2c

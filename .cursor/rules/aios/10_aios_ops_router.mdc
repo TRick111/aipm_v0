@@ -18,9 +18,10 @@ alwaysApply: false
 - **ユーザー意図の例**: 「新しいプロジェクトを作って」「◯◯プロジェクトを初期化して」
 - **参照すべき運用ルール**: `aios/ops/02_project_init.mdc`
 
-### 1日のタスク計画（Flow生成）
-- **ユーザー意図の例**: 「今日のタスク作って」「作業開始」「今日やることは…」
-- **参照すべき運用ルール**: `aios/ops/03_daily_task_planning.mdc`
+### 1日のタスク計画 / 朝の整理 ☀️
+- **ユーザー意図の例**: 「今日のタスク」「朝の整理」「☀️」「今日を始める」「作業開始」「今日やることは…」
+- **参照すべき運用ルール**: `aios/ops/13_mini_tachyon_protocol.mdc` (ミニタキオン Daily Loop 朝半分が canonical)
+- **旧ルート**: `aios/ops/03_daily_task_planning.mdc` (mmdd_daily_tasks.md ベース、廃止扱い・参考のみ)
 
 ### プロジェクト作業（Flow成果物作成）
 - **ユーザー意図の例**: 「◯◯の投稿案作って」「売上をまとめて」「資料のドラフト作って」
@@ -42,9 +43,10 @@ alwaysApply: false
 - **ユーザー意図の例**: 「進捗教えて」「このタスク終わった、次は？」「進捗報告して」
 - **参照すべき運用ルール**: `aios/ops/08_progress_report.mdc`
 
-### 今日の振り返り / 終業
-- **ユーザー意図の例**: 「今日の振り返り」「終業」「今日何やった」
-- **参照すべき運用ルール**: `aios/ops/09_daily_review.mdc`
+### 今日の振り返り / 終業 🌙
+- **ユーザー意図の例**: 「今日の振り返り」「終業」「今日何やった」「🌙」「今日を締める」
+- **参照すべき運用ルール**: `aios/ops/13_mini_tachyon_protocol.mdc` (ミニタキオン Daily Loop 夜半分が canonical)
+- **旧ルート**: `aios/ops/09_daily_review.mdc` (daily_tasks.md ベース、廃止扱い・参考のみ)
 
 ### 週次振り返り
 - **ユーザー意図の例**: 「今週のレビュー」「週次振り返り」「今週何やった」
@@ -54,17 +56,18 @@ alwaysApply: false
 - **ユーザー意図の例**: 「今月のレビュー」「月次振り返り」「今月何やった」
 - **参照すべき運用ルール**: `aios/ops/11_monthly_review.mdc`
 
-### 並行タスク運用（マスター = ルーター + 状態管理者）
+### 並行タスク運用 / 状態管理 (ミニタキオン経由)
 - **ユーザー意図の例**:
-  - 「STATUS」「状況」「進捗一覧」（→ `STATUS.md` を提示）
-  - 「INBOX」「次なに」「未対応」（→ `INBOX.md` の未対応のみ表示）
-  - 「<タスク名> 回答した」「answered <task>」（→ INBOX を読みエージェントに送信）
-  - 「<タスク名> 進捗」（→ そのタスクの最新ターン + 質問ファイルを要約）
-  - 「実装着手 <タスク名>」（→ 計画完了タスクを別エージェントで実装フェーズ起動）
-  - **Cockpit通知受信時**: `[cockpit] <id> "<name>" → waiting_confirmation` / `→ completed` 等を受け取った時
-  - クラスA / クラスB の複数タスクを同時並行で走らせるとき
-- **参照すべき運用ルール**: `aios/ops/12_parallel_task_orchestration.mdc`
-- **重要**: このルールは状態が変わるたびに **STATUS.md / INBOX.md / `mmdd_daily_tasks.md` の3ファイルすべて**を同期更新することを要求する。1つでも漏らさない。
+  - 「STATUS」「状況」「進捗一覧」（→ `mt projects list --human` または UI ホーム）
+  - 「今日の選択」「INBOX」「次なに」「未対応」（→ `mt today selected --human`）
+  - 「<タスク名> 回答した」「answered <task>」（→ `mt bl add-decision <id> --type answer --by user --content "..."`）
+  - 「<BL ID>」「<タスク名> 進捗」（→ `mt bl get <id> --human`）
+  - 「実装着手 <タスク名>」（→ `mt cockpit spawn --instruction ... --bl <id>`）
+  - **Cockpit通知受信時**: `[cockpit] <id> "<name>" → waiting_confirmation` / `→ completed` を受信時、`mt bl update` / `mt deliverable update-state` で状態反映
+  - クラスA / クラスB の複数タスクを同時並行で走らせるとき (= mini-tachyon の朝のタスク案承認 → `mt morning finalize` で atomic spawn)
+- **参照すべき運用ルール**: `aios/ops/13_mini_tachyon_protocol.mdc` (canonical)
+- **旧ルート**: `aios/ops/12_parallel_task_orchestration.mdc` (INBOX/3ファイル同期、廃止扱い)
+- **重要**: 状態変更は **mt CLI 経由のみ**。YAML 直接編集禁止。スキーマ違反は API 層で 400 reject される。
 
 ---
 

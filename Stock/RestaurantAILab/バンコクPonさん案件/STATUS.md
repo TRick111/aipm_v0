@@ -3,11 +3,11 @@ schema_version: 1
 project: バンコクPonさん案件
 category: RestaurantAILab
 status: in_progress
-owner_turn: ai
-updated_at: 2026-04-26T01:00:00+09:00
-updated_by: master-agent
+owner_turn: user
+updated_at: 2026-04-27T10:05:00+09:00
+updated_by: bl-0068-agent
 current_bl: BL-0073
-next_action: "2026-04-27 第6回セッション (PONさん) 資料準備 (BL-0073) と売上データAIアクセス説得資料 (BL-0074) を作成。並行して JBeauty デジタルサイネージ要件一覧 (BL-0070) を整理して送付"
+next_action: "**BL-0073 v2 ドラフト完成** (Flow/202604/2026-04-27/RestaurantAILab/バンコクPonさん案件/session6_{outline,content_draft}_v2.md)。新スコープ: Cursor 自動実行 / ntfy.sh (NTY.SH) push / Google Calendar 連携。INBOX.md BL-0073 Q1-Q4 田中さん回答待ち。**BL-0074 v2** (Power Platform 前提固定) も同日完成済 — INBOX Q1-Q3 田中さん回答 → 月曜セッション本番。**BL-0070 v1 完成** (Flow/202604/2026-04-27/RestaurantAILab/JBeauty/jbeauty_signage_requirements_v1.md): 展示会用 / 実写アバター 7 サービス比較 / 100-200 商品 RAG 設計 / Voice Beauty Advisor デルタ要件 を新章追加、INBOX BL-0070 Q1-Q6 田中さん回答待ち → §10 Pon さん質問書整形 → 送付。**BL-0068 月25万円月次請求 完全手順 v1 完成** (Flow/202604/2026-04-27/RestaurantAILab/バンコクPonさん案件/wise_billing_full_procedure_v1.md + wise_invoice_template.md): アカウント開設→月次運用 10 章、推奨方式= JPY 250,000 円固定請求。INBOX BL-0068 Q-A〜Q-G 田中さん回答待ち → 回答後 Phase A Wise 個人開設 当日〜3 日 で起動"
 blocker: null
 related_bls: [BL-0037, BL-0041, BL-0042, BL-0043, BL-0044, BL-0045, BL-0068, BL-0070, BL-0071, BL-0072, BL-0073, BL-0074]
 ---

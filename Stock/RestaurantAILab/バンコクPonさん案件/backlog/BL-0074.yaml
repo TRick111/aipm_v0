@@ -1,0 +1,83 @@
+id: BL-0074
+title: 'PONさん案件: 売上データAIアクセスの設計・説得資料の作成（IT担当者向け）'
+project: バンコクPonさん案件
+category: RestaurantAILab
+state: in_progress
+priority: urgent
+created_at: '2026-04-26T00:00:00+09:00'
+updated_at: '2026-04-27T02:44:25.680Z'
+created_by: mt-cli-migration
+description: >-
+  PONさんが自社売上データにAI経由でアクセスできるようにする。IT担当者はAIからのデータ流出を懸念しているため、懸念事項の整理と設計方針 (どのような構成でデータ流出を防ぐか) をまとめて説得材料とする。第6回セッション日
+  (2026-04-27) までに準備。 **2026-04-26 田中さん指示により P1→P0 格上げ・Due 4/27→4/26 (今日中ドラフト目標)**。 **2026-04-27 前提確定 (Power Platform /
+  読み取り専用 / サービスアカウント / ローカル Cursor + MCP・CLI) に基づき v2 作成**:
+  Flow/202604/2026-04-27/RestaurantAILab/バンコクPonさん案件/sales_data_ai_security_design_v2.md ＋
+  sales_data_architecture.mmd。リスク x 緩和策 R1-R12 / サービスアカウント運用ルール / 想定 Q&A 15 件 / 残懸念 C1-C8。
+
+  **2026-04-27 中央 Backlog.md → per-project YAML 移植** (mini-tachyon migration、deliverable_refs 連携のため)。
+deliverable_refs:
+  - d-bl0074-20260427-v2
+  - d-bl0074-20260427-mmd
+  - d-bl0074-20260426-sales-data-ai-security
+schema_version: 2
+cockpit_task_ids: []
+pending_questions:
+  - id: q-BL-0074-1-20260427-backend
+    at: '2026-04-27T09:30:00+09:00'
+    cockpit_task_id: '0'
+    content: |-
+      Q1. PON さんの Power Platform バックエンドは Dataverse か SharePoint か（あるいは両方）？ [方針確定 / 任意]
+
+      接続手段（A2: Dataverse MCP / B: M365 MCP / 併用）の最終確定に必要。回答が無くても v2 は両ケース対応で書いてあるが、月曜セッションで IT に確認すれば 1 本に絞れる。
+
+      選択肢:
+      - (a) Dataverse のみ → 推奨: 公式 Dataverse MCP Server + PAC CLI (`pac data query`)
+      - (b) SharePoint Excel/CSV のみ → 推奨: Microsoft 365 MCP Server を `--read-only` で
+      - (c) 両方 → 両 MCP を Cursor に登録 (同じサービスプリンシパルで OK)
+      - (d) 不明 → 月曜セッションで IT に確認
+
+      AI推奨: (d) (事前確認できればベターだが、v2 は (c) 想定で書かれているのでそのまま IT に提示できる)
+  - id: q-BL-0074-2-20260427-auth
+    at: '2026-04-27T09:30:00+09:00'
+    cockpit_task_id: '0'
+    content: |-
+      Q2. 認証方式の希望（証明書認証 vs クライアントシークレット）？ [方針確定 / 任意]
+
+      サービスプリンシパルの認証方式。v2 では証明書認証を推奨しているが、IT が慣れていない場合は短期シークレット (90 日ローテ) で開始してよい。
+
+      選択肢:
+      - (a) 証明書認証 (推奨): macOS Keychain / Windows 資格情報マネージャに保管・エクスポート不可。1 年更新。
+      - (b) クライアントシークレット: 1Password Business 等に保管。90 日ローテ必須。
+      - (c) IT に判断を委ねる (月曜に決定)
+
+      AI推奨: (c) (IT の Entra ID 運用経験次第で最適解が変わる。v2 は両対応で記述)
+  - id: q-BL-0074-3-20260427-cursor
+    at: '2026-04-27T09:30:00+09:00'
+    cockpit_task_id: '0'
+    content: |-
+      Q3. PON さんは Cursor を既に使っているか / Privacy Mode 設定の有無？ [任意]
+
+      v2 は Cursor Privacy Mode 必須前提で書いている。利用ステータスにより月曜の説明深度が変わる (未利用なら Cursor の概念紹介から)。
+
+      選択肢:
+      - (a) 使っている + Privacy Mode 有効 → そのまま接続設定だけ詰める
+      - (b) 使っている + Privacy Mode 未確認 → 設定確認を先に挟む
+      - (c) 未利用 → Cursor 概要 + Privacy Mode 設定 + MCP 設定 を月曜の冒頭でまとめる
+
+      AI推奨: (b) または (c) を想定して資料に Cursor 説明スライドを 1 枚足すか、町田さんから事前確認
+decisions:
+  - at: '2026-04-27T11:50:00+09:00'
+    type: commitment
+    by: ai
+    content: >-
+      mini-tachyon migration: 中央 Backlog.md の BL-0074 行を per-project YAML
+      (Stock/RestaurantAILab/バンコクPonさん案件/backlog/BL-0074.yaml) に昇格。 4/26-4/27 の deliverable 3 件を deliverable_refs
+      に登録、INBOX.md Q1-Q3 を pending_questions に移植。これにより BL-0074 詳細画面の「AI からの成果物」セクションに 3 件が表示される状態に復旧。 INBOX.md 側は段階的廃止
+      (rule 13) なので二重管理は短期容認。
+  - at: '2026-04-27T02:44:25.680Z'
+    type: commitment
+    by: ai
+    content: >-
+      中央 Backlog.md 由来 BL を per-project YAML (Stock/RestaurantAILab/バンコクPonさん案件/backlog/BL-0074.yaml)
+      に昇格。state=in_progress / priority=urgent、deliverable_refs 3 件 (4/26 v1 + 4/27 v2 + mmd) 登録、INBOX.md Q1-Q3 (Power
+      Platform バックエンド / 認証方式 / Cursor 利用状況) を pending_questions に移植。中央行は触らず。BL 詳細画面で「AI からの成果物」3 件表示確認済。

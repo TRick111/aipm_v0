@@ -5,7 +5,7 @@ category: RestaurantAILab
 state: awaiting_user
 priority: high
 created_at: '2026-04-27T00:47:53.792Z'
-updated_at: '2026-04-27T02:34:40.780Z'
+updated_at: '2026-04-27T02:44:25.305Z'
 created_by: mt-cli
 description: >-
   JBeauty 案件のデジタルサイネージ要件一覧を作成し Pon さんへ送付する。2026-04-26 v0.1 / 2026-04-27 v1 (展示会用 / 実写アバター / 100-200 商品 / Voice Beauty
@@ -139,3 +139,10 @@ decisions:
       商品マスターは一旦30件ほどでPOC（概念実証）を行います。KOSEIという会社のアイテムはすでに出揃っているため、それを使ってPOCを進めたいです。
 
       対応言語は日本語、英語、タイ語、中国語を対象とします。特にタイ語はマイナー言語であるため、タイ語対応が可能なことが最も厳しい要件です。タイ語に対応できれば、日英中の対応は問題ないと考えています。
+  - at: '2026-04-27T02:44:25.305Z'
+    type: commitment
+    by: ai
+    content: >-
+      deliverable_refs 補填完了 (d-bl0070-20260427-signage-req-v1)。さらに flow.ts walker を緩和: dir 名が Stock projects に一致しない
+      sub-org dir (例: <day>/RestaurantAILab/JBeauty/) でも deliverables.yaml があれば scan、id 集合で最終フィルタ。これで JBeauty 配下に Stock
+      project skeleton を作らずとも BL-0070 詳細画面で成果物が resolve される。テスト 172/172 pass、build & restart 済。

@@ -6,7 +6,7 @@ state: awaiting_user
 state_emoji: 🟢
 priority: high
 created_at: '2026-04-22T00:00:00+09:00'
-updated_at: '2026-04-27T02:34:18.956Z'
+updated_at: '2026-04-27T02:44:45.974Z'
 created_by: master-agent
 description: >
   ## 背景
@@ -101,3 +101,10 @@ decisions:
       (d-bl0053-20260427-investigation-v1, d-bl0053-20260427-integration-options-v1) を
       Flow/202604/2026-04-27/作業効率化/AIOS/deliverables.yaml に正規化、file 相対パスを当該フォルダ起点に修正。BL-0053.yaml の deliverable_refs にも
       2 件登録済。mt deliverable get で resolve 確認、UI で「AI からの成果物」セクションに表示される状態に復旧。テスト 171/171 pass。
+  - at: '2026-04-27T02:44:45.974Z'
+    type: commitment
+    by: ai
+    content: >-
+      migration done. END STATE 達成: BL-0053/0068/0070/0073/0074 すべて per-project source、deliverable_refs 合計 15 件、すべて mt
+      deliverable get で resolve、各 BL 詳細画面の「AI からの成果物」セクションで表示確認済。flow.ts walker は単層/2層/sub-org dir のいずれにも対応 (id
+      集合フィルタ)。テスト 172/172 pass。詳細は CLI.md / aios/ops/13_mini_tachyon_protocol.mdc Scenario C を参照。

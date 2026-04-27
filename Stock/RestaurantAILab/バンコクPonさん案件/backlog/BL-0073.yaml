@@ -1,0 +1,101 @@
+id: BL-0073
+title: 'PONさんAI活用サポート: 第6回セッション資料・内容準備'
+project: バンコクPonさん案件
+category: RestaurantAILab
+state: in_progress
+priority: urgent
+created_at: '2026-04-26T00:00:00+09:00'
+updated_at: '2026-04-27T02:44:25.485Z'
+created_by: mt-cli-migration
+description: >-
+  2026-04-27 (月) 第6回セッション実施。**2026-04-27 田中さん指示で内容スコープ更新**: 旧 (繰り返しタスク／iCloudカレンダー連携／会話履歴インポート) → 新 (Cursor で AI を自動実行 /
+  能動的自動実行+ntfy.sh (NTY.SH) push / Google Calendar 連携)。 旧 v1 は温存 (Flow/202604/2026-04-26/) し、v2 を
+  Flow/202604/2026-04-27/RestaurantAILab/バンコクPonさん案件/ に作成: session6_outline_v2.md + session6_content_draft_v2.md
+  (ハンズオン手順 / 実コード例 / 補足資料 A〜E 同梱)。 PONさん環境 (OS / ntfy 許可 / Google アカウント / iCloud移行意向) を Q1-Q4 で確認中。 **2026-04-26
+  田中さん指示により P1→P0 格上げ・Due 4/27→4/26 (絶対今日中に作成) として運用**。
+
+  **2026-04-27 中央 Backlog.md → per-project YAML 移植** (mini-tachyon migration、deliverable_refs 連携のため)。
+deliverable_refs:
+  - d-bl0073-20260427-session6-outline-v2
+  - d-bl0073-20260427-session6-content-draft-v2
+  - d-bl0073-20260426-session6-outline
+  - d-bl0073-20260426-session6-content-draft
+schema_version: 2
+cockpit_task_ids: []
+pending_questions:
+  - id: q-BL-0073-1-20260427-os
+    at: '2026-04-27T09:05:00+09:00'
+    cockpit_task_id: '0'
+    content: |-
+      Q1. PONさんの OS 構成は？ [方針確定 / 任意]
+
+      Cursor 自動実行 (Part 2) のスケジューラ選定に必要。Mac は launchd / Windows はタスクスケジューラ + PowerAutomate と提示する内容が変わる。
+
+      選択肢:
+      - (a) Mac のみ → launchd を主軸。cron は補足で見せる
+      - (b) Windows のみ → タスクスケジューラ + PowerAutomate
+      - (c) Mac + Windows 併用 → Mac を主デモにして Windows は補足スライドのみ
+      - (d) 不明 → セッション冒頭でヒアリング、その場でデモを切り替え
+
+      AI推奨: (d)。デモ機は田中側 Mac 想定。PONさん側で Windows メインなら出張版手順を別途案内
+  - id: q-BL-0073-2-20260427-ntfy
+    at: '2026-04-27T09:05:00+09:00'
+    cockpit_task_id: '0'
+    content: |-
+      Q2. PONさんの iPhone に ntfy アプリを入れて良いか？ [ブロッカー / 任意]
+
+      会社支給端末で MDM 制限がある場合、App Store からの自由インストールが NG なケースあり。Part 3 のハンズオン (朝ニュース push) の可否に直結する。
+
+      選択肢:
+      - (a) 個人 iPhone・制限なし → そのまま App Store からインストール
+      - (b) 会社端末・MDM あり → IT に申請 or 個人 iPhone に切替 / 別 push 経路 (LINE Notify 等) 検討
+      - (c) iPhone 以外を主に使う (Android) → ntfy は Android 版もあり問題なし
+
+      AI推奨: (a)。当日にダメだった場合は メール下書き生成 に push を切替 (Mail.app に届く形に変える)
+  - id: q-BL-0073-3-20260427-gcal
+    at: '2026-04-27T09:05:00+09:00'
+    cockpit_task_id: '0'
+    content: |-
+      Q3. PONさんは Google アカウントを既に持っているか？ [方針確定 / 任意]
+
+      Part 4 (Google Calendar 連携) のハンズオン速度に直結。Workspace か個人 Gmail かでメニュー位置が若干違う。
+
+      選択肢:
+      - (a) 個人 Gmail を保有 → そのまま Calendar API を有効化して進める
+      - (b) Workspace 契約あり (会社ドメイン) → 管理者が API 有効化を許可しているか確認が必要
+      - (c) Google アカウント未保有 → 当日 5 分で個人 Gmail を作るか、Part 4 は次回送り
+      - (d) 不明 → 当日確認。代替プランとして「読み込みのみデモ → PONさん環境で持ち帰り設定」を準備
+
+      AI推奨: (d)。当日 (a) なら本番設定、(b)/(c) ならデモ機 (田中側) で見せる形に切替
+  - id: q-BL-0073-4-20260427-icloud
+    at: '2026-04-27T09:05:00+09:00'
+    cockpit_task_id: '0'
+    content: |-
+      Q4. iCloud → Google Calendar の移行意向は？ [任意]
+
+      Part 4 の説明を「並行運用押し」にするか「移行押し」にするかの判断材料。本人の予定管理スタイル次第。
+
+      選択肢:
+      - (a) 完全移行したい (家族予定含めて Google に集約) → 移行手順を厚めに説明
+      - (b) 並行運用が良い (家族は iCloud / 仕事は Google) → 並行構成を厚めに説明 (田中の本命推奨)
+      - (c) 当面 iCloud のみ、AI 連携は気が向いたら → Part 4 は概要紹介に絞り、第7回以降で再検討
+      - (d) 当日相談しながら決める
+
+      AI推奨: (b) → (d)。「まず Google を増設して 1 週間試用」のフレームで提示すると判断材料が増える
+decisions:
+  - at: '2026-04-27T11:50:00+09:00'
+    type: commitment
+    by: ai
+    content: >-
+      mini-tachyon migration: 中央 Backlog.md の BL-0073 行を per-project YAML
+      (Stock/RestaurantAILab/バンコクPonさん案件/backlog/BL-0073.yaml) に昇格。 4/26-4/27 の deliverable 4 件を deliverable_refs
+      に登録、INBOX.md Q1-Q4 を pending_questions に移植。これにより BL-0073 詳細画面の「AI からの成果物」セクションに 4 件が表示される状態に復旧。 INBOX.md 側は段階的廃止
+      (rule 13) なので二重管理は短期容認。
+  - at: '2026-04-27T02:44:25.485Z'
+    type: commitment
+    by: ai
+    content: >-
+      中央 Backlog.md 由来 BL を per-project YAML (Stock/RestaurantAILab/バンコクPonさん案件/backlog/BL-0073.yaml)
+      に昇格。state=in_progress / priority=urgent、deliverable_refs 4 件 (4/26-4/27 v1 + v2 outline/content) 登録、INBOX.md Q1-Q4
+      (PONさん OS / ntfy / Google アカウント / iCloud移行) を pending_questions に移植。中央行は触らず (mergeCentralBLs が per-project を
+      canonical 扱い、id 重複は skip)。BL 詳細画面で「AI からの成果物」4 件表示確認済。

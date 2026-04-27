@@ -9,25 +9,24 @@ deliverables:
     created_at: '2026-04-27T09:55:00+09:00'
     created_by: agent
     created_by_agent: claude
-    review_state: unreviewed
-    summary: >-
-      4/26 v0.1 (機能/UI/データ/運用) を踏襲しつつ、田中さん 4/27 朝の追加前提
-      (展示会出展用 / 実写のようなアバター / 100-200 商品 / Voice Beauty Advisor 流用) を反映した v1。
-      新章として §6 展示会オペレーション要件 / §7 実写アバター 7 サービス比較
-      (Tavus / HeyGen / D-ID / Hedra / Anam / Synthesia / NVIDIA ACE) /
-      §8 商品 RAG 設計 (カテゴリ 3 階層 + 悩みタグ + JSON+Vector Store) /
-      §9 Voice Beauty Advisor 流用 vs 新規開発デルタ要件 を追加。各項目に
-      🔴 必須 / 🟡 推奨 / 🟢 将来オプション / ⏸ 保留 ラベルで田中さん採否判断を容易化。
-      Pon さん向け確認事項 15 件は INBOX.md Q1-Q6 に集約。
-    related_files:
-      - ../../_orchestration/INBOX.md
-      - ../../../2026-04-26/RestaurantAILab/バンコクPonさん案件/jbeauty_signage_requirements.md
-      - /Users/rikutanaka/RestaurantAILab/voice-beauty-advisor/  # 流用元コードベース
+    review_state: needs_revision
     review_log:
       - at: '2026-04-27T09:55:00+09:00'
         action: created
         to: unreviewed
         comment: >-
-          BL-0070 v1 ドラフト作成。田中さん 4/27 朝の追加前提
-          (展示会用 / 実写アバター / 100-200 商品 / Voice Beauty Advisor 流用) を反映。
-          田中さんレビュー → INBOX Q1-Q6 回答 → §10 Pon さん質問書 整形 → 送付メッセージ作成 へ。
+          BL-0070 v1 ドラフト作成。田中さん 4/27 朝の追加前提 (展示会用 / 実写アバター / 100-200 商品 / Voice Beauty Advisor 流用) を反映。 田中さんレビュー →
+          INBOX Q1-Q6 回答 → §10 Pon さん質問書 整形 → 送付メッセージ作成 へ。
+      - at: '2026-04-27T03:22:14.033Z'
+        action: state_change
+        from: unreviewed
+        to: needs_revision
+        comment: >-
+          全体的に表形式で作ってほしいです。列としては、項目、確認ポイント、入力例ないし選択肢、回答という列にしたいです。ヒアリングフローは別途詳細にまとめたいので、一旦今の4ステップだけ書いておいてください。注釈として、別で検討すると書きます。
+
+
+          3.2から3.4が不要です。データ連携要件については、CSVをデータインプットとすることにしたいです。店舗常設用などの話は一旦書かなくてOKです。6、7、8、9、11、12については、賞自体が不要です。
+
+
+          このドキュメントを Pon さんに対してヒアリングシートとして渡せるような形式にしてください。そのため、目線は開発者目線ではなく、美容師など非エンジニア目線での質問などにしてほしいです。
+    last_modified: '2026-04-27T03:22:14.033Z'

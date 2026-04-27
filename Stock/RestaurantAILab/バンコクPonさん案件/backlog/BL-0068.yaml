@@ -5,13 +5,14 @@ category: RestaurantAILab
 state: awaiting_user
 priority: high
 created_at: '2026-04-26T00:00:00+09:00'
-updated_at: '2026-04-27T02:34:26.938Z'
+updated_at: '2026-04-27T03:18:14.734Z'
 created_by: central-backlog
 description: >-
   BL-0068 v2 確定版 (2026-04-27 田中さん回答反映)。送金経路= Pon さん個人 Wise → 田中さん個人 Wise → みずほメインバンク。請求= LINE 送付・JPY 250,000
   円固定・輸出免税。初回バッチ= 2 月分 (2/19-3/18) + 3 月分 (3/19-4/18) + 4 月分 (4/19-5/18) の遡及 3 件 (合計 750,000 JPY) を Phase A
   完了直後にまとめ発行。SWIFT バックアップ不採用。手順書: wise_billing_full_procedure_v2.md / wise_invoice_template_v2.md。
 deliverable_refs:
+  - d-bl0068-20260427-pon-wise-confirmation
   - d-bl0068-20260427-wise-billing-full-procedure-v2
   - d-bl0068-20260427-wise-invoice-template-v2
   - d-bl0068-20260427-wise-billing-full-procedure-v1
@@ -20,7 +21,23 @@ deliverable_refs:
 schema_version: 2
 cockpit_task_ids:
   - ab7788eb
-pending_questions: []
+pending_questions:
+  - id: q-BL-0068-1-20260427031814
+    at: '2026-04-27T03:18:14.734Z'
+    cockpit_task_id: ab7788eb
+    content: |-
+      Q-H. Pon さんへの Wise 切替確認の結果はどうなりましたか？
+
+      田中さんから Pon さんへ pon_wise_confirmation.md §6.1 の LINE テンプレで確認後、以下のパターンで進路が分岐します:
+
+      - (A) Pon さん同意・個人 Wise で進める → v2 手順書通り Phase A〜D 進行
+      - (B) Pon さんが法人 Business を希望 → v1 §3.1 を再活用 + v2 を一部修正
+      - (C) Pon さんが Wise を渋り SWIFT を希望 → SWIFT 切替で別途設計
+      - (D) Pon さん同意するが書類準備に時間が必要 → Phase A 先行 / Phase B 後追い
+
+      📌 AI推奨: 本日 4/27 第 6 回セッションで Pon さんに口頭確認するのが最速。LINE 文面は pon_wise_confirmation.md §6.1 に日英で用意済。
+
+      参照: pon_wise_confirmation.md §4 確認チェックリスト 8 項目, §5 代替案, §6.1 LINE 送付テンプレ
 decisions:
   - at: '2026-04-27T01:01:06.991Z'
     type: answer
@@ -76,3 +93,17 @@ decisions:
       v1/v2、請求書テンプレ v1/v2、Payment switch comparison) が
       Flow/202604/2026-04-27/RestaurantAILab/バンコクPonさん案件/deliverables.yaml から正しく resolve されることを mt deliverable get
       で確認。UI 詳細画面の「AI からの成果物」セクションに 5 件表示される状態に復旧。互換のため単層も維持、テスト 171/171 pass。
+  - at: '2026-04-27T03:15:44.226Z'
+    type: answer
+    by: user
+    content: |-
+      一回PONさんにWise送金でいいか確認します。
+      PONさんでWiseアカウントは必要ですか？また、Wiseでもらうにあたり、前庭条件やPONさんへの影響をまとめて、確認事項として作成して
+  - at: '2026-04-27T03:18:05.598Z'
+    type: commitment
+    by: ai
+    content: >-
+      Pon さん側 Wise 開設の事前確認資料を作成 (pon_wise_confirmation.md)。内容: (1) Pon さん側 Wise アカウント開設は必須 / (2) 必要書類
+      (パスポート+住所3ヶ月以内+セルフィー+タイ銀行口座) / (3) Pon さん側影響 (送金手数料 1,000-2,000 円/月・為替変動 ±10,000 円/月・個人立替→法人精算) / (4) 田中さん→Pon さん
+      確認 8 項目 / (5) Pon さんが渋った場合の代替案 (Payoneer / SWIFT) / (6) LINE 送付テンプレ (日英併記)。次は田中さんから Pon さんへ確認 → 回答パターン A/B/C/D
+      で進路分岐。

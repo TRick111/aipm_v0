@@ -176,3 +176,29 @@ deliverables:
         action: created
         to: unreviewed
         comment: BL-0068 v2 完全手順 §5 の付属テンプレ。LINE 1:1 送付運用に確定。
+  - id: d-bl0068-20260427-pon-wise-confirmation
+    file: pon_wise_confirmation.md
+    bl_id: BL-0068
+    title: Pon さんへの Wise 切替 事前確認資料 (前提条件・影響・LINE 送付テンプレ)
+    created_at: '2026-04-27T11:20:00+09:00'
+    created_by: bl-0068-agent
+    created_by_agent: claude
+    review_state: unreviewed
+    summary: >-
+      v2 手順書 Phase B の前段として、Pon さんに Wise 切替で良いかを確認するための資料。
+      §1 Pon さん側 Wise アカウントは必須 (理由: Wise の本質は両者経由でミッドマーケット為替実現)／
+      §2 必要書類 (パスポート + 住所証明 3 ヶ月以内 + セルフィー + タイ銀行口座 + 環境)／
+      §3 メリット 5 項目 (PayPal 不可解消・低手数料・速着金・履歴管理・PromptPay 統合) と
+      デメリット 5 項目 (送金手数料 Pon 側負担 1,000-2,000 円/月・為替変動 ±10,000 円/月・
+      個人立替→法人精算・KYC 提出・タイ BOT 規制)／§4 田中さん→Pon さん確認チェックリスト 8 項目／
+      §5 代替案 (Payoneer / SWIFT) / Pon さんが Wise を渋った場合のシナリオ／
+      §6 LINE 送付テンプレ (日英併記、6.1 で 1 通構成)／§7 田中さんネクストアクション
+      (4/27 セッション口頭確認 or LINE 送付 → パターン A/B/C/D で分岐)。
+    related_files:
+      - wise_billing_full_procedure_v2.md
+      - wise_invoice_template_v2.md
+    review_log:
+      - at: '2026-04-27T11:20:00+09:00'
+        action: created
+        to: unreviewed
+        comment: Pon さん事前確認資料。Q-H として田中さん側に確認結果を待機。回答後パターン A/B/C/D で進路分岐。

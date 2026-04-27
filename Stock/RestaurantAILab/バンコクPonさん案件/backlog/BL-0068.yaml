@@ -5,7 +5,7 @@ category: RestaurantAILab
 state: awaiting_user
 priority: high
 created_at: '2026-04-26T00:00:00+09:00'
-updated_at: '2026-04-27T01:07:04.199Z'
+updated_at: '2026-04-27T02:34:26.938Z'
 created_by: central-backlog
 description: >-
   BL-0068 v2 確定版 (2026-04-27 田中さん回答反映)。送金経路= Pon さん個人 Wise → 田中さん個人 Wise → みずほメインバンク。請求= LINE 送付・JPY 250,000
@@ -68,3 +68,11 @@ decisions:
       v1 からの主要スコープ変更 (2026-04-27 田中さん回答反映): (1) 送金経路を Pon さん個人 Wise → 田中さん個人 Wise の単一ルートに確定。法人 Business は不採用。(2) 請求書送付は
       LINE 経由（メール非採用）。(3) 受取口座はみずほメインバンク。(4) SWIFT バックアップは不採用。(5) 初回請求は通常の4月稼働分 1 件ではなく、2 月稼働分 (2/19-3/18) と 3 月稼働分
       (3/19-4/18) の遡及 2 件 + 4 月稼働分 (4/19-5/18) の計 3 件まとめ発行。v2 手順書で反映。
+  - at: '2026-04-27T02:34:26.938Z'
+    type: commitment
+    by: ai
+    content: >-
+      flow.ts walker 2層 Flow 構造 (Flow/<day>/<category>/<project>/) 対応完了。BL-0068 の deliverable_refs 5 件 (Wise 完全運用手順
+      v1/v2、請求書テンプレ v1/v2、Payment switch comparison) が
+      Flow/202604/2026-04-27/RestaurantAILab/バンコクPonさん案件/deliverables.yaml から正しく resolve されることを mt deliverable get
+      で確認。UI 詳細画面の「AI からの成果物」セクションに 5 件表示される状態に復旧。互換のため単層も維持、テスト 171/171 pass。

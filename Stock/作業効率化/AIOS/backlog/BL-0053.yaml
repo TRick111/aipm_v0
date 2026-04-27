@@ -6,7 +6,7 @@ state: awaiting_user
 state_emoji: 🟢
 priority: high
 created_at: '2026-04-22T00:00:00+09:00'
-updated_at: '2026-04-27T01:08:09.765Z'
+updated_at: '2026-04-27T02:34:18.956Z'
 created_by: master-agent
 description: >
   ## 背景
@@ -41,7 +41,9 @@ description: >
   - [ ] Phase 1（軽い思想取り込み）を実装
 
   - [ ] Phase 2（gbrain MCP 並走）を実装（5 月以降）
-deliverable_refs: []
+deliverable_refs:
+  - d-bl0053-20260427-investigation-v1
+  - d-bl0053-20260427-integration-options-v1
 schema_version: 2
 cockpit_task_ids:
   - e6906556
@@ -91,4 +93,11 @@ decisions:
     content: >-
       Gbrain と言っているのは、今言っている GitHub のリポジトリであっています。統合方針はハイブリッドがいけるのかな？正直、その gbrain
       の内容次第かなと思っています。可能であれば、第一回から組み込みたいので、まずは調査をお願いします。
-    answers_question_id: q-BL-0053-1-20260427004830
+  - at: '2026-04-27T02:34:18.956Z'
+    type: commitment
+    by: ai
+    content: >-
+      flow.ts 2層対応 (lib/flow.ts) ＋ _orchestration/deliverables.yaml 浄化完了。BL-0053 成果物 2 件
+      (d-bl0053-20260427-investigation-v1, d-bl0053-20260427-integration-options-v1) を
+      Flow/202604/2026-04-27/作業効率化/AIOS/deliverables.yaml に正規化、file 相対パスを当該フォルダ起点に修正。BL-0053.yaml の deliverable_refs にも
+      2 件登録済。mt deliverable get で resolve 確認、UI で「AI からの成果物」セクションに表示される状態に復旧。テスト 171/171 pass。

@@ -228,11 +228,31 @@ mt bl update BL-0073 --state planned          # [-] (見送り) に相当
 
 ```bash
 # 1. .md ファイル作成は OK (Flow への書き込みは制限なし)
-echo "# レポート..." > Flow/<today>/<project>/my_report.md
+#    単層・2層どちらでも mini-tachyon が resolve する (2026-04-27〜)。
+#    AIOS 6.1.1 Stock 構造ミラーに合わせ Flow も 2層が一般化。
+echo "# レポート..." > Flow/<today>/<category>/<project>/my_report.md
 
 # 2. deliverables.yaml に entry 追加 — API 側に「register deliverable」が未整備なので
 #    schema 厳守でファイル直接編集 OK (Phase 4 の既知 gap、将来 mt deliverable create で改善予定)
 ```
+
+**Flow ディレクトリ構造 (どちらでも可)**:
+
+```
+# 単層 (従来 / 互換)
+Flow/<YYYYMM>/<YYYY-MM-DD>/<project>/deliverables.yaml
+
+# 2層 (Stock 構造ミラー、4/26 以降の標準)
+Flow/<YYYYMM>/<YYYY-MM-DD>/<category>/<project>/deliverables.yaml
+```
+
+`file:` フィールドは **必ず deliverables.yaml と同じフォルダ起点の相対パス** にする
+(`../<別フォルダ>/foo.md` のような跨ぎパスは可読性低下＋移動時 fragile なので避ける)。
+
+**重要**: BL に紐付く成果物は **絶対に** `_orchestration/deliverables.yaml` に書かない。
+`_orchestration` は朝のタスク案など `bl_id: null` の Daily Loop 専用領域。
+BL 紐付けは必ず `<category>/<project>/deliverables.yaml` 配下 + `BL-XXXX.yaml` の
+`deliverable_refs` 登録で行う。
 
 `deliverables.yaml` のエントリは以下のスキーマ厳守:
 ```yaml

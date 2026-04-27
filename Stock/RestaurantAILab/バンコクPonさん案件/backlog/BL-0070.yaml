@@ -5,12 +5,13 @@ category: RestaurantAILab
 state: awaiting_user
 priority: high
 created_at: '2026-04-27T00:47:53.792Z'
-updated_at: '2026-04-27T01:05:43.833Z'
+updated_at: '2026-04-27T02:34:40.780Z'
 created_by: mt-cli
 description: >-
   JBeauty 案件のデジタルサイネージ要件一覧を作成し Pon さんへ送付する。2026-04-26 v0.1 / 2026-04-27 v1 (展示会用 / 実写アバター / 100-200 商品 / Voice Beauty
   Advisor 流用) 完了。Flow/202604/2026-04-27/RestaurantAILab/JBeauty/jbeauty_signage_requirements_v1.md
-deliverable_refs: []
+deliverable_refs:
+  - d-bl0070-20260427-signage-req-v1
 schema_version: 2
 cockpit_task_ids:
   - 2d464210
@@ -90,6 +91,28 @@ pending_questions:
       回答してほしい項目:
       - 第一弾ローンチ目標日
       - 予算レンジ（アバター API + Realtime API + 端末 + 現地運用）
+  - id: q-BL-0070-6-20260427023440
+    at: '2026-04-27T02:34:40.780Z'
+    cockpit_task_id: 2d464210
+    content: >-
+      【END STATE 残留確認】flow.ts 2層対応・_orchestration 浄化は完了しましたが、BL-0070 の deliverable_refs
+      が空のままです。Flow/202604/2026-04-27/RestaurantAILab/JBeauty/deliverables.yaml に d-bl0070-20260427-signage-req-v1
+      が存在しますが、BL-0070.yaml には未登録 → UI 詳細画面の「AI からの成果物」には表示されません。
+
+
+      選択肢:
+
+      - (a) 私の方で BL-0070.yaml に deliverable_refs: [d-bl0070-20260427-signage-req-v1] を追記する (BL-0053 と同パターン、scope
+      内と判断したい)
+
+      - (b) BL-0070 は別タスクとして切り出して頂く
+
+
+      📌 AI 推奨: (a)。BL-0053 で同じ操作 (deliverable_refs 補填) を既に実施しており、END STATE 達成のため整合性を取りたい。
+
+
+      参考: BL-0073 / BL-0074 は中央 Backlog.md 由来 (per-project YAML なし) のため、deliverable_refs を持つ仕組みがそもそも存在しません。これらの成果物 UI
+      表示には別途 (1) per-project YAML への昇格 or (2) bl_id 逆引き機構の追加 が必要です。これも別途ご相談させてください。
 decisions:
   - at: '2026-04-27T01:05:43.833Z'
     type: answer
@@ -116,4 +139,3 @@ decisions:
       商品マスターは一旦30件ほどでPOC（概念実証）を行います。KOSEIという会社のアイテムはすでに出揃っているため、それを使ってPOCを進めたいです。
 
       対応言語は日本語、英語、タイ語、中国語を対象とします。特にタイ語はマイナー言語であるため、タイ語対応が可能なことが最も厳しい要件です。タイ語に対応できれば、日英中の対応は問題ないと考えています。
-    answers_question_id: q-BL-0070-1-20260427004804

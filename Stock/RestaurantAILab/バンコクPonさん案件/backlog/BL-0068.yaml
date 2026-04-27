@@ -1,0 +1,133 @@
+id: BL-0068
+title: PONさんへの請求方法の検討（PayPal→WISE切替）
+project: バンコクPonさん案件
+category: RestaurantAILab
+state: awaiting_user
+priority: high
+created_at: '2026-04-26T00:00:00+09:00'
+updated_at: '2026-04-27T00:53:54.284Z'
+created_by: central-backlog
+description: BL-0068 月25万円月次請求 完全手順 v1 (4/27作成)。田中さん回答待ち Q-A〜Q-G。Phase A→B→月次運用 10章。推奨 JPY 250,000 円固定請求。
+deliverable_refs:
+  - d-bl0068-20260427-wise-billing-full-procedure-v1
+  - d-bl0068-20260427-wise-invoice-template
+  - d-bl0068-20260426-payment-switch-comparison
+schema_version: 2
+cockpit_task_ids:
+  - ab7788eb
+pending_questions:
+  - id: q-BL-0068-1-20260427004904
+    at: '2026-04-27T00:49:04.419Z'
+    cockpit_task_id: ab7788eb
+    content: |-
+      Q-A. 送金者名義 [方針確定 / 任意]
+
+      PONさん側は「Rio's Innovation 法人」送金にしたいか、「Pon さん個人」送金で会計を回せるか。Phase B（§3 PONさん側 Wise 開設）の手順分岐に直結。
+
+      選択肢:
+      - (a) Rio's Innovation 法人 → Wise Business（タイ法人）開設、書類7点・所要 1〜2 週
+      - (b) Pon さん個人 → Wise 個人（タイ）開設、KYC 1〜3 日で即運用可
+      - (c) 両方並行検討（初回 (b) 即時運用 → 後で (a) Business に切替）
+
+      📌 AI推奨: (c)。初回（5月上旬支払い）に間に合わせるため (b) で運用開始 → 並行で (a) を進めて Business 化
+
+      参照: Flow/202604/2026-04-27/RestaurantAILab/バンコクPonさん案件/wise_billing_full_procedure_v1.md §1, §3
+  - id: q-BL-0068-2-20260427004913
+    at: '2026-04-27T00:49:13.050Z'
+    cockpit_task_id: ab7788eb
+    content: |-
+      Q-B. 初回支払いの希望タイミング [方針確定]
+
+      4 月稼働分の請求はいつ着金させたいか。Phase B（PONさん側 Wise 開設）の待ちが許容できるかの判断。
+
+      選択肢:
+      - (a) 5月上旬（5/10 まで）に着金 → §2 田中さん側 Wise 個人開設を 4/30 までに完了させる必要あり
+      - (b) 5月中旬（5/15 まで）に着金 → §2 を 5/3 までで OK
+      - (c) 5月末まででOK → Business 開設待ちも可
+
+      📌 AI推奨: (a) または (b)。月次運用の安定化を考えると毎月15日着金固定が良い
+
+      参照: wise_billing_full_procedure_v1.md §1 Q-B, §7 月次運用カレンダー
+  - id: q-BL-0068-3-20260427004922
+    at: '2026-04-27T00:49:22.955Z'
+    cockpit_task_id: ab7788eb
+    content: |-
+      Q-C. 月次 25 万円固定 / 方式 (B) JPY 建て請求でよいか [方針確定]
+
+      田中さん共有前提では「月25万円毎月発生」。本書では方式 (B) JPY 建て請求で田中さん手取りを 250,000 円固定にする方針（送金者側で為替変動を吸収）。
+
+      選択肢:
+      - (a) YES、25万円 JPY 固定で進める
+      - (b) THB 建てで請求したい（Rio's Innovation 経費計上をバーツ建てにしたい等）→ 方式 (A)
+      - (c) USD 建てで請求したい → 方式 (C)
+      - (d) 金額そのものを変えたい（25万円から増減）
+
+      📌 AI推奨: (a)。為替変動リスクが田中さんに来ない・会計シンプル
+
+      参照: wise_billing_full_procedure_v1.md §0 通貨経路試算, §5 月次請求書発行
+  - id: q-BL-0068-4-20260427004930
+    at: '2026-04-27T00:49:30.376Z'
+    cockpit_task_id: ab7788eb
+    content: |-
+      Q-D. 田中さん受取口座 [方針確定 / 任意]
+
+      Wise 経由で円着金させる先の銀行口座は既存メインバンク（みずほ等）で OK か、専用口座を新設したいか。
+
+      選択肢:
+      - (a) 既存メインバンク（事業所得もそこに入金 / 確定申告で按分）
+      - (b) 新設の事業用口座（事業所得を分離管理）
+      - (c) Wise 残高に滞留（必要時に出金、為替メリット温存）
+
+      📌 AI推奨: (a)。年300万円ペースなら個人口座で問題なし。事業規模が大きくなれば (b) に切替
+
+      参照: wise_billing_full_procedure_v1.md §1 Q-D, §2.4 受取用 JPY 口座情報の発行
+  - id: q-BL-0068-5-20260427004937
+    at: '2026-04-27T00:49:37.753Z'
+    cockpit_task_id: ab7788eb
+    content: |-
+      Q-E. PONさん側決裁者 [任意]
+
+      タイ法人会計の判断は Pon さん 1 人で進められるか、IT/経理の同意要か（BL-0074 と関連）。
+
+      選択肢:
+      - (a) Pon さん一存で可 → Q-B (a) に間に合う
+      - (b) 経理担当・IT 確認要 → 1〜2 週バッファ追加
+      - (c) 不明 → PONさんに本日 4/27 セッションで口頭確認
+
+      📌 AI推奨: (c)。本日 4/27 のセッション（BL-0073）で確認すれば即確定
+
+      参照: wise_billing_full_procedure_v1.md §1 Q-E, §3 Phase B PONさん側開設
+  - id: q-BL-0068-6-20260427004944
+    at: '2026-04-27T00:49:44.775Z'
+    cockpit_task_id: ab7788eb
+    content: |-
+      Q-F. SWIFT バックアップ整備の優先度 [任意]
+
+      §8 SWIFT バックアップ運用（みずほ等の SWIFT/BIC 控え）を今すぐ整備するか、Phase A/B 安定後に後回しか。
+
+      選択肢:
+      - (a) 今すぐ（Phase A 完了後すぐ）整備
+      - (b) Phase A/B 安定後（3 ヶ月運用してから）
+      - (c) 不要（Wise だけで運用、緊急時は別途対応）
+
+      📌 AI推奨: (b)。Wise 運用が問題なく回ることを 3 ヶ月確認してから整備で十分
+
+      参照: wise_billing_full_procedure_v1.md §1 Q-F, §8 SWIFT バックアップ運用
+  - id: q-BL-0068-7-20260427004952
+    at: '2026-04-27T00:49:52.283Z'
+    cockpit_task_id: ab7788eb
+    content: |-
+      Q-G. PONさん側 請求書受取メール [方針確定 / 任意]
+
+      §4 顧客登録 / §5 メール送付で必要。代表者個人 / 経理担当 / 法人代表メールのいずれにするか。
+
+      選択肢:
+      - (a) Pon さん個人メール（既存セッション連絡先と同じ）
+      - (b) Rio's Innovation 経理担当のメール
+      - (c) 法人代表メール（accounts@... 等）
+      - (d) 不明 → PONさんに確認
+
+      📌 AI推奨: (a) + (b) の CC 構成。Pon さんに本人通知＋経理 CC で会計処理が回る
+
+      参照: wise_billing_full_procedure_v1.md §1 Q-G（追加）, §4 顧客登録
+decisions: []

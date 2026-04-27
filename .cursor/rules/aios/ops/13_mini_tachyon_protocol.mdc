@@ -182,6 +182,199 @@ mt projects list [--human]
 
 ---
 
+## 5.A Migration Recipe — 旧運用で既に作業したエージェント向け
+
+このセクションは「廃止前の運用 (INBOX/daily_tasks 中心) で既に作業を進めてしまった」エージェントが、自分の成果を mini-tachyon に取り込むための機械的な手順集です。**該当する Scenario を見つけて、コマンドを実行するだけ** で migration できます。
+
+### Scenario A — `_orchestration/INBOX.md` に質問を書いた
+
+**旧の動作**:
+```bash
+echo "## BL-0073 で確認したいこと\n質問内容..." >> Flow/<today>/_orchestration/INBOX.md
+```
+
+**新で置き換える**:
+```bash
+# 質問を BL の pending_questions に登録 (UI で田中さん側に通知される)
+mt bl add-question BL-0073 \
+  --content "本当にこの章立てで進めてOK？" \
+  [--from-task <自分の cockpit_task_id>]
+```
+
+**追加対応**: 既に書いた `INBOX.md` のエントリは、`mt bl add-question` が成功したら **元 INBOX.md からは削除しない (履歴として残す)、ただし新規追記もしない**。
+
+### Scenario B — `mmdd_daily_tasks.md` の状態列を変更した
+
+**旧の動作**: タスク表で `[ ]` → `[>]` (着手) → `[x]` (完了) と書き換えた。
+
+**新で置き換える**:
+```bash
+# 状態を mt CLI で API に反映
+mt bl update BL-0073 --state in_progress      # [>] に相当
+mt bl update BL-0073 --state completed        # [x] に相当
+mt bl update BL-0073 --state blocked          # [!] に相当
+mt bl update BL-0073 --state planned          # [-] (見送り) に相当
+```
+
+**追加対応**: `mmdd_daily_tasks.md` 自体はそのままで OK (新規には作らない、過去履歴扱い)。
+
+### Scenario C — `Flow/<today>/<project>/` に新規 deliverable .md を作成した
+
+**旧の動作**:
+1. `Flow/<today>/<project>/my_report.md` を新規作成
+2. `Flow/<today>/<project>/deliverables.yaml` に entry を追加 (or 同階層に新設)
+
+**新で置き換える** (現状: API gap あり、暫定対応):
+
+```bash
+# 1. .md ファイル作成は OK (Flow への書き込みは制限なし)
+echo "# レポート..." > Flow/<today>/<project>/my_report.md
+
+# 2. deliverables.yaml に entry 追加 — API 側に「register deliverable」が未整備なので
+#    schema 厳守でファイル直接編集 OK (Phase 4 の既知 gap、将来 mt deliverable create で改善予定)
+```
+
+`deliverables.yaml` のエントリは以下のスキーマ厳守:
+```yaml
+schema_version: 1
+project: <project名>
+date: <YYYY-MM-DD>
+deliverables:
+  - id: d-<YYYYMMDD>-<NNN>           # 一意 ID、既存と被らないこと
+    file: my_report.md                # 同フォルダからの相対パス
+    bl_id: BL-XXXX                    # 関連 BL ID (なければ null)
+    title: "レポート"
+    created_at: <ISO8601>
+    created_by: cockpit-task-<self>
+    created_by_agent: claude          # claude | codex | gemini | manual
+    review_state: unreviewed          # unreviewed | reviewing | done | needs_revision | generating
+    review_log: []
+    last_modified: <ISO8601>
+```
+
+書込後、必要に応じて状態を更新:
+```bash
+# 例: 自分の作業で完成、レビュー待ちにする
+mt deliverable update-state d-<YYYYMMDD>-<NNN> --state unreviewed
+```
+
+**注意**: `deliverables.yaml` は **`cockpit_task_id: null`** を書いてもOK (2026-04-26 の schema 緩和で nullable 許容済)。`bl_id: null` も同様 (`_orchestration` 用途)。
+
+### Scenario D — プロジェクトレベルの STATUS.md を更新した
+
+**旧の動作**:
+```bash
+# Stock/<category>/<project>/STATUS.md の frontmatter / セクションを直接編集
+```
+
+**新でも同じ**: STATUS.md の **直接編集は引き続き OK**。ただし v2 schema 厳守:
+
+```yaml
+---
+schema_version: 1
+project: <project名>
+category: <program名>
+status: in_progress      # in_progress | awaiting_user | blocked | completed | paused のみ
+owner_turn: ai           # ai | user | external のみ
+updated_at: <ISO8601>
+updated_by: <自分の identifier>
+current_bl: BL-XXXX      # null も可 (現在 active な BL なし)
+next_action: "..."
+blocker: null            # 阻害要因あれば文字列
+related_bls: [BL-XXXX, BL-YYYY]
+---
+
+# <project名>
+
+## 🎯 次のアクション
+## 🚧 現在のブロッカー
+## 📋 概要
+## 🔄 進行中
+## ✅ 完了済
+## 🧠 決定事項
+## 📜 履歴
+## 🔗 関連リンク
+```
+
+Template: `aios/templates/STATUS.template.md` 参照。スキーマ違反すると mini-tachyon UI から消える。
+
+### Scenario E — 中央 Backlog.md に新規 BL を追加
+
+**旧の動作**:
+```bash
+# Backlog.md の table にあらたな BL 行を append (ID 手動採番)
+echo "| BL-0080 | todo | P2 | ... |" >> Stock/定型作業/バックログ/Backlog.md
+```
+
+**新で置き換える**:
+```bash
+mt bl create \
+  --title "新規タスクのタイトル" \
+  --project "プロジェクト名" \
+  --category "プログラム名" \
+  --priority high|normal|low|urgent \
+  [--due 2026-04-30] \
+  [--id BL-0080]            # 省略時は自動採番
+```
+
+→ API が ID 採番、Backlog.md と per-project YAML 両方を atomic に作成。
+
+### Scenario F — STATUS / INBOX / questions_to_user.md の 3 ファイル同期した
+
+**旧の動作**: タスク状態が変わるたびに、3 ファイルを 1 ターン内ですべて更新。
+
+**新で置き換える**: 個別の操作を mt CLI で:
+
+| 旧アクション | 新コマンド |
+|---|---|
+| INBOX.md に質問 append | `mt bl add-question <bl> --content "..."` |
+| INBOX.md の質問に回答済マーク | `mt bl add-decision <bl> --type answer --by user --content "..."` (`--answers-question-id <qid>` で consume) |
+| questions_to_user.md に長文質問記録 | `mt bl add-question` で content にすべて記入 |
+| daily_tasks.md の `[x]`/`[!]` 状態変更 | `mt bl update <bl> --state ...` |
+| daily_tasks.md にメモ列追記 | `mt bl add-decision <bl> --type commitment --by ai --content "進捗メモ"` |
+| STATUS.md frontmatter 編集 | STATUS.md を直接編集 (Scenario D) |
+| STATUS.md 本文 (進行中・完了済) 編集 | 同上 |
+
+**INBOX.md / questions_to_user.md / daily_tasks.md は新規には作成しない**。
+
+### Scenario G — Cockpit 通知を受けて状態反映する場合 (マスター agent 向け)
+
+**旧の動作**: `[cockpit] <id> "<name>" → waiting_confirmation` を受けたら、3 ファイル全部更新。
+
+**新で置き換える**:
+```bash
+# まず該当タスクの内容を読む
+./cockpit task get <id> --turns 1 --max-lines 50
+
+# 必要に応じて状態反映
+mt bl update <bl_id> --state awaiting_user                # AI 完了で田中さん review 待ち
+mt deliverable update-state <d_id> --state unreviewed     # deliverable が完成した
+
+# 田中さんが「<タスク名> 回答した」と言ったら:
+mt bl add-decision <bl_id> --type answer --by user --content "<回答内容>" \
+  --answers-question-id <qid_if_consuming>
+mt cockpit send <cockpit_task_id> --text "<回答内容>"      # AI 側に通知
+```
+
+### Migration 全体の進め方 (3 ステップ)
+
+1. **自分が触ったファイルを列挙する**
+   - `_orchestration/INBOX.md` を編集した → Scenario A
+   - `mmdd_daily_tasks.md` を編集した → Scenario B / F
+   - `Flow/<today>/<project>/...` に新規 .md を置いた → Scenario C
+   - `Stock/<...>/STATUS.md` を編集した → Scenario D
+   - `Stock/定型作業/バックログ/Backlog.md` に追記した → Scenario E
+
+2. **各 Scenario の新コマンドで mini-tachyon に反映する**
+   - エラーが出たら zod validation のメッセージ通りに修正して再実行
+   - `mt bl get <id>` で現状確認しながら進める
+
+3. **最後に `mt today selected --human` で「今日の選択」が田中さんの期待と合うか確認**
+
+完了後、田中さんに `migration done` と一言報告。
+
+---
+
 ## 6. AIPM プロジェクトで動くエージェント全般への要請
 
 Cursor / Claude Code / Codex / Cockpit から AIPM プロジェクト (`~/aipm_v0/`) で動くエージェントは、以下を遵守:

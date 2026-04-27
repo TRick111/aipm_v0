@@ -81,6 +81,31 @@ deliverables:
         action: created
         to: unreviewed
         comment: BL-0073 v2 content draft 作成。田中さんレビュー → PONさん事前確認 (INBOX Q1-Q4) 待ち
+  - id: d-bl0073-20260427-session6-research-addendum-v1
+    file: session6_research_addendum_v1.md
+    bl_id: BL-0073
+    title: 第6回セッション 追加調査メモ — Cursor Automations / iCloud→Google Calendar 移行
+    created_at: '2026-04-27T15:00:00+09:00'
+    created_by: bl-0073-agent
+    created_by_agent: claude
+    review_state: unreviewed
+    summary: >-
+      田中さん 4/27 PM 指示 (Q1 回答 + 追加調査依頼) を受けて作成した v2 補強メモ。
+      (1) Cursor「自動実行エージェント」= Cursor Automations (cron + クラウドAI、開発文脈前提) と整理し、
+      Auto-Run / Background Agent / Automations の3層を明示。日常プロンプト定期実行は Claude Desktop
+      Scheduled Tasks / ChatGPT Tasks / Zapier 等への分岐を台本化。
+      (2) iCloud カレンダー一括 .icbu は Google 取り込み不可 (Apple独自形式) と確定 →
+      `.ics` 個別書き出しが正攻法。完全移行運用 (Mac カレンダー.app → ファイル → 書き出す → calendar.google.com 設定 →
+      インポート → iPhone/Mac で Google を既定カレンダーに → iCloud は表示OFF) を Step 化。
+      v2 outline / content_draft への反映ポイント、PONさん即答カード、田中さん次アクションを末尾に明示。
+    related_files:
+      - session6_outline_v2.md
+      - session6_content_draft_v2.md
+    review_log:
+      - at: '2026-04-27T15:00:00+09:00'
+        action: created
+        to: unreviewed
+        comment: 田中さん 4/27 PM 追加指示で作成。本日の予定外タスクとして deliverable 登録 (mini-tachyon 運用乗せ)。本番までに v2 への反映が必要。
   - id: d-bl0068-20260427-wise-billing-full-procedure-v1
     file: wise_billing_full_procedure_v1.md
     bl_id: BL-0068

@@ -5,7 +5,7 @@ category: RestaurantAILab
 state: in_progress
 priority: urgent
 created_at: '2026-04-26T00:00:00+09:00'
-updated_at: '2026-04-27T03:27:06.142Z'
+updated_at: '2026-04-27T05:59:32.101Z'
 created_by: mt-cli-migration
 description: >-
   2026-04-27 (月) 第6回セッション実施。**2026-04-27 田中さん指示で内容スコープ更新**: 旧 (繰り返しタスク／iCloudカレンダー連携／会話履歴インポート) → 新 (Cursor で AI を自動実行 /
@@ -18,6 +18,7 @@ description: >-
 deliverable_refs:
   - d-bl0073-20260427-session6-outline-v2
   - d-bl0073-20260427-session6-content-draft-v2
+  - d-bl0073-20260427-session6-research-addendum-v1
   - d-bl0073-20260426-session6-outline
   - d-bl0073-20260426-session6-content-draft
 schema_version: 2
@@ -38,36 +39,6 @@ pending_questions:
       - (c) iPhone 以外を主に使う (Android) → ntfy は Android 版もあり問題なし
 
       AI推奨: (a)。当日にダメだった場合は メール下書き生成 に push を切替 (Mail.app に届く形に変える)
-  - id: q-BL-0073-3-20260427-gcal
-    at: '2026-04-27T09:05:00+09:00'
-    cockpit_task_id: '0'
-    content: |-
-      Q3. PONさんは Google アカウントを既に持っているか？ [方針確定 / 任意]
-
-      Part 4 (Google Calendar 連携) のハンズオン速度に直結。Workspace か個人 Gmail かでメニュー位置が若干違う。
-
-      選択肢:
-      - (a) 個人 Gmail を保有 → そのまま Calendar API を有効化して進める
-      - (b) Workspace 契約あり (会社ドメイン) → 管理者が API 有効化を許可しているか確認が必要
-      - (c) Google アカウント未保有 → 当日 5 分で個人 Gmail を作るか、Part 4 は次回送り
-      - (d) 不明 → 当日確認。代替プランとして「読み込みのみデモ → PONさん環境で持ち帰り設定」を準備
-
-      AI推奨: (d)。当日 (a) なら本番設定、(b)/(c) ならデモ機 (田中側) で見せる形に切替
-  - id: q-BL-0073-4-20260427-icloud
-    at: '2026-04-27T09:05:00+09:00'
-    cockpit_task_id: '0'
-    content: |-
-      Q4. iCloud → Google Calendar の移行意向は？ [任意]
-
-      Part 4 の説明を「並行運用押し」にするか「移行押し」にするかの判断材料。本人の予定管理スタイル次第。
-
-      選択肢:
-      - (a) 完全移行したい (家族予定含めて Google に集約) → 移行手順を厚めに説明
-      - (b) 並行運用が良い (家族は iCloud / 仕事は Google) → 並行構成を厚めに説明 (田中の本命推奨)
-      - (c) 当面 iCloud のみ、AI 連携は気が向いたら → Part 4 は概要紹介に絞り、第7回以降で再検討
-      - (d) 当日相談しながら決める
-
-      AI推奨: (b) → (d)。「まず Google を増設して 1 週間試用」のフレームで提示すると判断材料が増える
 decisions:
   - at: '2026-04-27T11:50:00+09:00'
     type: commitment
@@ -97,4 +68,25 @@ decisions:
 
 
       iCloudのカレンダーをエクスポートして、全部過去の情報も含めエクスポートし、Gmailにインポートする方法を調べて教えてください。
-    answers_question_id: q-BL-0073-1-20260427-os
+  - at: '2026-04-27T05:59:17.058Z'
+    type: commitment
+    by: ai
+    content: >-
+      田中さん 4/27 PM 追加指示 (Cursor 自動実行エージェント + iCloud 一括エクスポート) を受け、Web 調査して v2 補強メモ session6_research_addendum_v1.md
+      を作成・deliverable 登録 (d-bl0073-20260427-session6-research-addendum-v1)。要点: (1) Cursor の「自動実行エージェント」= Cursor
+      Automations (cron + クラウドAI、GitHub文脈前提)。Auto-Run / Background Agent / Automations の3層を整理し、日常プロンプト定期化は Claude
+      Desktop Scheduled Tasks / ChatGPT Tasks / Zapier 等へフォールバックさせる台本に変更。(2) iCloud は Mac で .icbu 一括エクスポート可能だが Google
+      取り込み不可 (Apple独自) → .ics 個別書き出しが正攻法。完全移行運用 (PONさんは Q4=(a) 路線) を Step 化。本番までに v2 outline / content_draft の Part 1 /
+      Part 4 への反映が要。本日朝のタスク案 (review_state=done) には未掲載のため、本コミットメントで本日 deliverable 追加扱いとする。
+  - at: '2026-04-27T05:59:25.099Z'
+    type: answer
+    by: user
+    content: (a) 個人 Gmail 保有。すでに Google アカウントを持っているのでそのまま Calendar 連携可。Workspace ではなく個人 Gmail 想定。
+  - at: '2026-04-27T05:59:32.101Z'
+    type: answer
+    by: user
+    content: >-
+      (a) 完全移行寄り。本人はあまり気にしていない様子だが、運用方針は『iCloud にある今のカレンダーをエクスポートして Google にインポートし、以降は Google
+      カレンダーを使う』。家族予定を含めるかは本人確認待ちだが、進行は完全移行ベースで設計してよい。なお iCloud 一括 .icbu は Google 取り込み不可と判明したため、移行手順は .ics 個別書き出し →
+      Google Calendar インポート → iPhone/Mac で Google を既定 → iCloud は表示 OFF (削除しない) で固定。
+    answers_question_id: q-BL-0073-4-20260427-icloud

@@ -1,0 +1,32 @@
+schema_version: 1
+project: AIOS
+date: '2026-04-29'
+deliverables:
+  - id: d-bl0053-20260429-gbrainos-poc-v1-migration
+    file: gbrainos_distribution_poc_v1_migration_report.md
+    bl_id: BL-0053
+    title: GbrainOS（飯武さん配布版・案F）PoC v1 — Brain 骨格構築 + Stock 内容反映の Migration レポート
+    created_at: '2026-04-29T08:30:00+09:00'
+    created_by: bl-0053-mini-tachyon-spawn
+    created_by_agent: claude
+    review_state: unreviewed
+    review_log:
+      - at: '2026-04-29T08:30:00+09:00'
+        action: created
+        comment: >-
+          田中さん指示「AIOS と並列で GbrainOS フォルダを作り、Brain 構成 + Stock 反映」を実行。配置: ~/aipm_v0/GbrainOS/Brain/。 構成: GBrain 標準 20
+          ディレクトリ (people/companies/projects/programs/meetings/concepts/writing/ideas/deals/...) + 案F 固有 published/。 各
+          dir に README.md（resolver）、top に RESOLVER.md / schema.md / index.md。 Migration 結果: programs 9件 (Stock
+          カテゴリ反映)、projects 43 件 (全 Stock プロジェクト反映、STATUS.md からメタ抽出)、people 3 (tanaka/iitake/ohchi seed)、companies 1
+          (restaurant-ai-lab seed)。 総 79 .md ファイル。Stock 原本は維持（destructive ではない reflection migration）、BL は mini-tachyon
+          canonical のため Brain に出さず、deliverable 本体も Stock に残す。 残課題: GBrain CLI 実インストール、publish-snapshot skill
+          実装、People/Companies 充実、配布パッケージ化。田中さんへ 4 つの問い返し（Stock 維持方針 OK か / published/ 遡及登録 / BL の代替手段 / People enrich
+          タイミング）。
+      - at: '2026-04-28T18:58:51.894Z'
+        action: state_change
+        from: unreviewed
+        to: unreviewed
+        comment: >-
+          GbrainOS PoC v1 構築完了 (案F 飯武さん配布版): Brain 骨格 + Stock 反映 79 .md / programs 9 / projects 43 / people 3 /
+          companies 1 / published 0
+    last_modified: '2026-04-28T18:58:51.894Z'

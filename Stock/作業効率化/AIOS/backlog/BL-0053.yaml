@@ -6,7 +6,7 @@ state: planned
 state_emoji: 🟢
 priority: high
 created_at: '2026-04-22T00:00:00+09:00'
-updated_at: '2026-04-28T18:47:15.436Z'
+updated_at: '2026-04-28T18:58:57.594Z'
 created_by: master-agent
 description: >
   ## 背景
@@ -48,6 +48,7 @@ deliverable_refs:
   - d-bl0053-20260428-use-cases-v1
   - d-bl0053-20260428-integration-design-v2
   - d-bl0053-20260428-integration-design-v3-addendum
+  - d-bl0053-20260429-gbrainos-poc-v1-migration
 schema_version: 2
 cockpit_task_ids:
   - e6906556
@@ -150,3 +151,14 @@ decisions:
       published/ で snapshot freeze、mini-tachyon なし、Flow なし、シンプル構成。LLM が compiled truth を常時 rewrite する GBrain の思想を全面採用。次は
       BL-0002 (GBrain 統合 AICore 検証) で 2 つの PoC を並行実施: Phase 1a = 田中さん AIPM の Stock を gbrain import で取り込み案D 検証、Phase 1b =
       飯武さん想定の Brain + published/ ミニマル構成 PoC。検証結果から飯武さん第一回 (4/30 or 5月) の組込み度合と本実装スコープを最終決定。
+  - at: '2026-04-28T18:58:57.594Z'
+    type: commitment
+    by: ai
+    content: >-
+      GbrainOS PoC v1 構築完了 (4/29、案F 飯武さん配布版検証用)。配置: ~/aipm_v0/GbrainOS/Brain/ (AIOS と並列、aipm_v0 内)。構成: GBrain 標準 20
+      ディレクトリ + 案F 固有 published/、各 dir に README、top に RESOLVER.md / schema.md / index.md。Migration: Stock 8カテゴリ + 本業 →
+      programs 9件、Stock 全 42 プロジェクト → projects 43 件 (STATUS.md からメタ抽出)、people 3 (tanaka/iitake/ohchi seed)、companies 1
+      (restaurant-ai-lab seed)。総 79 .md。Stock 原本は維持 (destructive でない reflection migration)、BL は mini-tachyon canonical
+      のため Brain に出さず。残課題: GBrain CLI 実インストール / publish-snapshot skill 実装 / People-Companies 充実 / 配布パッケージ化。レポートは
+      d-bl0053-20260429-gbrainos-poc-v1-migration として登録、BL-0053.yaml deliverable_refs に追加済 (合計 7 件)。田中さんへ 4 問い返し: Stock
+      維持方針 OK か / published/ 遡及登録の有無 / BL 代替手段 / People enrich タイミング。

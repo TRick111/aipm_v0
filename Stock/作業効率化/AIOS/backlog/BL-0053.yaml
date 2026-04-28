@@ -6,7 +6,7 @@ state: planned
 state_emoji: 🟢
 priority: high
 created_at: '2026-04-22T00:00:00+09:00'
-updated_at: '2026-04-28T19:09:58.597Z'
+updated_at: '2026-04-28T19:27:18.581Z'
 created_by: master-agent
 description: >
   ## 背景
@@ -50,6 +50,7 @@ deliverable_refs:
   - d-bl0053-20260428-integration-design-v3-addendum
   - d-bl0053-20260429-gbrainos-poc-v1-migration
   - d-bl0053-20260429-gbrainos-poc-v2-deep-import
+  - d-bl0053-20260429-gbrainos-poc-v3-complete-reflection
 schema_version: 2
 cockpit_task_ids:
   - e6906556
@@ -175,3 +176,16 @@ decisions:
       companies 1 (restaurant-ai-lab seed) / published 0、総 508 .md。Brain は ~/GbrainOS/ 単独で配布可能な状態に到達。v1 deliverable は
       needs_revision として superseded、v2 (d-bl0053-20260429-gbrainos-poc-v2-deep-import) を canonical 登録。BL-0053.yaml
       deliverable_refs に追加 (合計 8 件)。次は BL-0002 で GBrain CLI 実インストール + publish-snapshot skill 実装 + 配布パッケージ化。
+  - at: '2026-04-28T19:27:18.581Z'
+    type: commitment
+    by: ai
+    content: >-
+      GbrainOS PoC v3 完了 (4/29、田中さん 3 指示対応)。(1) published に過去配信物 125 件を遡及登録 (月報/週報 2_output 配下、.lock 付き、writing から移動で
+      MECE 維持、ファイル名は <period>-<client>-<type>-<topic>-v1.md 規約)。(2) BL を GBrain 方式に変換: Stock の backlog/*.yaml 35 件を
+      projects/<name>.md の Open Threads セクションに、[x]/[!]/[ ] チェックボックス形式で展開 (mini-tachyon なし前提)。(3) projects/ 全 43 件に Scope
+      セクション追加: STATUS の概要 / README の概要 / README の 背景+目的+ゴール の優先順で自動抽出、無ければ TBD 明示。完全反映達成 (数学検証): Stock 1056 .md =
+      writing 871 + published 125 + org 6 (1002 destinations) + 54 (project-root STATUS+README を projects に embed) =
+      1056、零落なし。Backlog YAMLs 35 件は設計上 skip (Open Threads に変換)。v2 の maxdepth 制限撤廃で sub-dir README/STATUS / Stock 直下
+      MasterIndex / category READMEs もすべて反映。BL-0053.yaml deliverable_refs に追加 (合計 9 件)。残課題: GBrain CLI 実インストール /
+      publish-snapshot skill / People-Companies enrich / 配布パッケージ化。田中さんへの問い返し: published 範囲 (麻布しき/Famm/BFA 等の納品物も対象?) /
+      People-Companies enrich の自動 vs 手動 / 配布形態 (GitHub repo / tarball / Cursor template)。

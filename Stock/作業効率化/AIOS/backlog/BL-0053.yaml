@@ -6,7 +6,7 @@ state: planned
 state_emoji: 🟢
 priority: high
 created_at: '2026-04-22T00:00:00+09:00'
-updated_at: '2026-04-28T09:20:49.944Z'
+updated_at: '2026-04-28T09:39:38.692Z'
 created_by: master-agent
 description: >
   ## 背景
@@ -44,6 +44,8 @@ description: >
 deliverable_refs:
   - d-bl0053-20260427-investigation-v1
   - d-bl0053-20260427-integration-options-v1
+  - d-bl0053-20260428-investigation-v2
+  - d-bl0053-20260428-use-cases-v1
 schema_version: 2
 cockpit_task_ids:
   - e6906556
@@ -109,3 +111,12 @@ decisions:
       Q2/Q3 確定: ハイブリッド方針継続。ただし飯武さんに組み込む前に、まずこちら (RestaurantAILab) で GBrain を組み込んだ AICore を検証する。新 BL「BL-0002
       GBrain統合AICore作成 (飯武さん導入前検証)」を BL-0066 の前段に挿入し、検証結果を踏まえて第1回スコープ確定 + Phase 1 spawn 判断。本日 BL-0053 自体は spawn
       せず、新BLの検証結果待ち (defer)。
+  - at: '2026-04-28T09:39:38.692Z'
+    type: commitment
+    by: ai
+    content: >-
+      4/28 田中さん質問A/B への回答成果物 2 件を deliverable 登録完了。(1) d-bl0053-20260428-investigation-v2: 目的調査 v2 — GBrain は TS コア層 +
+      Markdown スキル層の二層構造、スキルは実行スクリプトを含まず YAML frontmatter + Markdown 散文 + シェルコマンド断片で構成 (Thin Harness, Fat Skills 哲学)
+      を実物コードで明示。v0.14.1 → v0.22.2 にバージョン更新も反映。(2) d-bl0053-20260428-use-cases-v1: ユースケース集 v1 — 記憶させる側 4 + 取り出す側 4 + 夜間
+      cron 21 本 + AIPM × GBrain 統合フロー (役割補完表) + 第一回向け最小デモ案。BL-0002 の検証シナリオ設計に流用可能。BL-0053.yaml の deliverable_refs にも 2
+      件追加 (合計 4 件)。両 deliverable は mt deliverable get で resolve 確認、UI で「AI からの成果物」セクションに表示される状態。

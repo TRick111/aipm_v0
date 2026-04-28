@@ -1,0 +1,46 @@
+schema_version: 1
+project: AIOS
+date: '2026-04-28'
+deliverables:
+  - id: d-bl0053-20260428-investigation-v2
+    file: g_brain_investigation_v2.md
+    bl_id: BL-0053
+    title: G-Brain 目的調査 v2（GBrain 二層構造 / スキルの中身を追記、4/28 田中さん質問A 回答）
+    created_at: '2026-04-28T18:30:00+09:00'
+    created_by: bl-0053-mini-tachyon-spawn
+    created_by_agent: claude
+    review_state: unreviewed
+    review_log:
+      - at: '2026-04-28T18:30:00+09:00'
+        action: created
+        comment: >-
+          v1 (4/27) からの更新版。田中さん 4/28 質問A「GBrain はスキルの集合体？スキルはスクリプトで定式化？」への回答として、 GBrain が「TS コア層 + Markdown
+          スキル層」の二層構造であること、スキルは実行スクリプトを含まず YAML frontmatter + Markdown 散文 + シェルコマンド断片で構成されていること（Thin Harness, Fat Skills
+          哲学）を実物コードで明示。 バージョン情報を v0.14.1 系から v0.22.2 にアップデート、v0.22.2 (4/26) の minions worker memory leak 対策も追記。
+      - at: '2026-04-28T09:39:24.220Z'
+        action: state_change
+        from: unreviewed
+        to: unreviewed
+        comment: 'v2 公開: 4/28 田中さん質問A への回答 (二層構造 + スキルの中身)'
+    last_modified: '2026-04-28T09:39:24.220Z'
+  - id: d-bl0053-20260428-use-cases-v1
+    file: g_brain_use_cases_v1.md
+    bl_id: BL-0053
+    title: G-Brain ユースケース・イメージ集 v1（4/28 田中さん質問B 回答, 8 シナリオ + AIPM統合フロー）
+    created_at: '2026-04-28T18:30:00+09:00'
+    created_by: bl-0053-mini-tachyon-spawn
+    created_by_agent: claude
+    review_state: unreviewed
+    review_log:
+      - at: '2026-04-28T18:30:00+09:00'
+        action: created
+        comment: >-
+          田中さん 4/28 質問B「GBrain を使う場合のユースケースのイメージがつかない」への回答。記憶させる側 4 パターン (会議/URL/常時発火/オリジナル) + 取り出す側 4 パターン
+          (事実検索/関係性検索/ブリーフィング/合成走査) + 夜間 cron 21 本 + AIPM × GBrain 統合フロー (mini-tachyon との役割補完表) + 第一回向け最小デモ案を提示。 BL-0002
+          (GBrain 統合 AICore 検証) の検証シナリオ設計に流用可能な構成。
+      - at: '2026-04-28T09:39:25.401Z'
+        action: state_change
+        from: unreviewed
+        to: unreviewed
+        comment: 'v1 公開: 4/28 田中さん質問B への回答 (ユースケース 8 シナリオ + AIPM統合フロー)'
+    last_modified: '2026-04-28T09:39:25.401Z'

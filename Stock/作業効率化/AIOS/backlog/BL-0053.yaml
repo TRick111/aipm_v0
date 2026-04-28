@@ -6,7 +6,7 @@ state: planned
 state_emoji: 🟢
 priority: high
 created_at: '2026-04-22T00:00:00+09:00'
-updated_at: '2026-04-28T09:55:39.540Z'
+updated_at: '2026-04-28T14:17:12.038Z'
 created_by: master-agent
 description: >
   ## 背景
@@ -47,6 +47,7 @@ deliverable_refs:
   - d-bl0053-20260428-investigation-v2
   - d-bl0053-20260428-use-cases-v1
   - d-bl0053-20260428-integration-design-v2
+  - d-bl0053-20260428-integration-design-v3-addendum
 schema_version: 2
 cockpit_task_ids:
   - e6906556
@@ -124,3 +125,13 @@ decisions:
       import で読み込み・検索のみ、リスク 0) で BL-0002 検証 → Phase 2=案C 役割分担ハイブリッド (Stock = 外部公開成果物に絞る, Brain = 組織内部知識+プロジェクト状態,
       mini-tachyon = BL canonical) に移行。各案のファイル階層 Before/After、ユーザ体験ストーリー (朝/会議/夜の cron まで含む 1 日典型フロー)、運用ルールブック
       (ファイリング決定木 / STATUS.md 段階的廃止 / mini-tachyon UI 拡張案) まで具体化。BL-0053.yaml deliverable_refs に登録済 (合計 5 件)。
+  - at: '2026-04-28T14:17:12.038Z'
+    type: commitment
+    by: ai
+    content: >-
+      4/28 田中さん設計問いへの v3 addendum を deliverable 登録完了 (d-bl0053-20260428-integration-design-v3-addendum)。要点 3 つ: (1) 案C
+      のメリットはスイッチングコスト抜きでも 5 つ本質価値 (バージョン凍結 / 外部公開境界 / 引用元構造 / MECE 解放 / BL-task 統合) が残り、飯武さんゼロスタートでも有効。(2) GBrain 思想は『人は
+      dir を探さない、LLM が取り出す』前提。top-level dir は人間固定で AI は勝手に dir を作らない (ファイル爆発するが dir 構造は爆発しない)。ただし『LLM
+      不在で目視で探す』体験は意図的に最優先化していない真のトレードオフ。(3) 飯武さんゼロスタート向けに新案F『Brain 一本 + published/ で snapshot freeze』を提案。推奨を 2 系統運用に修正:
+      田中さん本人 = 案C (mini-tachyon 統合済) / 飯武さん配布 = 案F (シンプル)。田中さんへの問い返し 3 点を明示 (mini-tachyon 提供する? / LLM auto-rewrite 受容? /
+      Flow 層必要?)。BL-0053.yaml deliverable_refs に登録済 (合計 6 件)。

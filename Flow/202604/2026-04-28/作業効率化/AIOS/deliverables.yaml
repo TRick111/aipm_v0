@@ -59,7 +59,7 @@ deliverables:
     created_at: '2026-04-28T19:00:00+09:00'
     created_by: bl-0053-mini-tachyon-spawn
     created_by_agent: claude
-    review_state: unreviewed
+    review_state: done
     review_log:
       - at: '2026-04-28T19:00:00+09:00'
         action: created
@@ -75,4 +75,35 @@ deliverables:
         from: unreviewed
         to: unreviewed
         comment: 'v2 公開: Brain の正体訂正 + 5 案比較 + ファイル階層 Before/After + ユーザ体験 + 推奨案E (D→C 段階的)'
-    last_modified: '2026-04-28T09:55:26.581Z'
+      - at: '2026-04-28T14:13:32.222Z'
+        action: state_change
+        from: unreviewed
+        to: done
+        comment: >-
+          C案は思い描いていたものに結構近いと思いますがストックとフローに分けることにG-Brainの観点からメリットはあるのでしょうか。今回飯竹さんに関してはAIOSがない状態でゼロから提案をしていくので例えばスイッチングコストなどだけがメリットの場合はあまり意味がないのかなと思っています。C案のメリットを教えてほしいです。またg
+          brainだけでやる場合のにAIが勝手にどんどんフォルダを作っていくので、プロジェクトの成果物とかを人が後から見直しにくいんじゃないかっていう懸念があるんですけどその辺の思想ってどうなってるんですか。新しい成果物を一個作って、成果物として保存しておいて。
+    last_modified: '2026-04-28T14:13:32.222Z'
+  - id: d-bl0053-20260428-integration-design-v3-addendum
+    file: aios_gbrain_integration_design_v3_addendum.md
+    bl_id: BL-0053
+    title: AIOS × G-Brain 統合設計 v3 addendum（C案メリット精査 + GBrain 自動 dir 思想 + 飯武さん向け新案F snapshot freeze）
+    created_at: '2026-04-28T19:30:00+09:00'
+    created_by: bl-0053-mini-tachyon-spawn
+    created_by_agent: claude
+    review_state: unreviewed
+    review_log:
+      - at: '2026-04-28T19:30:00+09:00'
+        action: created
+        comment: >-
+          田中さん 4/28 鋭い問いへの回答 addendum。Q1: 案C のメリットはスイッチングコスト抜きでも 5 つ本質的価値 (バージョン凍結 / 外部公開境界 / 引用元構造 / MECE 解放 / BL-task
+          統合) が成立、飯武さんゼロスタートでも有効と確認。Q2: GBrain 思想は「人は dir を探さない、LLM が取り出す」前提。top-level dir は人間固定で AI は勝手に dir を作らない
+          (ファイル数は爆発するが dir 構造は爆発しない)。ただし「LLM 不在で目視で探す」体験は意図的に最優先化していない (真のトレードオフ)。Q3: 飯武さんゼロスタート向けに新案F「Brain 一本 +
+          published/ で snapshot freeze」を提案 — 学習コスト最小、Brain 純度フル、外部公開境界も担保。推奨修正: 田中さん本人 = 案C (mini-tachyon 統合済) / 飯武さん配布
+          = 案F (シンプル) の 2 系統運用。BL-0002 で両方の PoC を実施し決定。田中さんへの問い返し 3 点を明示 (mini-tachyon 提供する? / LLM auto-rewrite
+          を飯武さんが受け入れる? / Flow 層必要?)。
+      - at: '2026-04-28T14:18:13.466Z'
+        action: state_change
+        from: unreviewed
+        to: unreviewed
+        comment: 'v3 addendum 公開: C案メリット精査 + GBrain 自動dir 思想 + 飯武さん向け新案F (Brain + snapshot freeze)'
+    last_modified: '2026-04-28T14:18:13.466Z'

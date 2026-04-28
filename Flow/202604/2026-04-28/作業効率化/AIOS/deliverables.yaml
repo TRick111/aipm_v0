@@ -52,3 +52,27 @@ deliverables:
         from: unreviewed
         to: done
     last_modified: '2026-04-28T09:46:06.904Z'
+  - id: d-bl0053-20260428-integration-design-v2
+    file: aios_gbrain_integration_design_v2.md
+    bl_id: BL-0053
+    title: AIOS × G-Brain 統合設計 v2（Brain の正体を踏まえた 5 案 + ファイル階層実物 + ユーザ体験 + 推奨案E段階的）
+    created_at: '2026-04-28T19:00:00+09:00'
+    created_by: bl-0053-mini-tachyon-spawn
+    created_by_agent: claude
+    review_state: unreviewed
+    review_log:
+      - at: '2026-04-28T19:00:00+09:00'
+        action: created
+        comment: >-
+          田中さん 4/28 設計問い (Brain と Stock の二重管理懸念、プロジェクト進捗を Brain に寄せられるか) への回答。 冒頭で田中さんの理解 (Brain = entity 専用) を訂正:
+          GBrain 標準スキーマには projects/, writing/, programs/, ideas/, concepts/, meetings/ が含まれ、 実は完全な知識ベース (Karpathy LLM
+          wiki パターンの拡張版)。AIOS-GBrain 概念マッピング表で重複箇所 (STATUS.md ⇔ projects/, Stock 成果物 ⇔ writing/projects) を特定。5 案を比較: A
+          完全統合 / B Entity-only (田中さん仮説、機能の半分しか使わない) / C 役割分担ハイブリッド (★推奨★、Stock = 外部公開成果物に絞り、 Brain = 組織内部知識+プロジェクト状態) /
+          D Index 層のみ / E 段階的 (D→C→A)。推奨は案E (Phase 1=案D で BL-0002 検証 → Phase 2=案C 移行)。 各案のファイル階層 Before/After
+          実物、ユーザ体験ストーリー (1日の典型フロー)、運用ルールブック (ファイリング決定木 / mini-tachyon UI 拡張 / STATUS.md 移行段階) まで具体化。
+      - at: '2026-04-28T09:55:26.581Z'
+        action: state_change
+        from: unreviewed
+        to: unreviewed
+        comment: 'v2 公開: Brain の正体訂正 + 5 案比較 + ファイル階層 Before/After + ユーザ体験 + 推奨案E (D→C 段階的)'
+    last_modified: '2026-04-28T09:55:26.581Z'

@@ -6,7 +6,7 @@ state: planned
 state_emoji: 🟢
 priority: high
 created_at: '2026-04-22T00:00:00+09:00'
-updated_at: '2026-04-28T09:49:25.185Z'
+updated_at: '2026-04-28T09:55:39.540Z'
 created_by: master-agent
 description: >
   ## 背景
@@ -46,6 +46,7 @@ deliverable_refs:
   - d-bl0053-20260427-integration-options-v1
   - d-bl0053-20260428-investigation-v2
   - d-bl0053-20260428-use-cases-v1
+  - d-bl0053-20260428-integration-design-v2
 schema_version: 2
 cockpit_task_ids:
   - e6906556
@@ -113,4 +114,13 @@ decisions:
 
 
       G-Brainの思想的に本当に知識を保存しておくためだけのものなのか、ドキュメント管理までできるのか、ちょっとその辺も踏まえた上で、AIOSとの統合方法をいくつか案を出してください。設計思想の部分も気になるし、実際にファイル階層としてどういうのを保存して、ユーザーがどう使用するのかというイメージまで決めたいです。
-    answers_question_id: q-BL-0053-3-20260427004850
+  - at: '2026-04-28T09:55:39.540Z'
+    type: commitment
+    by: ai
+    content: >-
+      4/28 設計問いへの回答成果物を deliverable 登録完了 (d-bl0053-20260428-integration-design-v2)。重要発見: 田中さん仮説『Brain = entity 専用』を訂正 —
+      GBrain 標準スキーマには projects/, writing/, programs/, ideas/, concepts/, meetings/ が含まれる完全な知識ベース (Karpathy LLM wiki
+      パターンの拡張版)。これにより Stock の STATUS.md と Brain projects/ の二重管理リスクが本当の論点と判明。5 案を比較し推奨は案E 段階的: Phase 1=案D (Stock を gbrain
+      import で読み込み・検索のみ、リスク 0) で BL-0002 検証 → Phase 2=案C 役割分担ハイブリッド (Stock = 外部公開成果物に絞る, Brain = 組織内部知識+プロジェクト状態,
+      mini-tachyon = BL canonical) に移行。各案のファイル階層 Before/After、ユーザ体験ストーリー (朝/会議/夜の cron まで含む 1 日典型フロー)、運用ルールブック
+      (ファイリング決定木 / STATUS.md 段階的廃止 / mini-tachyon UI 拡張案) まで具体化。BL-0053.yaml deliverable_refs に登録済 (合計 5 件)。

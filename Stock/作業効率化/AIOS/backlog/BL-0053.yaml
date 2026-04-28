@@ -6,7 +6,7 @@ state: planned
 state_emoji: 🟢
 priority: high
 created_at: '2026-04-22T00:00:00+09:00'
-updated_at: '2026-04-28T14:17:12.038Z'
+updated_at: '2026-04-28T18:47:15.436Z'
 created_by: master-agent
 description: >
   ## 背景
@@ -135,3 +135,18 @@ decisions:
       不在で目視で探す』体験は意図的に最優先化していない真のトレードオフ。(3) 飯武さんゼロスタート向けに新案F『Brain 一本 + published/ で snapshot freeze』を提案。推奨を 2 系統運用に修正:
       田中さん本人 = 案C (mini-tachyon 統合済) / 飯武さん配布 = 案F (シンプル)。田中さんへの問い返し 3 点を明示 (mini-tachyon 提供する? / LLM auto-rewrite 受容? /
       Flow 層必要?)。BL-0053.yaml deliverable_refs に登録済 (合計 6 件)。
+  - at: '2026-04-28T18:47:04.589Z'
+    type: answer
+    by: user
+    content: >-
+      v3 addendum §6 の問い返し 3 点への回答: (1) 飯武さんに mini-tachyon は提供しない (NO). (2) 『LLM が常に rewrite する』思想を飯武さんは受け入れる (YES). (3)
+      Flow 層は田中さん本人は必要 (YES、mini-tachyon と連動)、飯武さんには不要 (NO).
+  - at: '2026-04-28T18:47:15.436Z'
+    type: scope_change
+    by: ai
+    content: >-
+      統合方針確定 (4/29): 2 系統運用で進める。【田中さん本人 (RestaurantAILab AIPM)】= 案C 役割分担ハイブリッド: Stock + Flow + Brain + mini-tachyon の 4
+      層、mini-tachyon が BL/deliverable canonical、Brain が組織内部知識+プロジェクト状態、Stock が外部公開可能成果物。【飯武さん配布版】= 案F: Brain 一本 +
+      published/ で snapshot freeze、mini-tachyon なし、Flow なし、シンプル構成。LLM が compiled truth を常時 rewrite する GBrain の思想を全面採用。次は
+      BL-0002 (GBrain 統合 AICore 検証) で 2 つの PoC を並行実施: Phase 1a = 田中さん AIPM の Stock を gbrain import で取り込み案D 検証、Phase 1b =
+      飯武さん想定の Brain + published/ ミニマル構成 PoC。検証結果から飯武さん第一回 (4/30 or 5月) の組込み度合と本実装スコープを最終決定。

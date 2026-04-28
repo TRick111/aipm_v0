@@ -6,7 +6,7 @@ state: awaiting_user
 state_emoji: 🟢
 priority: high
 created_at: '2026-04-22T00:00:00+09:00'
-updated_at: '2026-04-27T02:44:45.974Z'
+updated_at: '2026-04-28T02:53:12.809Z'
 created_by: master-agent
 description: >
   ## 背景
@@ -48,23 +48,6 @@ schema_version: 2
 cockpit_task_ids:
   - e6906556
 pending_questions:
-  - id: q-BL-0053-2-20260427004841
-    at: '2026-04-27T00:48:41.497Z'
-    cockpit_task_id: e3fc0291
-    content: |-
-      【Q2・方針確定】統合方針は 案 (E) ハイブリッドで進めるか
-
-      統合案 v1 ファイル (g_brain_aios_integration_options_v1.md) に 5 案を比較表で整理しました。要点:
-
-      - (A) gbrain 全乗り換え → ❌ 4/30 飯武さん導入に間に合わない
-      - (B) gbrain MCP 並走のみ → AIOS の検索弱点だけ補強
-      - (C) gbrain 思想だけ AIOS に取り込み → 軽量、依存ゼロ、即着手可
-      - (D) AIOS を gbrain skill 化して contribute → 中期計画
-      - (E) ハイブリッド = (B) + (C) ★推奨★ → 段階導入、AIOS 資産も維持
-
-      📌 AI推奨: (E)。Phase 1（案 C 部分、半日）→ Phase 2（案 B 部分、5 月以降）→ Phase 3（案 D 部分、任意）。
-
-      参照: Flow/202604/2026-04-27/作業効率化/AIOS/g_brain_aios_integration_options_v1.md
   - id: q-BL-0053-3-20260427004850
     at: '2026-04-27T00:48:50.372Z'
     cockpit_task_id: e3fc0291
@@ -108,3 +91,15 @@ decisions:
       migration done. END STATE 達成: BL-0053/0068/0070/0073/0074 すべて per-project source、deliverable_refs 合計 15 件、すべて mt
       deliverable get で resolve、各 BL 詳細画面の「AI からの成果物」セクションで表示確認済。flow.ts walker は単層/2層/sub-org dir のいずれにも対応 (id
       集合フィルタ)。テスト 172/172 pass。詳細は CLI.md / aios/ops/13_mini_tachyon_protocol.mdc Scenario C を参照。
+  - at: '2026-04-28T02:53:12.809Z'
+    type: answer
+    by: user
+    content: |-
+      A
+      GBrain自体はスキルの集合体という理解で合ってる？
+      スキルの中ではスクリプトも使って定式化されているということ？
+      B
+      GBrainを使う場合のユースケース（何かを記憶させる、記憶を取り出す）など、GBrainを使う場合どういう使い方がされているのかのイメージがつかないので、
+
+      Aは既存の目的調査をアップデートして。ユースケースはもう一個成果物を作って
+    answers_question_id: q-BL-0053-2-20260427004841

@@ -9,7 +9,7 @@ deliverables:
     created_at: '2026-04-28T02:40:27.148Z'
     created_by: mini-tachyon-startDailyLoop
     created_by_agent: claude
-    review_state: needs_revision
+    review_state: unreviewed
     review_log:
       - at: '2026-04-28T02:40:27.148Z'
         action: spawned
@@ -51,5 +51,41 @@ deliverables:
           聡子さんのドライブはキャンセルになったのでBL削除。
           ClaudeCodeは今日はやらない
           Omiも今日はやらない
-    last_modified: '2026-04-28T03:06:46.307Z'
+      - at: '2026-04-28T03:16:15.179Z'
+        action: state_change
+        from: needs_revision
+        to: unreviewed
+        comment: |-
+          v2 改訂: 田中さん 4/28 12:06 needs_revision フィードバック反映。
+
+          主な変更:
+          - 固定予定: 9-18 本業 / 19- デート移動。並列本数気にせず。
+          - 新規 BL 作成: BL-0002 GBrain統合AICore作成 (飯武さん導入前検証, project=AI-Core)。BL-0066 の前段に挿入。
+          - BL-0073 PONさん第6回: 完了 → state=completed (Q4-A 質問を answer で消化済)。
+          - BL-0074: Q1-Q3 IT 確認不可、本日対象外 → Q4-A 質問を answer で消化 + commitment 記録。
+          - BL-0070 JBeauty: 5/3 (土) に期限延長 (本日対象外)、Q1-Q6 ✍️ 回答は田中さんから別途到着予定。
+          - BL-0066: BL-0002 を前段とする commitment を追記したかったが source=central のため mt 失敗 (markdown には記録済)。
+
+          採択 [x] (mt morning finalize 用):
+          - BL-0002 (新規) / BL-0066 / BL-0053 / BL-0054 / BL-0068 / BL-0037 / BL-0067 / BL-TBD-006 / BL-TBD-007 / BL-0077
+
+          見送り [-]:
+          - BL-0030 / BL-0014 / BL-0060 / BL-0069 / BL-0074
+          - BL-0070 / BL-0042 / BL-0043 (5/3 土まで延長、BL-0070 へは defer 記録済 / BL-0042・0043 は source=central のため mt 失敗)
+          - その他 P2/P3 全般
+
+          DONE / DELETE:
+          - BL-0073: state=completed 済
+          - BL-0059: ドライブキャンセル → 削除指示。source=central のため mt 更新不可、中央 Backlog.md からの除去は別途手動対応必要。
+
+          source=central で mt 失敗した BL: BL-0042 / BL-0043 / BL-0059 / BL-0066 / BL-0067 / BL-0077。markdown には全件反映済。
+      - at: '2026-04-28T03:16:22.391Z'
+        action: state_change
+        from: unreviewed
+        to: unreviewed
+        comment: >-
+          v2 改訂: 田中さん 4/28 needs_revision 反映。BL-0002 (GBrain統合AICore) 新規作成済、BL-0073 完了化済、BL-0074 IT 確認不可記録済、BL-0070 5/3
+          延長記録済。markdown には全件反映 (Q0-Q13 ✍️ 回答 / 採択行更新 / BL-0059 削除指示)。source=central で mt 更新不可だった BL: BL-0042 / BL-0043
+          / BL-0059 / BL-0066 / BL-0067 / BL-0077 (markdown のみで記録)。
+    last_modified: '2026-04-28T03:16:22.391Z'
     cockpit_task_id: 5f9b8263

@@ -2,10 +2,11 @@ id: BL-0073
 title: 'PONさんAI活用サポート: 第6回セッション資料・内容準備'
 project: バンコクPonさん案件
 category: RestaurantAILab
-state: in_progress
+state: completed
 priority: urgent
 created_at: '2026-04-26T00:00:00+09:00'
-updated_at: '2026-04-28T02:45:36.085Z'
+updated_at: '2026-04-28T03:15:03.208Z'
+completed_at: '2026-04-28T03:14:36.911Z'
 created_by: mt-cli-migration
 description: >-
   2026-04-27 (月) 第6回セッション実施。**2026-04-27 田中さん指示で内容スコープ更新**: 旧 (繰り返しタスク／iCloudカレンダー連携／会話履歴インポート) → 新 (Cursor で AI を自動実行 /
@@ -39,17 +40,6 @@ pending_questions:
       - (c) iPhone 以外を主に使う (Android) → ntfy は Android 版もあり問題なし
 
       AI推奨: (a)。当日にダメだった場合は メール下書き生成 に push を切替 (Mail.app に届く形に変える)
-  - id: q-BL-0073-2-20260428024536
-    at: '2026-04-28T02:45:36.085Z'
-    cockpit_task_id: 5f9b8263
-    content: |-
-      Q4-A. 4/27 第6回セッション本番後の wrap-up は完了済み？ in_progress のまま 4/28 を迎えています。
-
-      - 案A: 本日 session メモを整理して BL-0073 を done 化 + フォロー BL を起票 (AI で文字起こし整理 spawn 可)
-      - 案B: 田中さん本人で done 化判断 (AI は触らない)
-      - 案C: まだ wrap-up 不要、in_progress のまま継続 (next session までの宿題が残っている)
-
-      AI 推奨: 案A — wrap-up が遅れると次回準備が圧迫されます。
 decisions:
   - at: '2026-04-27T11:50:00+09:00'
     type: commitment
@@ -100,3 +90,8 @@ decisions:
       (a) 完全移行寄り。本人はあまり気にしていない様子だが、運用方針は『iCloud にある今のカレンダーをエクスポートして Google にインポートし、以降は Google
       カレンダーを使う』。家族予定を含めるかは本人確認待ちだが、進行は完全移行ベースで設計してよい。なお iCloud 一括 .icbu は Google 取り込み不可と判明したため、移行手順は .ics 個別書き出し →
       Google Calendar インポート → iPhone/Mac で Google を既定 → iCloud は表示 OFF (削除しない) で固定。
+  - at: '2026-04-28T03:15:03.208Z'
+    type: answer
+    by: user
+    content: 完了。タスククローズしてください (田中さん 4/28 指定)。第6回 4/27 本番完了。フォローBL は当面起票しない。
+    answers_question_id: q-BL-0073-2-20260428024536

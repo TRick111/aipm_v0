@@ -5,7 +5,7 @@ category: RestaurantAILab
 state: in_progress
 priority: urgent
 created_at: '2026-04-26T00:00:00+09:00'
-updated_at: '2026-04-27T02:44:25.680Z'
+updated_at: '2026-04-28T02:45:43.620Z'
 created_by: mt-cli-migration
 description: >-
   PONさんが自社売上データにAI経由でアクセスできるようにする。IT担当者はAIからのデータ流出を懸念しているため、懸念事項の整理と設計方針 (どのような構成でデータ流出を防ぐか) をまとめて説得材料とする。第6回セッション日
@@ -65,6 +65,22 @@ pending_questions:
       - (c) 未利用 → Cursor 概要 + Privacy Mode 設定 + MCP 設定 を月曜の冒頭でまとめる
 
       AI推奨: (b) または (c) を想定して資料に Cursor 説明スライドを 1 枚足すか、町田さんから事前確認
+  - id: q-BL-0074-4-20260428024543
+    at: '2026-04-28T02:45:43.620Z'
+    cockpit_task_id: 5f9b8263
+    content: |-
+      Q4-B. 4/27 第6回セッションで IT 担当者から Q1-Q3 の回答は得られた？
+
+      Q1 (Power Platform バックエンドが Dataverse / SharePoint / 両方 / 不明)
+      Q2 (認証方式 = 証明書 / シークレット / IT判断)
+      Q3 (PON さん Cursor 利用状況 + Privacy Mode)
+
+      選択肢:
+      - 案A: 回答済み → 内容を decision/answer に書き戻して、構成を 1 案に絞った v3 ドラフト spawn
+      - 案B: IT 側持ち帰り中 → 回答待ちの間に v2 のまま fix、田中さん側で他作業を進める
+      - 案C: session 自体が延期/未開催 → BL-0073 と合わせてリスケ判断
+
+      AI 推奨: 案A 寄り (回答が来ていれば即 v3 反映が一番効率的)
 decisions:
   - at: '2026-04-27T11:50:00+09:00'
     type: commitment

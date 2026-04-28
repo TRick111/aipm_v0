@@ -6,7 +6,7 @@ state: planned
 state_emoji: 🟢
 priority: high
 created_at: '2026-04-22T00:00:00+09:00'
-updated_at: '2026-04-28T18:58:57.594Z'
+updated_at: '2026-04-28T19:09:58.597Z'
 created_by: master-agent
 description: >
   ## 背景
@@ -49,6 +49,7 @@ deliverable_refs:
   - d-bl0053-20260428-integration-design-v2
   - d-bl0053-20260428-integration-design-v3-addendum
   - d-bl0053-20260429-gbrainos-poc-v1-migration
+  - d-bl0053-20260429-gbrainos-poc-v2-deep-import
 schema_version: 2
 cockpit_task_ids:
   - e6906556
@@ -162,3 +163,15 @@ decisions:
       のため Brain に出さず。残課題: GBrain CLI 実インストール / publish-snapshot skill 実装 / People-Companies 充実 / 配布パッケージ化。レポートは
       d-bl0053-20260429-gbrainos-poc-v1-migration として登録、BL-0053.yaml deliverable_refs に追加済 (合計 7 件)。田中さんへ 4 問い返し: Stock
       維持方針 OK か / published/ 遡及登録の有無 / BL 代替手段 / People enrich タイミング。
+  - at: '2026-04-28T19:09:58.597Z'
+    type: commitment
+    by: ai
+    content: >-
+      GbrainOS PoC v2 完了 (4/29)。田中さん指示で v1 を 2 点修正: (1) 配置を ~/aipm_v0/GbrainOS/ → ~/GbrainOS/ に移動 (aipm と並列、~/
+      直下、~/aipm_v0/GbrainOS/ は rm -rf 済)、(2) Stock を参照型 reflection から実コピー型 deep import に変更し Brain を self-contained
+      化。Migration 規則: Stock の <category> → programs/、<project> → projects/<name>.md (STATUS+README を embed)、deliverable
+      .md を writing/<project>--<rel-path>.md として実コピー (--区切りで元パス復元可能)、backlog/*.yaml は mini-tachyon canonical のため import
+      せず projects/ にリスト表示のみ。最終 stats: programs 9 / projects 43 / writing 427 / people 3 (tanaka/iitake/ohchi seed) /
+      companies 1 (restaurant-ai-lab seed) / published 0、総 508 .md。Brain は ~/GbrainOS/ 単独で配布可能な状態に到達。v1 deliverable は
+      needs_revision として superseded、v2 (d-bl0053-20260429-gbrainos-poc-v2-deep-import) を canonical 登録。BL-0053.yaml
+      deliverable_refs に追加 (合計 8 件)。次は BL-0002 で GBrain CLI 実インストール + publish-snapshot skill 実装 + 配布パッケージ化。

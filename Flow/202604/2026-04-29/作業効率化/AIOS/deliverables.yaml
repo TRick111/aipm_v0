@@ -9,7 +9,7 @@ deliverables:
     created_at: '2026-04-29T08:30:00+09:00'
     created_by: bl-0053-mini-tachyon-spawn
     created_by_agent: claude
-    review_state: unreviewed
+    review_state: needs_revision
     review_log:
       - at: '2026-04-29T08:30:00+09:00'
         action: created
@@ -29,4 +29,35 @@ deliverables:
         comment: >-
           GbrainOS PoC v1 構築完了 (案F 飯武さん配布版): Brain 骨格 + Stock 反映 79 .md / programs 9 / projects 43 / people 3 /
           companies 1 / published 0
-    last_modified: '2026-04-28T18:58:51.894Z'
+      - at: '2026-04-28T19:09:50.139Z'
+        action: state_change
+        from: unreviewed
+        to: needs_revision
+        comment: Superseded by v2 (d-bl0053-20260429-gbrainos-poc-v2-deep-import) — 配置と migration 方式を修正。v1 の Markdown は履歴として残す
+    last_modified: '2026-04-28T19:09:50.139Z'
+  - id: d-bl0053-20260429-gbrainos-poc-v2-deep-import
+    file: gbrainos_distribution_poc_v2_relocate_and_deep_import.md
+    bl_id: BL-0053
+    title: GbrainOS PoC v2 — 配置を ~/GbrainOS/ に移動 + Stock を実コピーで Deep Import (self-contained 化)
+    created_at: '2026-04-29T09:30:00+09:00'
+    created_by: bl-0053-mini-tachyon-spawn
+    created_by_agent: claude
+    review_state: unreviewed
+    review_log:
+      - at: '2026-04-29T09:30:00+09:00'
+        action: created
+        comment: >-
+          v1 を superseded。田中さん指示で (1) 配置を ~/aipm_v0/GbrainOS/ から ~/GbrainOS/ に変更（aipm と並列、~/ 直下）、(2) Stock を参照型
+          reflection から 実コピー型 deep import に切替。Brain は self-contained、~/GbrainOS/ 単独で配布可能な状態。Migration 結果: programs 9 /
+          projects 43 (STATUS+README embed) / writing 427 (Stock 全 deliverable .md を <project>--<rel-path>.md として実コピー) /
+          people 3 / companies 1 / published 0。 総 508 .md。BL は mini-tachyon canonical のため Brain には未登録（projects/
+          にリスト表示のみ）。残課題: GBrain CLI 実インストール / publish-snapshot skill / People-Companies 充実 / 配布パッケージ化。田中さんへの問い返し 4
+          点（published/ 遡及 / BL 代替 / enrich タイミング / 配布形態）。
+      - at: '2026-04-28T19:09:48.137Z'
+        action: state_change
+        from: unreviewed
+        to: unreviewed
+        comment: >-
+          v2 公開: ~/GbrainOS/ に再配置 + Stock 全 .md を writing/ に実コピーで self-contained 化。508 .md (programs 9 / projects 43 /
+          writing 427 / people 3 / companies 1)
+    last_modified: '2026-04-28T19:09:48.137Z'

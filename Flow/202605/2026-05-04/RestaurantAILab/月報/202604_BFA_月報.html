@@ -71,6 +71,7 @@ strong{font-weight:700}
 .tag-junkanban{background:#B45309;color:#fff}
 .tag-seiri{background:#B91C1C;color:#fff}
 .data-gap{background:#FBEDED;border:2px dashed #B91C1C;color:#B91C1C;padding:8px 14px;border-radius:8px;font-weight:700;margin:6px 0;font-size:15px}
+svg{max-width:100%;height:auto;display:block}
 </style>
 </head>
 <body>
@@ -250,20 +251,22 @@ strong{font-weight:700}
 <div class="slide-header"><h2><span class="ch-badge">第2章補足</span>売上Top10 / カテゴリ構成</h2><span class="pn">7 / 18</span></div>
 <div class="msg-bar">売上1位は「その他CLPコース」¥280k — コース系で売上の<strong>26.8%</strong>を占有 (チャージ除外ベース)</div>
 <div class="slide-body">
-<div class="two-col">
-<div class="col-half" style="flex:1.1">
+<div style="display:flex;gap:22px;height:100%">
+<div style="width:60%;flex-shrink:0">
 <div class="sec-title">商品別売上Top10 (チャージ除外)</div>
-<table class="dt sm" style="width:100%">
-<tr><th class="c" style="width:32px">#</th><th>商品名</th><th class="r">売上</th><th class="r">出数</th><th class="r">前月差</th></tr>
+<table class="dt sm" style="width:100%;table-layout:fixed">
+<colgroup><col style="width:32px"/><col/><col style="width:110px"/><col style="width:55px"/><col style="width:65px"/></colgroup>
+<tr><th class="c">#</th><th>商品名</th><th class="r">売上</th><th class="r">出数</th><th class="r">前月差</th></tr>
 <tr><td class='c b'>1</td><td>その他CLPコース</td><td class='r b'>¥280,500</td><td class='r'>51</td><td class='r neg'>-28</td></tr><tr><td class='c b'>2</td><td>ハウスハイボール</td><td class='r b'>¥182,400</td><td class='r'>152</td><td class='r pos'>+53</td></tr><tr><td class='c b'>3</td><td>7000円飲み放題付（3時間制）</td><td class='r b'>¥182,000</td><td class='r'>26</td><td class='r pos'>+26</td></tr><tr><td class='c b'>4</td><td>6500円飲み放題付（2時間制）</td><td class='r b'>¥156,000</td><td class='r'>24</td><td class='r pos'>+1</td></tr><tr><td class='c b'>5</td><td>5000円飲み放題付（2時間制）＋チャージ込み</td><td class='r b'>¥136,500</td><td class='r'>21</td><td class='r pos'>+21</td></tr><tr><td class='c b'>6</td><td>森のジントニック</td><td class='r b'>¥121,500</td><td class='r'>82</td><td class='r pos'>+82</td></tr><tr><td class='c b'>7</td><td>イベント費用</td><td class='r b'>¥81,000</td><td class='r'>3</td><td class='r pos'>+1</td></tr><tr><td class='c b'>8</td><td>ガージェリー</td><td class='r b'>¥50,700</td><td class='r'>39</td><td class='r neg'>-44</td></tr><tr><td class='c b'>9</td><td>桜ブロッサム</td><td class='r b'>¥45,600</td><td class='r'>24</td><td class='r pos'>+24</td></tr><tr><td class='c b'>10</td><td>焙煎ファッションド</td><td class='r b'>¥39,900</td><td class='r'>21</td><td class='r pos'>+21</td></tr>
 </table>
 </div>
-<div class="col-half" style="flex:0.9">
+<div style="width:40%;flex-shrink:0">
 <div class="sec-title">カテゴリ構成 (4月)</div>
-<div id="chart-category" style="height:260px"></div>
-<table class="dt xs" style="margin-top:4px">
+<div id="chart-category" style="height:240px"></div>
+<table class="dt xs" style="margin-top:4px;width:100%;table-layout:fixed">
+<colgroup><col/><col style="width:60px"/><col style="width:65px"/></colgroup>
 <tr><th>カテゴリ</th><th class="r">構成比</th><th class="r">前月差</th></tr>
-<tr><td>コース&セット</td><td class='r b'>25.1%</td><td class='r pos'>+0.2pt</td></tr><tr><td>NEW CLASSIC COCKTAIL</td><td class='r b'>10.3%</td><td class='r pos'>+10.3pt</td></tr><tr><td>その他</td><td class='r b'>9.1%</td><td class='r pos'>+1.0pt</td></tr><tr><td>未設定</td><td class='r b'>8.7%</td><td class='r pos'>+8.7pt</td></tr><tr><td>ウイスキー（ハイボール・ボトル・オリジナ</td><td class='r b'>8.0%</td><td class='r pos'>+0.7pt</td></tr><tr><td>JAPANESE COCKTAIL</td><td class='r b'>6.5%</td><td class='r pos'>+6.5pt</td></tr>
+<tr><td>コース&セット</td><td class='r b'>25.1%</td><td class='r pos'>+0.2pt</td></tr><tr><td>NEW CLASSIC COCKTA</td><td class='r b'>10.3%</td><td class='r pos'>+10.3pt</td></tr><tr><td>その他</td><td class='r b'>9.1%</td><td class='r pos'>+1.0pt</td></tr><tr><td>未設定</td><td class='r b'>8.7%</td><td class='r pos'>+8.7pt</td></tr><tr><td>ウイスキー（ハイボール・ボトル・オリ</td><td class='r b'>8.0%</td><td class='r pos'>+0.7pt</td></tr><tr><td>JAPANESE COCKTAIL</td><td class='r b'>6.5%</td><td class='r pos'>+6.5pt</td></tr>
 </table>
 </div>
 </div>

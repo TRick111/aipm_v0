@@ -135,6 +135,7 @@ strong{font-weight:700}
 .tag-junkanban{background:#B45309;color:#fff}
 .tag-seiri{background:#B91C1C;color:#fff}
 .data-gap{background:#FBEDED;border:2px dashed #B91C1C;color:#B91C1C;padding:8px 14px;border-radius:8px;font-weight:700;margin:6px 0;font-size:15px}
+svg{max-width:100%;height:auto;display:block}
 """
 
 JS_CHARTS = """
@@ -599,27 +600,30 @@ slides.append(f'''<div class="slide" id="slide-6">
 </div>
 </div>''')
 
-# Slide 7: 第2章補足 売上ランキング+カテゴリ (左テーブル幅を画面半分に)
-# 上下2段レイアウトに変更: 上にTop10商品テーブル(全幅) / 下にカテゴリ構成
+# Slide 7: 第2章補足 売上ランキング+カテゴリ
+# レイアウト: 左カラム 60% (商品Top10) / 右カラム 40% (カテゴリチャート+表)
+# flex を使わず width 直接指定で確実に
 top10_sales = DATA['products']['top_sales_30_excl'][:10]  # tablecharge等除外
 slides.append(f'''<div class="slide" id="slide-7">
 <div class="slide-header"><h2><span class="ch-badge">第2章補足</span>売上Top10 / カテゴリ構成</h2><span class="pn">7 / {TOTAL}</span></div>
 <div class="msg-bar">売上1位は「その他CLPコース」¥280k — コース系で売上の<strong>26.8%</strong>を占有 (チャージ除外ベース)</div>
 <div class="slide-body">
-<div class="two-col">
-<div class="col-half" style="flex:1.1">
+<div style="display:flex;gap:22px;height:100%">
+<div style="width:60%;flex-shrink:0">
 <div class="sec-title">商品別売上Top10 (チャージ除外)</div>
-<table class="dt sm" style="width:100%">
-<tr><th class="c" style="width:32px">#</th><th>商品名</th><th class="r">売上</th><th class="r">出数</th><th class="r">前月差</th></tr>
+<table class="dt sm" style="width:100%;table-layout:fixed">
+<colgroup><col style="width:32px"/><col/><col style="width:110px"/><col style="width:55px"/><col style="width:65px"/></colgroup>
+<tr><th class="c">#</th><th>商品名</th><th class="r">売上</th><th class="r">出数</th><th class="r">前月差</th></tr>
 {''.join(f"<tr><td class='c b'>{i+1}</td><td>{p['name']}</td><td class='r b'>{fmt_yen(p['sales'])}</td><td class='r'>{p['qty']}</td><td class='r {('pos' if p['qty_diff_mom']>=0 else 'neg')}'>{p['qty_diff_mom']:+d}</td></tr>" for i,p in enumerate(top10_sales[:10]))}
 </table>
 </div>
-<div class="col-half" style="flex:0.9">
+<div style="width:40%;flex-shrink:0">
 <div class="sec-title">カテゴリ構成 (4月)</div>
-<div id="chart-category" style="height:260px"></div>
-<table class="dt xs" style="margin-top:4px">
+<div id="chart-category" style="height:240px"></div>
+<table class="dt xs" style="margin-top:4px;width:100%;table-layout:fixed">
+<colgroup><col/><col style="width:60px"/><col style="width:65px"/></colgroup>
 <tr><th>カテゴリ</th><th class="r">構成比</th><th class="r">前月差</th></tr>
-{''.join(f"<tr><td>{c['category'][:20]}</td><td class='r b'>{c['sales_share']*100:.1f}%</td><td class='r {('pos' if c['share_diff']>=0 else 'neg')}'>{c['share_diff']*100:+.1f}pt</td></tr>" for c in DATA['category_share'][:6])}
+{''.join(f"<tr><td>{c['category'][:18]}</td><td class='r b'>{c['sales_share']*100:.1f}%</td><td class='r {('pos' if c['share_diff']>=0 else 'neg')}'>{c['share_diff']*100:+.1f}pt</td></tr>" for c in DATA['category_share'][:6])}
 </table>
 </div>
 </div>

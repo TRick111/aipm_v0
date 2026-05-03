@@ -5,14 +5,15 @@ category: RestaurantAILab
 state: in_progress
 priority: high
 created_at: '2026-04-30T13:29:01.461Z'
-updated_at: '2026-05-03T01:55:40.391Z'
+updated_at: '2026-05-03T12:49:55.909Z'
 created_by: mt-cli
 description: >-
   BFA店舗の2026年4月分 月報を作成。提出期限: 2026-05-03 (毎月3日まで)。週報の運用 (Phase1: POSデータ準備 → Phase2: 月報作成 → Dashboard アップロード)
   に倣い、4月の全週を集計し、月次のPL観点での示唆と次月アクションを含めた月報を完成させる。due=2026-05-03 / tags: 月報,BFA,定期
 deliverable_refs: []
 schema_version: 2
-cockpit_task_ids: []
+cockpit_task_ids:
+  - 69b873c3
 pending_questions: []
 decisions:
   - at: '2026-05-03T00:46:37.614Z'
@@ -34,3 +35,9 @@ decisions:
       2026-05-03 計画ドラフト生成完了: Flow/202605/2026-05-03/RestaurantAILab/月報/dashboard_extension_plan.md (deliverable id:
       d-bl0080-20260503-dashboard-plan, review_state=unreviewed)。内容: ダッシュボード週報エリア → 「週報＋月報」時系列マージ表示への拡張計画 (DB/API/UI 7
       PR分割案) + 月報作成プロンプトのインプット定義 (運営会社/対象月/POSデータ/前月テンプレ等)。テンプレ受領後に Phase1〜5 で本体生成可能な状態。
+  - at: '2026-05-03T12:49:55.909Z'
+    type: answer
+    by: user
+    content: |-
+      計画はそれでいいので、実装を進めてください。
+      実装したら、私がレビューするべき項目をMarkdownにして、Minitachyonの仕組みに沿って報告して。

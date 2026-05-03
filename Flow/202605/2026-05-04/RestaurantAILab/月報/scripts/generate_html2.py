@@ -136,6 +136,29 @@ strong{font-weight:700}
 .tag-seiri{background:#B91C1C;color:#fff}
 .data-gap{background:#FBEDED;border:2px dashed #B91C1C;color:#B91C1C;padding:8px 14px;border-radius:8px;font-weight:700;margin:6px 0;font-size:15px}
 svg{max-width:100%;height:auto;display:block}
+/* compact mode: スライドが縦に収まらない場合の圧縮 */
+.compact .slide-body{padding:10px 36px}
+.compact .sec-title{font-size:19px;margin:5px 0 4px}
+.compact .msg-bar{padding:8px 36px;font-size:18px}
+.compact .dt{font-size:15px}
+.compact .dt th{padding:6px 10px;font-size:14px}
+.compact .dt td{padding:5px 10px}
+.compact .dt.sm{font-size:14px}
+.compact .dt.sm th{padding:5px 8px;font-size:13px}
+.compact .dt.sm td{padding:4px 8px}
+.compact .dt.xs{font-size:12px}
+.compact .dt.xs th{padding:3px 6px;font-size:11px}
+.compact .dt.xs td{padding:2px 6px}
+.compact .bl li{padding:3px 0 3px 22px;font-size:15px;line-height:1.4}
+.compact .nl li{padding:4px 0 4px 36px;font-size:15px;line-height:1.4}
+.compact .note-box,.compact .warn-box,.compact .info-box,.compact .data-gap{padding:8px 14px;font-size:14px;line-height:1.4;margin-top:5px}
+.compact .kpi-card{padding:10px 12px}
+.compact .kpi-value{font-size:30px}
+.compact .kpi-label{font-size:14px}
+.compact .kpi-sub{font-size:13px}
+.compact .kpi-change{font-size:15px}
+.compact .card{padding:9px 13px;margin:4px 0}
+.compact .card-title{font-size:17px}
 """
 
 JS_CHARTS = """
@@ -490,11 +513,11 @@ slides.append(f'''<div class="slide" id="slide-3">
 </div>''')
 
 # Slide 4: 第1章 売上構造
-slides.append(f'''<div class="slide" id="slide-4">
+slides.append(f'''<div class="slide compact" id="slide-4">
 <div class="slide-header"><h2><span class="ch-badge">第1章</span>売上構造の判定</h2><span class="pn">4 / {TOTAL}</span></div>
 <div class="msg-bar">主因は <strong>{driver}</strong>: 客数寄与{fmt_yen(visits_contrib)} vs 単価寄与{fmt_yen(unit_contrib)} (営業日換算)</div>
 <div class="slide-body">
-<div id="chart-daily" style="height:330px"></div>
+<div id="chart-daily" style="height:280px"></div>
 <div class="two-col" style="margin-top:6px">
 <div class="col-half">
 <div class="sec-title">月次主因分解 (営業日換算)</div>
@@ -569,11 +592,11 @@ slides.append(f'''<div class="slide" id="slide-5">
 # Slide 6: 第2章 商品戦略 (出数Top15 / tablecharge等除外)
 def get_p(name, key):
     return next((p[key] for p in DATA['products']['all'] if p['name']==name), 0)
-slides.append(f'''<div class="slide" id="slide-6">
+slides.append(f'''<div class="slide compact" id="slide-6">
 <div class="slide-header"><h2><span class="ch-badge">第2章</span>商品戦略の判定 — 出数Top15 (チャージ除外)</h2><span class="pn">6 / {TOTAL}</span></div>
 <div class="msg-bar">ハウスハイボール (152) / 森のジントニック (82) / ガージェリー (39) の3軸が出数を支える</div>
 <div class="slide-body">
-<div id="chart-products" style="height:380px"></div>
+<div id="chart-products" style="height:300px"></div>
 <div class="two-col" style="margin-top:6px">
 <div class="col-half">
 <div class="sec-title o">名指し看板 (確固たる地位)</div>
@@ -701,11 +724,11 @@ slides.append(f'''<div class="slide" id="slide-9">
 
 # Slide 10: 第4章 利益構造 ★最重要 (1-3月: スプレッドシート / 4月: DB)
 exp_sorted = sorted([(k,v) for k,v in pl_april.get('expenses',{}).items()], key=lambda x:-x[1])
-slides.append(f'''<div class="slide" id="slide-10">
+slides.append(f'''<div class="slide compact" id="slide-10">
 <div class="slide-header"><h2><span class="ch-badge">第4章 ★</span>利益構造の判定 — PL推移と固定費耐性</h2><span class="pn">10 / {TOTAL}</span></div>
 <div class="msg-bar">1月+¥289k → 2月▲¥164k → 3月(費用未入力) → 4月暫定+¥{int(pl_apr_profit/1000):,}k (一部費目未入力) — 損益分岐への到達は依然不十分</div>
 <div class="slide-body">
-<div id="chart-monthly-pl" style="height:330px"></div>
+<div id="chart-monthly-pl" style="height:260px"></div>
 <div class="two-col" style="margin-top:6px">
 <div class="col-half">
 <div class="sec-title">4月PL費用 (本番DB / 入力済分のみ)</div>
@@ -733,42 +756,54 @@ slides.append(f'''<div class="slide" id="slide-10">
 </div>''')
 
 # Slide 11: 第4章(B) 理論原価 — まずデータ取得状況を確認 (考察前)
-classes = DATA['recipe_match']['unmatched_classification']
-total_unmatched_qty = sum(c['qty'] for c in classes if 'チャージ' not in c['category'])
-slides.append(f'''<div class="slide" id="slide-11">
-<div class="slide-header"><h2><span class="ch-badge">第4章(B)-i</span>理論原価 — データ取得状況の確認 (考察前)</h2><span class="pn">11 / {TOTAL}</span></div>
-<div class="msg-bar">⚠ 考察に入る前に: POS×レシピ名寄せの欠損が出数の56.7% / ¥{int(total_unmatched_qty/100)*100:,}超出数規模。原因を分類して可視化</div>
+# 田中さん指示で 3月/4月 出現パターン別に再分類
+all_pos = DATA['recipe_match']['all_pos_records']
+def st(rec):
+    am, ap = rec.get('appeared_in_mar'), rec.get('appeared_in_apr')
+    if am and ap: return 'both'
+    if ap: return 'apr_only'
+    if am: return 'mar_only'
+    return 'neither'
+mat_both = [r for r in all_pos if r.get('matched') and st(r)=='both']
+mat_apr = [r for r in all_pos if r.get('matched') and st(r)=='apr_only']
+mat_mar = [r for r in all_pos if r.get('matched') and st(r)=='mar_only']
+unm_both = [r for r in all_pos if not r.get('matched') and st(r)=='both']
+unm_apr = [r for r in all_pos if not r.get('matched') and st(r)=='apr_only']
+unm_mar = [r for r in all_pos if not r.get('matched') and st(r)=='mar_only']
+unm_apr_qty = sum(r['qty'] for r in unm_apr)
+unm_apr_sales = sum(r['sales'] for r in unm_apr)
+# 区分3 = POSなし × レシピあり (両月)
+matched_recipe_names_set = {r['recipe_name'] for r in all_pos if r.get('matched') and r.get('recipe_name')}
+recipe_full_count = 99  # 商品一覧シート総数
+recipe_only_count = recipe_full_count - len(matched_recipe_names_set)
+
+slides.append(f'''<div class="slide compact" id="slide-11">
+<div class="slide-header"><h2><span class="ch-badge">第4章(B)-i</span>理論原価 — POS×レシピ マッピング状況 (3/4月別)</h2><span class="pn">11 / {TOTAL}</span></div>
+<div class="msg-bar">⚠ 4月リニューアルを踏まえて 3月/4月 出現別に再分類。<strong>区分2a (4月のみ×レシピなし) {len(unm_apr)}品目</strong>が要確認の最重要</div>
 <div class="slide-body">
 <div class="two-col">
 <div class="col-half">
-<div class="sec-title">マッチング全体像</div>
+<div class="sec-title">マッピング 3区分 × 月別</div>
 <table class="dt sm">
-<tr><th>項目</th><th class="r">値</th></tr>
-<tr><td>レシピ品目数 (商品一覧)</td><td class="r b">99品目</td></tr>
-<tr><td>うち売価+原価 揃い</td><td class="r">63品目</td></tr>
-<tr><td>POS出現 ユニーク商品</td><td class="r">{mc['total_pos_products']}品目</td></tr>
-<tr><td>マッチ済品目数</td><td class="r b">{mc['matched_count']}品目 ({mc['match_rate']*100:.1f}%)</td></tr>
-<tr><td>マッチ済出数</td><td class="r b warn">{mc['matched_qty']:,}本 / {mc['total_qty']:,}本 ({mc['qty_match_rate']*100:.1f}%)</td></tr>
-<tr class="highlight-row"><td>未マッチ出数</td><td class="r b neg">{mc['unmatched_qty']:,}本 ({(1-mc['qty_match_rate'])*100:.1f}%)</td></tr>
+<tr><th>区分</th><th class="r c">両月</th><th class="r c">4月のみ ★</th><th class="r c">3月のみ</th></tr>
+<tr><td>区分1: マッチ済</td><td class="r b">{len(mat_both)}</td><td class="r b">{len(mat_apr)}</td><td class="r">{len(mat_mar)}</td></tr>
+<tr class="highlight-row"><td>区分2: POS○ × レシピ✗</td><td class="r b">{len(unm_both)}</td><td class="r b warn">{len(unm_apr)}</td><td class="r">{len(unm_mar)}</td></tr>
+<tr><td>区分3: POS✗ × レシピ○</td><td class="r" colspan="3">— 両月とも出現なし: {recipe_only_count}品目 ※詳細は別Markdown</td></tr>
 </table>
-<div class="sec-title o" style="margin-top:10px">マッチ済 原価率 分布チェック</div>
+<div class="warn-box" style="margin-top:6px;font-size:14px"><strong>★区分2a (4月のみ×レシピなし) {len(unm_apr)}品目 / {unm_apr_qty}出数 / ¥{int(unm_apr_sales):,}</strong> = リニューアル後POSに出るが商品リストに無い → 商品マスタ追加登録の要否を確認</div>
+<div class="sec-title o" style="margin-top:6px">マッチ済 原価率 分布チェック</div>
 <table class="dt xs">
 <tr><th>原価率帯</th><th class="r">品目数</th><th>判定</th></tr>
 {''.join(f"<tr><td>{k}</td><td class='r b'>{v}</td><td>{'妥当' if 0<v<25 else '要確認' if v>=25 else '—'}</td></tr>" for k,v in DATA['recipe_match']['cost_rate_buckets'].items())}
 </table>
-<div class="info-box" style="margin-top:6px;font-size:14px">~10%の品目が11件 (低原価率帯に集中)。レシピ側の原価入力精度を要レビュー</div>
 </div>
 <div class="col-half">
-<div class="sec-title r">未マッチ品目の分類 (なぜ取れていないか)</div>
-<table class="dt sm">
-<tr><th>分類</th><th class="r">品目</th><th class="r">出数</th><th class="r">売上</th></tr>
-{''.join(f"<tr><td>{c['category'][:30]}</td><td class='r'>{c['count']}</td><td class='r b'>{c['qty']}</td><td class='r'>{fmt_yen(c['sales'])}</td></tr>" for c in classes)}
-</table>
-<div class="sec-title" style="margin-top:8px">代表サンプル</div>
+<div class="sec-title r">区分2a (★4月のみ×レシピなし) 内訳</div>
 <table class="dt xs">
-<tr><th>分類</th><th>例</th></tr>
-{''.join(f"<tr><td>{c['category'][:18]}</td><td>{', '.join(c['samples'][:3])}</td></tr>" for c in classes[:6])}
+<tr><th>POS商品名</th><th class="r">出数</th><th class="r">売上</th><th>カテゴリ</th></tr>
+{''.join(f"<tr><td>{r['pos_name'][:20]}</td><td class='r b'>{r['qty']}</td><td class='r'>¥{int(r['sales']):,}</td><td>{(r.get('category_pos') or '-')[:10]}</td></tr>" for r in sorted(unm_apr, key=lambda x:-x['qty'])[:12])}
 </table>
+<div class="info-box" style="margin-top:6px;font-size:13px">飲み放題コース系 (5000円/7000円) と ラム/テキーラ等の単品ボトルが大半。リニューアル時のレシピ登録が間に合っていない可能性</div>
 </div>
 </div>
 </div>
@@ -856,12 +891,12 @@ slides.append(f'''<div class="slide" id="slide-13">
 strong_wd = sorted(DATA['weekday_summary'], key=lambda w:-w['sales_per_day'])[:2]
 weak_wd = [w for w in sorted(DATA['weekday_summary'], key=lambda w:w['sales_per_day']) if w['days']>0][:2]
 
-slides.append(f'''<div class="slide" id="slide-14">
+slides.append(f'''<div class="slide compact" id="slide-14">
 <div class="slide-header"><h2><span class="ch-badge">第6章</span>曜日／時間帯サマリ</h2><span class="pn">14 / {TOTAL}</span></div>
 <div class="msg-bar">強化曜日: <strong>{strong_wd[0]['weekday']}・{strong_wd[1]['weekday']}</strong> / 改善曜日: <strong>{weak_wd[0]['weekday']}・{weak_wd[1]['weekday']}</strong> (営業日あたり)</div>
 <div class="slide-body">
-<div id="chart-heatmap" style="height:300px"></div>
-<div class="two-col" style="margin-top:8px">
+<div id="chart-heatmap" style="height:240px"></div>
+<div class="two-col" style="margin-top:6px">
 <div class="col-half">
 <div class="sec-title">曜日別 (営業日あたり)</div>
 <table class="dt sm">
@@ -872,8 +907,8 @@ slides.append(f'''<div class="slide" id="slide-14">
 </table>
 </div>
 <div class="col-half">
-<div id="chart-hour" style="height:240px"></div>
-<div class="info-box" style="margin-top:6px">時間帯: 20-22時台が売上の山。22-24時の深夜帯が客単価最高ゾーン。<strong>早時間(~20時)構成{early_visits/total_visits*100:.1f}%</strong>が「ダイニングバー化」未達の根拠</div>
+<div id="chart-hour" style="height:200px"></div>
+<div class="info-box" style="margin-top:5px">時間帯: 20-22時台が売上の山。22-24時の深夜帯が客単価最高ゾーン。<strong>早時間(~20時)構成{early_visits/total_visits*100:.1f}%</strong>が「ダイニングバー化」未達の根拠</div>
 </div>
 </div>
 </div>
@@ -947,7 +982,7 @@ slides.append(f'''<div class="slide" id="slide-16">
 </div>''')
 
 # Slide 17: 付録 - データソース・前提
-slides.append(f'''<div class="slide" id="slide-17">
+slides.append(f'''<div class="slide compact" id="slide-17">
 <div class="slide-header"><h2><span class="ch-badge">付録</span>前提・データソース・追補項目</h2><span class="pn">17 / {TOTAL}</span></div>
 <div class="msg-bar">本資料の出典・前提・追補必要事項の総まとめ</div>
 <div class="slide-body">

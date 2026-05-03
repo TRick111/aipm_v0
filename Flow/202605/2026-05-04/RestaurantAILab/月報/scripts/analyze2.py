@@ -201,6 +201,7 @@ prod_by_qty_excl = sorted(prod_apr_excl, key=lambda x: -x['qty'])
 prod_by_sales_excl = sorted(prod_apr_excl, key=lambda x: -x['sales'])
 
 # === レシピマッピング (POS商品名 → recipe商品名) ===
+# 田中さん指示: 4月リニューアルがあったため、3月POS出現と4月POS出現で分けて分類する
 # 名寄せ戦略: 完全一致 + 正規化(空白/記号除去)で再一致
 def normalize(s):
     if not s: return ''
@@ -208,6 +209,17 @@ def normalize(s):
 
 recipe_by_name = {r['メニュー名']: r for r in recipe if r.get('メニュー名')}
 recipe_norm = {normalize(r['メニュー名']): r for r in recipe if r.get('メニュー名')}
+
+# 3月のPOS商品 ユニークセット
+mar_pos_names = {p['name'] for p in prod_mar}
+mar_pos_qty = {p['name']: p['qty'] for p in prod_mar}
+mar_pos_sales = {p['name']: p['sales'] for p in prod_mar}
+mar_pos_normset = {normalize(n) for n in mar_pos_names}
+
+# 4月のPOS商品 ユニークセット
+apr_pos_names = {p['name'] for p in prod_apr}
+apr_pos_normset = {normalize(n) for n in apr_pos_names}
+
 match_results = []
 matched = 0
 unmatched = 0
@@ -222,6 +234,10 @@ for p in prod_apr:
     nn = normalize(n)
     r = recipe_by_name.get(n) or recipe_norm.get(nn)
     total_qty += p['qty']
+    # 3月にも出現したか
+    appeared_in_mar = (n in mar_pos_names) or (nn in mar_pos_normset)
+    qty_mar = mar_pos_qty.get(n, 0)
+    sales_mar = mar_pos_sales.get(n, 0)
     if r and r.get('原価') is not None:
         matched += 1
         matched_qty += p['qty']
@@ -230,6 +246,8 @@ for p in prod_apr:
         theoretical_sales_apr_matched += p['sales']
         match_results.append({
             'pos_name': n, 'recipe_name': r['メニュー名'], 'qty': p['qty'],
+            'qty_mar': qty_mar, 'sales_mar': sales_mar,
+            'appeared_in_mar': appeared_in_mar, 'appeared_in_apr': True,
             'price_pos': p['price_avg'], 'price_recipe': r['売価'],
             'cost_unit': r['原価'], 'cost_rate': r['原価率'],
             'theoretical_cost_total': cost,
@@ -243,10 +261,52 @@ for p in prod_apr:
         unmatched_qty += p['qty']
         match_results.append({
             'pos_name': n, 'recipe_name': None, 'qty': p['qty'],
+            'qty_mar': qty_mar, 'sales_mar': sales_mar,
+            'appeared_in_mar': appeared_in_mar, 'appeared_in_apr': True,
             'price_pos': p['price_avg'], 'sales': p['sales'],
             'category_pos': p['category1'],
             'matched': False,
         })
+
+# === 3月にあったが4月にPOS出現しなかった商品 ===
+mar_only_records = []
+for p in prod_mar:
+    n = p['name']
+    nn = normalize(n)
+    if n in apr_pos_names or nn in apr_pos_normset:
+        continue  # 4月にも出ているのでスキップ (既にmatch_resultsに含まれる)
+    r = recipe_by_name.get(n) or recipe_norm.get(nn)
+    rec = {
+        'pos_name': n, 'qty': 0, 'sales': 0,
+        'qty_mar': p['qty'], 'sales_mar': p['sales'],
+        'appeared_in_mar': True, 'appeared_in_apr': False,
+        'price_pos': p['price_avg'],
+        'category_pos': p['category1'],
+    }
+    if r and r.get('原価') is not None:
+        rec.update({
+            'recipe_name': r['メニュー名'],
+            'price_recipe': r['売価'],
+            'cost_unit': r['原価'],
+            'cost_rate': r['原価率'],
+            '位置付け': r.get('位置付け') or '',
+            'category_recipe': r.get('カテゴリ') or '',
+            'matched': True,
+        })
+    else:
+        rec.update({'recipe_name': None, 'matched': False})
+    mar_only_records.append(rec)
+
+# 区分1/2 を月別に再分類
+def cat_by_month(rec):
+    am, ap = rec.get('appeared_in_mar'), rec.get('appeared_in_apr')
+    if am and ap: return 'both'
+    if ap and not am: return 'apr_only'  # ★4月のみ = リニューアル後新規
+    if am and not ap: return 'mar_only'  # 3月のみ = リニューアルで落ちた
+    return 'neither'
+
+# match_results (4月POSあり) + mar_only_records (3月のみ) を統合した完全な POS×レシピ マスタ
+all_pos_records = match_results + mar_only_records
 
 match_summary = {
     'total_pos_products': len(prod_apr),
@@ -544,9 +604,13 @@ out = {
         'summary': match_summary,
         'matched': [m for m in match_results if m['matched']],
         'unmatched': [m for m in match_results if not m['matched']],
+        'mar_only': mar_only_records,  # 3月にPOSあり、4月でPOSなし
+        'all_pos_records': all_pos_records,  # 全POS出現商品 (3月 ∪ 4月)
         'unmatched_classification': unmatched_class_list,
         'cost_rate_buckets': cost_rate_buckets,
         'price_mismatches': price_mismatches,
+        'mar_pos_unique_count': len(mar_pos_names),
+        'apr_pos_unique_count': len(apr_pos_names),
     },
     'theoretical_cost': {
         'apr_total': theoretical_cost_apr,

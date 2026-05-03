@@ -468,7 +468,7 @@ slides.append(f'''<div class="slide" id="slide-2">
 <li><strong>客単価</strong>: 売上 ÷ 客数 (一人あたり)</li>
 <li><strong>金額</strong>: POS account_total (税込前提)</li>
 <li><strong>営業日</strong>: POS会計1件以上の日 (4月: <strong>{bd_apr}日</strong> / 3月: <strong>{bd_mar}日</strong>)</li>
-<li><strong>集計対象期間</strong>: 2026-04-01〜04-26 ({bd_apr}営業日)</li>
+<li><strong>集計対象期間</strong>: 2026年4月 ({bd_apr}営業日)</li>
 <li><strong>レシピ名寄せ率</strong>: 出数{mc['qty_match_rate']*100:.1f}% (matched品目を理論原価分析の母集団とする)</li>
 </ul>
 <div class="sec-title o">データソース構成</div>
@@ -1022,7 +1022,7 @@ slides.append(f'''<div class="slide compact" id="slide-17">
 <table class="dt sm">
 <tr><th>区分</th><th>ソース</th><th class="c">状態</th></tr>
 <tr><td>POS明細</td><td>Production DB salesData</td><td class="c pos">✓</td></tr>
-<tr><td>POS集計対象</td><td>2026-04-01〜04-26 ({bd_apr}営業日 / 126会計)</td><td class="c pos">✓</td></tr>
+<tr><td>POS集計対象</td><td>2026年4月 ({bd_apr}営業日 / 126会計)</td><td class="c pos">✓</td></tr>
 <tr><td>AI日報</td><td>Production DB dailyReport ({len(DATA['ai_reports'])}件)</td><td class="c pos">✓</td></tr>
 <tr><td>店舗日次サマリ</td><td>Production DB dailyStoreSummary ({len(DATA['daily_summaries'])}件)</td><td class="c pos">✓</td></tr>
 <tr><td>PL 1-2月実績</td><td>Spreadsheet 新PL管理（移管前）</td><td class="c pos">✓</td></tr>
@@ -1066,7 +1066,7 @@ slides.append(f'''<div class="slide slide-title" id="slide-18" style="background
 <h2 style="font-size:36px">本月報の生成情報</h2>
 <div style="margin-top:30px;font-size:18px;line-height:2">
 <p>店舗: <strong>BAR FIVE Arrows</strong> (store_code=bfa-001)</p>
-<p>対象期間: <strong>2026年4月 (POS最終日 {DATA['meta']['last_pos_date']})</strong></p>
+<p>対象期間: <strong>2026年4月</strong></p>
 <p>生成日時: <strong>{DATA['meta']['generated_at']}</strong></p>
 <p>レシピ名寄せ率: <strong>品目{mc['match_rate']*100:.1f}% / 出数{mc['qty_match_rate']*100:.1f}%</strong></p>
 <p style="margin-top:30px;opacity:.8">— 構成: 分析観点ガイド v2 §2 章立て準拠 (10章) —</p>

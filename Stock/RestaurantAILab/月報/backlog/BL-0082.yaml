@@ -5,7 +5,7 @@ category: RestaurantAILab
 state: in_progress
 priority: high
 created_at: '2026-05-03T16:02:17.088Z'
-updated_at: '2026-05-03T19:27:06.276Z'
+updated_at: '2026-05-03T19:41:14.069Z'
 created_by: mt-cli
 description: >-
   BFA(bfa-001)の2026年4月分 月報を、分析観点ガイドv2に準拠したフル章立て(第0章〜第9章)でHTML出力。出力先=Flow/202605/2026-05-04/RestaurantAILab/月報/。データソース:
@@ -580,3 +580,55 @@ decisions:
 
 
       タスククローズ判断は (a) このまま v1.0 で確定 / (b) 認証情報を提供してPOS最新化版 v1.1 を待つ のどちらでも対応可能です。
+  - at: '2026-05-03T19:36:38.778Z'
+    type: commitment
+    by: ai
+    content: >-
+      【BFA月報】26日までの記述を削除
+
+
+      ▼ 削除した表記
+
+      1. 表紙(2ページ): "対象期間: 2026年4月 (POS最終日 2026-04-26)" → "対象期間: 2026年4月"
+
+      2. 前提ページ(2ページ): "集計対象期間: 2026-04-01〜04-26 (23営業日)" → "集計対象期間: 2026年4月 (23営業日)"  
+
+      3. 付録(17ページ): "POS集計対象: 2026-04-01〜04-26 (23営業日 / 126会計)" → "POS集計対象: 2026年4月 (23営業日 / 126会計)"
+
+      4. analytics2.json meta: "last_pos_date" フィールド削除 / "data_freshness_note" を "POS集計対象: 2026年4月 (23営業日)" に変更
+
+      5. assumptions.md 数値定義表: "集計対象" を "2026年4月 (本番DB salesData)" に変更
+
+      6. assumptions.md §4.1: 売上の二重計上の (4/1〜4/26) → (2026年4月) に変更
+
+
+      ▼ 残存する 2026-04-26 (JSON データ literal 内のみ)
+
+      chartDaily の X軸データ (個別営業日のデータ点) として 4/1〜4/26
+      の23日分が含まれていますが、これは『各営業日の個別売上データ』であり、テキスト記述としての『26日まで』『POS最終日』表現ではありません。チャートとして23日分のバーが表示される動作は正常です。
+
+
+      成果物: 202604_BFA_月報.html (321KB)
+  - at: '2026-05-03T19:41:14.069Z'
+    type: commitment
+    by: ai
+    content: |-
+      PROD 月報を更新版で上書き完了。
+
+      【ファイル】
+      - /Users/rikutanaka/aipm_v0/Flow/202605/2026-05-04/RestaurantAILab/月報/202604_BFA_月報.html
+      - size: 328,857 bytes (前版 329,137 bytes から更新, MD5: 6b6640f5844af045f00284ff4a966548)
+
+      【PROD アップロード結果】
+      - 旧 record: id=7d06d96f-6dcc-4cc4-b3bc-bab49d5fb101 (329,137B) → 自動削除
+      - 新 record: id=32cdcac2-f11e-4ed8-995e-2c23d45d5723 (328,857B)
+      - title: BAR FIVE Arrows 月次経営判断資料 — 2026-04
+      - PROD Blob: bfa-001/monthly-reports/2026-M04.html (上書き — URL は同じ)
+      - PROD DB monthly_reports テーブルでは BFA 4月の record はこの 1 件のみ
+
+      【検証】
+      - GET /api/monthly-reports?storeId=bfa-001 → 200, count=1 (新 record のみ)
+      - GET /api/monthly-reports/<新id>/html → 200, MD5 一致 (PROD Blob 配信内容 = ローカルファイル)
+      - GET /store/bfa-001/monthly-reports/<新id> → 200
+
+      Vercel 本番 deploy は f277e7e (READY) で稼働中なので、田中さんが本番 URL の /store/bfa-001/weekly-reports を開けば更新版の月報が見える状態。

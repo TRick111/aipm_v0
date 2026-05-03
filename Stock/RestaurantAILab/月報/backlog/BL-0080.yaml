@@ -5,7 +5,7 @@ category: RestaurantAILab
 state: in_progress
 priority: high
 created_at: '2026-04-30T13:29:01.461Z'
-updated_at: '2026-05-03T18:37:11.168Z'
+updated_at: '2026-05-03T18:52:30.165Z'
 created_by: mt-cli
 description: >-
   BFA店舗の2026年4月分 月報を作成。提出期限: 2026-05-03 (毎月3日まで)。週報の運用 (Phase1: POSデータ準備 → Phase2: 月報作成 → Dashboard アップロード)
@@ -14,7 +14,15 @@ deliverable_refs: []
 schema_version: 2
 cockpit_task_ids:
   - 69b873c3
-pending_questions: []
+pending_questions:
+  - id: q-BL-0080-1-20260503185230
+    at: '2026-05-03T18:52:30.165Z'
+    cockpit_task_id: 69b873c3
+    content: >-
+      Vercel auto-deploy が失敗しています (dpl_GEvotMH6ecdtqN51XHdLdDfspzUH / dashboard-mjlxbqqre 共に 0ms ERROR)。ローカル build
+      は成功するためコード起因ではなく、Vercel platform 側 (アカウント / 課金 / プロジェクト設定) を疑っています。最後の READY deploy は 14 日前 (2026-04-20)。データ自体は
+      PROD DB+Blob に upload 済なので、Vercel deploy が通れば即可視化されます。Vercel ダッシュボード
+      (https://vercel.com/restaurant-ai-lab/dashboard) を確認していただき、原因が分かれば共有してください。手元で打てる手はありますか?
 decisions:
   - at: '2026-05-03T00:46:37.614Z'
     type: commitment
@@ -119,3 +127,67 @@ decisions:
 
 
       Dashboard インフラ (BL-0080) は production 月報を問題なく扱えることを確認。HTML 修正不要。エージェント I/F 仕様 §3.2 のすべての必須要件を満たす。
+  - at: '2026-05-03T18:52:20.468Z'
+    type: commitment
+    by: ai
+    content: >-
+      コミット・マージ・プッシュ + PROD アップロード 完了 (Vercel deploy のみ要対応)。
+
+
+      【Dashboard リポジトリ】
+
+      - branch dev コミット: 56b71a1 'feat: 月報 (monthly reports) 機能を週報と並列で追加' (15 files)
+
+      - branch main マージ: 2e38575 'Merge branch dev' (no-ff)
+
+      - 両 branch を origin に push 済 (https://github.com/RestaurantAILab/Dashboard)
+
+
+      【aipm_v0 リポジトリ】
+
+      - vault backup automation により全ての月報関連 markdown / HTML / yaml は既に origin/main に push 済 (latest: f08d26d9)
+
+      - BL-0080.yaml / BL-0082.yaml も同様
+
+
+      【PROD DB / Blob】
+
+      - Neon prod DB (ep-rough-bird-a1ynj8pb) に migration 20260503130000_add_monthly_reports 適用済 → monthly_reports
+      テーブル作成
+
+      - npm run dev:prod (port 3001 + .env.production) で BFA 4月分 HTML を /api/monthly-reports/upload に POST 成功
+        - id: 7d06d96f-6dcc-4cc4-b3bc-bab49d5fb101
+        - blob: bfa-001/monthly-reports/2026-M04.html (PROD Vercel Blob, 329KB)
+        - title: BAR FIVE Arrows 月次経営判断資料 — 2026-04
+      - 全 prod API endpoint (list / detail / html proxy / store-reports merged) で 200 確認
+
+
+      【⚠️ Vercel auto-deploy 失敗 (要田中さん対応)】
+
+      - main への push が触発した Vercel deploy が ERROR (dpl_GEvotMH6ecdtqN51XHdLdDfspzUH, 0ms duration, no build events)
+
+      - vercel deploy --prod --yes による手動再 deploy も同様に ERROR (dashboard-mjlxbqqre, 0ms)
+
+      - 過去履歴: 14 日前 (2026-04-20) の Production が最後の READY 状態。それ以降今日まで deploy 試行ゼロ
+
+      - ローカル  (env=.env.production) は **成功** — つまりコード起因ではない
+
+      - 推定原因: Vercel platform 側の問題 (アカウント / 課金 / プロジェクト設定 / build queue lock 等)
+
+      - データは PROD DB+Blob に既にあるので、Vercel deploy が成功すれば即座にユーザに見える
+
+      - 田中さん側で Vercel ダッシュボード (https://vercel.com/restaurant-ai-lab/dashboard) を確認 or サポート問い合わせを推奨
+
+
+      【現在のユーザ向け状態】
+
+      - 旧 production deploy (14 日前のコード) はまだ alias 維持で稼働中 → 月報 UI は表示されない
+
+      - 月報データ自体は PROD DB+Blob に永続化済 → Vercel deploy 成功すれば即可視化
+
+
+      【ローカル dev サーバー】
+
+      - 127.0.0.1:3002 (.env.local) は起動継続中
+
+      - 127.0.0.1:3001 (.env.production) は upload 後に停止済

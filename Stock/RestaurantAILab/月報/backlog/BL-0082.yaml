@@ -5,7 +5,7 @@ category: RestaurantAILab
 state: in_progress
 priority: high
 created_at: '2026-05-03T16:02:17.088Z'
-updated_at: '2026-05-03T18:31:19.450Z'
+updated_at: '2026-05-03T18:37:01.596Z'
 created_by: mt-cli
 description: >-
   BFA(bfa-001)の2026年4月分 月報を、分析観点ガイドv2に準拠したフル章立て(第0章〜第9章)でHTML出力。出力先=Flow/202605/2026-05-04/RestaurantAILab/月報/。データソース:
@@ -404,3 +404,36 @@ decisions:
 
 
       成果物: 202604_BFA_月報.html (321KB)
+  - at: '2026-05-03T18:37:01.596Z'
+    type: commitment
+    by: ai
+    content: |-
+      Dashboard へのアップロード完了 (BL-0080 のインフラ経由)。
+
+      【アップロード結果】
+      - 対象: Flow/202605/2026-05-04/RestaurantAILab/月報/202604_BFA_月報.html (329KB / 18 スライド)
+      - API: POST http://127.0.0.1:3002/api/monthly-reports/upload
+      - 環境: dev (ローカル Next.js + Neon Postgres + Vercel Blob)
+      - 結果: id=25ece928-aeaa-4e4e-8ec0-0ca01dfed9a6, blob=bfa-001/monthly-reports/2026-M04.html
+      - title: 'BAR FIVE Arrows 月次経営判断資料 — 2026-04'
+      - DB レコード: monthly_reports テーブル (storeId=bfa-001, year=2026, month=4) — 前回のダミー HTML は同一ユニーク制約で自動置換
+
+      【検証】
+      - GET /api/monthly-reports/<id>/html → 200, 329137 byte 配信
+      - GET /store/bfa-001/monthly-reports/<id> (ビューア) → 200
+      - GET /store/bfa-001/weekly-reports (リスト) → 200, M04 インディゴバッジで表示
+
+      【検証用 URL (admin ログイン要)】
+      - リスト: http://127.0.0.1:3002/store/bfa-001/weekly-reports
+      - 月報ビューア: http://127.0.0.1:3002/store/bfa-001/monthly-reports/25ece928-aeaa-4e4e-8ec0-0ca01dfed9a6
+
+      【HTML レビュー結果 → エージェントへのフィードバック】
+      仕様 (Flow/202605/2026-05-03/RestaurantAILab/月報/monthly_report_agent_interface.md §3.2) との差分:
+      - ✅ UTF-8 charset / D3.js v7 CDN のみ / 全 CSS インライン / 1280×720 スライド / @media print 対応 / ファイルサイズ 329KB(<5MB)
+      - ✅ 必須セクション 5 項目すべて含む (表紙/サマリー/数値/カテゴリ/アクション)、+ 13 スライドの追加章
+      - ⚠️ 軽微な揺れ (修正不要、エージェントへの参考フィードバック):
+        - HTML 内 <title>: 「月次経営判断資料 — 2026年4月」 vs 仕様サンプル「月次営業報告 — 2026-04」
+          → 内容を反映した命名でむしろ妥当 (slide-2 で月報=経営判断書 と定義しており一貫性あり)
+        - upload API の --title 引数は別物。HTML 内 <title> は API title に影響しない (今回は API 側を「月次経営判断資料 — 2026-04」で統一)
+        - 月表記: 「2026年4月」 vs 「2026-04」 (HTML 内表示は読みやすさ優先で OK)
+      - 結論: 修正不要、そのままアップロード可能。

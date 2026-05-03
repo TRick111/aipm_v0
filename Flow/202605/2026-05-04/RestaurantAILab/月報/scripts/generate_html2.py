@@ -231,8 +231,9 @@ function chartHeatmap(){
 function chartTopProducts(){
   const el = document.getElementById('chart-products'); if(!el) return;
   // tablecharge等を除外したランキングを使用
-  const data = (DATA.products.top_qty_30_excl || DATA.products.top_qty_30).slice(0,15);
-  const W=1100,H=400,M={t:20,r:80,b:30,l:240};
+  const data = (DATA.products.top_qty_30_excl || DATA.products.top_qty_30).slice(0,12);
+  // W:H比をslide-body幅(~1208px)に合わせ aspect-ratio を制御
+  const W=1208,H=290,M={t:15,r:70,b:22,l:220};
   const svg = d3.select(el).append('svg').attr('width',W).attr('height',H).attr('viewBox',`0 0 ${W} ${H}`);
   const y = d3.scaleBand().domain(data.map(d=>d.name)).range([M.t,H-M.b]).padding(0.15);
   const x = d3.scaleLinear().domain([0,d3.max(data,d=>d.qty)*1.1]).range([M.l,W-M.r]);
@@ -301,7 +302,8 @@ function chartMonthlyPL(){
     DATA.pl.apr.expenses_total,
   ];
   // 売上 と 費用 を横並びの棒グラフ (利益は表示しない)
-  const W=1100,H=320,M={t:40,r:40,b:50,l:80};
+  // W:H比をcontainer divに合わせ aspect-ratio を制御 (slide-body幅~1208px)
+  const W=1208,H=230,M={t:32,r:30,b:38,l:65};
   const svg = d3.select(el).append('svg').attr('width',W).attr('height',H).attr('viewBox',`0 0 ${W} ${H}`);
   const x0 = d3.scaleBand().domain(months).range([M.l,W-M.r]).padding(0.25);
   const x1 = d3.scaleBand().domain(['sales','exp']).range([0, x0.bandwidth()]).padding(0.1);
@@ -361,12 +363,12 @@ function chartMonthlyPL(){
 
   svg.append('g').attr('transform',`translate(0,${H-M.b})`).call(d3.axisBottom(x0));
   svg.append('g').attr('transform',`translate(${M.l},0)`).call(d3.axisLeft(y).ticks(6).tickFormat(d=>'¥'+fmtK(d)));
-  // 凡例
-  svg.append('rect').attr('x',M.l).attr('y',M.t-22).attr('width',12).attr('height',12).attr('fill','#0F4C3A');
-  svg.append('text').attr('x',M.l+18).attr('y',M.t-12).attr('font-size',13).attr('fill','#0F4C3A').attr('font-weight',700).text('売上');
-  svg.append('rect').attr('x',M.l+80).attr('y',M.t-22).attr('width',12).attr('height',12).attr('fill','#B91C1C').attr('opacity',0.85);
-  svg.append('text').attr('x',M.l+98).attr('y',M.t-12).attr('font-size',13).attr('fill','#B91C1C').attr('font-weight',700).text('費用');
-  svg.append('text').attr('x',M.l+170).attr('y',M.t-12).attr('font-size',12).attr('fill','#B45309').attr('font-weight',700).text('--- 4月予算');
+  // 凡例 (上部に少しコンパクトに配置)
+  svg.append('rect').attr('x',M.l).attr('y',M.t-20).attr('width',10).attr('height',10).attr('fill','#0F4C3A');
+  svg.append('text').attr('x',M.l+15).attr('y',M.t-11).attr('font-size',12).attr('fill','#0F4C3A').attr('font-weight',700).text('売上');
+  svg.append('rect').attr('x',M.l+70).attr('y',M.t-20).attr('width',10).attr('height',10).attr('fill','#B91C1C').attr('opacity',0.85);
+  svg.append('text').attr('x',M.l+85).attr('y',M.t-11).attr('font-size',12).attr('fill','#B91C1C').attr('font-weight',700).text('費用');
+  svg.append('text').attr('x',M.l+150).attr('y',M.t-11).attr('font-size',11).attr('fill','#B45309').attr('font-weight',700).text('--- 4月予算');
 }
 
 function chartParty(){
@@ -613,10 +615,10 @@ slides.append(f'''<div class="slide" id="slide-5">
 def get_p(name, key):
     return next((p[key] for p in DATA['products']['all'] if p['name']==name), 0)
 slides.append(f'''<div class="slide compact" id="slide-6">
-<div class="slide-header"><h2><span class="ch-badge">第2章</span>商品戦略の判定 — 出数Top15 (チャージ除外)</h2><span class="pn">6 / {TOTAL}</span></div>
+<div class="slide-header"><h2><span class="ch-badge">第2章</span>商品戦略の判定 — 出数Top12 (チャージ除外)</h2><span class="pn">6 / {TOTAL}</span></div>
 <div class="msg-bar">ハウスハイボール (152) / 森のジントニック (82) / ガージェリー (39) の3軸が出数を支える</div>
 <div class="slide-body">
-<div id="chart-products" style="height:300px"></div>
+<div id="chart-products" style="margin-bottom:12px"></div>
 <div class="two-col" style="margin-top:6px">
 <div class="col-half">
 <div class="sec-title o">名指し看板 (確固たる地位)</div>
@@ -746,30 +748,30 @@ slides.append(f'''<div class="slide" id="slide-9">
 exp_sorted = sorted([(k,v) for k,v in pl_april.get('expenses',{}).items()], key=lambda x:-x[1])
 slides.append(f'''<div class="slide compact" id="slide-10">
 <div class="slide-header"><h2><span class="ch-badge">第4章 ★</span>利益構造の判定 — PL推移と固定費耐性</h2><span class="pn">10 / {TOTAL}</span></div>
-<div class="msg-bar">月次の売上 vs 費用を並列で確認: 1月¥2.6M / 2月¥2.7M (赤字) / 3月¥2.8M (費用未入力) / 4月¥2.9M (一部費目未入力)</div>
+<div class="msg-bar">月次の売上 vs 費用を並列確認: 1月¥2.6M / 2月¥2.7M (赤字) / 3月¥2.8M (費用未入力) / 4月¥2.9M (一部費目未入力)</div>
 <div class="slide-body">
-<div id="chart-monthly-pl" style="height:260px"></div>
-<div class="two-col" style="margin-top:6px">
+<div id="chart-monthly-pl" style="margin-bottom:14px"></div>
+<div class="two-col">
 <div class="col-half">
-<div class="sec-title">4月PL費用 (本番DB / 入力済分のみ)</div>
-<table class="dt sm">
+<div class="sec-title" style="margin-top:0">4月PL費用 (本番DB / 入力済分のみ)</div>
+<table class="dt xs">
 <tr><th>費目</th><th class="r">4月実績</th><th class="r">vs 1月</th><th class="r">vs 2月</th></tr>
 {''.join(f"<tr><td>{k}</td><td class='r b'>{fmt_yen(v)}</td><td class='r'>{fmt_yen(v-pl_jan.get('expenses',{}).get(k,0))}</td><td class='r'>{fmt_yen(v-pl_feb.get('expenses',{}).get(k,0))}</td></tr>" for k,v in exp_sorted)}
 <tr class="highlight-row"><td>入力済合計</td><td class="r b">{fmt_yen(pl_apr_exp)}</td><td class="r">{fmt_yen(pl_apr_exp-pl_jan.get('expenses_total',0))}</td><td class="r">{fmt_yen(pl_apr_exp-pl_feb.get('expenses_total',0))}</td></tr>
 </table>
-<div class="data-gap" style="margin-top:6px">⚠ 4月未入力費目: 人件費・水道光熱費・ローン返済・税金 → 1-2月実績ベースで補正すると<strong>+¥600〜700k程度</strong></div>
-<div style="font-size:13px;color:#73625A;margin-top:4px">📌 データソース: 1-3月=新PL管理シート / 4月=本番DB</div>
+<div style="font-size:12px;color:#B91C1C;margin-top:4px;font-weight:700">⚠ 4月未入力: 人件費・水道光熱費・ローン返済・税金 → +¥600〜700k見込</div>
+<div style="font-size:11px;color:#73625A;margin-top:2px">📌 ソース: 1-3月=新PL管理シート / 4月=本番DB</div>
 </div>
 <div class="col-half">
-<div class="sec-title r">損益分岐ラインへのギャップ</div>
-<table class="dt sm">
-<tr><th>シナリオ</th><th class="r">必要売上</th><th class="r">4月実績</th><th class="r">ギャップ</th></tr>
-<tr><td>1月費用ベース</td><td class="r">{fmt_yen(pl_jan.get('expenses_total',0))}</td><td class="r b">{fmt_yen(pl_apr_sales)}</td><td class="r {'pos' if pl_apr_sales>=pl_jan.get('expenses_total',0) else 'neg'} b">{fmt_yen(pl_apr_sales-pl_jan.get('expenses_total',0))}</td></tr>
-<tr><td>2月費用ベース</td><td class="r">{fmt_yen(pl_feb.get('expenses_total',0))}</td><td class="r b">{fmt_yen(pl_apr_sales)}</td><td class="r {'pos' if pl_apr_sales>=pl_feb.get('expenses_total',0) else 'neg'} b">{fmt_yen(pl_apr_sales-pl_feb.get('expenses_total',0))}</td></tr>
-<tr><td>4月予算費用ベース</td><td class="r">{fmt_yen(budget['expenses_total'])}</td><td class="r b">{fmt_yen(pl_apr_sales)}</td><td class="r neg b">{fmt_yen(pl_apr_sales-budget['expenses_total'])}</td></tr>
-<tr><td>+CLP人件費(¥600k)</td><td class="r">{fmt_yen(budget['expenses_total']+600000)}</td><td class="r b">{fmt_yen(pl_apr_sales)}</td><td class="r neg b">{fmt_yen(pl_apr_sales-budget['expenses_total']-600000)}</td></tr>
+<div class="sec-title r" style="margin-top:0">損益分岐ラインへのギャップ</div>
+<table class="dt xs">
+<tr><th>シナリオ</th><th class="r">必要売上</th><th class="r">ギャップ</th></tr>
+<tr><td>1月費用ベース</td><td class="r">{fmt_yen(pl_jan.get('expenses_total',0))}</td><td class="r {'pos' if pl_apr_sales>=pl_jan.get('expenses_total',0) else 'neg'} b">{fmt_yen(pl_apr_sales-pl_jan.get('expenses_total',0))}</td></tr>
+<tr><td>2月費用ベース</td><td class="r">{fmt_yen(pl_feb.get('expenses_total',0))}</td><td class="r neg b">{fmt_yen(pl_apr_sales-pl_feb.get('expenses_total',0))}</td></tr>
+<tr><td>4月予算費用ベース</td><td class="r">{fmt_yen(budget['expenses_total'])}</td><td class="r neg b">{fmt_yen(pl_apr_sales-budget['expenses_total'])}</td></tr>
+<tr><td>+CLP人件費(¥600k)</td><td class="r">{fmt_yen(budget['expenses_total']+600000)}</td><td class="r neg b">{fmt_yen(pl_apr_sales-budget['expenses_total']-600000)}</td></tr>
 </table>
-<div class="warn-box" style="margin-top:6px"><strong>4月入力済費用 ¥{int(pl_apr_exp):,} に未入力分(人件費等) を補正すると ¥{int(pl_apr_exp+700000):,} 程度</strong>。CLP含めた最終利益は <strong>▲¥800k〜▲¥1M</strong>のレンジ想定。</div>
+<div style="font-size:12px;color:#1F1A18;margin-top:6px;font-weight:700;background:#FBEDED;border-left:4px solid #B91C1C;padding:6px 10px;border-radius:4px">4月入力済¥{int(pl_apr_exp/1000):,}k + 未入力分補正で約¥{int((pl_apr_exp+700000)/1000):,}k → CLP含めた最終利益は<strong>▲¥800k〜▲¥1M</strong>レンジ</div>
 </div>
 </div>
 </div>

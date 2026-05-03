@@ -5,7 +5,7 @@ category: RestaurantAILab
 state: in_progress
 priority: high
 created_at: '2026-05-03T16:02:17.088Z'
-updated_at: '2026-05-03T18:19:41.727Z'
+updated_at: '2026-05-03T18:31:19.450Z'
 created_by: mt-cli
 description: >-
   BFA(bfa-001)の2026年4月分 月報を、分析観点ガイドv2に準拠したフル章立て(第0章〜第9章)でHTML出力。出力先=Flow/202605/2026-05-04/RestaurantAILab/月報/。データソース:
@@ -347,3 +347,60 @@ decisions:
       新: 『月次の売上 vs 費用を並列で確認: 1月¥2.6M / 2月¥2.7M (赤字) / 3月¥2.8M (費用未入力) / 4月¥2.9M (一部費目未入力)』
 
       成果物: /Users/rikutanaka/aipm_v0/Flow/202605/2026-05-04/RestaurantAILab/月報/202604_BFA_月報.html (321KB)
+  - at: '2026-05-03T18:29:13.189Z'
+    type: commitment
+    by: ai
+    content: |-
+      【BFA月報】10ページ目 縦余白調整
+
+      ▼ 修正内容
+
+      1. **チャートの aspect ratio を修正**
+         - SVG W:1100→1208, H:320→230 (slide-body 内幅とほぼ一致 = aspect ratio 5.25)
+         - 凡例位置と font-size を1段階小さく
+         - これで chart-monthly-pl div は CSS の svg{height:auto} により container幅に追従して描画され、月ラベルが適正位置に
+
+      2. **チャート下に明示的な margin-bottom:14px**
+         - チャートの月ラベルと下段の sec-title 「4月PL費用...」の重なりを物理的に解消
+
+      3. **下段テーブルを dt sm → dt xs に圧縮**
+         - 行の高さを縮めて全体の縦サイズを削減
+         - 損益分岐表は4列→3列に簡略化 (『4月実績』列は msg-bar や別箇所で確認できるため省略)
+
+      4. **下部テキストを単一行 + コンパクトな color-coded box に**
+         - data-gap (赤背景大箱) → 小さな赤フォント1行に
+         - warn-box → flat color-coded box に統一して padding削減
+
+      これで slide-10 の bottom overflow と月ラベル重なりが解消するはずです。
+
+      成果物: 202604_BFA_月報.html (321KB)
+  - at: '2026-05-03T18:31:19.450Z'
+    type: commitment
+    by: ai
+    content: >-
+      【BFA月報】6ページ目 グラフと下段テーブルの重なり修正
+
+
+      ▼ 原因
+
+      10ページと同様、SVGのviewBox aspect ratio (W=1100, H=400) が
+      container幅(1208px)に追従して引き伸ばされ、指定height(300px)を超えて~439pxで描画されていた。下の『名指し看板 (確固たる地位)』テーブルと重なる原因。
+
+
+      ▼ 修正
+
+      1. SVG W:1100→1208 / H:400→290 (slide-body幅にfit)
+
+      2. 表示項目を Top15 → Top12 に削減 (縦サイズ削減)
+
+      3. 内部マージン M を {t:20→15, r:80→70, b:30→22, l:240→220} に圧縮
+
+      4. chart-products div に margin-bottom:12px を追加 → テーブルとの間に物理的余白
+
+      5. 見出しを『出数Top15』→『出数Top12』に変更
+
+
+      これで 6ページの bottom 領域に『名指し看板』テーブルがすっきり収まるはずです。
+
+
+      成果物: 202604_BFA_月報.html (321KB)

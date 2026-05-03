@@ -2,10 +2,10 @@ id: BL-0079
 title: CoreDrivenホームページ WordPress更新
 project: 社内システム
 category: RestaurantAILab
-state: pending
+state: in_progress
 priority: normal
 created_at: '2026-04-30T13:26:51.867Z'
-updated_at: '2026-05-03T00:46:41.425Z'
+updated_at: '2026-05-03T01:55:44.827Z'
 created_by: mt-cli
 description: >-
   RestaurantAILab
@@ -19,3 +19,17 @@ decisions:
     type: commitment
     by: user
     content: '2026-05-03 田中さん指示: 今日採択。CoreDriven ホームページの WordPress (プラグイン/コア/テーマ) 更新を進める。'
+  - at: '2026-05-03T01:44:44.054Z'
+    type: scope_change
+    by: user
+    content: >-
+      2026-05-03 田中さん指示: スコープを「現状の AI 生成 HTML を WordPress に丸ごと載せる仕組み調査」に変更。現状コアドリブン HP は AI で HTML 化済。今後は 1 ページ丸ごと HTML
+      を WordPress に表示する仕組み (Custom HTML / カスタムテンプレート / プラグイン等) を調べて報告。
+  - at: '2026-05-03T01:55:44.827Z'
+    type: commitment
+    by: ai
+    content: >-
+      2026-05-03 調査レポート生成完了: Flow/202605/2026-05-03/0.Other/CoreDriven/wordpress_full_html_mechanism.md (deliverable id:
+      d-bl0079-20260503-wp-fullhtml, review_state=unreviewed)。結論: 5 つの選択肢を比較し (A) Custom HTML ブロック / (B) Custom Page
+      Template / (C) 静的 HTML 直置き / (D) iframe / (E) プラグイン。CoreDriven 推奨は **(B) Custom Page Template (子テーマ拡張)**、当面の暫定は
+      (A)。実装手順 + セキュリティ注意点 + 確認事項を整理。

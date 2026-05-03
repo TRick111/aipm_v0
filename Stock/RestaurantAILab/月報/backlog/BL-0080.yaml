@@ -2,10 +2,10 @@ id: BL-0080
 title: BFA 月報作成 (2026年4月分)
 project: 月報
 category: RestaurantAILab
-state: pending
+state: in_progress
 priority: high
 created_at: '2026-04-30T13:29:01.461Z'
-updated_at: '2026-05-03T00:46:37.614Z'
+updated_at: '2026-05-03T01:55:40.391Z'
 created_by: mt-cli
 description: >-
   BFA店舗の2026年4月分 月報を作成。提出期限: 2026-05-03 (毎月3日まで)。週報の運用 (Phase1: POSデータ準備 → Phase2: 月報作成 → Dashboard アップロード)
@@ -21,3 +21,16 @@ decisions:
     content: >-
       2026-05-03 田中さん指示: 今日中に必ず提出する。BFA 月報の前月テンプレートは田中さんが後ほど提供予定。テンプレ受領 → 即 AI で本体生成 → 本人 review → 提出 の流れ。稼働時間制約
       (10:30-17:00 ビリヤード練習で不在) のため、テンプレ受領前の準備系 (Phase1 POSデータ準備 + BL-0081 Airレジ メモ欄調査) は先行で進める。
+  - at: '2026-05-03T01:44:40.520Z'
+    type: scope_change
+    by: user
+    content: >-
+      2026-05-03 田中さん指示: 月報の前に **ダッシュボードアプリの週報エリア仕様変更** を計画する。週報一覧と並列で月報も時系列順に並べる (色/タグで月報を区別)。月報自体は週報と同じ HTML 形式で作成。本日は
+      (1) ダッシュボード拡張計画、(2) 月報作成プロンプトのインプット定義 をマークダウンにまとめる。月報本体生成はテンプレ受領後・計画承認後。
+  - at: '2026-05-03T01:55:40.391Z'
+    type: commitment
+    by: ai
+    content: >-
+      2026-05-03 計画ドラフト生成完了: Flow/202605/2026-05-03/RestaurantAILab/月報/dashboard_extension_plan.md (deliverable id:
+      d-bl0080-20260503-dashboard-plan, review_state=unreviewed)。内容: ダッシュボード週報エリア → 「週報＋月報」時系列マージ表示への拡張計画 (DB/API/UI 7
+      PR分割案) + 月報作成プロンプトのインプット定義 (運営会社/対象月/POSデータ/前月テンプレ等)。テンプレ受領後に Phase1〜5 で本体生成可能な状態。

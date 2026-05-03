@@ -5,7 +5,7 @@ category: RestaurantAILab
 state: in_progress
 priority: high
 created_at: '2026-04-15T00:00:00.000Z'
-updated_at: '2026-05-03T00:47:09.766Z'
+updated_at: '2026-05-03T01:55:59.128Z'
 created_by: central-backlog
 description: タイ語テキストの STT (音声→テキスト) / TTS (テキスト→音声) 対応の品質確認。期日 2026-04-27 超過。
 deliverable_refs: []
@@ -19,3 +19,18 @@ decisions:
     content: >-
       2026-05-03 田中さん指示: タイ語 STT/TTS 検証を進める必要あり。AI の次作業は『タイ語会話の動画・音声サンプルをどこかから取得すること』(YouTube 等のタイ語会話シーン)。サンプル音源を確保した上で
       STT 精度評価 → TTS 候補比較に進む。
+  - at: '2026-05-03T01:44:48.981Z'
+    type: scope_change
+    by: user
+    content: >-
+      2026-05-03 田中さん指示明確化: 動画は不要、**音声サンプル**だけで良い。音声サンプルを取得して保存しておく
+      (Flow/202605/2026-05-03/RestaurantAILab/バンコクPonさん案件/thai_audio_samples/ 配下)。
+  - at: '2026-05-03T01:55:59.128Z'
+    type: commitment
+    by: ai
+    content: >-
+      2026-05-03 タイ語音声サンプル取得完了 (4 件 mp3): Flow/202605/2026-05-03/RestaurantAILab/バンコクPonさん案件/thai_audio_samples/
+      (deliverable id: d-bl0043-20260503-thai-audio, review_state=unreviewed)。yt-dlp で YouTube から audio 抽出 → ffmpeg で
+      16kHz mono mp3 化 (Whisper 直接使用可)。曲: (1) 30 Essential Thai Phrases / (2) Tips for learning Thai 6 Months / (3)
+      Weekend Routine Easy Thai Story / (4) Thai Listening Practice EP.1 Beginner。次フェーズは STT (Whisper / Azure / Google /
+      Deepgram 比較) → TTS (Azure Neural / ElevenLabs / Google / OpenAI 比較) → VBA POC 統合。

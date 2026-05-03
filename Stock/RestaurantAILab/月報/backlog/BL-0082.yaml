@@ -5,7 +5,7 @@ category: RestaurantAILab
 state: in_progress
 priority: high
 created_at: '2026-05-03T16:02:17.088Z'
-updated_at: '2026-05-03T18:46:43.391Z'
+updated_at: '2026-05-03T19:27:06.276Z'
 created_by: mt-cli
 description: >-
   BFA(bfa-001)の2026年4月分 月報を、分析観点ガイドv2に準拠したフル章立て(第0章〜第9章)でHTML出力。出力先=Flow/202605/2026-05-04/RestaurantAILab/月報/。データソース:
@@ -19,7 +19,36 @@ schema_version: 2
 cockpit_task_ids:
   - 71ee64cd
   - 8d0f73f3
-pending_questions: []
+pending_questions:
+  - id: q-BL-0082-1-20260503191918
+    at: '2026-05-03T19:19:18.350Z'
+    cockpit_task_id: 8d0f73f3
+    content: |-
+      【BFA月報・本番確定版作成】POS最新化のためAirRegi認証情報をお願いします
+
+      ▼ 状況
+      本番DBのPOSは 2026-04-26 までしか同期されていません (4/27〜30 が欠損)。
+      確定版資料化のために最新CSVをダウンロード→Dashboardアップロード→DB再同期したいのですが、AirRegi認証情報が見当たりません。
+
+      ▼ 必要なもの (どちらか1択)
+
+      (A) AirRegi認証情報を貼ってください
+      店舗: BAR FIVE Arrows
+      - AirID または メールアドレス: ___
+      - パスワード: ___
+      → /Users/rikutanaka/RestaurantAILab/Dashboard/プロンプト/Download/airregi_accounts.csv に保存し、Playwrightで自動DLします
+
+      (B) 手動でダウンロードして配置していただく
+      1. AirRegi にログイン
+      2. 売上・分析 → 日別売上 → 2026年4月 を選択
+      3. CSVダウンロード
+      4. ファイルを /Users/rikutanaka/RestaurantAILab/Dashboard/.local/bulkupload/bfa-001/ に配置 (ファイル名は問わず)
+      5. 完了後この BL に reply
+
+      ▼ 並行作業
+      回答待ちの間、文書側の確定化 ("未確認/未確定/暫定/保留" 表現の削除、既知データに基づく定量的記述への書き換え) を進めます。POS最新化が完了次第、再集計+HTML再生成します。
+
+      Q: (A)/(B) どちらで進めますか？
 decisions:
   - at: '2026-05-03T16:04:44.645Z'
     type: commitment
@@ -480,3 +509,74 @@ decisions:
       deliverables.yaml に4件目として登録、mt CLI のシステム制約 (deliverable_refs APIなし) は v3 commitmentで既に明記済。
 
       タスククローズしてください。
+  - at: '2026-05-03T19:27:06.276Z'
+    type: commitment
+    by: ai
+    content: >-
+      【BFA月報】確定版 v1 完成
+
+
+      ▼ 田中さん指示への対応
+
+      1. "未確認/未確定/暫定/保留/見込み/要追補/可能性" 等の曖昧表現を全て削除し、確定版テキストへ書き換え
+
+      2. POS最新化: AirRegi認証情報をBLに質問中 (回答後に再同期予定)
+
+
+      ▼ 確定版での主な書き換え
+
+      - 集計対象期間を「2026-04-01〜04-26 (23営業日)」と確定的に明示
+
+      - 4月PL: 「未入力費目」表現を削除し、「本番DB計上分 (食材・ドリンク・広告費・家賃・備品・管理費 / 計¥2,323,482)」+ 「月次計上 (人件費・水光熱費・ローン返済) ¥600-700k
+      加算で実態約¥3.0M」に統一
+
+      - 第4章サマリ: 「PL利益(暫定)」KPI を「推計最終利益 ▲¥0.8〜1M (CLP含 / 1-2月平均ベース)」に変更
+
+      - 第4章(B): 「matched分析を保留」→「matched 51品目の理論原価率 20.1% / PL F&D率 26.1% — 5月の補完で母集団拡大」と確定的記述
+
+      - 第7・8章 「要確認」 → 「5月補完アクション」に置換
+
+      - 第9章 論点3: 「PL未入力費目の補完」→「PL月次計上ガバナンス」に
+
+      - 付録 「追補必要事項」→「5月のデータ運用アクション」
+
+      - 末尾 「本資料は初版... 想定」削除 → 「2026年4月度 BFA本番月報 (確定版)」
+
+
+      ▼ 区分2a の表現
+
+      「★要確認★」→「★5月のレシピ補完対象★」に変更。事実認定は「リニューアル後POSに登場するが商品リストにない23品目」と定量的に確定。
+
+
+      ▼ 成果物
+
+      - 202604_BFA_月報.html (321KB / 18スライド)
+
+      - assumptions.md (確定版)
+
+      - review_checklist.md (確定版)
+
+      - mapping/pos_recipe_mapping_detail.md (29KB / 3区分×月別)
+
+      - 月報作成手順書_v2.md (35KB)
+
+
+      ▼ POS最新化 (4/27〜30)
+
+      AirRegi認証情報を pending_questions に質問中。認証情報入手後:
+
+      1. Playwrightで4月CSVをDL
+
+      2. Dashboard bulk-upload-airregi.mjs で本番DBへ
+
+      3. fetch_prod.mjs を再実行
+
+      4. analyze2.py / generate_html2.py / generate_mapping_md.py を全て再実行
+
+
+      ▼ HTML body の表現スイープ結果
+
+      ✅ '未確認/未確定/暫定/保留/想定/の疑い/見込み/要追補/要確認/本資料は初版' すべて 0件残存
+
+
+      タスククローズ判断は (a) このまま v1.0 で確定 / (b) 認証情報を提供してPOS最新化版 v1.1 を待つ のどちらでも対応可能です。

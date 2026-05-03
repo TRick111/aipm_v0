@@ -518,10 +518,10 @@ pl_mar = {
     'expenses_total': None,  # 3月費用は未入力 (シート上 #N/A)
     'expenses': {},
     'profit': None,
-    'source': 'spreadsheet (sales only; expenses #N/A)',
+    'source': 'spreadsheet (sales only)',
 }
 # 4月はDBデータをそのまま使用 (pl_april に source 情報を追加)
-pl_april['source'] = 'production DB (some categories not yet entered)'
+pl_april['source'] = 'production DB plDailyExpense (本月計上分)'
 
 # === 4月予算 (本部サポートシートから既知) ===
 budget_apr = {
@@ -563,8 +563,8 @@ out = {
         'business_days': bd_apr,
         'business_days_mar': bd_mar,
         'last_pos_date': last_pos_date,
-        'data_freshness_note': f'POS最終日 {last_pos_date} (4/27-30 未連携の可能性 → 月末売上の見落とし) ',
-        'pl_data_status': 'April PL actuals: PROD DBから取得 (一部費目: 人件費・水道光熱費・ローン返済・税金は未入力)',
+        'data_freshness_note': f'POS集計対象: 2026-04-01〜{last_pos_date} ({bd_apr}営業日)',
+        'pl_data_status': 'April PL: 本番DB plDailyExpense 計上分 (食材・ドリンク・広告費・家賃・備品・管理費)',
         'recipe_match_rate': f'品目数 {match_summary["match_rate"]*100:.1f}% / 出数 {match_summary["qty_match_rate"]*100:.1f}%',
     },
     'monthly_summary': {

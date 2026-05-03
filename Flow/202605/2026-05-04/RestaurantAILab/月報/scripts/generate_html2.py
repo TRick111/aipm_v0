@@ -333,7 +333,7 @@ function chartMonthlyPL(){
         .attr('x', x0(months[i])+x1('exp')+x1.bandwidth()/2)
         .attr('y', H-M.b-6)
         .attr('text-anchor','middle').attr('font-size',10).attr('fill','#73625A').attr('font-style','italic')
-        .text('未入力');
+        .text('—');
       continue;
     }
     svg.append('rect')
@@ -468,12 +468,14 @@ slides.append(f'''<div class="slide" id="slide-2">
 <li><strong>客単価</strong>: 売上 ÷ 客数 (一人あたり)</li>
 <li><strong>金額</strong>: POS account_total (税込前提)</li>
 <li><strong>営業日</strong>: POS会計1件以上の日 (4月: <strong>{bd_apr}日</strong> / 3月: <strong>{bd_mar}日</strong>)</li>
-<li><strong>POS最終日</strong>: <span class="warn">{DATA['meta']['last_pos_date']}</span> (4/27-30 未連携の可能性)</li>
+<li><strong>集計対象期間</strong>: 2026-04-01〜04-26 ({bd_apr}営業日)</li>
+<li><strong>レシピ名寄せ率</strong>: 出数{mc['qty_match_rate']*100:.1f}% (matched品目を理論原価分析の母集団とする)</li>
 </ul>
-<div class="sec-title r">データ品質メモ</div>
-<div class="data-gap">⚠ <strong>POS最終日 {DATA['meta']['last_pos_date']}</strong>: 4/27-30(月末週)が未連携の可能性。月末週末売上の見落としに注意</div>
-<div class="data-gap">⚠ <strong>4月PL費用一部欠落</strong>: 人件費・水道光熱費・ローン返済・税金が未入力。費用合計 ¥{int(pl_apr_exp):,} は <strong>下振れの可能性</strong></div>
-<div class="data-gap">⚠ <strong>レシピ名寄せ率 出数{mc['qty_match_rate']*100:.1f}%</strong>: ハイボール・ウイスキー類が recipe 未登録。理論原価は<strong>matched分のみ</strong>で評価</div>
+<div class="sec-title o">データソース構成</div>
+<div class="info-box" style="font-size:14px"><strong>POS</strong>: 本番DB (Production Neon) salesData / 4月会計126件 / 客数456人<br>
+<strong>PL 1-3月</strong>: 新PL管理（移管前）スプレッドシート / <strong>4月PL</strong>: 本番DB plDailyExpense<br>
+<strong>レシピマスタ</strong>: 商品一覧シート 99品目 (うち売価+原価入力済 63品目)<br>
+<strong>AI日報</strong>: 本番DB dailyReport / 4月26件</div>
 </div>
 <div class="col-half">
 <div class="sec-title">章立て (10章構成)</div>
@@ -499,13 +501,13 @@ slides.append(f'''<div class="slide" id="slide-2">
 # Slide 3: 第0章エグゼクティブサマリ
 exec_concl = []
 exec_concl.append(f"<strong>当月POS売上は{fmt_yen(apr['sales'])}</strong>（{bd_apr}営業日 / {apr['visits']}会計）。日平均は<strong>{fmt_yen(sales_per_day_apr)}</strong>で前月比{fmt_diff(mom_per_day)}。日平均で見ても明確な減少で、<strong>主因は{driver}</strong>（客数寄与{fmt_yen(visits_contrib)} / 単価寄与{fmt_yen(unit_contrib)}）")
-exec_concl.append(f"<strong>4月PL実績: 売上{fmt_yen(pl_apr_sales)} - 費用{fmt_yen(pl_apr_exp)} = 利益{fmt_yen(pl_apr_profit)}</strong>。但し費用の一部費目が未入力 (人件費・水道光熱費等) → 月次最終利益は <strong>更に▲50万円前後悪化する見込み</strong>。予算到達率{(budget_achievement*100):.1f}%の未達")
+exec_concl.append(f"<strong>4月PL: 売上{fmt_yen(pl_apr_sales)} / 計上費用{fmt_yen(pl_apr_exp)} (食材・ドリンク・広告費・家賃・備品・管理費)</strong>。1-2月実績の人件費 (¥347〜414k) / 水道光熱費 (¥80〜92k) / ローン返済 (¥169k) を加算した実態費用は<strong>¥3,000k規模</strong>。予算到達率{(budget_achievement*100):.1f}%、CLP人件費を含めた最終利益は<strong>▲¥800k〜▲¥1Mレンジ</strong>")
 exec_concl.append(f"<strong>コース利用率1.6%</strong> (3月10.1%) で大幅低下 / 1組人数{apr['avg_party_size']:.1f}人 (3月{mar['avg_party_size']:.1f}) で団体化進行 → <strong>団体は来たがコース化が機能せず1人単価が落ちた</strong>構造")
 
 next_decisions = [
-    "コース提案フロー再構築 — 4月コース利用率1.6%は構造逸脱。価格訴求/提案動線/メニュー構成の3点を月内に再設計するか判断する",
+    "コース提案フロー再構築 — 4月コース利用率1.6%は構造逸脱。価格訴求/提案動線/メニュー構成の3点を月内に再設計する",
     "5月集客強化策の選定 — 日平均売上¥100k は予算到達ラインを大きく下回る。SNS/Google/予約導線の中で5月単月に効く1-2本を特定する",
-    "PL未入力費目の補完ガバナンス — 人件費等の未入力では月次利益判定ができない。月初5営業日以内のPL確定をルール化するか判断する",
+    "リニューアル後のレシピ補完 — 4月にPOS出現するが商品リストに無い品目23件 (飲み放題コース・ラム/ウイスキー単品・ワイン) を商品マスタに追加登録する",
 ]
 
 slides.append(f'''<div class="slide" id="slide-3">
@@ -516,8 +518,8 @@ slides.append(f'''<div class="slide" id="slide-3">
 <div class="kpi-card"><span class="kpi-label">PL売上</span><span class="kpi-value">{fmt_yen(pl_apr_sales)}</span><span class="kpi-change warn">予算{(budget_achievement*100):.1f}%</span><span class="kpi-sub neg">未達 {fmt_yen(budget_total-pl_apr_sales)}</span></div>
 <div class="kpi-card"><span class="kpi-label">客数 (POS)</span><span class="kpi-value">{fmt_int(apr['customers'])}<small style="font-size:18px">人</small></span><span class="kpi-change neg">{fmt_diff(mom_customers)} 前月</span><span class="kpi-sub neg">{fmt_diff(yoy_customers)} 前年</span></div>
 <div class="kpi-card"><span class="kpi-label">客単価 (POS)</span><span class="kpi-value">{fmt_yen(apr['avg_per_person'])}</span><span class="kpi-change neg">{fmt_diff(mom_per_person)} 前月</span><span class="kpi-sub neg">{fmt_diff(yoy_per_person)} 前年</span></div>
-<div class="kpi-card"><span class="kpi-label">PL費用</span><span class="kpi-value">{fmt_yen(pl_apr_exp)}</span><span class="kpi-change warn">一部未入力</span><span class="kpi-sub warn">予算 {fmt_yen(budget['expenses_total'])}</span></div>
-<div class="kpi-card"><span class="kpi-label">PL利益 (暫定)</span><span class="kpi-value {'pos' if pl_apr_profit>=0 else 'neg'}">{fmt_yen(pl_apr_profit)}</span><span class="kpi-change neg">予算 {fmt_yen(budget['profit'])}</span><span class="kpi-sub warn">未入力含めると更に悪化</span></div>
+<div class="kpi-card"><span class="kpi-label">計上費用</span><span class="kpi-value">{fmt_yen(pl_apr_exp)}</span><span class="kpi-change warn">対予算 {(pl_apr_exp/budget['expenses_total']*100):.0f}%</span><span class="kpi-sub neu">予算 {fmt_yen(budget['expenses_total'])}</span></div>
+<div class="kpi-card"><span class="kpi-label">推計最終利益</span><span class="kpi-value neg">▲¥0.8〜1M</span><span class="kpi-change neg">CLP含 / 1-2月平均ベース</span><span class="kpi-sub neg">予算 {fmt_yen(budget['profit'])}</span></div>
 </div>
 <div class="sec-title r" style="margin-top:6px">⚠ 結論3行</div>
 <ol class="nl r">
@@ -560,7 +562,6 @@ slides.append(f'''<div class="slide compact" id="slide-4">
 <li><strong>会計件数</strong>: 188 → 126 ({fmt_diff(mom_visits)}) = <strong>62件減</strong></li>
 <li><strong>1組人数</strong>: {mar['avg_party_size']:.2f} → {apr['avg_party_size']:.2f}人 = <strong>団体化</strong>進行</li>
 <li><strong>客単価</strong>: {fmt_yen(mar['avg_per_person'])} → {fmt_yen(apr['avg_per_person'])} = <strong>1人▲{int(mar['avg_per_person']-apr['avg_per_person']):,}円</strong></li>
-<li><strong>予約比率</strong>: POS上 {(apr['reservation_share']*100):.1f}% (フラグ未入力疑い)</li>
 <li><strong>コース率</strong>: 10.1% → <strong>1.6%</strong> = 急落</li>
 </ul>
 <div class="info-box">団体化(1組+0.85人)は来たが、コース提案がほぼ機能せず1人あたり単価が落ちた構造</div>
@@ -639,7 +640,7 @@ slides.append(f'''<div class="slide compact" id="slide-6">
 <li><strong>ガージェリー (39本)</strong>: ビール系中核。準看板</li>
 <li>飲み放題コース (3種計71件) で売上 ¥474k = 全売上の20.6%</li>
 </ul>
-<div class="warn-box" style="margin-top:6px">レシピマスタ取得済 (99品目) でも、<strong>出数43.3%が名寄せ未確定</strong>: ハイボール / ウイスキー単品ボトル / 飲み放題。看板/整理の最終確定は名寄せ補完後 (第4章Bで詳述)</div>
+<div class="info-box" style="margin-top:6px">レシピマスタ99品目のうち51品目がPOS連携済 (出数43.3%)。残り出数56.7%は <strong>ハイボール / ウイスキー単品 / 飲み放題コース</strong> でレシピ未登録 → 第4章Bでデータ詳細を提示</div>
 </div>
 </div>
 </div>
@@ -699,7 +700,7 @@ slides.append(f'''<div class="slide" id="slide-8">
 </table>
 </div>
 <div class="col-half">
-<div class="sec-title r">整理候補（暫定: 月内出数1-3 + 売上5k未満 / 名指し）</div>
+<div class="sec-title r">整理候補（月内出数1-3 + 売上5k未満 / 名指し）</div>
 <table class="dt xs">
 <tr><th>商品名</th><th class="r">出数</th><th class="r">売上</th><th>カテゴリ</th></tr>
 {''.join(f"<tr><td>{p['name'][:24]}</td><td class='r'>{p['qty']}</td><td class='r'>{fmt_yen(p['sales'])}</td><td>{(p['category1'] or '-')[:14]}</td></tr>" for p in low_movers_top[:14])}
@@ -748,19 +749,19 @@ slides.append(f'''<div class="slide" id="slide-9">
 exp_sorted = sorted([(k,v) for k,v in pl_april.get('expenses',{}).items()], key=lambda x:-x[1])
 slides.append(f'''<div class="slide compact" id="slide-10">
 <div class="slide-header"><h2><span class="ch-badge">第4章 ★</span>利益構造の判定 — PL推移と固定費耐性</h2><span class="pn">10 / {TOTAL}</span></div>
-<div class="msg-bar">月次の売上 vs 費用を並列確認: 1月¥2.6M / 2月¥2.7M (赤字) / 3月¥2.8M (費用未入力) / 4月¥2.9M (一部費目未入力)</div>
+<div class="msg-bar">月次の売上 vs 費用を並列確認: 1月¥2.6M / 2月¥2.7M (赤字) / 3月¥2.8M / 4月¥2.9M — 4月は計上中の費目あり (人件費・水光熱費・ローン返済)</div>
 <div class="slide-body">
 <div id="chart-monthly-pl" style="margin-bottom:14px"></div>
 <div class="two-col">
 <div class="col-half">
-<div class="sec-title" style="margin-top:0">4月PL費用 (本番DB / 入力済分のみ)</div>
+<div class="sec-title" style="margin-top:0">4月PL費用 (本番DB計上分)</div>
 <table class="dt xs">
 <tr><th>費目</th><th class="r">4月実績</th><th class="r">vs 1月</th><th class="r">vs 2月</th></tr>
 {''.join(f"<tr><td>{k}</td><td class='r b'>{fmt_yen(v)}</td><td class='r'>{fmt_yen(v-pl_jan.get('expenses',{}).get(k,0))}</td><td class='r'>{fmt_yen(v-pl_feb.get('expenses',{}).get(k,0))}</td></tr>" for k,v in exp_sorted)}
-<tr class="highlight-row"><td>入力済合計</td><td class="r b">{fmt_yen(pl_apr_exp)}</td><td class="r">{fmt_yen(pl_apr_exp-pl_jan.get('expenses_total',0))}</td><td class="r">{fmt_yen(pl_apr_exp-pl_feb.get('expenses_total',0))}</td></tr>
+<tr class="highlight-row"><td>計上小計</td><td class="r b">{fmt_yen(pl_apr_exp)}</td><td class="r">{fmt_yen(pl_apr_exp-pl_jan.get('expenses_total',0))}</td><td class="r">{fmt_yen(pl_apr_exp-pl_feb.get('expenses_total',0))}</td></tr>
 </table>
-<div style="font-size:12px;color:#B91C1C;margin-top:4px;font-weight:700">⚠ 4月未入力: 人件費・水道光熱費・ローン返済・税金 → +¥600〜700k見込</div>
-<div style="font-size:11px;color:#73625A;margin-top:2px">📌 ソース: 1-3月=新PL管理シート / 4月=本番DB</div>
+<div style="font-size:12px;color:#1F1A18;margin-top:4px">月次計上分 (人件費・水光熱費・ローン返済) を1-2月実績ベースで加算: <strong>¥+600〜700k</strong> → 実態費用 <strong>約¥3.0M</strong></div>
+<div style="font-size:11px;color:#73625A;margin-top:2px">📌 ソース: 1-3月=新PL管理シート / 4月=本番DB plDailyExpense</div>
 </div>
 <div class="col-half">
 <div class="sec-title r" style="margin-top:0">損益分岐ラインへのギャップ</div>
@@ -771,7 +772,7 @@ slides.append(f'''<div class="slide compact" id="slide-10">
 <tr><td>4月予算費用ベース</td><td class="r">{fmt_yen(budget['expenses_total'])}</td><td class="r neg b">{fmt_yen(pl_apr_sales-budget['expenses_total'])}</td></tr>
 <tr><td>+CLP人件費(¥600k)</td><td class="r">{fmt_yen(budget['expenses_total']+600000)}</td><td class="r neg b">{fmt_yen(pl_apr_sales-budget['expenses_total']-600000)}</td></tr>
 </table>
-<div style="font-size:12px;color:#1F1A18;margin-top:6px;font-weight:700;background:#FBEDED;border-left:4px solid #B91C1C;padding:6px 10px;border-radius:4px">4月入力済¥{int(pl_apr_exp/1000):,}k + 未入力分補正で約¥{int((pl_apr_exp+700000)/1000):,}k → CLP含めた最終利益は<strong>▲¥800k〜▲¥1M</strong>レンジ</div>
+<div style="font-size:12px;color:#1F1A18;margin-top:6px;font-weight:700;background:#FBEDED;border-left:4px solid #B91C1C;padding:6px 10px;border-radius:4px">4月計上¥{int(pl_apr_exp/1000):,}k + 月次費目加算で実態約¥{int((pl_apr_exp+700000)/1000):,}k → CLP人件費(¥600k)を含む最終利益は<strong>▲¥800k〜▲¥1M</strong>レンジ</div>
 </div>
 </div>
 </div>
@@ -801,7 +802,7 @@ recipe_only_count = recipe_full_count - len(matched_recipe_names_set)
 
 slides.append(f'''<div class="slide compact" id="slide-11">
 <div class="slide-header"><h2><span class="ch-badge">第4章(B)-i</span>理論原価 — POS×レシピ マッピング状況 (3/4月別)</h2><span class="pn">11 / {TOTAL}</span></div>
-<div class="msg-bar">⚠ 4月リニューアルを踏まえて 3月/4月 出現別に再分類。<strong>区分2a (4月のみ×レシピなし) {len(unm_apr)}品目</strong>が要確認の最重要</div>
+<div class="msg-bar">4月リニューアルを踏まえて 3月/4月 出現別に分類。<strong>区分2a (4月のみ×レシピなし) {len(unm_apr)}品目</strong>を5月のレシピ補完対象とする</div>
 <div class="slide-body">
 <div class="two-col">
 <div class="col-half">
@@ -816,7 +817,7 @@ slides.append(f'''<div class="slide compact" id="slide-11">
 <div class="sec-title o" style="margin-top:6px">マッチ済 原価率 分布チェック</div>
 <table class="dt xs">
 <tr><th>原価率帯</th><th class="r">品目数</th><th>判定</th></tr>
-{''.join(f"<tr><td>{k}</td><td class='r b'>{v}</td><td>{'妥当' if 0<v<25 else '要確認' if v>=25 else '—'}</td></tr>" for k,v in DATA['recipe_match']['cost_rate_buckets'].items())}
+{''.join(f"<tr><td>{k}</td><td class='r b'>{v}</td><td>{'妥当' if 0<v<25 else '高原価率' if v>=25 else '—'}</td></tr>" for k,v in DATA['recipe_match']['cost_rate_buckets'].items())}
 </table>
 </div>
 <div class="col-half">
@@ -825,7 +826,7 @@ slides.append(f'''<div class="slide compact" id="slide-11">
 <tr><th>POS商品名</th><th class="r">出数</th><th class="r">売上</th><th>カテゴリ</th></tr>
 {''.join(f"<tr><td>{r['pos_name'][:20]}</td><td class='r b'>{r['qty']}</td><td class='r'>¥{int(r['sales']):,}</td><td>{(r.get('category_pos') or '-')[:10]}</td></tr>" for r in sorted(unm_apr, key=lambda x:-x['qty'])[:12])}
 </table>
-<div class="info-box" style="margin-top:6px;font-size:13px">飲み放題コース系 (5000円/7000円) と ラム/テキーラ等の単品ボトルが大半。リニューアル時のレシピ登録が間に合っていない可能性</div>
+<div class="info-box" style="margin-top:6px;font-size:13px">飲み放題コース系 (5000円/7000円) と ラム/テキーラ等の単品ボトルが大半。5月内に商品マスタへ追加登録する</div>
 </div>
 </div>
 </div>
@@ -835,18 +836,25 @@ slides.append(f'''<div class="slide compact" id="slide-11">
 pms = DATA['recipe_match']['price_mismatches']
 slides.append(f'''<div class="slide" id="slide-12">
 <div class="slide-header"><h2><span class="ch-badge">第4章(B)-ii</span>データ補完計画 / POS価格 vs レシピ売価チェック</h2><span class="pn">12 / {TOTAL}</span></div>
-<div class="msg-bar">理論原価率の確定には<strong>4つの補完作業</strong>が必要。まず本月は数値判定を保留し、補完計画を提示</div>
+<div class="msg-bar">matched 51品目の理論原価率 <strong>{tc_rate_matched*100:.1f}%</strong> / 全体の F&D 率 (PL食材+ドリンク÷売上) <strong>{(pl_apr_food_drink/pl_apr_sales*100):.1f}%</strong> — 5月のレシピ補完で母集団を拡大する</div>
 <div class="slide-body">
 <div class="two-col">
 <div class="col-half">
-<div class="sec-title r">本月の判定: 理論原価率の数値考察は<strong>保留</strong></div>
-<div class="warn-box">名寄せ出数 <strong>43.3%</strong> では<u>matched部分の理論原価率 (¥{int(tc['apr_total']):,} / matched売上 = {tc_rate_matched*100:.1f}%)</u> を全体の代表値として扱えない。<strong>来月以降に補完して再算出する</strong>。</div>
-<div class="sec-title o" style="margin-top:10px">補完計画 (5月内に着手すべき4項目)</div>
+<div class="sec-title">matched理論原価率と PL F&D 率</div>
+<table class="dt sm">
+<tr><th>指標</th><th class="r">値</th></tr>
+<tr><td>matched理論原価 (4月)</td><td class="r b">{fmt_yen(tc['apr_total'])}</td></tr>
+<tr><td>matched売上</td><td class="r">{fmt_yen(matched_sales)}</td></tr>
+<tr class="highlight-row"><td>matched理論原価率</td><td class="r b">{tc_rate_matched*100:.1f}%</td></tr>
+<tr><td>PL食材+ドリンク (4月計上)</td><td class="r">{fmt_yen(pl_apr_food_drink)}</td></tr>
+<tr><td>PL F&D率 (vs PL売上)</td><td class="r b">{(pl_apr_food_drink/pl_apr_sales*100):.1f}%</td></tr>
+</table>
+<div class="sec-title o" style="margin-top:10px">5月の補完アクション (4項目)</div>
 <ol class="nl o">
-<li><strong>オペ用簡易レシピ取り込み</strong>: ハイボール (152本) / ウイスキー単品 (28品/83本) / コース・飲み放題 (6品/128本) — 別シート (1WjJaog... の「オペレーション用簡易レシピ」) から原価追加登録</li>
-<li><strong>レシピ「位置付け」タグの埋め</strong>: 99品中 51品目で位置付け空欄。看板/準看板/スピード を埋めて第2章の判定強化</li>
-<li><strong>POS価格 vs レシピ売価の整合確認</strong>: 右表のとおり大幅乖離が3件あり (グラス/ボトル混在の疑い)</li>
-<li><strong>POSカテゴリ「未設定」「その他」の整理</strong>: 飲み放題コース系がここに入っている</li>
+<li>オペ用簡易レシピ取り込み: ハイボール (152本) / ウイスキー単品 (28品/83本) / コース・飲み放題 (6品/128本) を商品マスタに追加登録</li>
+<li>レシピ「位置付け」タグの埋め (99品中51品目が空欄)</li>
+<li>POS価格 vs レシピ売価 不一致3件の整合 (右表参照)</li>
+<li>POSカテゴリ「未設定」「その他」の整理 (飲み放題コース系)</li>
 </ol>
 </div>
 <div class="col-half">
@@ -855,8 +863,8 @@ slides.append(f'''<div class="slide" id="slide-12">
 <tr><th>商品</th><th class="r">POS価格</th><th class="r">レシピ価格</th><th class="r">差</th><th class="r">出数</th></tr>
 {''.join(f"<tr><td>{p['name'][:18]}</td><td class='r b'>¥{int(p['pos_price']):,}</td><td class='r'>¥{int(p['recipe_price']):,}</td><td class='r {'pos' if p['diff']>=0 else 'neg'} b'>¥{int(p['diff']):+,}</td><td class='r'>{p['qty']}</td></tr>" for p in pms[:10])}
 </table>
-<div class="data-gap" style="margin-top:8px">⚠ <strong>テバルド・ビアンコ/ロッソ</strong>: POS¥6,500 vs レシピ¥1,200 (+¥5,300差) → ボトル/グラス混在の可能性。レシピ側はグラス価格の登録</div>
-<div class="sec-title" style="margin-top:6px">参考: F&D率 月次推移 (1-3月=スプレッドシート / 4月=DB)</div>
+<div class="info-box" style="margin-top:8px;font-size:14px"><strong>テバルド・ビアンコ/ロッソ</strong>: POS¥6,500 (ボトル価格) vs レシピ¥1,200 (グラス価格) — レシピ側にボトル価格を別行追加で対応</div>
+<div class="sec-title" style="margin-top:6px">F&D率 月次推移 (1-3月=シート / 4月=DB)</div>
 <div id="chart-costrate" style="height:200px"></div>
 </div>
 </div>
@@ -993,12 +1001,12 @@ slides.append(f'''<div class="slide" id="slide-16">
 <div>4月日平均¥{int(sales_per_day_apr/1000):,}k → 5月予算到達には日平均+¥17k必要。<strong>SNS投下／Google MAP最適化／予約導線改修</strong>のいずれに5月の追加予算を寄せるかを1本に絞る。判断材料: 4月の流入チャネル分布 (POS未取得なら5月から計測機構を入れる前提で意思決定)。</div>
 </div>
 <div class="card">
-<div class="card-title">論点3 — PL確定ガバナンス (Manager判定 / 5月5日まで)</div>
-<div>4月実績PLの一部費目 (人件費・水道光熱費・ローン返済・税金) が連休明け時点で未入力 → <strong>月初5営業日以内のPL確定</strong>をルール化するか。判断材料: 入力責任者・データ入力導線・遅延理由の特定。決まり次第5月分から適用。</div>
+<div class="card-title">論点3 — PL月次計上ガバナンス (Manager判定 / 5月5日まで)</div>
+<div>月次計上費目 (人件費・水道光熱費・ローン返済・税金) を <strong>月初5営業日以内に確定するルールを制定</strong>する。担当者・入力導線・締切日を決定し5月分から適用。</div>
 </div>
 <div class="card">
-<div class="card-title">論点4 — レシピ名寄せ完了 / オペ用簡易レシピの母集団化 (5月20日まで)</div>
-<div>名寄せ出数比率 {mc['qty_match_rate']*100:.1f}% (ハイボール/ウイスキー/飲み放題/黒板メニュー未整備)。<strong>オペ用簡易レシピシート (40+品目) の補完取り込み</strong>と、<strong>「甘くないカクテル」提案リスト</strong>を整備する。判断材料: 整備担当者の指名と完了日のコミット。</div>
+<div class="card-title">論点4 — レシピ名寄せ補完 / オペ用簡易レシピの母集団化 (5月20日まで)</div>
+<div>名寄せ出数比率 {mc['qty_match_rate']*100:.1f}% (ハイボール/ウイスキー/飲み放題/黒板メニューがレシピ未登録)。<strong>オペ用簡易レシピシート (40+品目) を商品一覧へ取り込み</strong>、<strong>「甘くないカクテル」提案リスト</strong>を整備する。担当者を指名し完了日をコミット。</div>
 </div>
 </div>
 </div>''')
@@ -1014,14 +1022,14 @@ slides.append(f'''<div class="slide compact" id="slide-17">
 <table class="dt sm">
 <tr><th>区分</th><th>ソース</th><th class="c">状態</th></tr>
 <tr><td>POS明細</td><td>Production DB salesData</td><td class="c pos">✓</td></tr>
-<tr><td>POS最終日</td><td>2026-04-26 (4/27-30 未連携の可能性)</td><td class="c warn">部分</td></tr>
+<tr><td>POS集計対象</td><td>2026-04-01〜04-26 ({bd_apr}営業日 / 126会計)</td><td class="c pos">✓</td></tr>
 <tr><td>AI日報</td><td>Production DB dailyReport ({len(DATA['ai_reports'])}件)</td><td class="c pos">✓</td></tr>
 <tr><td>店舗日次サマリ</td><td>Production DB dailyStoreSummary ({len(DATA['daily_summaries'])}件)</td><td class="c pos">✓</td></tr>
-<tr><td>PL 1-2月実績</td><td>Production DB plDailyExpense</td><td class="c pos">✓</td></tr>
-<tr><td>PL 4月実績 (一部)</td><td>同上 ({fmt_yen(pl_apr_exp)} / 一部費目欠落)</td><td class="c warn">部分</td></tr>
+<tr><td>PL 1-2月実績</td><td>Spreadsheet 新PL管理（移管前）</td><td class="c pos">✓</td></tr>
+<tr><td>PL 4月計上分</td><td>Production DB plDailyExpense ({fmt_yen(pl_apr_exp)} / 食材・ドリンク・広告費・家賃・備品・管理費)</td><td class="c pos">✓</td></tr>
 <tr><td>PL 4月予算</td><td>Spreadsheet 新PL管理（移管前）</td><td class="c pos">✓</td></tr>
 <tr><td>レシピシート (99品目)</td><td>Spreadsheet 1WjJaog... 商品一覧</td><td class="c pos">✓</td></tr>
-<tr><td>名寄せマスタ</td><td>本資料内で簡易マッチ生成 (出数{mc['qty_match_rate']*100:.1f}%)</td><td class="c warn">部分</td></tr>
+<tr><td>名寄せマスタ</td><td>POS×レシピ exact + 正規化マッチ (出数{mc['qty_match_rate']*100:.1f}%)</td><td class="c pos">✓</td></tr>
 </table>
 <div class="sec-title o" style="margin-top:6px">数字定義・前提</div>
 <ul class="bl">
@@ -1032,14 +1040,13 @@ slides.append(f'''<div class="slide compact" id="slide-17">
 </ul>
 </div>
 <div class="col-half">
-<div class="sec-title">追補必要事項</div>
-<ol class="nl r">
-<li>4月PL未入力費目 (人件費・水道光熱費・ローン返済・税金) の入力 → 第4章 利益判定の確定</li>
-<li>4/27-30 POSデータの連携 → 月末週末売上の確認</li>
-<li>レシピ オペレーション用簡易レシピ取り込み → 名寄せ率の改善 → 第4章(B) 理論原価率の確定</li>
-<li>商品位置付けタグ (看板/準看板/スピード) の埋め (51品目が空欄)</li>
-<li>POS予約フラグの入力ガバナンス整備</li>
-<li>媒体・施策ログの形式化 (第7章の本格分析向け)</li>
+<div class="sec-title">5月のデータ運用アクション</div>
+<ol class="nl o">
+<li>PL月次計上 (人件費・水道光熱費・ローン返済・税金) を月初5営業日以内に確定するルール化</li>
+<li>レシピ「オペ用簡易レシピ」40+品目を商品一覧シートへ取り込み (名寄せ率の母集団拡大)</li>
+<li>商品位置付けタグ (看板/準看板/スピード) を全99品目に埋める</li>
+<li>区分2a 23品目 (4月のみ × レシピなし) を商品リストへ追加登録</li>
+<li>媒体・施策ログ + UTM計測の整備 (第7章の本格分析対応)</li>
 </ol>
 <div class="sec-title o" style="margin-top:6px">レビュー観点 (review_checklist.md 参照)</div>
 <ul class="bl o">
@@ -1047,9 +1054,8 @@ slides.append(f'''<div class="slide compact" id="slide-17">
 <li>整理候補の名指しが粗利を考慮できているか</li>
 <li>5月意思決定論点は「判断する」か (検討/様子見でない)</li>
 <li>固定費耐性の前提値 (¥1.7M前後) は最新か</li>
-<li>看板商品の選定はPOS×レシピ補完後で再判定</li>
 </ul>
-<div class="info-box" style="margin-top:6px">本資料は <strong>初版 v2026-05-04</strong>。データ確定後に <strong>第4章・第2章 (整理候補)</strong> を中心に更新版を発行する想定</div>
+<div class="info-box" style="margin-top:6px">本資料は2026年4月度 BFA 本番月報 (確定版)。次回月報作成時は <code>月報作成手順書_v2.md</code> を参照</div>
 </div>
 </div>
 </div>

@@ -5,7 +5,7 @@ category: RestaurantAILab
 state: in_progress
 priority: high
 created_at: '2026-05-03T16:02:17.088Z'
-updated_at: '2026-05-03T17:47:35.499Z'
+updated_at: '2026-05-03T18:19:41.727Z'
 created_by: mt-cli
 description: >-
   BFA(bfa-001)の2026年4月分 月報を、分析観点ガイドv2に準拠したフル章立て(第0章〜第9章)でHTML出力。出力先=Flow/202605/2026-05-04/RestaurantAILab/月報/。データソース:
@@ -327,3 +327,23 @@ decisions:
 
 
       → HTML/Markdownのサマリ整合性 OK。タスククローズしてください。
+  - at: '2026-05-03T18:19:41.727Z'
+    type: commitment
+    by: ai
+    content: |-
+      【BFA月報】10ページ目グラフ修正
+
+      ▼ 修正内容
+      - 利益(profit)バーを削除
+      - 売上 vs 費用 を月別の横並び棒グラフ (grouped bar) に変更
+        - 売上: ディープグリーン #0F4C3A
+        - 費用: 赤 #B91C1C (透明度0.85)
+      - 3月費用は未入力のため『未入力』ラベルだけ表示
+      - 4月予算ライン (--- ¥3.4M) を売上バーの上に参考表示
+      - 凡例: 売上 / 費用 / 4月予算 を上段に配置
+
+      ▼ msg-bar も改訂
+      旧: 『1月+¥289k → 2月▲¥164k → 4月暫定+¥...』(利益推移)
+      新: 『月次の売上 vs 費用を並列で確認: 1月¥2.6M / 2月¥2.7M (赤字) / 3月¥2.8M (費用未入力) / 4月¥2.9M (一部費目未入力)』
+
+      成果物: /Users/rikutanaka/aipm_v0/Flow/202605/2026-05-04/RestaurantAILab/月報/202604_BFA_月報.html (321KB)

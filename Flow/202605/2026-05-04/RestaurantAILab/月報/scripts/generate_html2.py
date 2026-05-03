@@ -300,53 +300,73 @@ function chartMonthlyPL(){
     DATA.pl.mar.expenses_total,  // null (3月費用未入力)
     DATA.pl.apr.expenses_total,
   ];
-  const profit = sales.map((s,i)=>exp[i]!=null ? s-exp[i] : null);
+  // 売上 と 費用 を横並びの棒グラフ (利益は表示しない)
   const W=1100,H=320,M={t:40,r:40,b:50,l:80};
   const svg = d3.select(el).append('svg').attr('width',W).attr('height',H).attr('viewBox',`0 0 ${W} ${H}`);
-  const x = d3.scaleBand().domain(months).range([M.l,W-M.r]).padding(0.3);
-  const minP = Math.min(0, d3.min(profit.filter(v=>v!=null)));
-  const maxV = d3.max([...sales,...exp.filter(v=>v!=null)])*1.15;
-  const y = d3.scaleLinear().domain([minP, maxV]).range([H-M.b,M.t]);
-  // sales line
-  const lineS = d3.line().x((d,i)=>x(months[i])+x.bandwidth()/2).y(d=>y(d));
-  svg.append('path').datum(sales).attr('fill','none').attr('stroke','#0F4C3A').attr('stroke-width',3).attr('d',lineS);
-  svg.selectAll('circle.s').data(sales).enter().append('circle').attr('class','s')
-    .attr('cx',(d,i)=>x(months[i])+x.bandwidth()/2).attr('cy',d=>y(d)).attr('r',5).attr('fill','#0F4C3A');
-  svg.selectAll('text.s').data(sales).enter().append('text').attr('class','s')
-    .attr('x',(d,i)=>x(months[i])+x.bandwidth()/2).attr('y',d=>y(d)-10)
-    .attr('text-anchor','middle').attr('font-size',12).attr('font-weight',700).attr('fill','#0F4C3A')
-    .text(d=>'¥'+fmtK(d));
-  // expense bars
+  const x0 = d3.scaleBand().domain(months).range([M.l,W-M.r]).padding(0.25);
+  const x1 = d3.scaleBand().domain(['sales','exp']).range([0, x0.bandwidth()]).padding(0.1);
+  const maxV = d3.max([...sales,...exp.filter(v=>v!=null)])*1.18;
+  const y = d3.scaleLinear().domain([0, maxV]).range([H-M.b,M.t]);
+
+  // 売上バー
+  for(let i=0;i<sales.length;i++){
+    if(sales[i]==null) continue;
+    svg.append('rect')
+      .attr('x', x0(months[i])+x1('sales'))
+      .attr('y', y(sales[i]))
+      .attr('width', x1.bandwidth())
+      .attr('height', y(0)-y(sales[i]))
+      .attr('fill','#0F4C3A').attr('opacity',0.92);
+    svg.append('text')
+      .attr('x', x0(months[i])+x1('sales')+x1.bandwidth()/2)
+      .attr('y', y(sales[i])-4)
+      .attr('text-anchor','middle').attr('font-size',11).attr('font-weight',700).attr('fill','#0F4C3A')
+      .text('¥'+fmtK(sales[i]));
+  }
+  // 費用バー
   for(let i=0;i<exp.length;i++){
-    if(exp[i]==null) continue;
-    svg.append('rect').attr('x',x(months[i])).attr('y',y(exp[i])).attr('width',x.bandwidth())
-      .attr('height',y(0)-y(exp[i])).attr('fill','#B91C1C').attr('opacity',0.65);
-    svg.append('text').attr('x',x(months[i])+x.bandwidth()/2).attr('y',y(exp[i])-4)
-      .attr('text-anchor','middle').attr('font-size',11).attr('font-weight',700).attr('fill','#B91C1C').text('¥'+fmtK(exp[i]));
+    if(exp[i]==null){
+      // データなし表示
+      svg.append('text')
+        .attr('x', x0(months[i])+x1('exp')+x1.bandwidth()/2)
+        .attr('y', H-M.b-6)
+        .attr('text-anchor','middle').attr('font-size',10).attr('fill','#73625A').attr('font-style','italic')
+        .text('未入力');
+      continue;
+    }
+    svg.append('rect')
+      .attr('x', x0(months[i])+x1('exp'))
+      .attr('y', y(exp[i]))
+      .attr('width', x1.bandwidth())
+      .attr('height', y(0)-y(exp[i]))
+      .attr('fill','#B91C1C').attr('opacity',0.85);
+    svg.append('text')
+      .attr('x', x0(months[i])+x1('exp')+x1.bandwidth()/2)
+      .attr('y', y(exp[i])-4)
+      .attr('text-anchor','middle').attr('font-size',11).attr('font-weight',700).attr('fill','#B91C1C')
+      .text('¥'+fmtK(exp[i]));
   }
-  // profit
-  for(let i=0;i<profit.length;i++){
-    if(profit[i]==null) continue;
-    svg.append('rect').attr('x',x(months[i])+x.bandwidth()*0.3).attr('y',profit[i]>=0?y(profit[i]):y(0))
-      .attr('width',x.bandwidth()*0.4).attr('height',Math.abs(y(profit[i])-y(0)))
-      .attr('fill', profit[i]>=0?'#0F4C3A':'#B45309').attr('opacity',0.95);
-    svg.append('text').attr('x',x(months[i])+x.bandwidth()/2).attr('y',profit[i]>=0?y(profit[i])-4:y(profit[i])+15)
-      .attr('text-anchor','middle').attr('font-size',12).attr('font-weight',700).attr('fill', profit[i]>=0?'#0F4C3A':'#B45309')
-      .text((profit[i]>=0?'+':'')+'¥'+fmtK(profit[i]));
-  }
-  // budget april line
+  // 4月予算の売上ラインを参考表示
   const ba = DATA.pl.budget_april.sales_total;
-  svg.append('line').attr('x1',x(months[3])).attr('x2',x(months[3])+x.bandwidth())
-    .attr('y1',y(ba)).attr('y2',y(ba))
+  svg.append('line')
+    .attr('x1', x0(months[3])+x1('sales')-2)
+    .attr('x2', x0(months[3])+x1('sales')+x1.bandwidth()+2)
+    .attr('y1', y(ba)).attr('y2', y(ba))
     .attr('stroke','#B45309').attr('stroke-width',2).attr('stroke-dasharray','5,4');
-  svg.append('text').attr('x',x(months[3])+x.bandwidth()/2).attr('y',y(ba)-22)
-    .attr('text-anchor','middle').attr('font-size',11).attr('fill','#B45309').attr('font-weight',700)
-    .text('予算 ¥'+fmtK(ba));
-  svg.append('g').attr('transform',`translate(0,${y(0)})`).call(d3.axisBottom(x));
+  svg.append('text')
+    .attr('x', x0(months[3])+x1('sales')+x1.bandwidth()/2)
+    .attr('y', y(ba)-18)
+    .attr('text-anchor','middle').attr('font-size',10).attr('fill','#B45309').attr('font-weight',700)
+    .text('予算¥'+fmtK(ba));
+
+  svg.append('g').attr('transform',`translate(0,${H-M.b})`).call(d3.axisBottom(x0));
   svg.append('g').attr('transform',`translate(${M.l},0)`).call(d3.axisLeft(y).ticks(6).tickFormat(d=>'¥'+fmtK(d)));
-  svg.append('text').attr('x',M.l).attr('y',M.t-15).attr('font-size',13).attr('fill','#0F4C3A').attr('font-weight',700).text('● 売上 (折線)  ');
-  svg.append('text').attr('x',M.l+130).attr('y',M.t-15).attr('font-size',13).attr('fill','#B91C1C').attr('font-weight',700).text('■ 費用 (棒)  ');
-  svg.append('text').attr('x',M.l+220).attr('y',M.t-15).attr('font-size',13).attr('fill','#0F4C3A').attr('font-weight',700).text('▮ 利益 (中央棒)');
+  // 凡例
+  svg.append('rect').attr('x',M.l).attr('y',M.t-22).attr('width',12).attr('height',12).attr('fill','#0F4C3A');
+  svg.append('text').attr('x',M.l+18).attr('y',M.t-12).attr('font-size',13).attr('fill','#0F4C3A').attr('font-weight',700).text('売上');
+  svg.append('rect').attr('x',M.l+80).attr('y',M.t-22).attr('width',12).attr('height',12).attr('fill','#B91C1C').attr('opacity',0.85);
+  svg.append('text').attr('x',M.l+98).attr('y',M.t-12).attr('font-size',13).attr('fill','#B91C1C').attr('font-weight',700).text('費用');
+  svg.append('text').attr('x',M.l+170).attr('y',M.t-12).attr('font-size',12).attr('fill','#B45309').attr('font-weight',700).text('--- 4月予算');
 }
 
 function chartParty(){
@@ -726,7 +746,7 @@ slides.append(f'''<div class="slide" id="slide-9">
 exp_sorted = sorted([(k,v) for k,v in pl_april.get('expenses',{}).items()], key=lambda x:-x[1])
 slides.append(f'''<div class="slide compact" id="slide-10">
 <div class="slide-header"><h2><span class="ch-badge">第4章 ★</span>利益構造の判定 — PL推移と固定費耐性</h2><span class="pn">10 / {TOTAL}</span></div>
-<div class="msg-bar">1月+¥289k → 2月▲¥164k → 3月(費用未入力) → 4月暫定+¥{int(pl_apr_profit/1000):,}k (一部費目未入力) — 損益分岐への到達は依然不十分</div>
+<div class="msg-bar">月次の売上 vs 費用を並列で確認: 1月¥2.6M / 2月¥2.7M (赤字) / 3月¥2.8M (費用未入力) / 4月¥2.9M (一部費目未入力)</div>
 <div class="slide-body">
 <div id="chart-monthly-pl" style="height:260px"></div>
 <div class="two-col" style="margin-top:6px">

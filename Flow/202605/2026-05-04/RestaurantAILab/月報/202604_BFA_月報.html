@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BAR FIVE Arrows 月次経営判断資料 — 2026年4月</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#EFEAE3;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;color:#2A2421;font-size:20px;line-height:1.5}
+.slide{width:1280px;height:720px;position:relative;overflow:hidden;background:#fff;margin:0 auto}
+@media screen{.slide{margin:0 auto 28px;box-shadow:0 4px 20px rgba(0,0,0,.12)}}
+@page{size:1280px 720px;margin:0}
+@media print{*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}body{margin:0;padding:0;background:#fff;width:1280px}.slide{page-break-after:always;page-break-inside:avoid;break-after:page;break-inside:avoid;box-shadow:none;margin:0;width:1280px;height:720px}.slide:last-child{page-break-after:auto}}
+/* 月報 配色: ディープフォレスト + 銅 + ゴールド */
+.slide-title{background:linear-gradient(135deg,#0F4C3A 0%,#08321F 60%,#1F1A18 100%);display:flex;flex-direction:column;justify-content:center;align-items:center;color:#fff}
+.slide-title h1{font-size:54px;font-weight:800;letter-spacing:3px;margin-top:20px}
+.slide-title h2{font-size:30px;font-weight:400;margin-top:14px;opacity:.9}
+.slide-title .badge{background:#B45309;color:#fff;padding:8px 22px;border-radius:30px;font-size:18px;font-weight:700;letter-spacing:2px;margin-bottom:10px}
+.slide-title p{font-size:18px;margin-top:24px;opacity:.7}
+.slide-title .accent{font-size:14px;letter-spacing:6px;color:#B45309;margin-top:16px;font-weight:700}
+.slide-header{background:#0F4C3A;color:#fff;padding:14px 40px;display:flex;align-items:center;justify-content:space-between}
+.slide-header h2{font-size:30px;font-weight:700}
+.slide-header .ch-badge{background:#B45309;color:#fff;padding:4px 14px;border-radius:20px;font-size:16px;font-weight:700;margin-right:12px}
+.slide-header .pn{font-size:15px;opacity:.7}
+.msg-bar{background:#FDF7ED;border-left:5px solid #B45309;padding:12px 40px;font-size:21px;font-weight:700;color:#1F1A18}
+.slide-body{padding:14px 40px;overflow:hidden;height:calc(100% - 110px)}
+.kpi-grid{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+.kpi-card{background:#F5F1EA;border:1px solid #D9CCB6;border-radius:12px;padding:14px 16px;text-align:center;flex:1;min-width:170px;max-width:230px}
+.kpi-label{display:block;font-size:16px;color:#73625A;margin-bottom:4px;font-weight:600}
+.kpi-value{display:block;font-size:36px;font-weight:800;color:#1F1A18;line-height:1.1}
+.kpi-sub{display:block;font-size:16px;margin-top:2px;font-weight:600}
+.kpi-change{display:block;font-size:18px;font-weight:700;margin-top:6px}
+.pos{color:#0F4C3A}.neg{color:#B91C1C}.neu{color:#73625A}
+.warn{color:#B45309}
+.two-col{display:flex;gap:22px;height:100%}
+.col-chart{flex:2}.col-text{flex:1;font-size:18px;line-height:1.6}
+.col-half{flex:1}
+.dt{width:100%;border-collapse:collapse;font-size:18px}
+.dt th{background:#0F4C3A;color:#fff;padding:9px 12px;text-align:left;font-weight:700;font-size:17px}
+.dt td{padding:7px 12px;border-bottom:1px solid #E5DCC9}
+.dt tr:nth-child(even) td{background:#F9F6F0}
+.dt .r{text-align:right}.dt .b{font-weight:700}.dt .c{text-align:center}
+.dt .highlight-row td{background:#FDF7ED;font-weight:700}
+.dt .best td{background:#EAF5EE}.dt .worst td{background:#FBEDED}
+.dt.sm{font-size:16px}.dt.sm th{padding:6px 10px;font-size:14px}.dt.sm td{padding:5px 10px}
+.sec-title{font-size:24px;font-weight:800;color:#1F1A18;margin:8px 0 6px;padding-left:12px;border-left:5px solid #0F4C3A}
+.sec-title.g{border-color:#0F4C3A}.sec-title.r{border-color:#B91C1C}.sec-title.o{border-color:#B45309}.sec-title.b{border-color:#1E40AF}
+.bl{list-style:none;padding:0}
+.bl li{padding:5px 0 5px 22px;position:relative;font-size:18px;line-height:1.6}
+.bl li::before{content:'●';position:absolute;left:0;color:#0F4C3A;font-size:11px;top:11px}
+.bl.g li::before{color:#0F4C3A}.bl.r li::before{color:#B91C1C}.bl.o li::before{color:#B45309}
+.nl{list-style:none;padding:0;counter-reset:nl}
+.nl li{padding:6px 0 6px 36px;position:relative;font-size:18px;line-height:1.5;counter-increment:nl}
+.nl li::before{content:counter(nl);position:absolute;left:0;width:26px;height:26px;background:#0F4C3A;color:#fff;border-radius:50%;text-align:center;line-height:26px;font-size:14px;font-weight:700}
+.nl.g li::before{background:#0F4C3A}.nl.r li::before{background:#B91C1C}.nl.o li::before{background:#B45309}
+.qb{border-left:4px solid #0F4C3A;padding:9px 16px;margin:6px 0;background:#F5F1EA;font-size:17px;line-height:1.5}
+.qb .qd{font-weight:700;color:#1F1A18;margin-bottom:3px;font-size:17px}
+.note-box{background:#EAF5EE;border-radius:10px;border-left:5px solid #0F4C3A;padding:12px 18px;margin-top:8px;font-size:18px;line-height:1.5;font-weight:600}
+.warn-box{background:#FBEDED;border-radius:10px;border-left:5px solid #B91C1C;padding:12px 18px;margin-top:8px;font-size:18px;line-height:1.5;font-weight:600}
+.info-box{background:#FDF7ED;border-radius:10px;border-left:5px solid #B45309;padding:12px 18px;margin-top:8px;font-size:18px;line-height:1.5;font-weight:600}
+.card{background:#F9F6F0;border:1px solid #E5DCC9;border-radius:12px;padding:14px 18px;margin:6px 0}
+.card-title{font-size:20px;font-weight:800;margin-bottom:4px}
+.card-title.g{color:#0F4C3A}.card-title.r{color:#B91C1C}.card-title.o{color:#B45309}
+.big-num{font-size:42px;font-weight:800;line-height:1.1;color:#1F1A18}
+.big-label{font-size:16px;color:#73625A;font-weight:600}
+.emphasis{font-size:26px;font-weight:800}
+strong{font-weight:700}
+.assumption-box{background:#FFF;border:1px dashed #B45309;border-radius:10px;padding:14px 20px;margin-top:14px;font-size:15px;line-height:1.5}
+.assumption-box h4{color:#B45309;font-size:17px;margin-bottom:6px}
+.assumption-box ul{padding-left:22px}
+.assumption-box li{font-size:14px;padding:1px 0}
+.tag{display:inline-block;padding:3px 10px;border-radius:12px;font-size:14px;font-weight:700;margin-right:6px}
+.tag-kanban{background:#0F4C3A;color:#fff}
+.tag-junkanban{background:#B45309;color:#fff}
+.tag-seiri{background:#B91C1C;color:#fff}
+.tag-data{background:#73625A;color:#fff}
+.data-gap{background:#FBEDED;border:2px dashed #B91C1C;color:#B91C1C;padding:10px 16px;border-radius:8px;font-weight:700;margin:8px 0}
+</style>
+</head>
+<body>
+<div class="slide slide-title" id="slide-1">
+<div class="badge">📅 月報 (Monthly)</div>
+<h1>BAR FIVE Arrows</h1>
+<h2>月次経営判断資料</h2>
+<p>2026年4月（2026-04-01 〜 2026-04-30）</p>
+<div class="accent">EXECUTIVE MONTHLY REVIEW</div>
+<p style="margin-top:36px;font-size:13px;opacity:.5">分析観点ガイド v2 準拠 / 全10章フル章立て</p>
+</div>
+<div class="slide" id="slide-2">
+<div class="slide-header"><h2><span class="ch-badge">前提</span>本月報の読み方</h2><span class="pn">2 / 16</span></div>
+<div class="msg-bar">月報＝経営判断書 / 週報＝施策修正書 / 日報＝兆候キャッチ — 本書は意思決定論点に絞る</div>
+<div class="slide-body">
+<div class="two-col">
+<div class="col-half">
+<div class="sec-title o">数字の起点（前提）</div>
+<ul class="bl o">
+<li><strong>会計単位</strong>: POS account_id 単位 (1グループ＝1会計)</li>
+<li><strong>客数</strong>: 会計人数 (customer_count) の合計</li>
+<li><strong>客単価</strong>: 売上 ÷ 会計人数 (一人あたり)</li>
+<li><strong>金額</strong>: POS account_total (税込推定。明示なし)</li>
+<li><strong>営業日</strong>: POS会計が1件以上発生した日 (4月: 24日 / 3月: 31日)</li>
+</ul>
+<div class="sec-title r">データ欠損 (要追補)</div>
+<div class="data-gap">⚠ <strong>2026年4月のPL実績</strong> (食材/ドリンク/人件費等) が新PL管理シートに未入力。第4章は <strong>予算 vs 1-2月実績の延長線</strong> で構成。</div>
+<div class="data-gap">⚠ <strong>レシピシート(99品目原価)</strong> の所在未確定。第4章(B) <strong>理論原価分析は名寄せ完了後に追補</strong>。</div>
+</div>
+<div class="col-half">
+<div class="sec-title">章立て (10章構成)</div>
+<table class="dt sm">
+<tr><td class="b c" style="width:40px">0</td><td>エグゼクティブサマリ</td></tr>
+<tr><td class="b c">1</td><td>売上構造の判定 (客数 vs 単価)</td></tr>
+<tr><td class="b c">2</td><td>商品戦略の判定 (看板/整理候補)</td></tr>
+<tr><td class="b c">3</td><td>客単価の作られ方</td></tr>
+<tr><td class="b c">4</td><td><strong>利益構造の判定 ★最重要</strong></td></tr>
+<tr><td class="b c">5</td><td>コンセプト定着度</td></tr>
+<tr><td class="b c">6</td><td>曜日／時間帯サマリ</td></tr>
+<tr><td class="b c">7</td><td>施策の結論</td></tr>
+<tr><td class="b c">8</td><td>構造的ボトルネック</td></tr>
+<tr><td class="b c">9</td><td>翌月の意思決定論点 (3〜5本)</td></tr>
+</table>
+<div class="info-box">レビュー観点: 同梱の <code>review_checklist.md</code> 参照</div>
+</div>
+</div>
+</div>
+</div>
+<div class="slide" id="slide-3">
+<div class="slide-header"><h2><span class="ch-badge">第0章</span>エグゼクティブサマリ</h2><span class="pn">3 / 16</span></div>
+<div class="msg-bar">結論3行 + 翌月の意思決定論点3つ</div>
+<div class="slide-body">
+<div class="kpi-grid" style="margin-bottom:6px">
+<div class="kpi-card"><span class="kpi-label">売上</span><span class="kpi-value">¥2,300,900</span><span class="kpi-change neg">-21.3% 前月比</span><span class="kpi-sub neg">-39.3% 前年比</span></div>
+<div class="kpi-card"><span class="kpi-label">客数</span><span class="kpi-value">456<small style="font-size:18px">人</small></span><span class="kpi-change neg">-12.5% 前月比</span><span class="kpi-sub neg">-43.1% 前年比</span></div>
+<div class="kpi-card"><span class="kpi-label">客単価</span><span class="kpi-value">¥5,046</span><span class="kpi-change neg">-10.0% 前月比</span><span class="kpi-sub neg">+6.7% 前年比</span></div>
+<div class="kpi-card"><span class="kpi-label">日平均売上</span><span class="kpi-value" style="font-size:30px">¥95,871</span><span class="kpi-change neg">+1.7% 前月比</span><span class="kpi-sub">営業日 24日</span></div>
+<div class="kpi-card"><span class="kpi-label">予算到達</span><span class="kpi-value warn">67.7<small>%</small></span><span class="kpi-change warn">予算 ¥3,400,000</span><span class="kpi-sub warn">未達 ¥1,099,100</span></div>
+</div>
+<div class="sec-title r">⚠ 結論3行</div>
+<ol class="nl r">
+<li><strong>当月売上は¥2,300,900</strong>（24営業日）。日平均は<strong>¥95,871</strong>で前月比+1.7%。日平均で見ても明確な減少トレンドで、<strong>主因は客単価減</strong>（営業日換算で客数寄与¥-303,840, 単価寄与¥342,485）。</li>
+<li><strong>4月予算¥3,400,000に対し売上達成率67.7%</strong>。1-2月の利益推移（1月+¥290k → 2月▲¥164k）と4月予算（▲¥155k見込）から、<strong>4月実績未入力ながら赤字基調が継続</strong>している前提で経営判断を要する。</li>
+<li><strong>コース利用率1.6%</strong>（3月10.1%から大幅低下）。一方で<strong>1組あたり人数は3.6人</strong>と3月の2.8人より増加 → <strong>団体・大人数比率は上がったがコース化が機能していない</strong>。コース提案の動線が壊れている兆候。</li>
+</ol>
+<div class="sec-title o">→ 翌月の意思決定論点（第9章で詳述）</div>
+<ol class="nl o">
+<li>コース提案フロー再構築 — 4月コース利用率1.6%は構造的逸脱（3月10.1%）。価格訴求／提案タイミング／メニュー構成の3点を月内に再設計するか判断する。</li>
+<li>5月の集客強化策の選定 — POS営業日24日／日平均¥95.9k は4月予算到達ラインを大きく下回る。SNS投下／予約導線（4月予約0%）／媒体の中で「翌月に効く」1-2本を特定する。</li>
+<li>PL実績入力ガバナンス — 4月実績が連休明け時点で未入力のままだと月報の利益判断ができない。月初5営業日以内のPL確定をルール化するか判断する。</li>
+</ol>
+</div>
+</div>
+<div class="slide" id="slide-4">
+<div class="slide-header"><h2><span class="ch-badge">第1章</span>売上構造の判定</h2><span class="pn">4 / 16</span></div>
+<div class="msg-bar">主因は <strong>客単価減</strong>: 客数寄与¥-303,840 vs 単価寄与¥342,485 (営業日換算)</div>
+<div class="slide-body">
+<div id="chart-daily" style="height:330px"></div>
+<div class="two-col" style="margin-top:6px">
+<div class="col-half">
+<div class="sec-title">月次主因分解 (営業日換算)</div>
+<table class="dt sm">
+<tr><th>項目</th><th class="r">4月実績</th><th class="r">3月実績</th><th class="r">差分(月)</th></tr>
+<tr><td>売上</td><td class="r b">¥2,300,900</td><td class="r">¥2,922,080</td><td class="r neg">-21.3%</td></tr>
+<tr><td>会計件数</td><td class="r b">126</td><td class="r">188</td><td class="r neg">-33.0%</td></tr>
+<tr><td>客数</td><td class="r b">456</td><td class="r">521</td><td class="r neg">-12.5%</td></tr>
+<tr><td>1組人数</td><td class="r b">3.62人</td><td class="r">2.77人</td><td class="r pos">+0.85</td></tr>
+<tr><td>客単価(1人)</td><td class="r b">¥5,046</td><td class="r">¥5,609</td><td class="r neg">-10.0%</td></tr>
+<tr class="highlight-row"><td>日平均売上</td><td class="r b">¥95,871</td><td class="r">¥94,261</td><td class="r neg b">+1.7%</td></tr>
+</table>
+</div>
+<div class="col-half">
+<div class="sec-title r">主因の特定 (1行で明言)</div>
+<div class="warn-box"><strong>客単価減が決定的に効いた</strong>。営業日換算の差分内訳: 客数¥-303,840 / 単価¥342,485</div>
+<ul class="bl">
+<li><strong>会計件数</strong>: 188 → 126 (-33.0%) = <strong>62件減</strong></li>
+<li><strong>1組人数</strong>: 2.77 → 3.62人 (+0.85) = <strong>団体化</strong>進行</li>
+<li><strong>客単価</strong>: ¥5,609 → ¥5,046 = <strong>1人あたり▲563円</strong></li>
+<li><strong>予約比率</strong>: 4月 0.0% (POS上0件) ⚠</li>
+<li><strong>コース率</strong>: 10.1% → 1.6% = <strong>急落</strong></li>
+</ul>
+<div class="info-box">団体化(1組+0.85人)は来たが、コース提案がほぼ機能せず1人あたり単価が落ちた構造</div>
+</div>
+</div>
+</div>
+</div>
+<div class="slide" id="slide-5">
+<div class="slide-header"><h2><span class="ch-badge">第1章補足</span>日次変動・客層別売上</h2><span class="pn">5 / 16</span></div>
+<div class="msg-bar">団体貸切が売上の山を作る一方、予約POS記録ゼロは入力欠落の疑い</div>
+<div class="slide-body">
+<div class="two-col">
+<div class="col-half">
+<div class="sec-title g">月内ベスト3日 (売上)</div>
+<table class="dt sm">
+<tr><th>日付</th><th>曜日</th><th class="r">売上</th><th class="r">会計</th><th class="r">客数</th><th class="r">1人単価</th></tr>
+<tr class='best'><td>04-15</td><td>水</td><td class='r b'>¥293,070</td><td class='r'>3</td><td class='r'>35</td><td class='r'>¥8,373</td></tr><tr class='best'><td>04-24</td><td>金</td><td class='r b'>¥251,600</td><td class='r'>4</td><td class='r'>65</td><td class='r'>¥3,871</td></tr><tr class='best'><td>04-17</td><td>金</td><td class='r b'>¥240,910</td><td class='r'>9</td><td class='r'>43</td><td class='r'>¥5,603</td></tr>
+</table>
+<div class="sec-title r" style="margin-top:14px">月内ワースト3日 (売上)</div>
+<table class="dt sm">
+<tr><th>日付</th><th>曜日</th><th class="r">売上</th><th class="r">会計</th><th class="r">客数</th><th class="r">1人単価</th></tr>
+<tr class='worst'><td>04-08</td><td>水</td><td class='r b'>¥11,300</td><td class='r'>1</td><td class='r'>2</td><td class='r'>¥5,650</td></tr><tr class='worst'><td>04-07</td><td>火</td><td class='r b'>¥14,100</td><td class='r'>3</td><td class='r'>5</td><td class='r'>¥2,820</td></tr><tr class='worst'><td>04-14</td><td>火</td><td class='r b'>¥17,900</td><td class='r'>3</td><td class='r'>6</td><td class='r'>¥2,983</td></tr>
+</table>
+</div>
+<div class="col-half">
+<div class="sec-title o">予約 vs ウォークイン (4月)</div>
+<table class="dt sm">
+<tr><th>区分</th><th class="r">会計</th><th class="r">売上</th><th class="r">構成比</th></tr>
+<tr><td>予約あり</td><td class="r">0</td><td class="r">¥0</td><td class="r">0.0%</td></tr>
+<tr><td>ウォークイン</td><td class="r b">126</td><td class="r b">¥2,300,900</td><td class="r b">100.0%</td></tr>
+</table>
+<div class="data-gap" style="margin-top:8px">⚠ POS記録上「予約あり」が0件。<strong>POSで予約フラグが入力されていない可能性</strong>。日報には貸切等の予約言及あり (4/3 24名様部門送別会など)</div>
+<div class="sec-title o" style="margin-top:14px">コース vs アラカルト</div>
+<table class="dt sm">
+<tr><th>区分</th><th class="r">会計</th><th class="r">売上</th><th class="r">単価</th></tr>
+<tr><td>コース</td><td class="r b">2</td><td class="r b">¥302,500</td><td class="r b">¥151,250</td></tr>
+<tr><td>アラカルト</td><td class="r">124</td><td class="r">¥1,998,400</td><td class="r">¥16,116</td></tr>
+</table>
+<div class="info-box">コース2件で売上¥117,000(構成5.1%)。3月の19件・¥626kから激減</div>
+</div>
+</div>
+</div>
+</div>
+<div class="slide" id="slide-6">
+<div class="slide-header"><h2><span class="ch-badge">第2章</span>商品戦略の判定 — 出数Top15</h2><span class="pn">6 / 16</span></div>
+<div class="msg-bar">tablecharge / ハウスハイボール / 森のジントニックの3軸が出数を支える</div>
+<div class="slide-body">
+<div id="chart-products" style="height:380px"></div>
+<div class="two-col" style="margin-top:6px">
+<div class="col-half">
+<div class="sec-title o">注釈</div>
+<ul class="bl">
+<li><strong>tablecharge (290件)</strong>: 全会計に発生する課金。会計数の指標</li>
+<li><strong>ハウスハイボール (152本)</strong>: 出数1位の単独ドリンク → <span class="tag tag-kanban">看板</span>候補の確固たる地位</li>
+<li><strong>森のジントニック (82本)</strong>: BFAコンセプト商品 → <span class="tag tag-kanban">看板</span>定着</li>
+<li><strong>ガージェリー (39本)</strong>: ビール系の中核 → <span class="tag tag-junkanban">準看板</span></li>
+</ul>
+</div>
+<div class="col-half">
+<div class="sec-title o">レシピマスタ未取得のため判定保留 (4/30時点)</div>
+<div class="data-gap">⚠ 99品目の<strong>原価/位置付けタグ</strong>が未連携。<br>看板/準看板/整理候補の<strong>正式選定は名寄せマスタ完成後</strong>。本資料では<strong>POS出数・売上のみで暫定推定</strong>。</div>
+</div>
+</div>
+</div>
+</div>
+<div class="slide" id="slide-7">
+<div class="slide-header"><h2><span class="ch-badge">第2章補足</span>売上Top10 / カテゴリ構成</h2><span class="pn">7 / 16</span></div>
+<div class="msg-bar">売上1位は「その他CLPコース」¥280k — コース系2品で売上構造の<strong>15%</strong>を占有</div>
+<div class="slide-body">
+<div class="two-col">
+<div class="col-half">
+<div class="sec-title">商品別売上Top10</div>
+<table class="dt sm">
+<tr><th class="c">#</th><th>商品名</th><th class="r">売上</th><th class="r">出数</th><th class="r">前月比</th></tr>
+<tr><td class='c b'>1</td><td>その他CLPコース</td><td class='r b'>¥280,500</td><td class='r'>51</td><td class='r neg'>-28</td></tr><tr><td class='c b'>2</td><td>ハウスハイボール</td><td class='r b'>¥182,400</td><td class='r'>152</td><td class='r pos'>+53</td></tr><tr><td class='c b'>3</td><td>7000円飲み放題付（3時間制）</td><td class='r b'>¥182,000</td><td class='r'>26</td><td class='r pos'>+26</td></tr><tr><td class='c b'>4</td><td>tablecharge</td><td class='r b'>¥172,300</td><td class='r'>290</td><td class='r neg'>-71</td></tr><tr><td class='c b'>5</td><td>6500円飲み放題付（2時間制）</td><td class='r b'>¥156,000</td><td class='r'>24</td><td class='r pos'>+1</td></tr><tr><td class='c b'>6</td><td>5000円飲み放題付（2時間制）＋チャージ込み</td><td class='r b'>¥136,500</td><td class='r'>21</td><td class='r pos'>+21</td></tr><tr><td class='c b'>7</td><td>森のジントニック</td><td class='r b'>¥121,500</td><td class='r'>82</td><td class='r pos'>+82</td></tr><tr><td class='c b'>8</td><td>イベント費用</td><td class='r b'>¥81,000</td><td class='r'>3</td><td class='r pos'>+1</td></tr><tr><td class='c b'>9</td><td>ガージェリー</td><td class='r b'>¥50,700</td><td class='r'>39</td><td class='r neg'>-44</td></tr><tr><td class='c b'>10</td><td>桜ブロッサム</td><td class='r b'>¥45,600</td><td class='r'>24</td><td class='r pos'>+24</td></tr>
+</table>
+</div>
+<div class="col-half">
+<div id="chart-category" style="height:330px"></div>
+<table class="dt sm" style="margin-top:8px">
+<tr><th>カテゴリ</th><th class="r">構成比</th><th class="r">前月差</th></tr>
+<tr><td>コース&セット</td><td class='r b'>25.1%</td><td class='r pos'>+0.2pt</td></tr><tr><td>NEW CLASSIC COCKTAIL</td><td class='r b'>10.3%</td><td class='r pos'>+10.3pt</td></tr><tr><td>その他</td><td class='r b'>9.1%</td><td class='r pos'>+1.0pt</td></tr><tr><td>未設定</td><td class='r b'>8.7%</td><td class='r pos'>+8.7pt</td></tr><tr><td>ウイスキー（ハイボール・ボトル・オリジナ</td><td class='r b'>8.0%</td><td class='r pos'>+0.7pt</td></tr><tr><td>JAPANESE COCKTAIL</td><td class='r b'>6.5%</td><td class='r pos'>+6.5pt</td></tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="slide" id="slide-8">
+<div class="slide-header"><h2><span class="ch-badge">第2章補足</span>動きの大きい商品 / 整理候補</h2><span class="pn">8 / 16</span></div>
+<div class="msg-bar">前月から大きく動いた商品 / 月内ほぼ動かない商品の名指し</div>
+<div class="slide-body">
+<div class="two-col">
+<div class="col-half">
+<div class="sec-title g">出数 急上昇 Top8 (前月比)</div>
+<table class="dt sm">
+<tr><th>商品名</th><th class="r">4月</th><th class="r">3月</th><th class="r">差分</th></tr>
+<tr><td>森のジントニック</td><td class='r b'>82</td><td class='r'>0</td><td class='r pos b'>+82</td></tr><tr><td>ハウスハイボール</td><td class='r b'>152</td><td class='r'>99</td><td class='r pos b'>+53</td></tr><tr><td>BAR 専用チョコレート</td><td class='r b'>38</td><td class='r'>0</td><td class='r pos b'>+38</td></tr><tr><td>7000円飲み放題付（3時間制）</td><td class='r b'>26</td><td class='r'>0</td><td class='r pos b'>+26</td></tr><tr><td>ワカモレチップス</td><td class='r b'>25</td><td class='r'>0</td><td class='r pos b'>+25</td></tr><tr><td>桜ブロッサム</td><td class='r b'>24</td><td class='r'>0</td><td class='r pos b'>+24</td></tr><tr><td>カルヴァドスモヒート</td><td class='r b'>21</td><td class='r'>0</td><td class='r pos b'>+21</td></tr><tr><td>焙煎ファッションド</td><td class='r b'>21</td><td class='r'>0</td><td class='r pos b'>+21</td></tr>
+</table>
+<div class="sec-title r" style="margin-top:10px">出数 急減少 Top8 (前月比)</div>
+<table class="dt sm">
+<tr><th>商品名</th><th class="r">4月</th><th class="r">3月</th><th class="r">差分</th></tr>
+<tr><td>tablecharge</td><td class='r b'>290</td><td class='r'>361</td><td class='r neg b'>-71</td></tr><tr><td>ガージェリー</td><td class='r b'>39</td><td class='r'>83</td><td class='r neg b'>-44</td></tr><tr><td>No charge</td><td class='r b'>21</td><td class='r'>59</td><td class='r neg b'>-38</td></tr><tr><td>丸氷</td><td class='r b'>26</td><td class='r'>63</td><td class='r neg b'>-37</td></tr><tr><td>その他CLPコース</td><td class='r b'>51</td><td class='r'>79</td><td class='r neg b'>-28</td></tr><tr><td>ハートランド</td><td class='r b'>6</td><td class='r'>32</td><td class='r neg b'>-26</td></tr><tr><td>パナメラ・カルベネ・ソーヴィニョン</td><td class='r b'>6</td><td class='r'>18</td><td class='r neg b'>-12</td></tr><tr><td>余市</td><td class='r b'>8</td><td class='r'>18</td><td class='r neg b'>-10</td></tr>
+</table>
+</div>
+<div class="col-half">
+<div class="sec-title r">整理候補（暫定: 月内出数1-3 + 売上5k未満）</div>
+<table class="dt sm">
+<tr><th>商品名</th><th class="r">出数</th><th class="r">売上</th><th>カテゴリ</th></tr>
+<tr><td>グレープフルーツジュース</td><td class='r'>1</td><td class='r'>¥800</td><td>ソフトドリンク</td></tr><tr><td>紅茶</td><td class='r'>1</td><td class='r'>¥1,000</td><td>ソフトドリンク</td></tr><tr><td>ハーパー</td><td class='r'>1</td><td class='r'>¥1,000</td><td>ウイスキー</td></tr><tr><td>ロイヤルセンテナリオ12年</td><td class='r'>1</td><td class='r'>¥1,200</td><td>ラム</td></tr><tr><td>バイオレットフィズ</td><td class='r'>1</td><td class='r'>¥1,200</td><td>STANDARD COCKT</td></tr><tr><td>チャイナブルー</td><td class='r'>1</td><td class='r'>¥1,200</td><td>STANDARD COCKT</td></tr><tr><td>スプモーニ</td><td class='r'>1</td><td class='r'>¥1,200</td><td>STANDARD COCKT</td></tr><tr><td>ウイスキー</td><td class='r'>1</td><td class='r'>¥1,300</td><td>ウイスキー（ハイボール・ボト</td></tr><tr><td>バスカー</td><td class='r'>1</td><td class='r'>¥1,300</td><td>ウイスキー</td></tr><tr><td>ニッカ　セッション</td><td class='r'>1</td><td class='r'>¥1,300</td><td>ジャパニーズウイスキー</td></tr><tr><td>ハイランドパーク10年</td><td class='r'>1</td><td class='r'>¥1,400</td><td>ウイスキー</td></tr><tr><td>イチローズモルト ホワイトラベル</td><td class='r'>1</td><td class='r'>¥1,400</td><td>ジャパニーズウイスキー</td></tr>
+</table>
+<div class="data-gap" style="margin-top:8px">⚠ 整理判定の最終決裁は<strong>原価データ取得後</strong>。粗利貢献を加味する必要</div>
+</div>
+</div>
+</div>
+</div>
+<div class="slide" id="slide-9">
+<div class="slide-header"><h2><span class="ch-badge">第3章</span>客単価の作られ方</h2><span class="pn">9 / 16</span></div>
+<div class="msg-bar">中央値¥4,400 / 平均¥4,758 — 中央値&lt;平均で<strong>少数の高単価会計が平均を押上げ</strong></div>
+<div class="slide-body">
+<div id="chart-pphist" style="height:280px"></div>
+<div class="two-col" style="margin-top:8px">
+<div class="col-half">
+<div class="sec-title">客単価サマリ</div>
+<table class="dt sm">
+<tr><th>指標</th><th class="r">値</th></tr>
+<tr><td>平均客単価</td><td class="r b">¥4,758</td></tr>
+<tr><td>中央値</td><td class="r b">¥4,400</td></tr>
+<tr><td>25パーセンタイル</td><td class="r">¥2,950</td></tr>
+<tr><td>75パーセンタイル</td><td class="r">¥6,062</td></tr>
+<tr><td>90パーセンタイル</td><td class="r">¥7,788</td></tr>
+<tr><td>最高単価</td><td class="r warn">¥15,167</td></tr>
+</table>
+</div>
+<div class="col-half">
+<div class="sec-title o">注文構造</div>
+<table class="dt sm">
+<tr><th>指標</th><th class="r">4月</th><th class="r">3月</th></tr>
+<tr><td>1会計あたり点数</td><td class="r b">5.48点</td><td class="r">5.44点</td></tr>
+<tr><td>ドリンク2杯目以上比率</td><td class="r b">50.0%</td><td class="r">25.0%</td></tr>
+<tr><td>コース利用率</td><td class="r b">1.6%</td><td class="r">10.1%</td></tr>
+</table>
+<div class="warn-box" style="margin-top:8px">客単価の主たる作られ方は <strong>「ドリンク2杯目以上 + 看板ジン or ハイボール」</strong>。コース構造が機能していない4月は中位帯（4-7k）が薄い分布。</div>
+</div>
+</div>
+</div>
+</div>
+<div class="slide" id="slide-10">
+<div class="slide-header"><h2><span class="ch-badge">第4章 ★</span>利益構造の判定 — PL推移と固定費耐性</h2><span class="pn">10 / 16</span></div>
+<div class="msg-bar">1月+¥289k → 2月▲¥164k → 3月（費用未入力）→ 4月予算▲¥155k想定。<strong>固定費 ¥1.7M前後の損益分岐に届かない月が続く</strong></div>
+<div class="slide-body">
+<div id="chart-monthly-trend" style="height:330px"></div>
+<div class="two-col" style="margin-top:6px">
+<div class="col-half">
+<div class="sec-title">主要費目構成 (1月実績)</div>
+<table class="dt sm">
+<tr><th>費目</th><th class="r">1月</th><th class="r">2月</th><th class="r">変動性</th></tr>
+<tr><td>家賃 (固定)</td><td class="r">¥1,112,859</td><td class="r">¥1,112,859</td><td>固定</td></tr>
+<tr><td>人件費</td><td class="r">¥347,258</td><td class="r">¥414,487</td><td>準固定</td></tr>
+<tr><td>食材</td><td class="r">¥178,182</td><td class="r">¥210,952</td><td>変動</td></tr>
+<tr><td>ドリンク仕入</td><td class="r">¥203,250</td><td class="r">¥420,616</td><td>変動</td></tr>
+<tr><td>水道光熱費</td><td class="r">¥79,854</td><td class="r">¥91,609</td><td>準固定</td></tr>
+<tr><td>管理費</td><td class="r">¥194,481</td><td class="r">¥250,617</td><td>準変動</td></tr>
+<tr><td>ローン返済</td><td class="r">¥169,154</td><td class="r">¥169,221</td><td>固定</td></tr>
+<tr class="highlight-row"><td>合計</td><td class="r b">¥2,352,939</td><td class="r b">¥2,832,178</td><td></td></tr>
+</table>
+</div>
+<div class="col-half">
+<div class="sec-title r">損益分岐ラインへのギャップ</div>
+<table class="dt sm">
+<tr><th>シナリオ</th><th class="r">必要売上</th><th class="r">4月実績</th><th class="r">ギャップ</th></tr>
+<tr><td>1月費用ベース</td><td class="r">¥2,352,939</td><td class="r b">¥2,300,900</td><td class="r neg b">¥-52,039</td></tr>
+<tr><td>2月費用ベース</td><td class="r">¥2,832,178</td><td class="r b">¥2,300,900</td><td class="r neg b">¥-531,278</td></tr>
+<tr><td>4月予算ベース</td><td class="r">¥3,554,556</td><td class="r b">¥2,300,900</td><td class="r neg b">¥-1,253,656</td></tr>
+<tr><td>+CLP人件費(¥600k)</td><td class="r">¥4,154,556</td><td class="r b">¥2,300,900</td><td class="r neg b">¥-1,853,656</td></tr>
+</table>
+<div class="warn-box" style="margin-top:8px"><strong>4月実績費用が2月並に膨らんだ場合、単月赤字▲¥531k</strong> (CLP人件費考慮なし)。CLP含めると▲¥1.13M。</div>
+</div>
+</div>
+</div>
+</div>
+<div class="slide" id="slide-11">
+<div class="slide-header"><h2><span class="ch-badge">第4章補足</span>理論原価分析 (名寄せ完成後に追補)</h2><span class="pn">11 / 16</span></div>
+<div class="msg-bar">レシピマスタ確定後、商品出数 × 原価 で月次理論原価を確定し実原価との乖離を判定する</div>
+<div class="slide-body">
+<div class="data-gap" style="font-size:18px">⚠ <strong>レシピシート (商品一覧99品目) の所在が未確定</strong>のため、本スライドは<strong>計算枠組みと暫定数字</strong>のみ。最終理論原価率・乖離率は次回月報で追補。</div>
+<div class="two-col" style="margin-top:8px">
+<div class="col-half">
+<div class="sec-title">理論原価計算式</div>
+<div class="card">
+<div class="big-num" style="font-size:22px">月次理論原価 = Σ ( 商品別月内出数(POS) × 商品別原価(レシピ) )</div>
+</div>
+<div class="sec-title o" style="margin-top:10px">本月の前提</div>
+<ul class="bl o">
+<li>4月総売上: <strong>¥2,300,900</strong> (POS合計)</li>
+<li>商品ユニーク数: <strong>110品目</strong> (POS出数1以上)</li>
+<li>レシピマスタ品目: <strong>99品目</strong> (要連携)</li>
+<li>名寄せ未確定品目数: 不明 (確定後に欠損率を本スライドへ転載)</li>
+</ul>
+</div>
+<div class="col-half">
+<div class="sec-title">POSカテゴリ別売上 (理論原価分析の入口)</div>
+<table class="dt sm">
+<tr><th>カテゴリ</th><th class="r">売上</th><th class="r">構成比</th></tr>
+<tr><td>コース&セット</td><td class='r b'>¥583,000</td><td class='r'>25.3%</td></tr><tr><td>NEW CLASSIC COCKTA</td><td class='r b'>¥239,700</td><td class='r'>10.4%</td></tr><tr><td>その他</td><td class='r b'>¥212,700</td><td class='r'>9.2%</td></tr><tr><td>未設定</td><td class='r b'>¥202,000</td><td class='r'>8.8%</td></tr><tr><td>ウイスキー（ハイボール・ボトル・オリ</td><td class='r b'>¥186,500</td><td class='r'>8.1%</td></tr><tr><td>JAPANESE COCKTAIL</td><td class='r b'>¥152,100</td><td class='r'>6.6%</td></tr><tr><td>ウイスキー</td><td class='r b'>¥92,600</td><td class='r'>4.0%</td></tr><tr><td>COLD APPETIZERS</td><td class='r b'>¥82,200</td><td class='r'>3.6%</td></tr>
+</table>
+<div class="info-box" style="margin-top:8px">レシピ連携後、<strong>カテゴリ別実原価率 vs 理論原価率</strong>を算出して乖離トップ3を特定する。</div>
+</div>
+</div>
+</div>
+</div>
+<div class="slide" id="slide-12">
+<div class="slide-header"><h2><span class="ch-badge">第5章</span>コンセプト定着度 — 「使いやすいダイニングバー／ラウンジ」化</h2><span class="pn">12 / 16</span></div>
+<div class="msg-bar">当月評価: <strong>停滞</strong> — 看板商品は安定もコース構造が逆行、平日早時間の伸びは限定的</div>
+<div class="slide-body">
+<div class="two-col">
+<div class="col-half">
+<div class="sec-title">用途タグ別 (POS+日報からの推定指標)</div>
+<table class="dt sm">
+<tr><th>軸</th><th class="r">4月</th><th class="r">参考(3月)</th><th class="c">評価</th></tr>
+<tr><td>早時間 (~20時) 構成</td><td class="r b">27.0%</td><td class="r">—</td><td class="c warn">→</td></tr>
+<tr><td>深夜 (22時~) 構成</td><td class="r b">42.1%</td><td class="r">—</td><td class="c warn">→</td></tr>
+<tr><td>金土依存度</td><td class="r b">55.7%</td><td class="r">—</td><td class="c warn">→</td></tr>
+<tr><td>コース利用率</td><td class="r b">1.6%</td><td class="r">10.1%</td><td class="c neg">↓ 逆行</td></tr>
+<tr><td>1組人数</td><td class="r b">3.62人</td><td class="r">2.77人</td><td class="c pos">↑ 進行</td></tr>
+</table>
+<div class="sec-title o" style="margin-top:10px">看板商品の月次安定度</div>
+<table class="dt sm">
+<tr><th>商品</th><th class="r">4月</th><th class="r">3月</th><th class="c">判定</th></tr>
+<tr><td>ハウスハイボール</td><td class="r b">152</td><td class="r">99</td><td class="c pos">上昇</td></tr>
+<tr><td>森のジントニック</td><td class="r b">82</td><td class="r">0</td><td class="c pos">上昇</td></tr>
+</table>
+</div>
+<div class="col-half">
+<div class="sec-title">日報から読む来店動機 (4月20日分集計)</div>
+<ul class="bl">
+<li><strong>海外客比率が高い</strong>: フィンランド/Google検索流入/接待観光がほぼ毎日記載</li>
+<li><strong>団体送別会・部門会</strong>: 4/3 24名貸切, 4/2 同窓会2次会など複数</li>
+<li><strong>常連の戻り</strong>: アールガット好き等、リピート言及が複数日に確認</li>
+<li><strong>チョコレート (お通し)</strong>が会話の起点となる場面が多い</li>
+<li><strong>「甘くないカクテル」</strong>提案リスト未整備が複数回課題化</li>
+</ul>
+<div class="warn-box" style="margin-top:8px"><strong>判定: 停滞</strong>。看板（ハイボール・ジン）は機能、海外客流入の構造化も観察できるが、コース提案の機能不全と平日早時間（食事用途）の構成比未公開で「ダイニングバー化」進度の確認は次回精査必要。</div>
+</div>
+</div>
+</div>
+</div>
+<div class="slide" id="slide-13">
+<div class="slide-header"><h2><span class="ch-badge">第6章</span>曜日／時間帯サマリ</h2><span class="pn">13 / 16</span></div>
+<div class="msg-bar">強化曜日: <strong>金・土</strong> / 改善曜日: <strong>火・木</strong> (営業日あたり)</div>
+<div class="slide-body">
+<div id="chart-heatmap" style="height:300px"></div>
+<div class="two-col" style="margin-top:8px">
+<div class="col-half">
+<div class="sec-title">曜日別 (営業日あたり)</div>
+<table class="dt sm">
+<tr><th>曜日</th><th class="r">営業日</th><th class="r">日平均売上</th><th class="r">日平均会計</th><th class="r">単価</th></tr>
+<tr class=''><td class='b'>月</td><td class='r'>3</td><td class='r b'>¥64,057</td><td class='r'>5.7</td><td class='r'>¥4,927</td></tr><tr class='worst'><td class='b'>火</td><td class='r'>3</td><td class='r b'>¥32,567</td><td class='r'>4.0</td><td class='r'>¥3,489</td></tr><tr class=''><td class='b'>水</td><td class='r'>3</td><td class='r b'>¥118,933</td><td class='r'>3.0</td><td class='r'>¥7,929</td></tr><tr class=''><td class='b'>木</td><td class='r'>4</td><td class='r b'>¥47,635</td><td class='r'>4.0</td><td class='r'>¥5,444</td></tr><tr class='best'><td class='b'>金</td><td class='r'>4</td><td class='r b'>¥183,988</td><td class='r'>5.5</td><td class='r'>¥4,842</td></tr><tr class=''><td class='b'>土</td><td class='r'>4</td><td class='r b'>¥136,432</td><td class='r'>8.0</td><td class='r'>¥4,961</td></tr><tr class=''><td class='b'>日</td><td class='r'>3</td><td class='r b'>¥60,670</td><td class='r'>6.0</td><td class='r'>¥3,873</td></tr>
+</table>
+</div>
+<div class="col-half">
+<div id="chart-hour" style="height:240px"></div>
+<div class="info-box" style="margin-top:6px">時間帯別: 20-22時台が売上の山。22-24時の深夜帯が客単価最高ゾーン。早時間（~20時）構成が低めなのが「ダイニングバー化」未達の根拠。</div>
+</div>
+</div>
+</div>
+</div>
+<div class="slide" id="slide-14">
+<div class="slide-header"><h2><span class="ch-badge">第7・8章</span>施策の結論 / 構造的ボトルネック</h2><span class="pn">14 / 16</span></div>
+<div class="msg-bar">施策ベース判断は限定的 — 業務改善カテゴリの再発: 補充オペ / 英語対応 / 甘くないカクテル提案</div>
+<div class="slide-body">
+<div class="two-col">
+<div class="col-half">
+<div class="sec-title o">第7章 — 月内施策の結論</div>
+<table class="dt sm">
+<tr><th>施策</th><th>狙い</th><th class="c">継続/修正/停止</th></tr>
+<tr><td>チョコレート お通し定常化</td><td>会話起点・購入導線</td><td class="c pos b">継続</td></tr>
+<tr><td>多言語対応強化</td><td>海外客リピート</td><td class="c warn b">修正 (英語ガイド整備)</td></tr>
+<tr><td>甘くないカクテル提案リスト整備</td><td>提案揺れ解消</td><td class="c warn b">修正 (作成中)</td></tr>
+<tr><td>団体貸切受け入れ</td><td>大口売上</td><td class="c pos b">継続</td></tr>
+<tr><td>コース予約導線</td><td>客単価底上げ</td><td class="c neg b">修正 (機能不全)</td></tr>
+</table>
+<div class="warn-box" style="margin-top:8px">⚠ 媒体施策（食べログ/Google/HP）/ SNS施策の効果数値が日報からは確認できず。第7章の本格的検証は<strong>施策ログ + UTMトラッキング</strong>整備後</div>
+</div>
+<div class="col-half">
+<div class="sec-title r">第8章 — 改善ポイント月内頻出 (日報集計)</div>
+<table class="dt sm">
+<tr><th>キーワード</th><th class="r">月内出現</th><th>分類</th></tr>
+<tr><td>スタッフ</td><td class='r b'>12</td><td>オペ/仕組み</td></tr><tr><td>メニュー</td><td class='r b'>6</td><td>商品/接客</td></tr><tr><td>チョコレート</td><td class='r b'>4</td><td>商品/接客</td></tr><tr><td>ロス</td><td class='r b'>4</td><td>商品/言語</td></tr><tr><td>カクテル</td><td class='r b'>4</td><td>商品/接客</td></tr><tr><td>レシピ</td><td class='r b'>4</td><td>商品/接客</td></tr><tr><td>英語</td><td class='r b'>2</td><td>商品/言語</td></tr><tr><td>日報</td><td class='r b'>1</td><td>オペ/仕組み</td></tr><tr><td>改行</td><td class='r b'>1</td><td>オペ/仕組み</td></tr><tr><td>補充</td><td class='r b'>1</td><td>オペ/仕組み</td></tr>
+</table>
+<div class="sec-title o" style="margin-top:8px">原因分類の比率 (推定)</div>
+<ul class="bl o">
+<li>仕組み: <strong>補充ペース / 役割分担 / システム入力</strong> — オペ整備で解消可</li>
+<li>人: <strong>提案揺れ (甘くないカクテル) / 接客トーク標準化</strong> — トレーニング材料化</li>
+<li>商品: <strong>コース提案フロー</strong> — メニュー設計から再構築</li>
+</ul>
+<div class="info-box" style="margin-top:6px">属人性リスク: 大泉さん入力の日報が大半 → <strong>記録の属人化</strong>が次の構造課題</div>
+</div>
+</div>
+</div>
+</div>
+<div class="slide" id="slide-15">
+<div class="slide-header"><h2><span class="ch-badge">第9章</span>翌月（5月）の意思決定論点 — 4本</h2><span class="pn">15 / 16</span></div>
+<div class="msg-bar">「検討する」「様子を見る」を排し、5月内に判断する論点だけに絞る</div>
+<div class="slide-body">
+<div class="card">
+<div class="card-title r">論点1 — コース提案フロー再構築 (Owner判定 / 5月10日まで)</div>
+<div>4月コース利用率1.6% (3月10.1%)。価格訴求／提案タイミング／メニュー構成の3点で <strong>「コース化が再構造的に成立する設計」</strong>を引くか、<strong>コース概念を諦めて単品ハイチケットに振る</strong>かを判断する。判断材料: 4月コース2件の中身分析、3月コース19件の中身分析、団体予約のコース化率。</div>
+</div>
+<div class="card">
+<div class="card-title o">論点2 — 5月集客強化策 (Owner判定 / 5月7日まで)</div>
+<div>4月日平均¥95.9k → 5月予算 (推定¥3.4M前後) 到達には日平均+¥17k必要。<strong>SNS投下／Google MAP最適化／予約導線改修</strong>のいずれに5月の追加予算を寄せるかを1本に絞る。判断材料: 4月の流入チャネル分布 (POSで取れない場合は5月から計測機構を入れる前提で意思決定)。</div>
+</div>
+<div class="card">
+<div class="card-title">論点3 — PL確定ガバナンス (Manager判定 / 5月5日まで)</div>
+<div>4月実績PLが連休明け時点で未入力 → <strong>月初5営業日以内のPL確定</strong>をルール化するか。判断材料: 入力責任者・データ入力導線・遅延理由の特定。決まり次第5月分から適用。</div>
+</div>
+<div class="card">
+<div class="card-title">論点4 — 「甘くないカクテル」と英語対応資料の整備 (5月20日まで)</div>
+<div>日報で複数回再発する課題。<strong>レシピ提案リスト + 英語ガイド</strong>を整備し、属人解消する。判断材料: 整備担当者の指名と完了日のコミット。</div>
+</div>
+</div>
+</div>
+<div class="slide" id="slide-16">
+<div class="slide-header"><h2><span class="ch-badge">付録</span>前提・データソース・レビュー観点</h2><span class="pn">16 / 16</span></div>
+<div class="msg-bar">本資料の出典・前提・追補必要事項の総まとめ</div>
+<div class="slide-body">
+<div class="two-col">
+<div class="col-half">
+<div class="sec-title">データソース</div>
+<table class="dt sm">
+<tr><th>区分</th><th>ソース</th><th class="c">状態</th></tr>
+<tr><td>POS明細</td><td>rawdata.csv (Stock/週報/1_input/BFA)</td><td class="c pos">✓</td></tr>
+<tr><td>AI日報 (4月20日分)</td><td>DailyReport.csv (同上)</td><td class="c pos">✓</td></tr>
+<tr><td>PL 1-2月実績</td><td>Spreadsheet 新PL管理（移管前）</td><td class="c pos">✓</td></tr>
+<tr><td>PL 3月実績</td><td>同上 (売上のみ確定)</td><td class="c warn">部分</td></tr>
+<tr><td>PL 4月実績</td><td>未入力</td><td class="c neg">✗</td></tr>
+<tr><td>PL 4月予算</td><td>Spreadsheet</td><td class="c pos">✓</td></tr>
+<tr><td>レシピシート (商品99品目)</td><td>所在確認中 (BL-0082 質問中)</td><td class="c neg">✗</td></tr>
+<tr><td>名寄せマスタ</td><td>姉妹タスク生成中</td><td class="c neg">✗</td></tr>
+</table>
+<div class="sec-title o" style="margin-top:10px">数字定義・前提</div>
+<ul class="bl">
+<li>金額 = POS account_total (税込前提)</li>
+<li>客数 = customer_count 合計</li>
+<li>営業日 = POSに会計1件以上の日</li>
+<li>客単価 = 売上 ÷ 客数 (1人あたり)</li>
+<li>主因分解 = 営業日換算</li>
+</ul>
+</div>
+<div class="col-half">
+<div class="sec-title">追補必要事項</div>
+<ol class="nl r">
+<li>4月PL実績入力 → 第4章 利益判定の確定</li>
+<li>レシピシート確定 → 第4章(B) 理論原価分析</li>
+<li>商品位置付けタグ (看板/準看板/スピード)</li>
+<li>POS予約フラグの入力ガバナンス</li>
+<li>媒体・施策ログの形式化 (第7章の本格分析向け)</li>
+</ol>
+<div class="sec-title o" style="margin-top:10px">レビュー観点 (review_checklist.md 参照)</div>
+<ul class="bl o">
+<li>主因分解の解釈は妥当か (客数 vs 単価)</li>
+<li>整理候補の名指しが粗利を考慮できているか</li>
+<li>5月意思決定論点は「判断する」か (検討/様子見でない)</li>
+<li>固定費耐性の前提値 (¥1.7M前後) は最新か</li>
+<li>看板商品の選定は POS×レシピ後で再判定するか</li>
+</ul>
+<div class="info-box" style="margin-top:8px">本資料は <strong>初版</strong>。データ確定後に <strong>第4章・第2章 (整理候補)</strong> を中心に更新版を発行する想定。</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+
+const DATA = {"meta": {"store": "BAR FIVE Arrows (BFA)", "store_code": "bfa-001", "period": "2026-04", "period_label": "2026年4月", "generated_at": "2026-05-04T01:11:39", "business_days": 24, "business_days_mar": 31, "data_sources": {"pos": "rawdata.csv (Stock/週報/1_input/BFA)", "ai_report": "DailyReport.csv (Stock/週報/1_input/BFA)", "pl_past": "Spreadsheet 新PL管理（移管前）2026-01,02 actuals + 03 sales", "pl_apr_actual": "NOT AVAILABLE (sheet shows blank/N/A as of 2026-05-04)", "pl_apr_budget": "Spreadsheet 新PL管理（移管前）", "recipe": "NOT AVAILABLE — 商品一覧シート所在確認中 (BL-0082 question)"}}, "monthly_summary": {"apr": {"sales": 2300900.0, "visits": 126, "customers": 456, "avg_per_visit": 18261.11111111111, "avg_per_person": 5045.833333333333, "avg_party_size": 3.619047619047619, "reservation_share": 0.0, "course_share": 0.015873015873015872}, "mar": {"sales": 2922080.0, "visits": 188, "customers": 521, "avg_per_visit": 15542.978723404256, "avg_per_person": 5608.598848368522, "avg_party_size": 2.771276595744681, "reservation_share": 0.0, "course_share": 0.10106382978723404}, "feb": {"sales": 2782330.0, "visits": 164, "customers": 462, "avg_per_visit": 16965.426829268294, "avg_per_person": 6022.359307359307, "avg_party_size": 2.817073170731707, "reservation_share": 0.0, "course_share": 0.04878048780487805}, "y25_apr": {"sales": 3788620.0, "visits": 294, "customers": 801, "avg_per_visit": 12886.462585034014, "avg_per_person": 4729.862671660425, "avg_party_size": 2.7244897959183674, "reservation_share": 0.0, "course_share": 0.013605442176870748}}, "daily": [{"date": "2026-04-01", "weekday": "水", "sales": 52430.0, "visits": 5, "customers": 8, "items": 29, "avg_per_visit": 10486.0, "avg_per_person": 6553.75}, {"date": "2026-04-02", "weekday": "木", "sales": 53200.0, "visits": 4, "customers": 8, "items": 24, "avg_per_visit": 13300.0, "avg_per_person": 6650.0}, {"date": "2026-04-03", "weekday": "金", "sales": 194500.0, "visits": 3, "customers": 30, "items": 18, "avg_per_visit": 64833.333333333336, "avg_per_person": 6483.333333333333}, {"date": "2026-04-04", "weekday": "土", "sales": 115500.0, "visits": 8, "customers": 19, "items": 50, "avg_per_visit": 14437.5, "avg_per_person": 6078.9473684210525}, {"date": "2026-04-05", "weekday": "日", "sales": 28700.0, "visits": 4, "customers": 7, "items": 19, "avg_per_visit": 7175.0, "avg_per_person": 4100.0}, {"date": "2026-04-06", "weekday": "月", "sales": 64810.0, "visits": 6, "customers": 14, "items": 34, "avg_per_visit": 10801.666666666666, "avg_per_person": 4629.285714285715}, {"date": "2026-04-07", "weekday": "火", "sales": 14100.0, "visits": 3, "customers": 5, "items": 10, "avg_per_visit": 4700.0, "avg_per_person": 2820.0}, {"date": "2026-04-08", "weekday": "水", "sales": 11300.0, "visits": 1, "customers": 2, "items": 9, "avg_per_visit": 11300.0, "avg_per_person": 5650.0}, {"date": "2026-04-09", "weekday": "木", "sales": 20100.0, "visits": 2, "customers": 4, "items": 13, "avg_per_visit": 10050.0, "avg_per_person": 5025.0}, {"date": "2026-04-10", "weekday": "金", "sales": 48940.0, "visits": 6, "customers": 14, "items": 28, "avg_per_visit": 8156.666666666667, "avg_per_person": 3495.714285714286}, {"date": "2026-04-11", "weekday": "土", "sales": 158260.0, "visits": 9, "customers": 42, "items": 55, "avg_per_visit": 17584.444444444445, "avg_per_person": 3768.095238095238}, {"date": "2026-04-12", "weekday": "日", "sales": 44500.0, "visits": 4, "customers": 12, "items": 30, "avg_per_visit": 11125.0, "avg_per_person": 3708.3333333333335}, {"date": "2026-04-13", "weekday": "月", "sales": 80260.0, "visits": 6, "customers": 16, "items": 34, "avg_per_visit": 13376.666666666666, "avg_per_person": 5016.25}, {"date": "2026-04-14", "weekday": "火", "sales": 17900.0, "visits": 3, "customers": 6, "items": 13, "avg_per_visit": 5966.666666666667, "avg_per_person": 2983.3333333333335}, {"date": "2026-04-15", "weekday": "水", "sales": 293070.0, "visits": 3, "customers": 35, "items": 36, "avg_per_visit": 97690.0, "avg_per_person": 8373.42857142857}, {"date": "2026-04-16", "weekday": "木", "sales": 84870.0, "visits": 6, "customers": 14, "items": 33, "avg_per_visit": 14145.0, "avg_per_person": 6062.142857142857}, {"date": "2026-04-17", "weekday": "金", "sales": 240910.0, "visits": 9, "customers": 43, "items": 39, "avg_per_visit": 26767.777777777777, "avg_per_person": 5602.558139534884}, {"date": "2026-04-18", "weekday": "土", "sales": 41170.0, "visits": 6, "customers": 11, "items": 21, "avg_per_visit": 6861.666666666667, "avg_per_person": 3742.7272727272725}, {"date": "2026-04-20", "weekday": "月", "sales": 47100.0, "visits": 5, "customers": 9, "items": 29, "avg_per_visit": 9420.0, "avg_per_person": 5233.333333333333}, {"date": "2026-04-21", "weekday": "火", "sales": 65700.0, "visits": 6, "customers": 17, "items": 37, "avg_per_visit": 10950.0, "avg_per_person": 3864.705882352941}, {"date": "2026-04-23", "weekday": "木", "sales": 32370.0, "visits": 4, "customers": 9, "items": 21, "avg_per_visit": 8092.5, "avg_per_person": 3596.6666666666665}, {"date": "2026-04-24", "weekday": "金", "sales": 251600.0, "visits": 4, "customers": 65, "items": 12, "avg_per_visit": 62900.0, "avg_per_person": 3870.769230769231}, {"date": "2026-04-25", "weekday": "土", "sales": 230800.0, "visits": 9, "customers": 38, "items": 49, "avg_per_visit": 25644.444444444445, "avg_per_person": 6073.684210526316}, {"date": "2026-04-26", "weekday": "日", "sales": 108810.0, "visits": 10, "customers": 28, "items": 47, "avg_per_visit": 10881.0, "avg_per_person": 3886.0714285714284}], "weekday_summary": [{"weekday": "月", "wd_idx": 0, "sales": 192170.0, "visits": 17, "customers": 39, "days": 3, "sales_per_day": 64056.666666666664, "visits_per_day": 5.666666666666667, "avg_per_visit": 11304.117647058823, "avg_per_person": 4927.4358974358975}, {"weekday": "火", "wd_idx": 1, "sales": 97700.0, "visits": 12, "customers": 28, "days": 3, "sales_per_day": 32566.666666666668, "visits_per_day": 4.0, "avg_per_visit": 8141.666666666667, "avg_per_person": 3489.285714285714}, {"weekday": "水", "wd_idx": 2, "sales": 356800.0, "visits": 9, "customers": 45, "days": 3, "sales_per_day": 118933.33333333333, "visits_per_day": 3.0, "avg_per_visit": 39644.444444444445, "avg_per_person": 7928.888888888889}, {"weekday": "木", "wd_idx": 3, "sales": 190540.0, "visits": 16, "customers": 35, "days": 4, "sales_per_day": 47635.0, "visits_per_day": 4.0, "avg_per_visit": 11908.75, "avg_per_person": 5444.0}, {"weekday": "金", "wd_idx": 4, "sales": 735950.0, "visits": 22, "customers": 152, "days": 4, "sales_per_day": 183987.5, "visits_per_day": 5.5, "avg_per_visit": 33452.27272727273, "avg_per_person": 4841.776315789473}, {"weekday": "土", "wd_idx": 5, "sales": 545730.0, "visits": 32, "customers": 110, "days": 4, "sales_per_day": 136432.5, "visits_per_day": 8.0, "avg_per_visit": 17054.0625, "avg_per_person": 4961.181818181818}, {"weekday": "日", "wd_idx": 6, "sales": 182010.0, "visits": 18, "customers": 47, "days": 3, "sales_per_day": 60670.0, "visits_per_day": 6.0, "avg_per_visit": 10111.666666666666, "avg_per_person": 3872.553191489362}], "hour_summary": [{"bucket": "~18時", "sales": 449150.0, "visits": 18, "customers": 76, "avg_per_visit": 24952.777777777777, "avg_per_person": 5909.868421052632}, {"bucket": "18-20時", "sales": 248010.0, "visits": 16, "customers": 48, "avg_per_visit": 15500.625, "avg_per_person": 5166.875}, {"bucket": "20-22時", "sales": 759360.0, "visits": 39, "customers": 156, "avg_per_visit": 19470.76923076923, "avg_per_person": 4867.692307692308}, {"bucket": "22-24時", "sales": 844380.0, "visits": 53, "customers": 176, "avg_per_visit": 15931.698113207547, "avg_per_person": 4797.613636363636}, {"bucket": "24時~", "sales": 0, "visits": 0, "customers": 0, "avg_per_visit": 0, "avg_per_person": 0}], "heatmap": [{"weekday": "月", "wd_idx": 0, "bucket": "~18時", "sales": 47000.0, "visits": 2}, {"weekday": "月", "wd_idx": 0, "bucket": "18-20時", "sales": 26200.0, "visits": 3}, {"weekday": "月", "wd_idx": 0, "bucket": "20-22時", "sales": 65760.0, "visits": 8}, {"weekday": "月", "wd_idx": 0, "bucket": "22-24時", "sales": 53210.0, "visits": 4}, {"weekday": "月", "wd_idx": 0, "bucket": "24時~", "sales": 0, "visits": 0}, {"weekday": "火", "wd_idx": 1, "bucket": "~18時", "sales": 10100.0, "visits": 1}, {"weekday": "火", "wd_idx": 1, "bucket": "18-20時", "sales": 25200.0, "visits": 5}, {"weekday": "火", "wd_idx": 1, "bucket": "20-22時", "sales": 30200.0, "visits": 3}, {"weekday": "火", "wd_idx": 1, "bucket": "22-24時", "sales": 32200.0, "visits": 3}, {"weekday": "火", "wd_idx": 1, "bucket": "24時~", "sales": 0, "visits": 0}, {"weekday": "水", "wd_idx": 2, "bucket": "~18時", "sales": 166870.0, "visits": 3}, {"weekday": "水", "wd_idx": 2, "bucket": "18-20時", "sales": 1600.0, "visits": 1}, {"weekday": "水", "wd_idx": 2, "bucket": "20-22時", "sales": 31500.0, "visits": 1}, {"weekday": "水", "wd_idx": 2, "bucket": "22-24時", "sales": 156830.0, "visits": 4}, {"weekday": "水", "wd_idx": 2, "bucket": "24時~", "sales": 0, "visits": 0}, {"weekday": "木", "wd_idx": 3, "bucket": "~18時", "sales": 36380.0, "visits": 2}, {"weekday": "木", "wd_idx": 3, "bucket": "18-20時", "sales": 4200.0, "visits": 1}, {"weekday": "木", "wd_idx": 3, "bucket": "20-22時", "sales": 34700.0, "visits": 3}, {"weekday": "木", "wd_idx": 3, "bucket": "22-24時", "sales": 115260.0, "visits": 10}, {"weekday": "木", "wd_idx": 3, "bucket": "24時~", "sales": 0, "visits": 0}, {"weekday": "金", "wd_idx": 4, "bucket": "~18時", "sales": 17700.0, "visits": 1}, {"weekday": "金", "wd_idx": 4, "bucket": "18-20時", "sales": 165000.0, "visits": 1}, {"weekday": "金", "wd_idx": 4, "bucket": "20-22時", "sales": 454540.0, "visits": 11}, {"weekday": "金", "wd_idx": 4, "bucket": "22-24時", "sales": 98710.0, "visits": 9}, {"weekday": "金", "wd_idx": 4, "bucket": "24時~", "sales": 0, "visits": 0}, {"weekday": "土", "wd_idx": 5, "bucket": "~18時", "sales": 130300.0, "visits": 6}, {"weekday": "土", "wd_idx": 5, "bucket": "18-20時", "sales": 8800.0, "visits": 1}, {"weekday": "土", "wd_idx": 5, "bucket": "20-22時", "sales": 72660.0, "visits": 7}, {"weekday": "土", "wd_idx": 5, "bucket": "22-24時", "sales": 333970.0, "visits": 18}, {"weekday": "土", "wd_idx": 5, "bucket": "24時~", "sales": 0, "visits": 0}, {"weekday": "日", "wd_idx": 6, "bucket": "~18時", "sales": 40800.0, "visits": 3}, {"weekday": "日", "wd_idx": 6, "bucket": "18-20時", "sales": 17010.0, "visits": 4}, {"weekday": "日", "wd_idx": 6, "bucket": "20-22時", "sales": 70000.0, "visits": 6}, {"weekday": "日", "wd_idx": 6, "bucket": "22-24時", "sales": 54200.0, "visits": 5}, {"weekday": "日", "wd_idx": 6, "bucket": "24時~", "sales": 0, "visits": 0}], "products": {"top_qty_30": [{"name": "tablecharge", "category1": "その他", "qty": 290, "sales": 172300.0, "unique_visits": 103, "price_avg": 594.1379310344828, "qty_mar": 361, "qty_diff_mom": -71, "qty_y25apr": 629, "qty_diff_yoy": -339}, {"name": "ハウスハイボール", "category1": "ウイスキー（ハイボール・ボトル・オリジナル）", "qty": 152, "sales": 182400.0, "unique_visits": 16, "price_avg": 1200.0, "qty_mar": 99, "qty_diff_mom": 53, "qty_y25apr": 66, "qty_diff_yoy": 86}, {"name": "森のジントニック", "category1": "NEW CLASSIC COCKTAIL", "qty": 82, "sales": 121500.0, "unique_visits": 37, "price_avg": 1481.7073170731708, "qty_mar": 0, "qty_diff_mom": 82, "qty_y25apr": 0, "qty_diff_yoy": 82}, {"name": "その他CLPコース", "category1": "コース&セット", "qty": 51, "sales": 280500.0, "unique_visits": 2, "price_avg": 5500.0, "qty_mar": 79, "qty_diff_mom": -28, "qty_y25apr": 28, "qty_diff_yoy": 23}, {"name": "ガージェリー", "category1": "ビール", "qty": 39, "sales": 50700.0, "unique_visits": 16, "price_avg": 1300.0, "qty_mar": 83, "qty_diff_mom": -44, "qty_y25apr": 47, "qty_diff_yoy": -8}, {"name": "BAR 専用チョコレート", "category1": "BAR SNACKS", "qty": 38, "sales": 22800.0, "unique_visits": 12, "price_avg": 600.0, "qty_mar": 0, "qty_diff_mom": 38, "qty_y25apr": 0, "qty_diff_yoy": 38}, {"name": "丸氷", "category1": "その他", "qty": 26, "sales": 2600.0, "unique_visits": 15, "price_avg": 100.0, "qty_mar": 63, "qty_diff_mom": -37, "qty_y25apr": 78, "qty_diff_yoy": -52}, {"name": "7000円飲み放題付（3時間制）", "category1": "未設定", "qty": 26, "sales": 182000.0, "unique_visits": 2, "price_avg": 7000.0, "qty_mar": 0, "qty_diff_mom": 26, "qty_y25apr": 0, "qty_diff_yoy": 26}, {"name": "ワカモレチップス", "category1": "COLD APPETIZERS", "qty": 25, "sales": 30000.0, "unique_visits": 18, "price_avg": 1200.0, "qty_mar": 0, "qty_diff_mom": 25, "qty_y25apr": 0, "qty_diff_yoy": 25}, {"name": "ドリンク", "category1": "その他", "qty": 25, "sales": 37800.0, "unique_visits": 11, "price_avg": 1512.0, "qty_mar": 27, "qty_diff_mom": -2, "qty_y25apr": 10, "qty_diff_yoy": 15}, {"name": "桜ブロッサム", "category1": "JAPANESE COCKTAIL", "qty": 24, "sales": 45600.0, "unique_visits": 22, "price_avg": 1900.0, "qty_mar": 0, "qty_diff_mom": 24, "qty_y25apr": 0, "qty_diff_yoy": 24}, {"name": "6500円飲み放題付（2時間制）", "category1": "コース&セット", "qty": 24, "sales": 156000.0, "unique_visits": 1, "price_avg": 6500.0, "qty_mar": 23, "qty_diff_mom": 1, "qty_y25apr": 18, "qty_diff_yoy": 6}, {"name": "No charge", "category1": "未設定", "qty": 21, "sales": 0.0, "unique_visits": 14, "price_avg": 0.0, "qty_mar": 59, "qty_diff_mom": -38, "qty_y25apr": 59, "qty_diff_yoy": -38}, {"name": "カルヴァドスモヒート", "category1": "NEW CLASSIC COCKTAIL", "qty": 21, "sales": 31500.0, "unique_visits": 15, "price_avg": 1500.0, "qty_mar": 0, "qty_diff_mom": 21, "qty_y25apr": 0, "qty_diff_yoy": 21}, {"name": "焙煎ファッションド", "category1": "JAPANESE COCKTAIL", "qty": 21, "sales": 39900.0, "unique_visits": 18, "price_avg": 1900.0, "qty_mar": 0, "qty_diff_mom": 21, "qty_y25apr": 0, "qty_diff_yoy": 21}, {"name": "5000円飲み放題付（2時間制）＋チャージ込み", "category1": "コース&セット", "qty": 21, "sales": 136500.0, "unique_visits": 1, "price_avg": 6500.0, "qty_mar": 0, "qty_diff_mom": 21, "qty_y25apr": 0, "qty_diff_yoy": 21}, {"name": "トロピカルヴェール", "category1": "FRUITS COCKTAIL", "qty": 18, "sales": 27000.0, "unique_visits": 14, "price_avg": 1500.0, "qty_mar": 0, "qty_diff_mom": 18, "qty_y25apr": 0, "qty_diff_yoy": 18}, {"name": "キャンディピーカン", "category1": "BAR SNACKS", "qty": 17, "sales": 11900.0, "unique_visits": 16, "price_avg": 700.0, "qty_mar": 0, "qty_diff_mom": 17, "qty_y25apr": 0, "qty_diff_yoy": 17}, {"name": "ウーロン茶", "category1": "ソフトドリンク", "qty": 17, "sales": 13600.0, "unique_visits": 7, "price_avg": 800.0, "qty_mar": 13, "qty_diff_mom": 4, "qty_y25apr": 0, "qty_diff_yoy": 17}, {"name": "マティポテ", "category1": "HOT APPETIZERS", "qty": 16, "sales": 20800.0, "unique_visits": 14, "price_avg": 1300.0, "qty_mar": 0, "qty_diff_mom": 16, "qty_y25apr": 0, "qty_diff_yoy": 16}, {"name": "ローズガーデン", "category1": "FRUITS COCKTAIL", "qty": 16, "sales": 24000.0, "unique_visits": 14, "price_avg": 1500.0, "qty_mar": 0, "qty_diff_mom": 16, "qty_y25apr": 0, "qty_diff_yoy": 16}, {"name": "ゆずマティーニ", "category1": "JAPANESE COCKTAIL", "qty": 16, "sales": 32400.0, "unique_visits": 11, "price_avg": 2025.0, "qty_mar": 0, "qty_diff_mom": 16, "qty_y25apr": 0, "qty_diff_yoy": 16}, {"name": "ベルガモットモスコミュール", "category1": "NEW CLASSIC COCKTAIL", "qty": 15, "sales": 22500.0, "unique_visits": 14, "price_avg": 1500.0, "qty_mar": 0, "qty_diff_mom": 15, "qty_y25apr": 0, "qty_diff_yoy": 15}, {"name": "ミントのジェノベーゼ", "category1": "MAIN DISHES", "qty": 15, "sales": 28500.0, "unique_visits": 13, "price_avg": 1900.0, "qty_mar": 0, "qty_diff_mom": 15, "qty_y25apr": 0, "qty_diff_yoy": 15}, {"name": "牛肉と季節のフルーツのカルパッチョ", "category1": "COLD APPETIZERS", "qty": 13, "sales": 19500.0, "unique_visits": 11, "price_avg": 1500.0, "qty_mar": 0, "qty_diff_mom": 13, "qty_y25apr": 0, "qty_diff_yoy": 13}, {"name": "オーチャードマティーニ", "category1": "NEW CLASSIC COCKTAIL", "qty": 13, "sales": 19500.0, "unique_visits": 12, "price_avg": 1500.0, "qty_mar": 0, "qty_diff_mom": 13, "qty_y25apr": 0, "qty_diff_yoy": 13}, {"name": "ワイルドターキー8年", "category1": "ウイスキー", "qty": 13, "sales": 15600.0, "unique_visits": 2, "price_avg": 1200.0, "qty_mar": 4, "qty_diff_mom": 9, "qty_y25apr": 0, "qty_diff_yoy": 13}, {"name": "ボロネーゼラザニア", "category1": "MAIN DISHES", "qty": 12, "sales": 25200.0, "unique_visits": 10, "price_avg": 2100.0, "qty_mar": 0, "qty_diff_mom": 12, "qty_y25apr": 0, "qty_diff_yoy": 12}, {"name": "オリエンタルアフタヌーン", "category1": "NEW CLASSIC COCKTAIL", "qty": 12, "sales": 18000.0, "unique_visits": 9, "price_avg": 1500.0, "qty_mar": 0, "qty_diff_mom": 12, "qty_y25apr": 0, "qty_diff_yoy": 12}, {"name": "フィーバーツリーソーダ", "category1": "ソフトドリンク", "qty": 11, "sales": 8800.0, "unique_visits": 3, "price_avg": 800.0, "qty_mar": 9, "qty_diff_mom": 2, "qty_y25apr": 0, "qty_diff_yoy": 11}], "top_sales_30": [{"name": "その他CLPコース", "category1": "コース&セット", "qty": 51, "sales": 280500.0, "unique_visits": 2, "price_avg": 5500.0, "qty_mar": 79, "qty_diff_mom": -28, "qty_y25apr": 28, "qty_diff_yoy": 23}, {"name": "ハウスハイボール", "category1": "ウイスキー（ハイボール・ボトル・オリジナル）", "qty": 152, "sales": 182400.0, "unique_visits": 16, "price_avg": 1200.0, "qty_mar": 99, "qty_diff_mom": 53, "qty_y25apr": 66, "qty_diff_yoy": 86}, {"name": "7000円飲み放題付（3時間制）", "category1": "未設定", "qty": 26, "sales": 182000.0, "unique_visits": 2, "price_avg": 7000.0, "qty_mar": 0, "qty_diff_mom": 26, "qty_y25apr": 0, "qty_diff_yoy": 26}, {"name": "tablecharge", "category1": "その他", "qty": 290, "sales": 172300.0, "unique_visits": 103, "price_avg": 594.1379310344828, "qty_mar": 361, "qty_diff_mom": -71, "qty_y25apr": 629, "qty_diff_yoy": -339}, {"name": "6500円飲み放題付（2時間制）", "category1": "コース&セット", "qty": 24, "sales": 156000.0, "unique_visits": 1, "price_avg": 6500.0, "qty_mar": 23, "qty_diff_mom": 1, "qty_y25apr": 18, "qty_diff_yoy": 6}, {"name": "5000円飲み放題付（2時間制）＋チャージ込み", "category1": "コース&セット", "qty": 21, "sales": 136500.0, "unique_visits": 1, "price_avg": 6500.0, "qty_mar": 0, "qty_diff_mom": 21, "qty_y25apr": 0, "qty_diff_yoy": 21}, {"name": "森のジントニック", "category1": "NEW CLASSIC COCKTAIL", "qty": 82, "sales": 121500.0, "unique_visits": 37, "price_avg": 1481.7073170731708, "qty_mar": 0, "qty_diff_mom": 82, "qty_y25apr": 0, "qty_diff_yoy": 82}, {"name": "イベント費用", "category1": "イベント", "qty": 3, "sales": 81000.0, "unique_visits": 3, "price_avg": 27000.0, "qty_mar": 2, "qty_diff_mom": 1, "qty_y25apr": 57, "qty_diff_yoy": -54}, {"name": "ガージェリー", "category1": "ビール", "qty": 39, "sales": 50700.0, "unique_visits": 16, "price_avg": 1300.0, "qty_mar": 83, "qty_diff_mom": -44, "qty_y25apr": 47, "qty_diff_yoy": -8}, {"name": "桜ブロッサム", "category1": "JAPANESE COCKTAIL", "qty": 24, "sales": 45600.0, "unique_visits": 22, "price_avg": 1900.0, "qty_mar": 0, "qty_diff_mom": 24, "qty_y25apr": 0, "qty_diff_yoy": 24}, {"name": "焙煎ファッションド", "category1": "JAPANESE COCKTAIL", "qty": 21, "sales": 39900.0, "unique_visits": 18, "price_avg": 1900.0, "qty_mar": 0, "qty_diff_mom": 21, "qty_y25apr": 0, "qty_diff_yoy": 21}, {"name": "ドリンク", "category1": "その他", "qty": 25, "sales": 37800.0, "unique_visits": 11, "price_avg": 1512.0, "qty_mar": 27, "qty_diff_mom": -2, "qty_y25apr": 10, "qty_diff_yoy": 15}, {"name": "ゆずマティーニ", "category1": "JAPANESE COCKTAIL", "qty": 16, "sales": 32400.0, "unique_visits": 11, "price_avg": 2025.0, "qty_mar": 0, "qty_diff_mom": 16, "qty_y25apr": 0, "qty_diff_yoy": 16}, {"name": "カルヴァドスモヒート", "category1": "NEW CLASSIC COCKTAIL", "qty": 21, "sales": 31500.0, "unique_visits": 15, "price_avg": 1500.0, "qty_mar": 0, "qty_diff_mom": 21, "qty_y25apr": 0, "qty_diff_yoy": 21}, {"name": "ワカモレチップス", "category1": "COLD APPETIZERS", "qty": 25, "sales": 30000.0, "unique_visits": 18, "price_avg": 1200.0, "qty_mar": 0, "qty_diff_mom": 25, "qty_y25apr": 0, "qty_diff_yoy": 25}, {"name": "ミントのジェノベーゼ", "category1": "MAIN DISHES", "qty": 15, "sales": 28500.0, "unique_visits": 13, "price_avg": 1900.0, "qty_mar": 0, "qty_diff_mom": 15, "qty_y25apr": 0, "qty_diff_yoy": 15}, {"name": "トロピカルヴェール", "category1": "FRUITS COCKTAIL", "qty": 18, "sales": 27000.0, "unique_visits": 14, "price_avg": 1500.0, "qty_mar": 0, "qty_diff_mom": 18, "qty_y25apr": 0, "qty_diff_yoy": 18}, {"name": "ボロネーゼラザニア", "category1": "MAIN DISHES", "qty": 12, "sales": 25200.0, "unique_visits": 10, "price_avg": 2100.0, "qty_mar": 0, "qty_diff_mom": 12, "qty_y25apr": 0, "qty_diff_yoy": 12}, {"name": "ローズガーデン", "category1": "FRUITS COCKTAIL", "qty": 16, "sales": 24000.0, "unique_visits": 14, "price_avg": 1500.0, "qty_mar": 0, "qty_diff_mom": 16, "qty_y25apr": 0, "qty_diff_yoy": 16}, {"name": "BAR 専用チョコレート", "category1": "BAR SNACKS", "qty": 38, "sales": 22800.0, "unique_visits": 12, "price_avg": 600.0, "qty_mar": 0, "qty_diff_mom": 38, "qty_y25apr": 0, "qty_diff_yoy": 38}, {"name": "ベルガモットモスコミュール", "category1": "NEW CLASSIC COCKTAIL", "qty": 15, "sales": 22500.0, "unique_visits": 14, "price_avg": 1500.0, "qty_mar": 0, "qty_diff_mom": 15, "qty_y25apr": 0, "qty_diff_yoy": 15}, {"name": "撫子ネグローニ", "category1": "JAPANESE COCKTAIL", "qty": 11, "sales": 20900.0, "unique_visits": 11, "price_avg": 1900.0, "qty_mar": 0, "qty_diff_mom": 11, "qty_y25apr": 0, "qty_diff_yoy": 11}, {"name": "マティポテ", "category1": "HOT APPETIZERS", "qty": 16, "sales": 20800.0, "unique_visits": 14, "price_avg": 1300.0, "qty_mar": 0, "qty_diff_mom": 16, "qty_y25apr": 0, "qty_diff_yoy": 16}, {"name": "7000円飲み放題付（2時間制）", "category1": "未設定", "qty": 4, "sales": 20000.0, "unique_visits": 1, "price_avg": 5000.0, "qty_mar": 0, "qty_diff_mom": 4, "qty_y25apr": 0, "qty_diff_yoy": 4}, {"name": "牛肉と季節のフルーツのカルパッチョ", "category1": "COLD APPETIZERS", "qty": 13, "sales": 19500.0, "unique_visits": 11, "price_avg": 1500.0, "qty_mar": 0, "qty_diff_mom": 13, "qty_y25apr": 0, "qty_diff_yoy": 13}, {"name": "オーチャードマティーニ", "category1": "NEW CLASSIC COCKTAIL", "qty": 13, "sales": 19500.0, "unique_visits": 12, "price_avg": 1500.0, "qty_mar": 0, "qty_diff_mom": 13, "qty_y25apr": 0, "qty_diff_yoy": 13}, {"name": "オリエンタルアフタヌーン", "category1": "NEW CLASSIC COCKTAIL", "qty": 12, "sales": 18000.0, "unique_visits": 9, "price_avg": 1500.0, "qty_mar": 0, "qty_diff_mom": 12, "qty_y25apr": 0, "qty_diff_yoy": 12}, {"name": "サンセットソルティドッグ", "category1": "NEW CLASSIC COCKTAIL", "qty": 11, "sales": 16500.0, "unique_visits": 11, "price_avg": 1500.0, "qty_mar": 0, "qty_diff_mom": 11, "qty_y25apr": 0, "qty_diff_yoy": 11}, {"name": "ティラミスロブロイ", "category1": "DESSERT COCKTAIL", "qty": 11, "sales": 16500.0, "unique_visits": 11, "price_avg": 1500.0, "qty_mar": 0, "qty_diff_mom": 11, "qty_y25apr": 0, "qty_diff_yoy": 11}, {"name": "ワイルドターキー8年", "category1": "ウイスキー", "qty": 13, "sales": 15600.0, "unique_visits": 2, "price_avg": 1200.0, "qty_mar": 4, "qty_diff_mom": 9, "qty_y25apr": 0, "qty_diff_yoy": 13}], "all": [{"name": "No charge", "category1": "未設定", "qty": 21, "sales": 0.0, "unique_visits": 14, "price_avg": 0.0, "qty_mar": 59, "qty_diff_mom": -38, "qty_y25apr": 59, "qty_diff_yoy": -38}, {"name": "森のジントニック", "category1": "NEW CLASSIC COCKTAIL", "qty": 82, "sales": 121500.0, "unique_visits": 37, "price_avg": 1481.7073170731708, "qty_mar": 0, "qty_diff_mom": 82, "qty_y25apr": 0, "qty_diff_yoy": 82}, {"name": "デイドリームレモネード", "category1": "NEW CLASSIC COCKTAIL", "qty": 6, "sales": 10200.0, "unique_visits": 6, "price_avg": 1700.0, "qty_mar": 0, "qty_diff_mom": 6, "qty_y25apr": 0, "qty_diff_yoy": 6}, {"name": "tablecharge", "category1": "その他", "qty": 290, "sales": 172300.0, "unique_visits": 103, "price_avg": 594.1379310344828, "qty_mar": 361, "qty_diff_mom": -71, "qty_y25apr": 629, "qty_diff_yoy": -339}, {"name": "ラ・ロスカ カヴァ ブリュット", "category1": "ワイン", "qty": 2, "sales": 12000.0, "unique_visits": 2, "price_avg": 6000.0, "qty_mar": 0, "qty_diff_mom": 2, "qty_y25apr": 0, "qty_diff_yoy": 2}, {"name": "フィーバーツリーソーダ", "category1": "ソフトドリンク", "qty": 11, "sales": 8800.0, "unique_visits": 3, "price_avg": 800.0, "qty_mar": 9, "qty_diff_mom": 2, "qty_y25apr": 0, "qty_diff_yoy": 11}, {"name": "カルヴァドスモヒート", "category1": "NEW CLASSIC COCKTAIL", "qty": 21, "sales": 31500.0, "unique_visits": 15, "price_avg": 1500.0, "qty_mar": 0, "qty_diff_mom": 21, "qty_y25apr": 0, "qty_diff_yoy": 21}, {"name": "ベルガモットモスコミュール", "category1": "NEW CLASSIC COCKTAIL", "qty": 15, "sales": 22500.0, "unique_visits": 14, "price_avg": 1500.0, "qty_mar": 0, "qty_diff_mom": 15, "qty_y25apr": 0, "qty_diff_yoy": 15}, {"name": "マッシュルームサラダとコールドカット", "category1": "COLD APPETIZERS", "qty": 8, "sales": 10400.0, "unique_visits": 8, "price_avg": 1300.0, "qty_mar": 0, "qty_diff_mom": 8, "qty_y25apr": 0, "qty_diff_yoy": 8}, {"name": "牛肉と季節のフルーツのカルパッチョ", "category1": "COLD APPETIZERS", "qty": 13, "sales": 19500.0, "unique_visits": 11, "price_avg": 1500.0, "qty_mar": 0, "qty_diff_mom": 13, "qty_y25apr": 0, "qty_diff_yoy": 13}, {"name": "ワカモレチップス", "category1": "COLD APPETIZERS", "qty": 25, "sales": 30000.0, "unique_visits": 18, "price_avg": 1200.0, "qty_mar": 0, "qty_diff_mom": 25, "qty_y25apr": 0, "qty_diff_yoy": 25}, {"name": "マティポテ", "category1": "HOT APPETIZERS", "qty": 16, "sales": 20800.0, "unique_visits": 14, "price_avg": 1300.0, "qty_mar": 0, "qty_diff_mom": 16, "qty_y25apr": 0, "qty_diff_yoy": 16}, {"name": "カマンベールフォンデュ", "category1": "HOT APPETIZERS", "qty": 6, "sales": 8400.0, "unique_visits": 6, "price_avg": 1400.0, "qty_mar": 0, "qty_diff_mom": 6, "qty_y25apr": 0, "qty_diff_yoy": 6}, {"name": "コーラ", "category1": "ソフトドリンク", "qty": 4, "sales": 3200.0, "unique_visits": 3, "price_avg": 800.0, "qty_mar": 3, "qty_diff_mom": 1, "qty_y25apr": 0, "qty_diff_yoy": 4}, {"name": "オーチャードマティーニ", "category1": "NEW CLASSIC COCKTAIL", "qty": 13, "sales": 19500.0, "unique_visits": 12, "price_avg": 1500.0, "qty_mar": 0, "qty_diff_mom": 13, "qty_y25apr": 0, "qty_diff_yoy": 13}, {"name": "BAR 専用チョコレート", "category1": "BAR SNACKS", "qty": 38, "sales": 22800.0, "unique_visits": 12, "price_avg": 600.0, "qty_mar": 0, "qty_diff_mom": 38, "qty_y25apr": 0, "qty_diff_yoy": 38}, {"name": "オリーブ", "category1": "BAR SNACKS", "qty": 9, "sales": 6300.0, "unique_visits": 9, "price_avg": 700.0, "qty_mar": 0, "qty_diff_mom": 9, "qty_y25apr": 0, "qty_diff_yoy": 9}, {"name": "キャンディピーカン", "category1": "BAR SNACKS", "qty": 17, "sales": 11900.0, "unique_visits": 16, "price_avg": 700.0, "qty_mar": 0, "qty_diff_mom": 17, "qty_y25apr": 0, "qty_diff_yoy": 17}, {"name": "ボロネーゼラザニア", "category1": "MAIN DISHES", "qty": 12, "sales": 25200.0, "unique_visits": 10, "price_avg": 2100.0, "qty_mar": 0, "qty_diff_mom": 12, "qty_y25apr": 0, "qty_diff_yoy": 12}, {"name": "ウイスキー", "category1": "ウイスキー（ハイボール・ボトル・オリジナル）", "qty": 1, "sales": 1300.0, "unique_visits": 1, "price_avg": 1300.0, "qty_mar": 4, "qty_diff_mom": -3, "qty_y25apr": 84, "qty_diff_yoy": -83}, {"name": "サンセットソルティドッグ", "category1": "NEW CLASSIC COCKTAIL", "qty": 11, "sales": 16500.0, "unique_visits": 11, "price_avg": 1500.0, "qty_mar": 0, "qty_diff_mom": 11, "qty_y25apr": 0, "qty_diff_yoy": 11}, {"name": "ローズガーデン", "category1": "FRUITS COCKTAIL", "qty": 16, "sales": 24000.0, "unique_visits": 14, "price_avg": 1500.0, "qty_mar": 0, "qty_diff_mom": 16, "qty_y25apr": 0, "qty_diff_yoy": 16}, {"name": "ティラミスロブロイ", "category1": "DESSERT COCKTAIL", "qty": 11, "sales": 16500.0, "unique_visits": 11, "price_avg": 1500.0, "qty_mar": 0, "qty_diff_mom": 11, "qty_y25apr": 0, "qty_diff_yoy": 11}, {"name": "キャラメルナッツキャデラック", "category1": "DESSERT COCKTAIL", "qty": 8, "sales": 12000.0, "unique_visits": 8, "price_avg": 1500.0, "qty_mar": 0, "qty_diff_mom": 8, "qty_y25apr": 0, "qty_diff_yoy": 8}, {"name": "ミントのジェノベーゼ", "category1": "MAIN DISHES", "qty": 15, "sales": 28500.0, "unique_visits": 13, "price_avg": 1900.0, "qty_mar": 0, "qty_diff_mom": 15, "qty_y25apr": 0, "qty_diff_yoy": 15}, {"name": "デバルド・ロッソ", "category1": "ワイン（グラス）", "qty": 7, "sales": 8400.0, "unique_visits": 6, "price_avg": 1200.0, "qty_mar": 13, "qty_diff_mom": -6, "qty_y25apr": 21, "qty_diff_yoy": -14}, {"name": "焙煎ファッションド", "category1": "JAPANESE COCKTAIL", "qty": 21, "sales": 39900.0, "unique_visits": 18, "price_avg": 1900.0, "qty_mar": 0, "qty_diff_mom": 21, "qty_y25apr": 0, "qty_diff_yoy": 21}, {"name": "桜ブロッサム", "category1": "JAPANESE COCKTAIL", "qty": 24, "sales": 45600.0, "unique_visits": 22, "price_avg": 1900.0, "qty_mar": 0, "qty_diff_mom": 24, "qty_y25apr": 0, "qty_diff_yoy": 24}, {"name": "ソイ抹茶アレキサンダー", "category1": "DESSERT COCKTAIL", "qty": 6, "sales": 9000.0, "unique_visits": 6, "price_avg": 1500.0, "qty_mar": 0, "qty_diff_mom": 6, "qty_y25apr": 0, "qty_diff_yoy": 6}, {"name": "フィグバター＆ブリオッシュ", "category1": "HOT APPETIZERS", "qty": 3, "sales": 3900.0, "unique_visits": 3, "price_avg": 1300.0, "qty_mar": 0, "qty_diff_mom": 3, "qty_y25apr": 0, "qty_diff_yoy": 3}, {"name": "丸氷", "category1": "その他", "qty": 26, "sales": 2600.0, "unique_visits": 15, "price_avg": 100.0, "qty_mar": 63, "qty_diff_mom": -37, "qty_y25apr": 78, "qty_diff_yoy": -52}, {"name": "ボウモア12年", "category1": "ウイスキー", "qty": 4, "sales": 6400.0, "unique_visits": 2, "price_avg": 1600.0, "qty_mar": 13, "qty_diff_mom": -9, "qty_y25apr": 5, "qty_diff_yoy": -1}, {"name": "ラフロイグ10年", "category1": "ウイスキー", "qty": 3, "sales": 5100.0, "unique_visits": 2, "price_avg": 1700.0, "qty_mar": 3, "qty_diff_mom": 0, "qty_y25apr": 25, "qty_diff_yoy": -22}, {"name": "ガージェリー", "category1": "ビール", "qty": 39, "sales": 50700.0, "unique_visits": 16, "price_avg": 1300.0, "qty_mar": 83, "qty_diff_mom": -44, "qty_y25apr": 47, "qty_diff_yoy": -8}, {"name": "ゆずマティーニ", "category1": "JAPANESE COCKTAIL", "qty": 16, "sales": 32400.0, "unique_visits": 11, "price_avg": 2025.0, "qty_mar": 0, "qty_diff_mom": 16, "qty_y25apr": 0, "qty_diff_yoy": 16}, {"name": "ハウスハイボール", "category1": "ウイスキー（ハイボール・ボトル・オリジナル）", "qty": 152, "sales": 182400.0, "unique_visits": 16, "price_avg": 1200.0, "qty_mar": 99, "qty_diff_mom": 53, "qty_y25apr": 66, "qty_diff_yoy": 86}, {"name": "タリスカー10年", "category1": "ウイスキー", "qty": 9, "sales": 12600.0, "unique_visits": 3, "price_avg": 1400.0, "qty_mar": 5, "qty_diff_mom": 4, "qty_y25apr": 6, "qty_diff_yoy": 3}, {"name": "ハートランド", "category1": "ビール", "qty": 6, "sales": 6000.0, "unique_visits": 4, "price_avg": 1000.0, "qty_mar": 32, "qty_diff_mom": -26, "qty_y25apr": 90, "qty_diff_yoy": -84}, {"name": "ハイランドパーク10年", "category1": "ウイスキー", "qty": 1, "sales": 1400.0, "unique_visits": 1, "price_avg": 1400.0, "qty_mar": 0, "qty_diff_mom": 1, "qty_y25apr": 0, "qty_diff_yoy": 1}, {"name": "イベント費用", "category1": "イベント", "qty": 3, "sales": 81000.0, "unique_visits": 3, "price_avg": 27000.0, "qty_mar": 2, "qty_diff_mom": 1, "qty_y25apr": 57, "qty_diff_yoy": -54}, {"name": "6500円飲み放題付（2時間制）", "category1": "コース&セット", "qty": 24, "sales": 156000.0, "unique_visits": 1, "price_avg": 6500.0, "qty_mar": 23, "qty_diff_mom": 1, "qty_y25apr": 18, "qty_diff_yoy": 6}, {"name": "フロールデカーニャ12年", "category1": "ラム", "qty": 1, "sales": 1500.0, "unique_visits": 1, "price_avg": 1500.0, "qty_mar": 0, "qty_diff_mom": 1, "qty_y25apr": 1, "qty_diff_yoy": 0}, {"name": "タンカレーNo10", "category1": "ジン", "qty": 2, "sales": 2800.0, "unique_visits": 1, "price_avg": 1400.0, "qty_mar": 1, "qty_diff_mom": 1, "qty_y25apr": 0, "qty_diff_yoy": 2}, {"name": "ロイヤルセンテナリオ12年", "category1": "ラム", "qty": 1, "sales": 1200.0, "unique_visits": 1, "price_avg": 1200.0, "qty_mar": 0, "qty_diff_mom": 1, "qty_y25apr": 1, "qty_diff_yoy": 0}, {"name": "ドリンク", "category1": "その他", "qty": 25, "sales": 37800.0, "unique_visits": 11, "price_avg": 1512.0, "qty_mar": 27, "qty_diff_mom": -2, "qty_y25apr": 10, "qty_diff_yoy": 15}, {"name": "余市", "category1": "ジャパニーズウイスキー", "qty": 8, "sales": 14400.0, "unique_visits": 4, "price_avg": 1800.0, "qty_mar": 18, "qty_diff_mom": -10, "qty_y25apr": 0, "qty_diff_yoy": 8}, {"name": "BFAカプレーゼ", "category1": "COLD APPETIZERS", "qty": 9, "sales": 9900.0, "unique_visits": 7, "price_avg": 1100.0, "qty_mar": 0, "qty_diff_mom": 9, "qty_y25apr": 0, "qty_diff_yoy": 9}, {"name": "撫子ネグローニ", "category1": "JAPANESE COCKTAIL", "qty": 11, "sales": 20900.0, "unique_visits": 11, "price_avg": 1900.0, "qty_mar": 0, "qty_diff_mom": 11, "qty_y25apr": 0, "qty_diff_yoy": 11}, {"name": "ロンサカパ23", "category1": "ラム", "qty": 2, "sales": 3000.0, "unique_visits": 1, "price_avg": 1500.0, "qty_mar": 0, "qty_diff_mom": 2, "qty_y25apr": 2, "qty_diff_yoy": 0}, {"name": "ビーツのフムス", "category1": "BAR SNACKS", "qty": 7, "sales": 6300.0, "unique_visits": 7, "price_avg": 900.0, "qty_mar": 0, "qty_diff_mom": 7, "qty_y25apr": 0, "qty_diff_yoy": 7}, {"name": "トロピカルヴェール", "category1": "FRUITS COCKTAIL", "qty": 18, "sales": 27000.0, "unique_visits": 14, "price_avg": 1500.0, "qty_mar": 0, "qty_diff_mom": 18, "qty_y25apr": 0, "qty_diff_yoy": 18}, {"name": "オリエンタルアフタヌーン", "category1": "NEW CLASSIC COCKTAIL", "qty": 12, "sales": 18000.0, "unique_visits": 9, "price_avg": 1500.0, "qty_mar": 0, "qty_diff_mom": 12, "qty_y25apr": 0, "qty_diff_yoy": 12}, {"name": "グレンアラヒー8年", "category1": "ウイスキー", "qty": 1, "sales": 1600.0, "unique_visits": 1, "price_avg": 1600.0, "qty_mar": 6, "qty_diff_mom": -5, "qty_y25apr": 0, "qty_diff_yoy": 1}, {"name": "梅酒", "category1": "ドリンク", "qty": 3, "sales": 3600.0, "unique_visits": 2, "price_avg": 1200.0, "qty_mar": 7, "qty_diff_mom": -4, "qty_y25apr": 0, "qty_diff_yoy": 3}, {"name": "山崎12年", "category1": "ジャパニーズウイスキー", "qty": 1, "sales": 3500.0, "unique_visits": 1, "price_avg": 3500.0, "qty_mar": 0, "qty_diff_mom": 1, "qty_y25apr": 10, "qty_diff_yoy": -9}, {"name": "スパークリング", "category1": "ワイン（グラス）", "qty": 2, "sales": 2400.0, "unique_visits": 1, "price_avg": 1200.0, "qty_mar": 6, "qty_diff_mom": -4, "qty_y25apr": 8, "qty_diff_yoy": -6}, {"name": "ソフトドリンク", "category1": "ソフトドリンク", "qty": 2, "sales": 1600.0, "unique_visits": 2, "price_avg": 800.0, "qty_mar": 9, "qty_diff_mom": -7, "qty_y25apr": 28, "qty_diff_yoy": -26}, {"name": "シルキー麹サワー", "category1": "JAPANESE COCKTAIL", "qty": 7, "sales": 13300.0, "unique_visits": 7, "price_avg": 1900.0, "qty_mar": 0, "qty_diff_mom": 7, "qty_y25apr": 0, "qty_diff_yoy": 7}, {"name": "コーヒー", "category1": "ソフトドリンク", "qty": 3, "sales": 3000.0, "unique_visits": 2, "price_avg": 1000.0, "qty_mar": 0, "qty_diff_mom": 3, "qty_y25apr": 0, "qty_diff_yoy": 3}, {"name": "ケールとベリーのサラダ", "category1": "COLD APPETIZERS", "qty": 7, "sales": 9100.0, "unique_visits": 6, "price_avg": 1300.0, "qty_mar": 0, "qty_diff_mom": 7, "qty_y25apr": 0, "qty_diff_yoy": 7}, {"name": "テバルド・ビアンコ", "category1": "ワイン", "qty": 1, "sales": 6500.0, "unique_visits": 1, "price_avg": 6500.0, "qty_mar": 2, "qty_diff_mom": -1, "qty_y25apr": 0, "qty_diff_yoy": 1}, {"name": "にんじんのソテー", "category1": "HOT APPETIZERS", "qty": 2, "sales": 2600.0, "unique_visits": 2, "price_avg": 1300.0, "qty_mar": 0, "qty_diff_mom": 2, "qty_y25apr": 0, "qty_diff_yoy": 2}, {"name": "ジンジャーエール", "category1": "ソフトドリンク", "qty": 11, "sales": 8800.0, "unique_visits": 4, "price_avg": 800.0, "qty_mar": 4, "qty_diff_mom": 7, "qty_y25apr": 0, "qty_diff_yoy": 11}, {"name": "キャラメルバナナ", "category1": "DESSERT", "qty": 6, "sales": 7200.0, "unique_visits": 5, "price_avg": 1200.0, "qty_mar": 0, "qty_diff_mom": 6, "qty_y25apr": 0, "qty_diff_yoy": 6}, {"name": "作", "category1": "日本酒", "qty": 3, "sales": 5100.0, "unique_visits": 2, "price_avg": 1700.0, "qty_mar": 6, "qty_diff_mom": -3, "qty_y25apr": 0, "qty_diff_yoy": 3}, {"name": "レモンジンフィズ", "category1": "STANDARD COCKTAIL", "qty": 5, "sales": 6000.0, "unique_visits": 3, "price_avg": 1200.0, "qty_mar": 0, "qty_diff_mom": 5, "qty_y25apr": 0, "qty_diff_yoy": 5}, {"name": "バイオレットフィズ", "category1": "STANDARD COCKTAIL", "qty": 1, "sales": 1200.0, "unique_visits": 1, "price_avg": 1200.0, "qty_mar": 0, "qty_diff_mom": 1, "qty_y25apr": 0, "qty_diff_yoy": 1}, {"name": "パナメラ・カルベネ・ソーヴィニョン", "category1": "ワイン（グラス）", "qty": 6, "sales": 9600.0, "unique_visits": 3, "price_avg": 1600.0, "qty_mar": 18, "qty_diff_mom": -12, "qty_y25apr": 17, "qty_diff_yoy": -11}, {"name": "ウーロン茶", "category1": "ソフトドリンク", "qty": 17, "sales": 13600.0, "unique_visits": 7, "price_avg": 800.0, "qty_mar": 13, "qty_diff_mom": 4, "qty_y25apr": 0, "qty_diff_yoy": 17}, {"name": "ベンネヴィス 10年", "category1": "ウイスキー", "qty": 1, "sales": 1900.0, "unique_visits": 1, "price_avg": 1900.0, "qty_mar": 0, "qty_diff_mom": 1, "qty_y25apr": 0, "qty_diff_yoy": 1}, {"name": "プンタレッラのサラダ", "category1": "COLD APPETIZERS", "qty": 3, "sales": 3300.0, "unique_visits": 3, "price_avg": 1100.0, "qty_mar": 0, "qty_diff_mom": 3, "qty_y25apr": 0, "qty_diff_yoy": 3}, {"name": "ワイルドターキー8年", "category1": "ウイスキー", "qty": 13, "sales": 15600.0, "unique_visits": 2, "price_avg": 1200.0, "qty_mar": 4, "qty_diff_mom": 9, "qty_y25apr": 0, "qty_diff_yoy": 13}, {"name": "黒板メニュー　前菜", "category1": "黒板メニュー", "qty": 3, "sales": 5400.0, "unique_visits": 1, "price_avg": 1800.0, "qty_mar": 0, "qty_diff_mom": 3, "qty_y25apr": 1, "qty_diff_yoy": 2}, {"name": "テキーラ", "category1": "テキーラ", "qty": 6, "sales": 7200.0, "unique_visits": 1, "price_avg": 1200.0, "qty_mar": 0, "qty_diff_mom": 6, "qty_y25apr": 0, "qty_diff_yoy": 6}, {"name": "イチローズモルト ホワイトラベル", "category1": "ジャパニーズウイスキー", "qty": 1, "sales": 1400.0, "unique_visits": 1, "price_avg": 1400.0, "qty_mar": 0, "qty_diff_mom": 1, "qty_y25apr": 0, "qty_diff_yoy": 1}, {"name": "グレンリベット12年", "category1": "ウイスキー", "qty": 9, "sales": 12600.0, "unique_visits": 4, "price_avg": 1400.0, "qty_mar": 0, "qty_diff_mom": 9, "qty_y25apr": 11, "qty_diff_yoy": -2}, {"name": "ダルモア 12年", "category1": "ウイスキー", "qty": 5, "sales": 8500.0, "unique_visits": 2, "price_avg": 1700.0, "qty_mar": 8, "qty_diff_mom": -3, "qty_y25apr": 0, "qty_diff_yoy": 5}, {"name": "ピーチフィズ", "category1": "STANDARD COCKTAIL", "qty": 2, "sales": 2400.0, "unique_visits": 2, "price_avg": 1200.0, "qty_mar": 0, "qty_diff_mom": 2, "qty_y25apr": 0, "qty_diff_yoy": 2}, {"name": "スプリングバンク 10年", "category1": "ウイスキー", "qty": 1, "sales": 1800.0, "unique_visits": 1, "price_avg": 1800.0, "qty_mar": 2, "qty_diff_mom": -1, "qty_y25apr": 0, "qty_diff_yoy": 1}, {"name": "バスカー", "category1": "ウイスキー", "qty": 1, "sales": 1300.0, "unique_visits": 1, "price_avg": 1300.0, "qty_mar": 1, "qty_diff_mom": 0, "qty_y25apr": 0, "qty_diff_yoy": 1}, {"name": "メーカーズマーク", "category1": "ウイスキー", "qty": 1, "sales": 1400.0, "unique_visits": 1, "price_avg": 1400.0, "qty_mar": 2, "qty_diff_mom": -1, "qty_y25apr": 0, "qty_diff_yoy": 1}, {"name": "パナメラ・シャルドネ", "category1": "ワイン（グラス）", "qty": 7, "sales": 11200.0, "unique_visits": 4, "price_avg": 1600.0, "qty_mar": 8, "qty_diff_mom": -1, "qty_y25apr": 16, "qty_diff_yoy": -9}, {"name": "知多", "category1": "ジャパニーズウイスキー", "qty": 3, "sales": 5100.0, "unique_visits": 1, "price_avg": 1700.0, "qty_mar": 6, "qty_diff_mom": -3, "qty_y25apr": 15, "qty_diff_yoy": -12}, {"name": "紅茶", "category1": "ソフトドリンク", "qty": 1, "sales": 1000.0, "unique_visits": 1, "price_avg": 1000.0, "qty_mar": 4, "qty_diff_mom": -3, "qty_y25apr": 0, "qty_diff_yoy": 1}, {"name": "オレンジジュース", "category1": "ソフトドリンク", "qty": 2, "sales": 1600.0, "unique_visits": 2, "price_avg": 800.0, "qty_mar": 5, "qty_diff_mom": -3, "qty_y25apr": 0, "qty_diff_yoy": 2}, {"name": "黒板メニュー　肉料理", "category1": "黒板メニュー", "qty": 2, "sales": 3800.0, "unique_visits": 1, "price_avg": 1900.0, "qty_mar": 5, "qty_diff_mom": -3, "qty_y25apr": 1, "qty_diff_yoy": 1}, {"name": "黒板メニュー　その他", "category1": "黒板メニュー", "qty": 9, "sales": 7100.0, "unique_visits": 3, "price_avg": 788.8888888888889, "qty_mar": 0, "qty_diff_mom": 9, "qty_y25apr": 31, "qty_diff_yoy": -22}, {"name": "ロイヤルブラックラ 12年", "category1": "ウイスキー", "qty": 6, "sales": 10800.0, "unique_visits": 1, "price_avg": 1800.0, "qty_mar": 1, "qty_diff_mom": 5, "qty_y25apr": 0, "qty_diff_yoy": 6}, {"name": "鴨のパイ包み", "category1": "MAIN DISHES", "qty": 4, "sales": 8400.0, "unique_visits": 1, "price_avg": 2100.0, "qty_mar": 0, "qty_diff_mom": 4, "qty_y25apr": 0, "qty_diff_yoy": 4}, {"name": "その他CLPコース", "category1": "コース&セット", "qty": 51, "sales": 280500.0, "unique_visits": 2, "price_avg": 5500.0, "qty_mar": 79, "qty_diff_mom": -28, "qty_y25apr": 28, "qty_diff_yoy": 23}, {"name": "デバルド・ビアンコ", "category1": "ワイン（グラス）", "qty": 4, "sales": 4800.0, "unique_visits": 3, "price_avg": 1200.0, "qty_mar": 14, "qty_diff_mom": -10, "qty_y25apr": 20, "qty_diff_yoy": -16}, {"name": "テバルド・ロッソ", "category1": "ワイン", "qty": 1, "sales": 6500.0, "unique_visits": 1, "price_avg": 6500.0, "qty_mar": 2, "qty_diff_mom": -1, "qty_y25apr": 0, "qty_diff_yoy": 1}, {"name": "7000円飲み放題付（3時間制）", "category1": "未設定", "qty": 26, "sales": 182000.0, "unique_visits": 2, "price_avg": 7000.0, "qty_mar": 0, "qty_diff_mom": 26, "qty_y25apr": 0, "qty_diff_yoy": 26}, {"name": "マッカランダブルカスク12年", "category1": "ウイスキー", "qty": 1, "sales": 2500.0, "unique_visits": 1, "price_avg": 2500.0, "qty_mar": 1, "qty_diff_mom": 0, "qty_y25apr": 0, "qty_diff_yoy": 1}, {"name": "ハイランドパーク12年", "category1": "ウイスキー", "qty": 1, "sales": 1700.0, "unique_visits": 1, "price_avg": 1700.0, "qty_mar": 0, "qty_diff_mom": 1, "qty_y25apr": 0, "qty_diff_yoy": 1}, {"name": "5000円飲み放題付（2時間制）", "category1": "コース&セット", "qty": 2, "sales": 10000.0, "unique_visits": 1, "price_avg": 5000.0, "qty_mar": 0, "qty_diff_mom": 2, "qty_y25apr": 0, "qty_diff_yoy": 2}, {"name": "ハーパー", "category1": "ウイスキー", "qty": 1, "sales": 1000.0, "unique_visits": 1, "price_avg": 1000.0, "qty_mar": 0, "qty_diff_mom": 1, "qty_y25apr": 7, "qty_diff_yoy": -6}, {"name": "モルタデッラサンド", "category1": "MAIN DISHES", "qty": 1, "sales": 1500.0, "unique_visits": 1, "price_avg": 1500.0, "qty_mar": 0, "qty_diff_mom": 1, "qty_y25apr": 0, "qty_diff_yoy": 1}, {"name": "グレンフィディック12年", "category1": "ウイスキー", "qty": 2, "sales": 3200.0, "unique_visits": 1, "price_avg": 1600.0, "qty_mar": 0, "qty_diff_mom": 2, "qty_y25apr": 0, "qty_diff_yoy": 2}, {"name": "ジョニーウォーカー ゴールドラベル", "category1": "ウイスキー", "qty": 2, "sales": 3200.0, "unique_visits": 1, "price_avg": 1600.0, "qty_mar": 0, "qty_diff_mom": 2, "qty_y25apr": 0, "qty_diff_yoy": 2}, {"name": "チャイナブルー", "category1": "STANDARD COCKTAIL", "qty": 1, "sales": 1200.0, "unique_visits": 1, "price_avg": 1200.0, "qty_mar": 0, "qty_diff_mom": 1, "qty_y25apr": 0, "qty_diff_yoy": 1}, {"name": "BFAグレングラッサ8年", "category1": "ウイスキー（ハイボール・ボトル・オリジナル）", "qty": 1, "sales": 2800.0, "unique_visits": 1, "price_avg": 2800.0, "qty_mar": 1, "qty_diff_mom": 0, "qty_y25apr": 2, "qty_diff_yoy": -1}, {"name": "山崎", "category1": "ジャパニーズウイスキー", "qty": 2, "sales": 5000.0, "unique_visits": 2, "price_avg": 2500.0, "qty_mar": 2, "qty_diff_mom": 0, "qty_y25apr": 0, "qty_diff_yoy": 2}, {"name": "スプモーニ", "category1": "STANDARD COCKTAIL", "qty": 1, "sales": 1200.0, "unique_visits": 1, "price_avg": 1200.0, "qty_mar": 0, "qty_diff_mom": 1, "qty_y25apr": 0, "qty_diff_yoy": 1}, {"name": "ニッカ　セッション", "category1": "ジャパニーズウイスキー", "qty": 1, "sales": 1300.0, "unique_visits": 1, "price_avg": 1300.0, "qty_mar": 1, "qty_diff_mom": 0, "qty_y25apr": 4, "qty_diff_yoy": -3}, {"name": "グレープフルーツジュース", "category1": "ソフトドリンク", "qty": 1, "sales": 800.0, "unique_visits": 1, "price_avg": 800.0, "qty_mar": 3, "qty_diff_mom": -2, "qty_y25apr": 0, "qty_diff_yoy": 1}, {"name": "5000円飲み放題付（2時間制）＋チャージ込み", "category1": "コース&セット", "qty": 21, "sales": 136500.0, "unique_visits": 1, "price_avg": 6500.0, "qty_mar": 0, "qty_diff_mom": 21, "qty_y25apr": 0, "qty_diff_yoy": 21}, {"name": "7000円飲み放題付（2時間制）", "category1": "未設定", "qty": 4, "sales": 20000.0, "unique_visits": 1, "price_avg": 5000.0, "qty_mar": 0, "qty_diff_mom": 4, "qty_y25apr": 0, "qty_diff_yoy": 4}, {"name": "ニッカウヰスキーフロムザバレル", "category1": "ジャパニーズウイスキー", "qty": 2, "sales": 3200.0, "unique_visits": 1, "price_avg": 1600.0, "qty_mar": 0, "qty_diff_mom": 2, "qty_y25apr": 0, "qty_diff_yoy": 2}, {"name": "鶴", "category1": "ジャパニーズウイスキー", "qty": 1, "sales": 3500.0, "unique_visits": 1, "price_avg": 3500.0, "qty_mar": 1, "qty_diff_mom": 0, "qty_y25apr": 4, "qty_diff_yoy": -3}]}, "category_share": [{"category": "コース&セット", "qty": 98, "sales": 583000.0, "sales_share": 0.250785047533015, "sales_share_mar": 0.2488849241748439, "share_diff": 0.0019001233581711074}, {"category": "NEW CLASSIC COCKTAIL", "qty": 160, "sales": 239700.0, "sales_share": 0.10311007871983481, "sales_share_mar": 0, "share_diff": 0.10311007871983481}, {"category": "その他", "qty": 341, "sales": 212700.0, "sales_share": 0.09149567686153053, "sales_share_mar": 0.08196253345227475, "share_diff": 0.009533143409255776}, {"category": "未設定", "qty": 51, "sales": 202000.0, "sales_share": 0.08689293242138771, "sales_share_mar": 0.0, "share_diff": 0.08689293242138771}, {"category": "ウイスキー（ハイボール・ボトル・オリジナル）", "qty": 154, "sales": 186500.0, "sales_share": 0.08022540542865746, "sales_share_mar": 0.07332738626226583, "share_diff": 0.006898019166391628}, {"category": "JAPANESE COCKTAIL", "qty": 79, "sales": 152100.0, "sales_share": 0.06542779713511421, "sales_share_mar": 0, "share_diff": 0.06542779713511421}, {"category": "ウイスキー", "qty": 62, "sales": 92600.0, "sales_share": 0.03983309674366585, "sales_share_mar": 0.06185548617305977, "share_diff": -0.02202238942939392}, {"category": "COLD APPETIZERS", "qty": 65, "sales": 82200.0, "sales_share": 0.03535940121305975, "sales_share_mar": 0, "share_diff": 0.03535940121305975}, {"category": "イベント", "qty": 3, "sales": 81000.0, "sales_share": 0.03484320557491289, "sales_share_mar": 0.015165031222123104, "share_diff": 0.019678174352789787}, {"category": "MAIN DISHES", "qty": 32, "sales": 63600.0, "sales_share": 0.027358368821783455, "sales_share_mar": 0, "share_diff": 0.027358368821783455}, {"category": "ビール", "qty": 45, "sales": 56700.0, "sales_share": 0.024390243902439025, "sales_share_mar": 0.04991971454058876, "share_diff": -0.025529470638149733}, {"category": "FRUITS COCKTAIL", "qty": 34, "sales": 51000.0, "sales_share": 0.02193831462124145, "sales_share_mar": 0, "share_diff": 0.02193831462124145}, {"category": "BAR SNACKS", "qty": 71, "sales": 47300.0, "sales_share": 0.020346711403621973, "sales_share_mar": 0, "share_diff": 0.020346711403621973}, {"category": "ソフトドリンク", "qty": 52, "sales": 42400.0, "sales_share": 0.01823891254785564, "sales_share_mar": 0.01455842997323818, "share_diff": 0.0036804825746174583}, {"category": "DESSERT COCKTAIL", "qty": 25, "sales": 37500.0, "sales_share": 0.0161311136920893, "sales_share_mar": 0, "share_diff": 0.0161311136920893}, {"category": "ジャパニーズウイスキー", "qty": 19, "sales": 37400.0, "sales_share": 0.016088097388910396, "sales_share_mar": 0.031828724353256024, "share_diff": -0.01574062696434563}, {"category": "ワイン（グラス）", "qty": 26, "sales": 36400.0, "sales_share": 0.015657934357121348, "sales_share_mar": 0.04471008028545941, "share_diff": -0.029052145928338064}, {"category": "HOT APPETIZERS", "qty": 27, "sales": 35700.0, "sales_share": 0.015356820234869015, "sales_share_mar": 0, "share_diff": 0.015356820234869015}, {"category": "ワイン", "qty": 4, "sales": 25000.0, "sales_share": 0.010754075794726202, "sales_share_mar": 0.02886708296164139, "share_diff": -0.01811300716691519}, {"category": "黒板メニュー", "qty": 14, "sales": 16300.0, "sales_share": 0.007011657418161483, "sales_share_mar": 0.00856378233719893, "share_diff": -0.0015521249190374462}, {"category": "STANDARD COCKTAIL", "qty": 10, "sales": 12000.0, "sales_share": 0.005161956381468577, "sales_share_mar": 0, "share_diff": 0.005161956381468577}, {"category": "DESSERT", "qty": 6, "sales": 7200.0, "sales_share": 0.003097173828881146, "sales_share_mar": 0, "share_diff": 0.003097173828881146}, {"category": "テキーラ", "qty": 6, "sales": 7200.0, "sales_share": 0.003097173828881146, "sales_share_mar": 0.0016057091882247993, "share_diff": 0.0014914646406563466}, {"category": "ラム", "qty": 4, "sales": 5700.0, "sales_share": 0.0024519292811975737, "sales_share_mar": 0, "share_diff": 0.0024519292811975737}, {"category": "日本酒", "qty": 3, "sales": 5100.0, "sales_share": 0.002193831462124145, "sales_share_mar": 0.003639607493309545, "share_diff": -0.0014457760311854}, {"category": "ドリンク", "qty": 3, "sales": 3600.0, "sales_share": 0.001548586914440573, "sales_share_mar": 0.002997323818019625, "share_diff": -0.0014487369035790522}, {"category": "ジン", "qty": 2, "sales": 2800.0, "sales_share": 0.0012044564890093346, "sales_share_mar": 0.010133809099018733, "share_diff": -0.008929352610009399}], "avg_per_person_dist": {"stats": {"mean": 4758.155618094643, "median": 4400.0, "p25": 2950.0, "p75": 6062.5, "p90": 7788.0, "min": 1500.0, "max": 15166.666666666666}, "histogram": [{"bucket": "~2000", "count": 5}, {"bucket": "2-3k", "count": 27}, {"bucket": "3-4k", "count": 24}, {"bucket": "4-5k", "count": 16}, {"bucket": "5-6k", "count": 20}, {"bucket": "6-7k", "count": 10}, {"bucket": "7-8k", "count": 11}, {"bucket": "8-10k", "count": 7}, {"bucket": "10-15k", "count": 2}, {"bucket": "15-20k", "count": 1}, {"bucket": "20-30k", "count": 0}, {"bucket": "30-50k", "count": 0}, {"bucket": "50k+", "count": 0}]}, "items_per_visit": {"apr": {"avg_items": 5.476190476190476, "drink_visits": 2, "drink_2plus_share": 0.5}, "mar": {"avg_items": 5.441489361702128, "drink_visits": 4, "drink_2plus_share": 0.25}}, "segments": {"apr": {"reservation": {"visits": 0, "sales": 0, "customers": 0}, "walkin": {"visits": 126, "sales": 2300900.0, "customers": 456}, "course": {"visits": 2, "sales": 302500.0, "customers": 45}, "alacarte": {"visits": 124, "sales": 1998400.0, "customers": 411}}, "mar": {"reservation": {"visits": 0, "sales": 0, "customers": 0}, "walkin": {"visits": 188, "sales": 2922080.0, "customers": 521}, "course": {"visits": 19, "sales": 744640.0, "customers": 118}, "alacarte": {"visits": 169, "sales": 2177440.0, "customers": 403}}}, "party_size": [{"bucket": "1人", "visits": 17, "sales": 91310.0}, {"bucket": "2人", "visits": 65, "sales": 574720.0}, {"bucket": "3-4人", "visits": 28, "sales": 444500.0}, {"bucket": "5-9人", "visits": 7, "sales": 180600.0}, {"bucket": "10-19人", "visits": 3, "sales": 194770.0}, {"bucket": "20人+", "visits": 6, "sales": 815000.0}], "pl": {"actuals_2026": {"2026-01": {"sales": {"ドリンク": 1250018, "フード": 846000, "コース": 64500, "イベント": 482200}, "sales_total": 2642718, "expenses": {"食材": 178182, "ドリンク": 203250, "広告費": 22000, "家賃": 1112859, "人件費": 347258, "ローン返済": 169154, "水道光熱費": 79854, "管理費": 194481, "備品": 45901, "税金": 0}, "expenses_total": 2352939, "profit": 289779}, "2026-02": {"sales": {"ドリンク": 1510960, "フード": 461900, "コース": 413000, "イベント": 281900}, "sales_total": 2667760, "expenses": {"食材": 210952, "ドリンク": 420616, "広告費": 103180, "家賃": 1112859, "人件費": 414487, "ローン返済": 169221, "水道光熱費": 91609, "管理費": 250617, "備品": 58637, "税金": 0}, "expenses_total": 2832178, "profit": -164418}, "2026-03": {"sales": {"ドリンク": 1479150, "フード": 568250, "コース": 269500, "イベント": 470500}, "sales_total": 2787400, "expenses": null, "expenses_total": null, "profit": null}}, "budget_april": {"sales": {"ドリンク": 1700000, "フード": 680000, "チャーム": 340000, "コース": 578000, "イベント": 102000}, "sales_total": 3400000, "expenses": {"食材": 340000, "ドリンク": 408000, "販売・広告": 238000, "家賃": 1134859, "人件費": 782000, "ローン返済": 150000, "水道光熱費": 136000, "通信/衛生/管理費": 330000, "備品": 22697, "税金": 13000}, "expenses_total": 3554556, "profit": -154556, "CLP人件費": 600000, "profit_clp": -754556}, "pos_category_april": {"未設定": 202000.0, "NEW CLASSIC COCKTAIL": 239700.0, "その他": 212700.0, "ワイン": 25000.0, "ソフトドリンク": 42400.0, "COLD APPETIZERS": 82200.0, "HOT APPETIZERS": 35700.0, "BAR SNACKS": 47300.0, "MAIN DISHES": 63600.0, "ウイスキー（ハイボール・ボトル・オリジナル）": 186500.0, "FRUITS COCKTAIL": 51000.0, "DESSERT COCKTAIL": 37500.0, "ワイン（グラス）": 36400.0, "JAPANESE COCKTAIL": 152100.0, "ウイスキー": 92600.0, "ビール": 56700.0, "イベント": 81000.0, "コース&セット": 583000.0, "ラム": 5700.0, "ジン": 2800.0, "ジャパニーズウイスキー": 37400.0, "ドリンク": 3600.0, "DESSERT": 7200.0, "日本酒": 5100.0, "STANDARD COCKTAIL": 12000.0, "黒板メニュー": 16300.0, "テキーラ": 7200.0}}, "ai_reports": [{"date": "2026-04-01", "author": "大泉 瞳", "guests": "- 20〜40代男女4名（フィンランドからの海外客）がGoogle検索で来店、カクテル・食事・ボトルスパークリング1本を注文。日本初訪問で、内装やアートを非常に気に入っていた。  \n- 30代男女2名がGoogle検索で初来店、普段は渋谷で飲むウイスキー好き。アールガットを知っており、カクテル2杯ずつ注文、見た目の美しさを評価。  \n- 両組ともGoogle検索経由の来店で、内装やドリンクの見た目が高評価。  \n- 今後もGoogle検索対策と内装・アートの魅力発信を強化する。", "improvements": "- チョコレートの説明に英語対応の案内を作成予定。\n- 日報に食材ロスの記入欄を追加する改善案が出た。\n- スマホ入力時、日報で改行すると送信されてしまうため、改行対応の改善を検討。\n- オーチャードマティーニを注文したお客様から「もっと冷たい方が好み」とのご意見あり。今後はより冷たく提供する方法を検討する。"}, {"date": "2026-04-02", "author": "大泉 瞳", "guests": "- 海外女性5名（親子2組、20〜50代）がGoogle検索で来店。柚子マティーニ注文時、甘さを確認しジンソーダに変更対応。\n- 40〜50代男性2名（同窓会2次会）がGoogle検索で来店。チョコレートを気に入り、購入希望の声あり。\n- 40〜50代男性2名は初来店、来店動機は不明。\n- 20代男女4名は検索で来店、チョコレートのお通し後に追加注文。ウイスキーと森のジントニックを注文。\n- 来店動機や検索ワードが不明な場合は「不明」と記録。", "improvements": "- チョコレートはボックスから選んでいただく方式で提供、今日の来店ペースでは補充が間に合った\n- 来店が重なった際、スタッフ人数が足りず補充作業が追いつかなくなる可能性あり\n- 改善策として、ピーク前に多めに補充しておく、役割分担の明確化、補充用チョコのストック場所をボックス近くに設置する案が挙がった\n- 明日から、ピーク前補充とストック場所の見直しを実施予定"}, {"date": "2026-04-03", "author": "大泉 瞳", "guests": "- 24名様が会社の部門送別会で貸切利用（リピーター、年齢層バラバラ）、2024年6月にも貸切実績あり。\n- 2名様（男女30代～40代）はGoogle検索で来店、ラムやウイスキーを注文し、チョコレートを気に入って同じ味をおかわり。\n- 11名様（男女30～50代）は会社飲み会の2次会利用、ハイボール・生ビールの注文が多かった。\n- お客様からの具体的な好評（チョコレートのおかわり）やドリンクの傾向を把握できたため、今後のメニュー提案や販促に活用する。", "improvements": "- ギムレット注文時や、甘くないドリンクを希望する海外ゲストへの提案で迷いが生じ、柚子マティーニを代替品として提案した。\n- 甘くないカクテルの選択肢が少なく、提案に自信が持てなかった。\n- 明日から「甘くないカクテルのオリジナルレシピや定番提案リスト」を作成し、スタッフ間で共有することで提案時の迷いを解消する予定。"}, {"date": "2026-04-04", "author": "大泉 瞳", "guests": "- 30〜40代男女2名がホットペッパー経由で初来店。カンパリ系ドリンクを好み、お友達同士での利用。\n- 20代女性と40代男性はGoogle検索で来店し、フルーツ系カクテルを気に入っていただいた。\n- 海外20〜30代男性2名は甘いカクテルを希望し、フルーツ・デザートカクテルをおかわりしながら楽しんでいた。\n- お客様の具体的な会話や行動の観察は今回は特になし。", "improvements": "- 飲み物が減ってきた際、おかわりのお声がけが遅れる場面があった（他のお客様対応で手が離せなかったため）。\n- スタッフ同士で声をかけ合い、卓ごとに分担してチェックすることで対応の遅れを防ぐ改善案を検討。\n- 明日からは卓ごとの状況確認を意識し、タイミングよくお声がけできるようスタッフ間で連携を強化する。"}, {"date": "2026-04-05", "author": "大泉 瞳", "guests": "- 30代男性と20代女性の2名がGoogle検索で「カクテル飲めるお店」を探して来店。\n- 海外からの40～50代男女（台湾人・シンガポール人）が、歩いていて当店を見つけ来店。日本には5日間滞在、ウイスキーが好きとのこと。\n- 来店動機やお客様の属性を会話から丁寧にヒアリングできている。\n- 今後もお客様の来店経路や嗜好を積極的に聞き取り、メニュー提案や集客施策に活用する。", "improvements": "- 海外ゲストへのチョコレート説明時、注文時に会話が詰まり内容が伝わらない問題が発生していた。\n- 大泉瞳が英語入りメニューを作成し、海外ゲストにも内容が伝わるよう工夫した。\n- 今後の改善案として、スタッフが説明しやすいようチョコレートの特徴を英語でまとめたメモを作成予定。\n- 明日から英語入りメニューを活用し、スタッフ全員で説明練習を行う予定。"}, {"date": "2026-04-06", "author": "橋本 直樹", "guests": "- 海外の家族連れ（大人4名・子供2名）がソファー席でカクテル・ソフトドリンクを注文。\n- カウンター席にサンフランシスコ出身の男性と子供2名が来店、Google検索で当店を知ったとのこと。\n- テーブル席に30代男女2名がカクテルとオリーブを注文。\n- ソファー席に20代女性2名、30代男性1名、50代男性1名が来店し、カクテル・ソフトドリンク・多種のフードを注文。男性2名は常連で仕事の話をしていた。\n- カウンターに50代男性1名が白ワインボトルを注文。元シェフ・現整体師で健康志向（甘いもの・小麦粉を控えている）と会話あり。", "improvements": "- ウニとプンタレッラ（イタリア野菜）のフードメニューがほとんど注文されず、両食材とも約8割のロスが発生見込み。\n- ウニはワカモレの上にトッピングしているが、保存性が低いため、今後はウニを無くすか、保存性の高い食材への変更を検討。\n- プンタレッラは珍しい食材のため、日本人のお客様には注文のハードルが高いと分析。\n- 改善策として、両食材のメニュー見直しや仕入れ量調整を明日から実施予定。"}, {"date": "2026-04-07", "author": "大泉 瞳", "guests": "- 海外30代男女2名がGoogle検索で写真を見て来店、日本滞在中で近隣バーを探していた。  \n- 50代女性（高島屋カフェのパティシエ、リピーター）が高島屋が暇で早上がりのため来店。  \n- 海外男女2名（30代？）は会話できず詳細不明。  \n- 20～50代男性2名は仕事の打ち合わせでソフトドリンクと軽食利用、昨日と同様の利用形態。  \n- Google検索や写真の印象が集客につながっているため、SNSや写真の充実を継続する。", "improvements": "- 新メニュー導入に伴い、全ての場面でレシピ確認の必要性が発生\n- アルバイトスタッフが間違えず素早くカクテルを提供できるよう、チョコレート・カクテルのレシピシートを作成\n- レシピシートを活用し、提供ミスや遅れの防止を図る\n- 今後もスタッフ全員がレシピを正確に把握できるよう、シートの利用を徹底"}, {"date": "2026-04-09", "author": "大泉 瞳", "guests": "- 海外ゲスト男女2名（20代）がGoogle検索で来店し、多くのお食事を注文。\n- 海外ゲスト女性2名（30代・サンフランシスコ）がGoogleまたはインスタで当店を見つけ来店。日本語で挨拶あり。\n- お食事・カクテルが美味しかったとの感想をいただいた。\n- SNSやGoogle検索経由の集客が効果的であることを確認。", "improvements": "- 神山さんが近藤さんにドリンクメイクを指導し、一通りの作り方を実践してもらった。\n- 今後、近藤さんがスムーズに作れるように練習を継続予定。\n- カクテルのレシピを見直し、ロスの出る素材を極力使わないよう改善を実施。\n- 明日以降も引き続きドリンクメイクの練習と、ロス削減レシピの運用を進める。"}, {"date": "2026-04-10", "author": "大泉 瞳", "guests": "- 海外ゲスト1名（50代男性、オーストリア・デザイン関係）：サントリーのデザイン業務で来日、日本のデザインが好きで10日間滞在予定。来週再来店希望あり。\n- 50代・20代男性2名：食べログ経由で予約、カクテルを高評価。仕事の話をしたくて落ち着いた雰囲気を求めて来店。\n- 30～40代海外男女4名：Google検索で来店、観光目的。各自2杯ずつ注文。\n- お客様の来店経路（予約サイト・Google検索）や目的（観光・仕事）を今後も記録し、再来店希望者へのフォローを検討。", "improvements": "- 本日の改善ポイントおよび明日できる改善案は「なし」との報告。\n- スタッフから特に困った場面や気付きは挙がらず、業務は大きな問題なく遂行された。\n- 今後も小さな気付きがあれば随時共有し、さらなる業務改善につなげる。"}, {"date": "2026-04-11", "author": "大泉 瞳", "guests": "- リピーター男女13名（50～60代）が会議後の二次会で1時間滞在、「来年も来ます」とお声がけあり。\n- 20代男女2名はGoogle検索で「カクテル飲める店」を探し来店。\n- 50代男性・海外30代女性のリピーターはワインとチョコレートを楽しまれ、「チョコレート美味しかった」とコメント。メインはミントジェノベーゼを注文。\n- 来店動機やお客様の反応を把握でき、リピーター獲得や検索流入の重要性を再認識。", "improvements": "- 予約確認ミスにより、コース予約と席のみ予約を取り違える事案が発生したが、開始前に気付き対応したためロスは発生しなかった。\n- 保存が効かない料理はおすすめとして提供し、お客様にもご満足いただけた。\n- 自動反映されない予約については、今後必ずWチェックを徹底する改善策を実施予定。"}, {"date": "2026-04-12", "author": "大泉 瞳", "guests": "- 海外30～50代男女5名がB&F紹介で来店、ドリンクの注文ペースが早く、味も好評で客単価8,000円超・チップ3,000円をいただいた。\n- 20～50代男女5名は看板を見て来店、近隣で食事後の親戚グループで「バスカーは家でも飲むがバーだと美味しい」との感想あり。\n- 20～30代女性2名はホットペッパー予約で来店、新宿駅近くでゆっくりできる店を探していたとのこと、店内で写真を多く撮影していた。\n- 各グループの来店動機や反応をスタッフが丁寧にヒアリングし記録した。", "improvements": "- ドリンク作成・洗い物・お会計・オーダーが同時に重なるタイミングがあり、スタッフ1名体制では対応が困難な場面が多かった。\n- プレミックスでドリンク対応してもスピードが追いつかないことがあった。\n- その場その場で優先順位をつけて臨機応変に対応したが、3名体制が望ましいと感じた。\n- 改善策：スタッフ増員を検討する。"}, {"date": "2026-04-13", "author": "大泉 瞳", "guests": "- 30代男性2名（不動産勤務、リピーター）が仕事後に来店し、ワイルドターキーのみを注文、お食事は不要とのこと。\n- 30代男女2名はGoogle検索で来店、チョコレートの種類に興味を持ち、おかわりを注文された。\n- チョコレートの種類に関心を持つ新規客へのアプローチ強化を検討。\n- リピーター客にはドリンク中心の提案が有効と考えられる。", "improvements": "- 本日の改善ポイント・改善案は「なし」との報告。\n- 大泉瞳スタッフより、特に気になった点や改善点は挙げられなかった。\n- お客様対応や業務進行において、特記すべき問題や課題は発生しなかった。"}, {"date": "2026-04-15", "author": "大泉 瞳", "guests": "- CLP主催の人事交流会（カジュアル会）として25名が来店\n- 参加者は20～40代男性4名を含むCLP社員中心の構成\n- 来店目的は社内交流イベント\n- 特記事項やお客様の反応、スタッフの工夫は記載なし", "improvements": "- イベント時、ドリンクのラストオーダー時間のアナウンスが主催からなかったため、案内漏れが発生。\n- 次回からは主催に事前打ち合わせでラストオーダー案内をリマインドすることを決定。\n- スタッフ側でもアナウンス徹底のための共有を実施予定。\n- 改善策として、事前確認とリマインドを徹底し、案内漏れを防止する。"}, {"date": "2026-04-15", "author": "大泉 瞳", "guests": "- 海外女性2名（30代・オーストラリア出身）が、過去来店者の紹介で来店。カクテルが美味しかったと好評。\n- 30～50代男女3名（マジシャン）が5～6回目のリピーターとして来店。東京来訪時に頻繁に利用しており、お食事が美味しいとの声あり。\n- 紹介やリピーターによる来店が目立ち、料理・ドリンクの品質が評価された。", "improvements": "- 20代前半女性2名がカウンター利用時、メニュー説明への反応が薄く、話しかけを控えた\n- 「話しかけて欲しくない」印象を受けたが、声かけのタイミングを工夫する必要を感じた\n- 改善策として、帰る前やおかわり提供後など、お客様の会話や食事を妨げないタイミングでさりげなく声かけを行うことを明日から実施予定"}, {"date": "2026-04-16", "author": "橋本 直樹", "guests": "- 30代海外男女2名がカクテルとマティポテを注文、デート利用と推測される。\n- 20代男性4名がハイボール、森のジントニック、赤ワイン等を注文、仕事帰りの会食と推測。\n- 20代男女2名がリピート来店し、森のジントニック、カルヴァドスモヒート、デイドリームレモネードを注文、デート利用と推測。\n- オーナーと社員1名が来店し、ソフトドリンクや各種フードを注文、仕事やプライベートの話をされていた。\n- キッチン担当のため、注文内容や提供時の会話から来店動機を推測した。", "improvements": "- フード提供のオペレーションは早いが、仕込み作業が時間のかかるメニューが多く、現状1人で営業前に全て仕込んでいるため負担が大きい状況。\n- 仕込み作業の分担や、工程ごとの時短方法（まとめて下処理、冷凍・半加工品の活用）を検討する必要あり。\n- 週単位や数日分をまとめて仕込むメニューを増やすことも改善策として挙がった。\n- 明日以降、仕込みの分担や時短方法の具体的な実施を検討する。"}, {"date": "2026-04-17", "author": "大泉 瞳", "guests": "- 20～40代男女23名が新入社員歓迎会で来店、ワインを美味しいと評価いただく  \n- 40代男性2名（オーストラリア在住）はGoogle検索で来店、食事とワインを注文（詳細未確認）  \n- 40～50代男性2名のリピーターは、覚えていることを話すと喜ばれ、今回はダルモアのウイスキーを注文  \n- 30代男性3名（CLP社員と友人）は食事後に利用  \n- リピーターへの声かけやワインの品質が好評だった点を今後も継続する", "improvements": "- 23名の大人数コース対応で料理提供が大変だったため、オペレーションやメニュー構成の見直しを検討。\n- 3名で予約されたお客様が料理を1/3ほど残されており、量が多い可能性があると判明（味には満足との声あり）。\n- 明日からの改善策として、大人数コース時は事前にスタッフの役割分担を明確にし、スムーズな提供を目指す。\n- 少人数コースの場合は、事前に料理の量についてお客様へ説明し、希望に応じて量の調整を提案する。"}, {"date": "2026-04-18", "author": "大泉 瞳", "guests": "- 40～50代男女2名がGoogle検索で来店、バレーボール仲間で女性はパッションフルーツ好き。チョコレート（マンゴーパッション）を美味しいと好評、前店の接客不満から「飲み直しで寄って良かった」とのお声あり。\n- 20代女性2名がGoogle検索で来店、会話少なめだったがチョコレートに喜んでいただけた。\n- 20代男女2名（海外、タイから滞在中・男性はドイツ人）がGoogleマップで内装のきれいさに惹かれて来店。\n- 60代男性2名はCLP顧客でコース予約利用、事前に食事済みのため飲食量は少なめだった。", "improvements": "- 新しい5000円コースのラザニア提供時、端が固くなっていたため、お取り分け時に気づいた。\n- キッチンに対し、仕込み方法または提供オペレーションのどちらに原因があるか次回作成時に確認するよう依頼済み。\n- 明日以降、提供前にラザニアの端の柔らかさをスタッフが確認するルールを検討中。"}, {"date": "2026-04-20", "author": "橋本 直樹", "guests": "- 本社パートナー企業の30代・40代男性2名がMTG後に来店、生ビールやジントニック、ジェノベーゼ等を注文。\n- 40代男性と20代女性のペアはカクテルやウイスキー、にんじんソテー等を注文、パパ活・同伴利用の可能性あり。\n- 40代男女2名はGoogle検索で来店、カクテルやウイスキーを注文。\n- ホットペッパー予約の30代男女2名はデート利用でソファー席希望、各種カクテルを注文。\n- 取引先紹介の40代男性はウイスキー（グレンリベット12年）とキャンディーピーカンを注文、今後の取り組み提案あり。\n- 30～40代男性2名・女性1名グループはカクテルやワカモレチップス等を注文し、「また来ます」と好評。", "improvements": "- デザート系カクテル作成時、アイスクリームや生クリームなどの事前仕込み範囲が明確でなく、メイキング時間短縮に課題があった。\n- 仕込みによる消費期限短縮の懸念があり、リキュール以外の材料の扱いに注意が必要と判明。\n- 改善策として、商品開発担当とレシピ表を都度確認し、事前仕込みのルール化を進める方針を決定。\n- 明日以降、スタッフ間で仕込み範囲の共有とレシピ表運用を徹底する。"}, {"date": "2026-04-21", "author": "橋本 直樹", "guests": "- フーズラボの求人を見た56歳男性が来店し、ウイスキーを飲みながら店内の雰囲気やコンセプトを確認、面接希望で後日連絡予定。\n- 30代海外男女2名がガージェリー、ティラミス風ブロイ、カプレーゼなどを注文、日本語も話せる様子でデート利用。\n- 50代海外男女2名がウイスキー、オーチャードマティーニ、フムス、ワカモレチップス等を注文、夕食と飲み利用。\n- 30～40代男女4名がモスコミュール、ピーチフィズ、キャラメルバナナなどを注文、ご家族での飲み利用。\n- 60代マジシャン男性と40～50代男性4名（計5名）が来店、マジックを披露し、ハイボール等を注文、楽しい時間を過ごした。", "improvements": "- 本日は比較的ゆったりとした営業で、大きな改善ポイントはなし\n- 手が空いた時間を活用し、フードの仕込みを実施\n- 仕込みを進めたことで、次回営業への準備ができた\n- 今後も余裕がある日は仕込みや清掃に取り組む方針"}, {"date": "2026-04-23", "author": "大泉 瞳", "guests": "- 50代男性常連様と30代カリフォルニア在住の海外男性が来店。近くの立ち飲みで出会い、一緒に来店。会話内容は「寿司が好き」「日本は2回目」など。\n- 30代男女3名はGoogle検索で来店。仕事のつながりのグループで、チョコレートを2個ずつ注文し気に入っていただいた様子。\n- お客様の来店動機や会話内容を具体的に記録できた。今後も観察した事実や会話を積極的に記録する。", "improvements": "- 両角さん（アルバイト）がドリンクの基本的な作成を習得済み。\n- 今後はドリンク作成全体のスピード向上が課題。\n- お客様との会話をしながらの作業での問題は現状なし。\n- 改善策として、明日から実際にオーダーをこなしてもらい、経験を積ませる予定。"}]};
+
+function fmtYen(n){return '¥'+Math.round(n).toLocaleString('ja-JP')}
+function fmtK(n){if(Math.abs(n)>=1e6)return Math.round(n/1e5)/10+'M'; if(Math.abs(n)>=1e3)return Math.round(n/100)/10+'k'; return n.toString()}
+
+// === Chart 1: 日次売上推移 (折れ線+棒) ===
+function chartDaily(){
+  const el = document.getElementById('chart-daily');
+  if(!el) return;
+  const W=1100,H=320,M={t:30,r:60,b:55,l:70};
+  const svg = d3.select(el).append('svg').attr('width',W).attr('height',H).attr('viewBox',`0 0 ${W} ${H}`);
+  const data = DATA.daily.map(d=>({date:d.date, sales:d.sales, customers:d.customers, weekday:d.weekday}));
+  const x = d3.scaleBand().domain(data.map(d=>d.date)).range([M.l,W-M.r]).padding(0.2);
+  const y = d3.scaleLinear().domain([0, d3.max(data,d=>d.sales)*1.15]).range([H-M.b,M.t]);
+  const y2 = d3.scaleLinear().domain([0, d3.max(data,d=>d.customers)*1.15]).range([H-M.b,M.t]);
+  // bars (sales)
+  svg.append('g').selectAll('rect').data(data).enter().append('rect')
+    .attr('x',d=>x(d.date)).attr('y',d=>y(d.sales)).attr('width',x.bandwidth())
+    .attr('height',d=>H-M.b-y(d.sales))
+    .attr('fill',d=>['土','金'].includes(d.weekday)?'#B45309':'#0F4C3A')
+    .attr('opacity',0.85);
+  // line (customers)
+  const line = d3.line().x(d=>x(d.date)+x.bandwidth()/2).y(d=>y2(d.customers));
+  svg.append('path').datum(data).attr('fill','none').attr('stroke','#1F1A18').attr('stroke-width',2.5).attr('d',line);
+  svg.append('g').selectAll('circle').data(data).enter().append('circle')
+    .attr('cx',d=>x(d.date)+x.bandwidth()/2).attr('cy',d=>y2(d.customers))
+    .attr('r',3).attr('fill','#1F1A18');
+  // x axis
+  svg.append('g').attr('transform',`translate(0,${H-M.b})`)
+    .call(d3.axisBottom(x).tickFormat(d=>d.slice(8)+'\n'+data.find(x=>x.date===d).weekday).tickSize(4))
+    .selectAll('text').style('font-size','11px');
+  // y axis sales
+  svg.append('g').attr('transform',`translate(${M.l},0)`).call(d3.axisLeft(y).ticks(5).tickFormat(d=>'¥'+fmtK(d)));
+  // y axis customers
+  svg.append('g').attr('transform',`translate(${W-M.r},0)`).call(d3.axisRight(y2).ticks(5));
+  // labels
+  svg.append('text').attr('x',M.l).attr('y',M.t-10).attr('font-size',13).attr('fill','#0F4C3A').text('■ 売上 (棒, 左軸) / ▲ 客数 (折線, 右軸)');
+}
+
+// === Chart 2: 曜日別ヒートマップ ===
+function chartHeatmap(){
+  const el = document.getElementById('chart-heatmap');
+  if(!el) return;
+  const W=1100,H=300,M={t:30,r:30,b:40,l:80};
+  const wds=['月','火','水','木','金','土','日'];
+  const buckets=['~18時','18-20時','20-22時','22-24時','24時~'];
+  const heat = DATA.heatmap;
+  const cellW=(W-M.l-M.r)/buckets.length;
+  const cellH=(H-M.t-M.b)/wds.length;
+  const svg = d3.select(el).append('svg').attr('width',W).attr('height',H).attr('viewBox',`0 0 ${W} ${H}`);
+  const maxV = d3.max(heat,d=>d.sales);
+  const color = d3.scaleSequential([0,maxV],d3.interpolateGreens);
+  for(const d of heat){
+    const i = wds.indexOf(d.weekday); const j = buckets.indexOf(d.bucket);
+    if(i<0||j<0) continue;
+    svg.append('rect').attr('x',M.l+j*cellW).attr('y',M.t+i*cellH)
+      .attr('width',cellW-2).attr('height',cellH-2)
+      .attr('fill', d.sales>0?color(d.sales):'#F0EBE0').attr('rx',4);
+    if(d.sales>0){
+      svg.append('text').attr('x',M.l+j*cellW+cellW/2).attr('y',M.t+i*cellH+cellH/2-2)
+        .attr('text-anchor','middle').attr('font-size',12).attr('font-weight',700)
+        .attr('fill', d.sales>maxV*0.5?'#fff':'#1F1A18').text(fmtK(d.sales));
+      svg.append('text').attr('x',M.l+j*cellW+cellW/2).attr('y',M.t+i*cellH+cellH/2+12)
+        .attr('text-anchor','middle').attr('font-size',10)
+        .attr('fill', d.sales>maxV*0.5?'#fff':'#73625A').text(d.visits+'件');
+    }
+  }
+  // labels
+  for(let i=0;i<wds.length;i++){
+    svg.append('text').attr('x',M.l-10).attr('y',M.t+i*cellH+cellH/2+5)
+      .attr('text-anchor','end').attr('font-size',13).attr('font-weight',700).text(wds[i]);
+  }
+  for(let j=0;j<buckets.length;j++){
+    svg.append('text').attr('x',M.l+j*cellW+cellW/2).attr('y',M.t-8)
+      .attr('text-anchor','middle').attr('font-size',12).attr('font-weight',700).text(buckets[j]);
+  }
+}
+
+// === Chart 3: 商品出数Top15 (横棒) ===
+function chartTopProducts(){
+  const el = document.getElementById('chart-products');
+  if(!el) return;
+  const data = DATA.products.top_qty_30.slice(0,15);
+  const W=1100,H=400,M={t:20,r:80,b:30,l:230};
+  const svg = d3.select(el).append('svg').attr('width',W).attr('height',H).attr('viewBox',`0 0 ${W} ${H}`);
+  const y = d3.scaleBand().domain(data.map(d=>d.name)).range([M.t,H-M.b]).padding(0.15);
+  const x = d3.scaleLinear().domain([0,d3.max(data,d=>d.qty)*1.1]).range([M.l,W-M.r]);
+  svg.append('g').selectAll('rect').data(data).enter().append('rect')
+    .attr('x',M.l).attr('y',d=>y(d.name)).attr('width',d=>x(d.qty)-M.l).attr('height',y.bandwidth())
+    .attr('fill','#0F4C3A').attr('opacity',0.85);
+  svg.append('g').selectAll('text.lbl').data(data).enter().append('text').attr('class','lbl')
+    .attr('x',d=>x(d.qty)+5).attr('y',d=>y(d.name)+y.bandwidth()/2+4)
+    .attr('font-size',12).attr('fill','#1F1A18').attr('font-weight',700)
+    .text(d=>d.qty);
+  // y axis (product names)
+  svg.append('g').attr('transform',`translate(${M.l},0)`).call(d3.axisLeft(y).tickSize(0))
+    .selectAll('text').style('font-size','12px').style('font-weight','600');
+  svg.selectAll('.domain').remove();
+}
+
+// === Chart 4: カテゴリ別売上構成 (積み上げ) ===
+function chartCategory(){
+  const el = document.getElementById('chart-category');
+  if(!el) return;
+  const data = DATA.category_share.slice(0,8);
+  const W=1100,H=320,M={t:30,r:30,b:60,l:60};
+  const svg = d3.select(el).append('svg').attr('width',W).attr('height',H).attr('viewBox',`0 0 ${W} ${H}`);
+  const x = d3.scaleBand().domain(data.map(d=>d.category)).range([M.l,W-M.r]).padding(0.25);
+  const y = d3.scaleLinear().domain([0,d3.max(data,d=>d.sales)*1.15]).range([H-M.b,M.t]);
+  svg.append('g').selectAll('rect').data(data).enter().append('rect')
+    .attr('x',d=>x(d.category)).attr('y',d=>y(d.sales)).attr('width',x.bandwidth())
+    .attr('height',d=>H-M.b-y(d.sales)).attr('fill','#0F4C3A').attr('opacity',0.85);
+  svg.append('g').selectAll('text.lbl').data(data).enter().append('text').attr('class','lbl')
+    .attr('x',d=>x(d.category)+x.bandwidth()/2).attr('y',d=>y(d.sales)-6)
+    .attr('text-anchor','middle').attr('font-size',13).attr('fill','#1F1A18').attr('font-weight',700)
+    .text(d=>(d.sales_share*100).toFixed(1)+'%');
+  svg.append('g').attr('transform',`translate(0,${H-M.b})`).call(d3.axisBottom(x))
+    .selectAll('text').attr('transform','rotate(-25)').attr('text-anchor','end').style('font-size','11px');
+  svg.append('g').attr('transform',`translate(${M.l},0)`).call(d3.axisLeft(y).ticks(5).tickFormat(d=>'¥'+fmtK(d)));
+}
+
+// === Chart 5: 客単価ヒストグラム ===
+function chartPpHist(){
+  const el = document.getElementById('chart-pphist');
+  if(!el) return;
+  const data = DATA.avg_per_person_dist.histogram;
+  const W=1100,H=280,M={t:20,r:30,b:50,l:60};
+  const svg = d3.select(el).append('svg').attr('width',W).attr('height',H).attr('viewBox',`0 0 ${W} ${H}`);
+  const x = d3.scaleBand().domain(data.map(d=>d.bucket)).range([M.l,W-M.r]).padding(0.1);
+  const y = d3.scaleLinear().domain([0,d3.max(data,d=>d.count)*1.15]).range([H-M.b,M.t]);
+  svg.append('g').selectAll('rect').data(data).enter().append('rect')
+    .attr('x',d=>x(d.bucket)).attr('y',d=>y(d.count)).attr('width',x.bandwidth())
+    .attr('height',d=>H-M.b-y(d.count)).attr('fill','#B45309').attr('opacity',0.85);
+  svg.append('g').selectAll('text.lbl').data(data).enter().append('text').attr('class','lbl')
+    .attr('x',d=>x(d.bucket)+x.bandwidth()/2).attr('y',d=>y(d.count)-4)
+    .attr('text-anchor','middle').attr('font-size',12).attr('fill','#1F1A18').text(d=>d.count||'');
+  svg.append('g').attr('transform',`translate(0,${H-M.b})`).call(d3.axisBottom(x))
+    .selectAll('text').style('font-size','11px');
+  svg.append('g').attr('transform',`translate(${M.l},0)`).call(d3.axisLeft(y).ticks(5));
+}
+
+// === Chart 6: 月次推移(売上/利益) ===
+function chartMonthlyTrend(){
+  const el = document.getElementById('chart-monthly-trend');
+  if(!el) return;
+  // POS売上は月次でJan-Apr計算
+  const months = ['2026-01','2026-02','2026-03','2026-04'];
+  const sales = [
+    DATA.pl.actuals_2026['2026-01'].sales_total,
+    DATA.pl.actuals_2026['2026-02'].sales_total,
+    DATA.pl.actuals_2026['2026-03'].sales_total,
+    DATA.monthly_summary.apr.sales,
+  ];
+  const exp = [
+    DATA.pl.actuals_2026['2026-01'].expenses_total,
+    DATA.pl.actuals_2026['2026-02'].expenses_total,
+    null, null  // 3,4月実績未確定
+  ];
+  const budget_apr_sales = DATA.pl.budget_april.sales_total;
+  const budget_apr_exp = DATA.pl.budget_april.expenses_total;
+
+  const W=1100,H=320,M={t:40,r:40,b:50,l:80};
+  const svg = d3.select(el).append('svg').attr('width',W).attr('height',H).attr('viewBox',`0 0 ${W} ${H}`);
+  const x = d3.scaleBand().domain(months).range([M.l,W-M.r]).padding(0.3);
+  const allVals = [...sales,...exp.filter(v=>v!=null), budget_apr_sales, budget_apr_exp];
+  const y = d3.scaleLinear().domain([0, d3.max(allVals)*1.15]).range([H-M.b,M.t]);
+  // sales line
+  const lineS = d3.line().x((d,i)=>x(months[i])+x.bandwidth()/2).y(d=>y(d));
+  svg.append('path').datum(sales).attr('fill','none').attr('stroke','#0F4C3A').attr('stroke-width',3).attr('d',lineS);
+  svg.selectAll('circle.s').data(sales).enter().append('circle').attr('class','s')
+    .attr('cx',(d,i)=>x(months[i])+x.bandwidth()/2).attr('cy',d=>y(d)).attr('r',5).attr('fill','#0F4C3A');
+  svg.selectAll('text.s').data(sales).enter().append('text').attr('class','s')
+    .attr('x',(d,i)=>x(months[i])+x.bandwidth()/2).attr('y',d=>y(d)-10)
+    .attr('text-anchor','middle').attr('font-size',12).attr('font-weight',700).attr('fill','#0F4C3A')
+    .text(d=>'¥'+fmtK(d));
+  // expense bars
+  for(let i=0;i<exp.length;i++){
+    if(exp[i]==null) continue;
+    svg.append('rect').attr('x',x(months[i])).attr('y',y(exp[i])).attr('width',x.bandwidth())
+      .attr('height',H-M.b-y(exp[i])).attr('fill','#B91C1C').attr('opacity',0.65);
+    svg.append('text').attr('x',x(months[i])+x.bandwidth()/2).attr('y',y(exp[i])-4)
+      .attr('text-anchor','middle').attr('font-size',11).attr('font-weight',700).attr('fill','#B91C1C').text('¥'+fmtK(exp[i]));
+  }
+  // budget april (dashed)
+  svg.append('line').attr('x1',x(months[3])).attr('x2',x(months[3])+x.bandwidth())
+    .attr('y1',y(budget_apr_sales)).attr('y2',y(budget_apr_sales))
+    .attr('stroke','#B45309').attr('stroke-width',2).attr('stroke-dasharray','5,4');
+  svg.append('text').attr('x',x(months[3])+x.bandwidth()/2).attr('y',y(budget_apr_sales)-6)
+    .attr('text-anchor','middle').attr('font-size',11).attr('fill','#B45309').attr('font-weight',700)
+    .text('予算 ¥'+fmtK(budget_apr_sales));
+  // axes
+  svg.append('g').attr('transform',`translate(0,${H-M.b})`).call(d3.axisBottom(x));
+  svg.append('g').attr('transform',`translate(${M.l},0)`).call(d3.axisLeft(y).ticks(6).tickFormat(d=>'¥'+fmtK(d)));
+  // legend
+  svg.append('text').attr('x',M.l).attr('y',M.t-15).attr('font-size',13).attr('fill','#0F4C3A').attr('font-weight',700).text('● 売上 (折線)  ');
+  svg.append('text').attr('x',M.l+130).attr('y',M.t-15).attr('font-size',13).attr('fill','#B91C1C').attr('font-weight',700).text('■ 費用 (棒)  ');
+  svg.append('text').attr('x',M.l+220).attr('y',M.t-15).attr('font-size',13).attr('fill','#B45309').attr('font-weight',700).text('--- 予算');
+}
+
+// === Chart 7: 客層 (人数別) ===
+function chartParty(){
+  const el = document.getElementById('chart-party');
+  if(!el) return;
+  const data = DATA.party_size;
+  const W=540,H=240,M={t:20,r:30,b:30,l:80};
+  const svg = d3.select(el).append('svg').attr('width',W).attr('height',H).attr('viewBox',`0 0 ${W} ${H}`);
+  const y = d3.scaleBand().domain(data.map(d=>d.bucket)).range([M.t,H-M.b]).padding(0.15);
+  const x = d3.scaleLinear().domain([0,d3.max(data,d=>d.visits)*1.15]).range([M.l,W-M.r]);
+  svg.append('g').selectAll('rect').data(data).enter().append('rect')
+    .attr('x',M.l).attr('y',d=>y(d.bucket)).attr('width',d=>x(d.visits)-M.l).attr('height',y.bandwidth())
+    .attr('fill','#0F4C3A');
+  svg.selectAll('text.lbl').data(data).enter().append('text').attr('class','lbl')
+    .attr('x',d=>x(d.visits)+5).attr('y',d=>y(d.bucket)+y.bandwidth()/2+4)
+    .attr('font-size',12).attr('font-weight',700).text(d=>d.visits+'件');
+  svg.append('g').attr('transform',`translate(${M.l},0)`).call(d3.axisLeft(y).tickSize(0))
+    .selectAll('text').style('font-size','12px').style('font-weight','600');
+  svg.selectAll('.domain').remove();
+}
+
+// === Chart 8: 時間帯別 ===
+function chartHour(){
+  const el = document.getElementById('chart-hour');
+  if(!el) return;
+  const data = DATA.hour_summary;
+  const W=540,H=240,M={t:20,r:30,b:50,l:60};
+  const svg = d3.select(el).append('svg').attr('width',W).attr('height',H).attr('viewBox',`0 0 ${W} ${H}`);
+  const x = d3.scaleBand().domain(data.map(d=>d.bucket)).range([M.l,W-M.r]).padding(0.2);
+  const y = d3.scaleLinear().domain([0,d3.max(data,d=>d.sales)*1.15]).range([H-M.b,M.t]);
+  svg.append('g').selectAll('rect').data(data).enter().append('rect')
+    .attr('x',d=>x(d.bucket)).attr('y',d=>y(d.sales)).attr('width',x.bandwidth())
+    .attr('height',d=>H-M.b-y(d.sales)).attr('fill','#B45309').attr('opacity',0.85);
+  svg.selectAll('text.lbl').data(data).enter().append('text').attr('class','lbl')
+    .attr('x',d=>x(d.bucket)+x.bandwidth()/2).attr('y',d=>y(d.sales)-4)
+    .attr('text-anchor','middle').attr('font-size',11).attr('font-weight',700).attr('fill','#1F1A18')
+    .text(d=>'¥'+fmtK(d.sales));
+  svg.append('g').attr('transform',`translate(0,${H-M.b})`).call(d3.axisBottom(x)).selectAll('text').style('font-size','11px');
+  svg.append('g').attr('transform',`translate(${M.l},0)`).call(d3.axisLeft(y).ticks(5).tickFormat(d=>'¥'+fmtK(d)));
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  chartDaily(); chartHeatmap(); chartTopProducts(); chartCategory();
+  chartPpHist(); chartMonthlyTrend(); chartParty(); chartHour();
+});
+
+</script>
+</body>
+</html>

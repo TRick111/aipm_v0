@@ -5,7 +5,7 @@ category: RestaurantAILab
 state: in_progress
 priority: high
 created_at: '2026-05-03T16:02:17.088Z'
-updated_at: '2026-05-03T16:09:35.460Z'
+updated_at: '2026-05-03T16:17:10.736Z'
 created_by: mt-cli
 description: >-
   BFA(bfa-001)の2026年4月分 月報を、分析観点ガイドv2に準拠したフル章立て(第0章〜第9章)でHTML出力。出力先=Flow/202605/2026-05-04/RestaurantAILab/月報/。データソース:
@@ -20,96 +20,6 @@ cockpit_task_ids:
   - 71ee64cd
   - 8d0f73f3
 pending_questions:
-  - id: q-BL-0082-1-20260503160604
-    at: '2026-05-03T16:06:04.941Z'
-    cockpit_task_id: 8d0f73f3
-    content: >-
-      【BFA月報・名寄せ作業】レシピシート（商品一覧）の所在確認をお願いします。
-
-
-      指定された Google Spreadsheet ID `1yALYHSMncsSURPfWEN0SXQJeVUdMm6yxUXhhkal-q3o`
-      は「【BFA】本部サポート」というスプレッドシートで、シート一覧は以下の通りで【商品一覧】というシートは存在しませんでした：
-
-
-      - WBS / アーカイブ_お見積もり / （アーカイブ）進行管理_0202
-
-      - 参考：類似サポート事例 / 参考：事業計画イメージ
-
-      - リニューアル後の課題管理 / 新PL管理（移管前） / PL
-
-      - メニュー検討_260504 / 初動確認_260425 / 初動確認_260413
-
-      - プランの整理_260330 / アジェンダ_260326 / アジェンダ_260316
-
-      - 参考_報告指標 / リニューアルコンセプト / 初期情報
-
-      - 媒体設計 / 訴求方針 / メニュー構成_takeya / appendix
-
-      - AI日報要件 / リブランディング / memo
-
-
-      参考に、Drive 全体検索で見つかった候補：
-
-      - 別スプレッドシート「レシピ」(ID: 1gklkWn77xSUc5ktg7mjgoPzkkciACGBh7IeuqnXZtco) → シートは「オペレーション用簡易レシピ／レシピテンプレート」のみで商品一覧なし
-
-      - 「レシピ_riku」(ID: 1oZI5u1Z-DIt7jyYqNfOpz6FnQt9zNnoJjTh9jHs1xvc) → 「初期手順／Meta／オペレーション用簡易レシピ／食材マスタ／レシピテンプレート」
-
-      - 「【BFA】運営管理」(ID: 1tZQOxDiLSuw-iiZHlqQtwmW0y867Rim2xXuJPDCaX_Y) → PL系・MTG系のみ
-
-
-      確認したいこと：
-
-      (1) 99品目の商品一覧（種別/カテゴリ/位置付け/メニュー名/売価/原価/原価率）は、どのスプレッドシートのどのシートにありますか？正しいID/シート名を教えてください。
-
-      (2) もし本部サポートの中なら、メニュー検討_260504（メニュー/ABC/出現率の列構成）またはメニュー構成_takeya（横方向のカテゴリ表）の流用で良いか、それとも別のソース（Notion等）を見るべきか？
-
-
-      判断を待つ間、POS出数（Dashboard DB / store_code=bfa-001 / 2026-04）の取得は並行して進めて、レシピマスタが特定でき次第マッチングを実施します。
-  - id: q-BL-0082-2-20260503160820
-    at: '2026-05-03T16:08:20.993Z'
-    cockpit_task_id: 8d0f73f3
-    content: >-
-      【BFA月報・名寄せ作業】POS出数データの所在確認をお願いします。
-
-
-      Dashboard DB (Neon Postgres / .env.local の DATABASE_URL) を調査した結果、**2026年4月の売上データが、bfa-001を含む全店舗に対して存在しません**。最新は
-      2026-02 で、店舗別の集計は以下の通りです：
-
-
-      | store_code | 月 | 件数 |
-
-      |---|---|---|
-
-      | bbc-001 | 2026-02 | 58 |
-
-      | shiki-001 | 2026-02 | 195 |
-
-      | **test-003 (= BAR FIVE Arrows)** | **2026-02** | **123 (sales_data) / 681 (sales_items) / 134 (menu_master)** |
-
-      | bfa-001 | — | **0件 (sales_data/menu_master/pl_daily_sales 全て空)** |
-
-
-      判明したこと：
-
-      - BFA-001 のデータは実は `test-003` store_code 配下にある（`store_name='BAR FIVE Arrows'`）。  
-        Dashboard リポジトリには `scripts/migrate-test003-to-bfa001.ts` というスクリプトがあり、移行予定だった様子。
-      - それでも 2026-04 のデータは test-003 にも存在しない（最終: 2026-02）。
-
-      - csv_import_logs の最新 BFA インポートも `2026-02-23` の `会計明細_20260201-20260228.csv` のみ。
-
-
-      確認したいこと：
-
-      (1) **2026年4月のBFA POS出数CSV**は既に手元（Drive/ローカル）にあって、Dashboard へのインポートが未実施という状態でしょうか？  
-
-      　→ もしそうなら、CSVの所在を教えていただくか、私が `scripts/bulk-upload-airregi.mjs` 等でインポートすればよいか、あるいは別エージェントに依頼するか指示ください。
-
-      (2) DBに入っている店舗コードは `test-003` ですが、月報生成時は `bfa-001` として表記すれば良いですか？（store_name は既に「BAR FIVE Arrows」になっています）
-
-      (3) もし4月CSVがまだ存在せず、2月分しか取れない状況なら、月報の対象月を変更する必要があるかもしれません。
-
-
-      並行して、レシピシート所在確認(先の質問)が解決し次第、現存する2月分のPOSデータでマッピング雛形を作っておく事も可能です。指示お願いします。
   - id: q-BL-0082-3-20260503160935
     at: '2026-05-03T16:09:35.460Z'
     cockpit_task_id: 8d0f73f3
@@ -184,3 +94,14 @@ decisions:
 
 
       現在 `Flow/202605/2026-05-04/RestaurantAILab/月報/mapping/` は空のまま（早合点で空ファイルを置かない方針）。
+  - at: '2026-05-03T16:16:46.107Z'
+    type: answer
+    by: user
+    content: |-
+      https://docs.google.com/spreadsheets/d/1WjJaogeoRzA3BfO8ldohym5lywniVBApg1BxtINs8CA/edit?usp=drivesdk
+      上にあるこのURLが商品一覧のファイルのURLです。データベースに関しては本番DBと検証DBとあるので、本番DBの方でBFAの売上データを探させてください。
+  - at: '2026-05-03T16:17:10.736Z'
+    type: answer
+    by: user
+    content: 上にあるこのURLが商品一覧のファイルのURLです。データベースに関しては本番DBと検証DBとあるので、本番DBの方でBFAの売上データを探させてください。
+    answers_question_id: q-BL-0082-2-20260503160820

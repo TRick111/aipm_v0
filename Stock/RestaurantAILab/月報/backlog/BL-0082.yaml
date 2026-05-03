@@ -5,7 +5,7 @@ category: RestaurantAILab
 state: in_progress
 priority: high
 created_at: '2026-05-03T16:02:17.088Z'
-updated_at: '2026-05-03T16:17:10.736Z'
+updated_at: '2026-05-03T16:25:35.073Z'
 created_by: mt-cli
 description: >-
   BFA(bfa-001)の2026年4月分 月報を、分析観点ガイドv2に準拠したフル章立て(第0章〜第9章)でHTML出力。出力先=Flow/202605/2026-05-04/RestaurantAILab/月報/。データソース:
@@ -19,43 +19,7 @@ schema_version: 2
 cockpit_task_ids:
   - 71ee64cd
   - 8d0f73f3
-pending_questions:
-  - id: q-BL-0082-3-20260503160935
-    at: '2026-05-03T16:09:35.460Z'
-    cockpit_task_id: 8d0f73f3
-    content: >-
-      【BFA月報・本体生成】データソース疎通確認の結果、以下のデータ欠損があります。月報生成方針について判断をお願いします。
-
-
-      ▼確認できたデータ
-
-      1. POS売上明細 (rawdata.csv): 2026年4月分 690行のメニュー明細あり (~/aipm_v0/Stock/RestaurantAILab/週報/1_input/BFA/rawdata.csv)
-
-      2. AI日報 (DailyReport.csv): 4月分20日分 (~/aipm_v0/Stock/RestaurantAILab/週報/1_input/BFA/DailyReport.csv)
-
-      3. PL過去 (Spreadsheet 新PL管理（移管前）): 2026年1月・2月の実績フル粒度、3月は売上のみ
-
-      4. PL予算 (同上): 2026年4月の予算目標値あり（売上3.4M / 利益▲154K想定）
-
-
-      ▼欠損データ
-
-      A. 【April PL実績】2026年4月のPL実績（食材費・ドリンク費・人件費等）が未入力。 シート上は #N/A / 空欄。Dashboard DB側もbfa-001店舗にPL_Daily_Salesは0件
-      (PL_Daily_Expensesは1月のみ)。
-         → 第4章 利益構造の判定 が実数では書けません。
-      B. 【商品一覧シート】レシピマスタ（99品目の売価・原価・原価率）の所在が不明（姉妹agentが質問中）。
-         → 第4章(B) 理論原価分析 ができません。
-
-      ▼判断願い
-
-      (1) 4月PL実績は当月内に確定しないと割り切り、第4章は「予算 vs 実績推移トレンド (1-3月) + 4月予算到達感」で構成して良いか？それとも実績を待つか？
-
-      (2) 第4章(B)理論原価は「名寄せマスタ完成待ち」として一旦Placeholder（後日追記）にして、他章を先行させて良いか？
-
-      (3) 月報の出力単位: HTML月報には「データ欠損による暫定版」と冒頭に明示して良いか？
-
-
-      回答をお待ちしている間、第1章(売上構造)/第2章(商品戦略)/第3章(客単価)/第5章(コンセプト)/第6章(曜日時間帯)/第7章(施策)/第8章(構造的ボトルネック)/第9章(翌月論点) を並行で進めます。
+pending_questions: []
 decisions:
   - at: '2026-05-03T16:04:44.645Z'
     type: commitment
@@ -104,4 +68,8 @@ decisions:
     type: answer
     by: user
     content: 上にあるこのURLが商品一覧のファイルのURLです。データベースに関しては本番DBと検証DBとあるので、本番DBの方でBFAの売上データを探させてください。
-    answers_question_id: q-BL-0082-2-20260503160820
+  - at: '2026-05-03T16:25:35.073Z'
+    type: answer
+    by: user
+    content: 4月のPLはダッシュボードアプリのデータベースから取ってきて
+    answers_question_id: q-BL-0082-3-20260503160935

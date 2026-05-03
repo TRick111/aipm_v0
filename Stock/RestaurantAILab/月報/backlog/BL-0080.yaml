@@ -1,4 +1,3 @@
-schema_version: 2
 id: BL-0080
 title: BFA 月報作成 (2026年4月分)
 project: 月報
@@ -6,17 +5,19 @@ category: RestaurantAILab
 state: pending
 priority: high
 created_at: '2026-04-30T13:29:01.461Z'
-updated_at: '2026-04-30T13:29:01.461Z'
+updated_at: '2026-05-03T00:46:37.614Z'
 created_by: mt-cli
 description: >-
   BFA店舗の2026年4月分 月報を作成。提出期限: 2026-05-03 (毎月3日まで)。週報の運用 (Phase1: POSデータ準備 → Phase2: 月報作成 → Dashboard アップロード)
   に倣い、4月の全週を集計し、月次のPL観点での示唆と次月アクションを含めた月報を完成させる。due=2026-05-03 / tags: 月報,BFA,定期
 deliverable_refs: []
+schema_version: 2
 cockpit_task_ids: []
 pending_questions: []
-decisions: []
-due: '2026-05-03'
-tags:
-  - 月報
-  - BFA
-  - 定期
+decisions:
+  - at: '2026-05-03T00:46:37.614Z'
+    type: commitment
+    by: user
+    content: >-
+      2026-05-03 田中さん指示: 今日中に必ず提出する。BFA 月報の前月テンプレートは田中さんが後ほど提供予定。テンプレ受領 → 即 AI で本体生成 → 本人 review → 提出 の流れ。稼働時間制約
+      (10:30-17:00 ビリヤード練習で不在) のため、テンプレ受領前の準備系 (Phase1 POSデータ準備 + BL-0081 Airレジ メモ欄調査) は先行で進める。

@@ -194,6 +194,12 @@ for p in prod_apr:
 prod_by_qty = sorted(prod_apr, key=lambda x: -x['qty'])
 prod_by_sales = sorted(prod_apr, key=lambda x: -x['sales'])
 
+# tablecharge / no charge / 単純チャージ系を除外したランキング (商品戦略章用)
+EXCLUDE_FROM_RANKING = {'tablecharge', 'No charge', 'no charge', '丸氷', 'ドリンク'}  # 'ドリンク'は単独カテゴリ名のみ表示の総称
+prod_apr_excl = [p for p in prod_apr if p['name'] not in EXCLUDE_FROM_RANKING]
+prod_by_qty_excl = sorted(prod_apr_excl, key=lambda x: -x['qty'])
+prod_by_sales_excl = sorted(prod_apr_excl, key=lambda x: -x['sales'])
+
 # === レシピマッピング (POS商品名 → recipe商品名) ===
 # 名寄せ戦略: 完全一致 + 正規化(空白/記号除去)で再一致
 def normalize(s):
@@ -255,6 +261,58 @@ match_summary = {
     'matched_sales': theoretical_sales_apr_matched,
     'theoretical_cost_rate_matched': theoretical_cost_apr/theoretical_sales_apr_matched if theoretical_sales_apr_matched else 0,
 }
+
+# === 未マッチ商品の分類 (理論原価データ確認用) ===
+def classify_unmatched(name, cat):
+    n = name or ''
+    c = cat or ''
+    if n in ('tablecharge','No charge','no charge'): return 'チャージ系 (ランキング除外対象)'
+    if 'コース' in n or 'CLP' in n or '飲み放題' in n: return 'コース・飲み放題'
+    if 'ハイボール' in n or 'ハウスハイボール' == n: return 'ハウスハイボール (要レシピ登録)'
+    if 'ウイスキー' in c or any(w in n for w in ['余市','タリスカー','グレンリベット','ワイルドターキー','イチローズ','響','山崎','白州']): return 'ウイスキー単品ボトル'
+    if 'ワイン' in c or 'グラス' in c: return 'ワイン (要レシピ登録)'
+    if 'ビール' in c or 'ビール' in n: return 'ビール'
+    if c == 'その他' or c == '未設定' or '黒板' in n: return 'その他 (POSカテゴリ未整理)'
+    return 'レシピ未登録 (要追補)'
+
+unmatched_classification = defaultdict(lambda: {'qty':0,'sales':0,'count':0,'samples':[]})
+for m in match_results:
+    if m['matched']: continue
+    cat = classify_unmatched(m['pos_name'], m.get('category_pos',''))
+    unmatched_classification[cat]['qty'] += m['qty']
+    unmatched_classification[cat]['sales'] += m['sales']
+    unmatched_classification[cat]['count'] += 1
+    if len(unmatched_classification[cat]['samples']) < 5:
+        unmatched_classification[cat]['samples'].append(m['pos_name'])
+unmatched_class_list = [
+    {'category':k,'qty':v['qty'],'sales':v['sales'],'count':v['count'],'samples':v['samples']}
+    for k,v in sorted(unmatched_classification.items(), key=lambda x:-x[1]['qty'])
+]
+
+# === マッチ済品目の原価率分布 (データ妥当性チェック) ===
+matched_with_rates = [m for m in match_results if m['matched'] and m.get('cost_rate')]
+cost_rate_buckets = {'~10%':0,'10-20%':0,'20-30%':0,'30-40%':0,'40-50%':0,'50%+':0}
+for m in matched_with_rates:
+    r = m['cost_rate']
+    if r < 0.10: cost_rate_buckets['~10%'] += 1
+    elif r < 0.20: cost_rate_buckets['10-20%'] += 1
+    elif r < 0.30: cost_rate_buckets['20-30%'] += 1
+    elif r < 0.40: cost_rate_buckets['30-40%'] += 1
+    elif r < 0.50: cost_rate_buckets['40-50%'] += 1
+    else: cost_rate_buckets['50%+'] += 1
+
+# === POS価格 vs レシピ売価 不一致の検出 ===
+price_mismatches = []
+for m in match_results:
+    if not m['matched']: continue
+    pp = m.get('price_pos') or 0
+    rp = m.get('price_recipe') or 0
+    if rp and pp and abs(pp-rp) > 50:  # 50円以上の差
+        price_mismatches.append({
+            'name': m['pos_name'], 'pos_price': pp, 'recipe_price': rp,
+            'diff': pp-rp, 'qty': m['qty'],
+        })
+price_mismatches = sorted(price_mismatches, key=lambda x:-abs(x['diff']))[:15]
 print(f'Match rate: {match_summary["match_rate"]*100:.1f}% (qty {match_summary["qty_match_rate"]*100:.1f}%)', file=sys.stderr)
 print(f'Theoretical cost: ¥{theoretical_cost_apr:,.0f}', file=sys.stderr)
 
@@ -367,8 +425,43 @@ for m in pl_monthly:
     pl_monthly[m]['profit'] = pl_monthly[m]['sales_total'] - pl_monthly[m]['expenses_total']
 
 pl_april = pl_monthly.get('2026-04', {})
-pl_jan = pl_monthly.get('2026-01', {})
-pl_feb = pl_monthly.get('2026-02', {})
+
+# === PL 1-3月: スプレッドシート (新PL管理（移管前）) を採用 ===
+# 田中さん指示: 1-3月はスプレッドシート、4月はDB
+pl_jan = {
+    'sales_total': 2642718,
+    'sales': {'ドリンク': 1250018, 'フード': 846000, 'コース': 64500, 'イベント': 482200},
+    'expenses_total': 2352939,
+    'expenses': {
+        '食材': 178182, 'ドリンク': 203250, '広告費': 22000,
+        '家賃': 1112859, '人件費': 347258, 'ローン返済': 169154,
+        '水道光熱費': 79854, '管理費': 194481, '備品': 45901, '税金': 0,
+    },
+    'profit': 2642718 - 2352939,
+    'source': 'spreadsheet',
+}
+pl_feb = {
+    'sales_total': 2667760,
+    'sales': {'ドリンク': 1510960, 'フード': 461900, 'コース': 413000, 'イベント': 281900},
+    'expenses_total': 2832178,
+    'expenses': {
+        '食材': 210952, 'ドリンク': 420616, '広告費': 103180,
+        '家賃': 1112859, '人件費': 414487, 'ローン返済': 169221,
+        '水道光熱費': 91609, '管理費': 250617, '備品': 58637, '税金': 0,
+    },
+    'profit': 2667760 - 2832178,
+    'source': 'spreadsheet',
+}
+pl_mar = {
+    'sales_total': 2787400,
+    'sales': {'ドリンク': 1479150, 'フード': 568250, 'コース': 269500, 'イベント': 470500},
+    'expenses_total': None,  # 3月費用は未入力 (シート上 #N/A)
+    'expenses': {},
+    'profit': None,
+    'source': 'spreadsheet (sales only; expenses #N/A)',
+}
+# 4月はDBデータをそのまま使用 (pl_april に source 情報を追加)
+pl_april['source'] = 'production DB (some categories not yet entered)'
 
 # === 4月予算 (本部サポートシートから既知) ===
 budget_apr = {
@@ -431,7 +524,10 @@ out = {
     'products': {
         'top_qty_30': prod_by_qty[:30],
         'top_sales_30': prod_by_sales[:30],
+        'top_qty_30_excl': prod_by_qty_excl[:30],   # tablecharge等を除外
+        'top_sales_30_excl': prod_by_sales_excl[:30],
         'all': prod_apr,
+        'excluded_from_ranking': sorted(EXCLUDE_FROM_RANKING),
     },
     'category_share': cat_summary,
     'avg_per_person_dist': {'stats': spp_stats, 'histogram': spp_hist},
@@ -439,15 +535,18 @@ out = {
     'segments': {'apr': seg_apr, 'mar': seg_mar},
     'party_size': party_summary,
     'pl': {
-        'monthly_actuals': dict(pl_monthly),
-        'apr': pl_april,
-        'jan': pl_jan, 'feb': pl_feb,
+        'monthly_actuals': dict(pl_monthly),  # DB-derived
+        'apr': pl_april,                       # DB
+        'jan': pl_jan, 'feb': pl_feb, 'mar': pl_mar,  # spreadsheet (Tanaka指示)
         'budget_april': budget_apr,
     },
     'recipe_match': {
         'summary': match_summary,
         'matched': [m for m in match_results if m['matched']],
         'unmatched': [m for m in match_results if not m['matched']],
+        'unmatched_classification': unmatched_class_list,
+        'cost_rate_buckets': cost_rate_buckets,
+        'price_mismatches': price_mismatches,
     },
     'theoretical_cost': {
         'apr_total': theoretical_cost_apr,

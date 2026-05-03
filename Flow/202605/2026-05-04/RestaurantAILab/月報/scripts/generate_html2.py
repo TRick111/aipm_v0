@@ -206,7 +206,8 @@ function chartHeatmap(){
 
 function chartTopProducts(){
   const el = document.getElementById('chart-products'); if(!el) return;
-  const data = DATA.products.top_qty_30.slice(0,15);
+  // tablecharge等を除外したランキングを使用
+  const data = (DATA.products.top_qty_30_excl || DATA.products.top_qty_30).slice(0,15);
   const W=1100,H=400,M={t:20,r:80,b:30,l:240};
   const svg = d3.select(el).append('svg').attr('width',W).attr('height',H).attr('viewBox',`0 0 ${W} ${H}`);
   const y = d3.scaleBand().domain(data.map(d=>d.name)).range([M.t,H-M.b]).padding(0.15);
@@ -262,17 +263,18 @@ function chartPpHist(){
 function chartMonthlyPL(){
   const el = document.getElementById('chart-monthly-pl'); if(!el) return;
   const months = ['2026-01','2026-02','2026-03','2026-04'];
+  // 1-3月はスプレッドシート / 4月はDB (Tanaka指示)
   const sales = [
-    DATA.pl.monthly_actuals['2026-01']?.sales_total || DATA.monthly_summary.jan.sales,
-    DATA.pl.monthly_actuals['2026-02']?.sales_total || DATA.monthly_summary.feb.sales,
-    DATA.pl.monthly_actuals['2026-03']?.sales_total || DATA.monthly_summary.mar.sales,
-    DATA.pl.monthly_actuals['2026-04']?.sales_total || DATA.monthly_summary.apr.sales,
+    DATA.pl.jan.sales_total,
+    DATA.pl.feb.sales_total,
+    DATA.pl.mar.sales_total,
+    DATA.pl.apr.sales_total || DATA.monthly_summary.apr.sales,
   ];
   const exp = [
-    DATA.pl.monthly_actuals['2026-01']?.expenses_total || null,
-    DATA.pl.monthly_actuals['2026-02']?.expenses_total || null,
-    DATA.pl.monthly_actuals['2026-03']?.expenses_total || null,
-    DATA.pl.monthly_actuals['2026-04']?.expenses_total || null,
+    DATA.pl.jan.expenses_total,
+    DATA.pl.feb.expenses_total,
+    DATA.pl.mar.expenses_total,  // null (3月費用未入力)
+    DATA.pl.apr.expenses_total,
   ];
   const profit = sales.map((s,i)=>exp[i]!=null ? s-exp[i] : null);
   const W=1100,H=320,M={t:40,r:40,b:50,l:80};
@@ -361,14 +363,17 @@ function chartHour(){
 
 function chartCostRate(){
   const el = document.getElementById('chart-costrate'); if(!el) return;
-  // 月次 食材+ドリンク費 / 売上
-  const months = ['2026-01','2026-02','2026-04'];  // 3月は費用未入力
-  const ma = DATA.pl.monthly_actuals;
-  const data = months.map(m=>{
-    const s = ma[m]?.sales_total||0;
-    const e = ma[m]?.expenses||{};
+  // 月次 食材+ドリンク費 / 売上 (1-3月はスプレッドシート / 4月はDB)
+  const sources = [
+    {month:'2026-01', d: DATA.pl.jan},
+    {month:'2026-02', d: DATA.pl.feb},
+    {month:'2026-04', d: DATA.pl.apr},  // 3月は費用未入力
+  ];
+  const data = sources.map(({month,d})=>{
+    const s = d.sales_total||0;
+    const e = d.expenses||{};
     const fd = (e['食材']||0)+(e['ドリンク']||0);
-    return {month:m, rate: s? fd/s : 0, fd, sales: s};
+    return {month, rate: s? fd/s : 0, fd, sales: s};
   });
   const W=540,H=240,M={t:30,r:30,b:40,l:60};
   const svg = d3.select(el).append('svg').attr('width',W).attr('height',H).attr('viewBox',`0 0 ${W} ${H}`);
@@ -518,13 +523,14 @@ slides.append(f'''<div class="slide" id="slide-4">
 </div>
 </div>''')
 
-# Slide 5: 第1章補足 - 日次変動と予約/ウォークイン
+# Slide 5: 第1章補足 - 日次変動 + コース vs アラカルト (予約フラグはデータ未取得につき記載なし)
 top3_days = sorted(DATA['daily'], key=lambda d:-d['sales'])[:3]
 worst3_days = sorted([d for d in DATA['daily'] if d['sales']>0], key=lambda d:d['sales'])[:3]
 seg = DATA['segments']['apr']
+seg_m = DATA['segments']['mar']
 slides.append(f'''<div class="slide" id="slide-5">
-<div class="slide-header"><h2><span class="ch-badge">第1章補足</span>日次変動・客層別売上</h2><span class="pn">5 / {TOTAL}</span></div>
-<div class="msg-bar">団体貸切が売上の山を作る一方、予約フラグPOS記録ゼロは入力欠落の疑い</div>
+<div class="slide-header"><h2><span class="ch-badge">第1章補足</span>日次変動・コース／アラカルト構成</h2><span class="pn">5 / {TOTAL}</span></div>
+<div class="msg-bar">月内ベスト日が団体貸切で売上の山を作るも、コース利用が3月19件→4月2件へ激減</div>
 <div class="slide-body">
 <div class="two-col">
 <div class="col-half">
@@ -540,29 +546,31 @@ slides.append(f'''<div class="slide" id="slide-5">
 </table>
 </div>
 <div class="col-half">
-<div class="sec-title o">予約 vs ウォークイン (4月)</div>
+<div class="sec-title o">コース vs アラカルト (4月)</div>
 <table class="dt sm">
-<tr><th>区分</th><th class="r">会計</th><th class="r">売上</th><th class="r">構成比</th></tr>
-<tr><td>予約あり</td><td class="r">{seg['reservation']['visits']}</td><td class="r">{fmt_yen(seg['reservation']['sales'])}</td><td class="r">{seg['reservation']['sales']/apr['sales']*100:.1f}%</td></tr>
-<tr><td>ウォークイン</td><td class="r b">{seg['walkin']['visits']}</td><td class="r b">{fmt_yen(seg['walkin']['sales'])}</td><td class="r b">{seg['walkin']['sales']/apr['sales']*100:.1f}%</td></tr>
+<tr><th>区分</th><th class="r">会計</th><th class="r">売上</th><th class="r">構成比</th><th class="r">会計単価</th></tr>
+<tr><td>コース</td><td class="r b">{seg['course']['visits']}</td><td class="r b">{fmt_yen(seg['course']['sales'])}</td><td class="r b">{seg['course']['sales']/apr['sales']*100:.1f}%</td><td class="r">{fmt_yen(seg['course']['sales']/seg['course']['visits']) if seg['course']['visits'] else '—'}</td></tr>
+<tr><td>アラカルト</td><td class="r">{seg['alacarte']['visits']}</td><td class="r">{fmt_yen(seg['alacarte']['sales'])}</td><td class="r">{seg['alacarte']['sales']/apr['sales']*100:.1f}%</td><td class="r">{fmt_yen(seg['alacarte']['sales']/seg['alacarte']['visits']) if seg['alacarte']['visits'] else '—'}</td></tr>
 </table>
-<div class="data-gap" style="margin-top:8px">⚠ POS記録上「予約あり」0件。日報には貸切等の予約言及あり (4/3 24名様部門送別会など) → POSで予約フラグが入力されていない可能性</div>
-<div class="sec-title o" style="margin-top:14px">コース vs アラカルト</div>
+<div class="sec-title o" style="margin-top:14px">3月との比較</div>
 <table class="dt sm">
-<tr><th>区分</th><th class="r">会計</th><th class="r">売上</th><th class="r">単価</th></tr>
-<tr><td>コース</td><td class="r b">{seg['course']['visits']}</td><td class="r b">{fmt_yen(seg['course']['sales'])}</td><td class="r b">{fmt_yen(seg['course']['sales']/seg['course']['visits']) if seg['course']['visits'] else '—'}</td></tr>
-<tr><td>アラカルト</td><td class="r">{seg['alacarte']['visits']}</td><td class="r">{fmt_yen(seg['alacarte']['sales'])}</td><td class="r">{fmt_yen(seg['alacarte']['sales']/seg['alacarte']['visits']) if seg['alacarte']['visits'] else '—'}</td></tr>
+<tr><th>指標</th><th class="r">4月</th><th class="r">3月</th><th class="r">差</th></tr>
+<tr><td>コース会計件数</td><td class="r b">{seg['course']['visits']}</td><td class="r">{seg_m['course']['visits']}</td><td class="r neg b">{seg['course']['visits']-seg_m['course']['visits']:+d}</td></tr>
+<tr><td>コース売上</td><td class="r b">{fmt_yen(seg['course']['sales'])}</td><td class="r">{fmt_yen(seg_m['course']['sales'])}</td><td class="r neg b">{fmt_yen(seg['course']['sales']-seg_m['course']['sales'])}</td></tr>
+<tr><td>コース利用率</td><td class="r b">{apr['course_share']*100:.1f}%</td><td class="r">{mar['course_share']*100:.1f}%</td><td class="r neg b">{(apr['course_share']-mar['course_share'])*100:+.1f}pt</td></tr>
 </table>
-<div class="info-box">3月コース19件・¥626kから激減。コース提案ファネルの再構築が論点</div>
+<div class="warn-box" style="margin-top:8px">コース2件・¥117kは3月19件・¥626kから激減 (会計件数▲17 / 売上▲¥509k)。<strong>コース提案ファネルの再構築が論点</strong> (第9章 論点1)</div>
 </div>
 </div>
 </div>
 </div>''')
 
-# Slide 6: 第2章 商品戦略 (出数Top15)
+# Slide 6: 第2章 商品戦略 (出数Top15 / tablecharge等除外)
+def get_p(name, key):
+    return next((p[key] for p in DATA['products']['all'] if p['name']==name), 0)
 slides.append(f'''<div class="slide" id="slide-6">
-<div class="slide-header"><h2><span class="ch-badge">第2章</span>商品戦略の判定 — 出数Top15</h2><span class="pn">6 / {TOTAL}</span></div>
-<div class="msg-bar">tablecharge / ハウスハイボール / 森のジントニックの3軸が出数を支える</div>
+<div class="slide-header"><h2><span class="ch-badge">第2章</span>商品戦略の判定 — 出数Top15 (チャージ除外)</h2><span class="pn">6 / {TOTAL}</span></div>
+<div class="msg-bar">ハウスハイボール (152) / 森のジントニック (82) / ガージェリー (39) の3軸が出数を支える</div>
 <div class="slide-body">
 <div id="chart-products" style="height:380px"></div>
 <div class="two-col" style="margin-top:6px">
@@ -570,44 +578,46 @@ slides.append(f'''<div class="slide" id="slide-6">
 <div class="sec-title o">名指し看板 (確固たる地位)</div>
 <table class="dt sm">
 <tr><th>商品</th><th class="r">4月出数</th><th class="r">3月</th><th class="r">差</th><th class="c">タグ</th></tr>
-<tr class="best"><td>ハウスハイボール</td><td class="r b">152</td><td class="r">{next((p['qty'] for p in DATA['products']['all'] if p['name']=='ハウスハイボール' and 'qty_mar' in p),'-')}</td><td class="r pos">+{next((p['qty_diff_mom'] for p in DATA['products']['all'] if p['name']=='ハウスハイボール'),'-')}</td><td class="c"><span class="tag tag-kanban">看板</span></td></tr>
-<tr class="best"><td>森のジントニック</td><td class="r b">82</td><td class="r">{next((p['qty_mar'] for p in DATA['products']['all'] if p['name']=='森のジントニック'),'-')}</td><td class="r pos">+{next((p['qty_diff_mom'] for p in DATA['products']['all'] if p['name']=='森のジントニック'),'-')}</td><td class="c"><span class="tag tag-kanban">看板</span></td></tr>
-<tr><td>ガージェリー</td><td class="r b">39</td><td class="r">{next((p['qty_mar'] for p in DATA['products']['all'] if p['name']=='ガージェリー'),'-')}</td><td class="r {'pos' if next((p['qty_diff_mom'] for p in DATA['products']['all'] if p['name']=='ガージェリー'),0)>=0 else 'neg'}">{next((p['qty_diff_mom'] for p in DATA['products']['all'] if p['name']=='ガージェリー'),0):+d}</td><td class="c"><span class="tag tag-junkanban">準看板</span></td></tr>
-<tr><td>BAR専用チョコレート</td><td class="r b">38</td><td class="r">{next((p['qty_mar'] for p in DATA['products']['all'] if p['name']=='BAR 専用チョコレート'),'-')}</td><td class="r">—</td><td class="c"><span class="tag tag-kanban">看板</span></td></tr>
+<tr class="best"><td>ハウスハイボール</td><td class="r b">152</td><td class="r">{get_p('ハウスハイボール','qty_mar')}</td><td class="r pos">{get_p('ハウスハイボール','qty_diff_mom'):+d}</td><td class="c"><span class="tag tag-kanban">看板</span></td></tr>
+<tr class="best"><td>森のジントニック</td><td class="r b">82</td><td class="r">{get_p('森のジントニック','qty_mar')}</td><td class="r pos">{get_p('森のジントニック','qty_diff_mom'):+d}</td><td class="c"><span class="tag tag-kanban">看板</span></td></tr>
+<tr><td>ガージェリー</td><td class="r b">39</td><td class="r">{get_p('ガージェリー','qty_mar')}</td><td class="r {'pos' if get_p('ガージェリー','qty_diff_mom')>=0 else 'neg'}">{get_p('ガージェリー','qty_diff_mom'):+d}</td><td class="c"><span class="tag tag-junkanban">準看板</span></td></tr>
+<tr><td>BAR専用チョコレート</td><td class="r b">38</td><td class="r">{get_p('BAR 専用チョコレート','qty_mar')}</td><td class="r">{get_p('BAR 専用チョコレート','qty_diff_mom'):+d}</td><td class="c"><span class="tag tag-kanban">看板</span></td></tr>
 </table>
 </div>
 <div class="col-half">
 <div class="sec-title o">注釈</div>
 <ul class="bl o">
-<li><strong>tablecharge (290件)</strong>: 全会計に発生する課金。会計数の指標であり「出数」ではない</li>
+<li><strong>tablecharge等は除外</strong>: 全会計に自動付与されるチャージは商品戦略判断の対象外 ({', '.join(DATA['products']['excluded_from_ranking'])})</li>
 <li><strong>ハウスハイボール (152本)</strong>: 看板地位を維持。ウイスキー類の入口商品として機能</li>
 <li><strong>森のジントニック (82本)</strong>: BFAコンセプト看板。安定出数</li>
 <li><strong>ガージェリー (39本)</strong>: ビール系中核。準看板</li>
 <li>飲み放題コース (3種計71件) で売上 ¥474k = 全売上の20.6%</li>
 </ul>
-<div class="warn-box" style="margin-top:6px">レシピマスタ取得済 (99品目) でも、<strong>出数43.3%が名寄せ未確定</strong>: ハイボール / ウイスキー単品ボトル / 飲み放題 / tablecharge。看板/整理の最終確定は名寄せ補完後</div>
+<div class="warn-box" style="margin-top:6px">レシピマスタ取得済 (99品目) でも、<strong>出数43.3%が名寄せ未確定</strong>: ハイボール / ウイスキー単品ボトル / 飲み放題。看板/整理の最終確定は名寄せ補完後 (第4章Bで詳述)</div>
 </div>
 </div>
 </div>
 </div>''')
 
-# Slide 7: 第2章補足 売上ランキング+カテゴリ
-top10_sales = DATA['products']['top_sales_30'][:10]
+# Slide 7: 第2章補足 売上ランキング+カテゴリ (左テーブル幅を画面半分に)
+# 上下2段レイアウトに変更: 上にTop10商品テーブル(全幅) / 下にカテゴリ構成
+top10_sales = DATA['products']['top_sales_30_excl'][:10]  # tablecharge等除外
 slides.append(f'''<div class="slide" id="slide-7">
 <div class="slide-header"><h2><span class="ch-badge">第2章補足</span>売上Top10 / カテゴリ構成</h2><span class="pn">7 / {TOTAL}</span></div>
-<div class="msg-bar">売上1位は「その他CLPコース」¥280k — コース系で売上の<strong>26.8%</strong>を占有</div>
+<div class="msg-bar">売上1位は「その他CLPコース」¥280k — コース系で売上の<strong>26.8%</strong>を占有 (チャージ除外ベース)</div>
 <div class="slide-body">
 <div class="two-col">
-<div class="col-half">
-<div class="sec-title">商品別売上Top10</div>
-<table class="dt sm">
-<tr><th class="c">#</th><th>商品名</th><th class="r">売上</th><th class="r">出数</th><th class="r">前月差</th></tr>
+<div class="col-half" style="flex:1.1">
+<div class="sec-title">商品別売上Top10 (チャージ除外)</div>
+<table class="dt sm" style="width:100%">
+<tr><th class="c" style="width:32px">#</th><th>商品名</th><th class="r">売上</th><th class="r">出数</th><th class="r">前月差</th></tr>
 {''.join(f"<tr><td class='c b'>{i+1}</td><td>{p['name']}</td><td class='r b'>{fmt_yen(p['sales'])}</td><td class='r'>{p['qty']}</td><td class='r {('pos' if p['qty_diff_mom']>=0 else 'neg')}'>{p['qty_diff_mom']:+d}</td></tr>" for i,p in enumerate(top10_sales[:10]))}
 </table>
 </div>
-<div class="col-half">
-<div id="chart-category" style="height:300px"></div>
-<table class="dt sm" style="margin-top:6px">
+<div class="col-half" style="flex:0.9">
+<div class="sec-title">カテゴリ構成 (4月)</div>
+<div id="chart-category" style="height:260px"></div>
+<table class="dt xs" style="margin-top:4px">
 <tr><th>カテゴリ</th><th class="r">構成比</th><th class="r">前月差</th></tr>
 {''.join(f"<tr><td>{c['category'][:20]}</td><td class='r b'>{c['sales_share']*100:.1f}%</td><td class='r {('pos' if c['share_diff']>=0 else 'neg')}'>{c['share_diff']*100:+.1f}pt</td></tr>" for c in DATA['category_share'][:6])}
 </table>
@@ -685,22 +695,23 @@ slides.append(f'''<div class="slide" id="slide-9">
 </div>
 </div>''')
 
-# Slide 10: 第4章 利益構造 ★最重要
+# Slide 10: 第4章 利益構造 ★最重要 (1-3月: スプレッドシート / 4月: DB)
 exp_sorted = sorted([(k,v) for k,v in pl_april.get('expenses',{}).items()], key=lambda x:-x[1])
 slides.append(f'''<div class="slide" id="slide-10">
 <div class="slide-header"><h2><span class="ch-badge">第4章 ★</span>利益構造の判定 — PL推移と固定費耐性</h2><span class="pn">10 / {TOTAL}</span></div>
-<div class="msg-bar">1月+¥289k → 2月▲¥164k → 4月+¥{int(pl_apr_profit/1000):,}k (一部費目未入力につき暫定) — 損益分岐への到達は依然不十分</div>
+<div class="msg-bar">1月+¥289k → 2月▲¥164k → 3月(費用未入力) → 4月暫定+¥{int(pl_apr_profit/1000):,}k (一部費目未入力) — 損益分岐への到達は依然不十分</div>
 <div class="slide-body">
 <div id="chart-monthly-pl" style="height:330px"></div>
 <div class="two-col" style="margin-top:6px">
 <div class="col-half">
-<div class="sec-title">4月PL費用 (実績入力分のみ)</div>
+<div class="sec-title">4月PL費用 (本番DB / 入力済分のみ)</div>
 <table class="dt sm">
 <tr><th>費目</th><th class="r">4月実績</th><th class="r">vs 1月</th><th class="r">vs 2月</th></tr>
 {''.join(f"<tr><td>{k}</td><td class='r b'>{fmt_yen(v)}</td><td class='r'>{fmt_yen(v-pl_jan.get('expenses',{}).get(k,0))}</td><td class='r'>{fmt_yen(v-pl_feb.get('expenses',{}).get(k,0))}</td></tr>" for k,v in exp_sorted)}
 <tr class="highlight-row"><td>入力済合計</td><td class="r b">{fmt_yen(pl_apr_exp)}</td><td class="r">{fmt_yen(pl_apr_exp-pl_jan.get('expenses_total',0))}</td><td class="r">{fmt_yen(pl_apr_exp-pl_feb.get('expenses_total',0))}</td></tr>
 </table>
-<div class="data-gap" style="margin-top:6px">⚠ 未入力費目: 人件費・水道光熱費・ローン返済・税金 → 補完で<strong>+¥600k〜800k程度の可能性</strong></div>
+<div class="data-gap" style="margin-top:6px">⚠ 4月未入力費目: 人件費・水道光熱費・ローン返済・税金 → 1-2月実績ベースで補正すると<strong>+¥600〜700k程度</strong></div>
+<div style="font-size:13px;color:#73625A;margin-top:4px">📌 データソース: 1-3月=新PL管理シート / 4月=本番DB</div>
 </div>
 <div class="col-half">
 <div class="sec-title r">損益分岐ラインへのギャップ</div>
@@ -717,72 +728,75 @@ slides.append(f'''<div class="slide" id="slide-10">
 </div>
 </div>''')
 
-# Slide 11: 第4章補足(B) 理論原価分析
-top_matched = sorted(DATA['recipe_match']['matched'], key=lambda x:-x['theoretical_cost_total'])[:10]
-top_unmatched_by_qty = sorted(DATA['recipe_match']['unmatched'], key=lambda x:-x['qty'])[:8]
+# Slide 11: 第4章(B) 理論原価 — まずデータ取得状況を確認 (考察前)
+classes = DATA['recipe_match']['unmatched_classification']
+total_unmatched_qty = sum(c['qty'] for c in classes if 'チャージ' not in c['category'])
 slides.append(f'''<div class="slide" id="slide-11">
-<div class="slide-header"><h2><span class="ch-badge">第4章(B)</span>理論原価分析 (POS×レシピ)</h2><span class="pn">11 / {TOTAL}</span></div>
-<div class="msg-bar">名寄せ出数{mc['qty_match_rate']*100:.1f}% (matched部分)で 理論原価率<strong>{tc_rate_matched*100:.1f}%</strong> vs PL食材+ドリンク率<strong>{(pl_apr_food_drink/pl_apr_sales*100):.1f}%</strong></div>
+<div class="slide-header"><h2><span class="ch-badge">第4章(B)-i</span>理論原価 — データ取得状況の確認 (考察前)</h2><span class="pn">11 / {TOTAL}</span></div>
+<div class="msg-bar">⚠ 考察に入る前に: POS×レシピ名寄せの欠損が出数の56.7% / ¥{int(total_unmatched_qty/100)*100:,}超出数規模。原因を分類して可視化</div>
 <div class="slide-body">
 <div class="two-col">
 <div class="col-half">
-<div id="chart-costrate" style="height:240px"></div>
-<div class="sec-title" style="margin-top:6px">名寄せ サマリ</div>
+<div class="sec-title">マッチング全体像</div>
 <table class="dt sm">
 <tr><th>項目</th><th class="r">値</th></tr>
-<tr><td>レシピ品目数</td><td class="r b">99品目</td></tr>
-<tr><td>POS出現品目</td><td class="r b">{mc['total_pos_products']}</td></tr>
-<tr><td>マッチ品目数</td><td class="r">{mc['matched_count']} ({mc['match_rate']*100:.1f}%)</td></tr>
-<tr><td>マッチ出数比率</td><td class="r b warn">{mc['qty_match_rate']*100:.1f}%</td></tr>
-<tr><td>マッチ売上</td><td class="r">{fmt_yen(mc['matched_sales'])} ({mc['matched_sales']/apr['sales']*100:.1f}%)</td></tr>
-<tr><td>理論原価 (matched)</td><td class="r b">{fmt_yen(tc['apr_total'])}</td></tr>
-<tr class="highlight-row"><td>理論原価率 (matched)</td><td class="r b">{tc_rate_matched*100:.1f}%</td></tr>
-<tr><td>PL食材+ドリンク</td><td class="r">{fmt_yen(pl_apr_food_drink)}</td></tr>
-<tr><td>PL F&D率 (vs PL売上)</td><td class="r b">{(pl_apr_food_drink/pl_apr_sales*100):.1f}%</td></tr>
+<tr><td>レシピ品目数 (商品一覧)</td><td class="r b">99品目</td></tr>
+<tr><td>うち売価+原価 揃い</td><td class="r">63品目</td></tr>
+<tr><td>POS出現 ユニーク商品</td><td class="r">{mc['total_pos_products']}品目</td></tr>
+<tr><td>マッチ済品目数</td><td class="r b">{mc['matched_count']}品目 ({mc['match_rate']*100:.1f}%)</td></tr>
+<tr><td>マッチ済出数</td><td class="r b warn">{mc['matched_qty']:,}本 / {mc['total_qty']:,}本 ({mc['qty_match_rate']*100:.1f}%)</td></tr>
+<tr class="highlight-row"><td>未マッチ出数</td><td class="r b neg">{mc['unmatched_qty']:,}本 ({(1-mc['qty_match_rate'])*100:.1f}%)</td></tr>
 </table>
+<div class="sec-title o" style="margin-top:10px">マッチ済 原価率 分布チェック</div>
+<table class="dt xs">
+<tr><th>原価率帯</th><th class="r">品目数</th><th>判定</th></tr>
+{''.join(f"<tr><td>{k}</td><td class='r b'>{v}</td><td>{'妥当' if 0<v<25 else '要確認' if v>=25 else '—'}</td></tr>" for k,v in DATA['recipe_match']['cost_rate_buckets'].items())}
+</table>
+<div class="info-box" style="margin-top:6px;font-size:14px">~10%の品目が11件 (低原価率帯に集中)。レシピ側の原価入力精度を要レビュー</div>
 </div>
 <div class="col-half">
-<div class="sec-title">名寄せ済 — 理論原価Top10</div>
-<table class="dt xs">
-<tr><th>商品</th><th class="r">出数</th><th class="r">原価/個</th><th class="r">理論原価</th><th class="c">タグ</th></tr>
-{''.join(f"<tr><td>{m['pos_name'][:18]}</td><td class='r'>{m['qty']}</td><td class='r'>¥{int(m['cost_unit'])}</td><td class='r b'>{fmt_yen(m['theoretical_cost_total'])}</td><td class='c'>{m['位置付け'] or '-'}</td></tr>" for m in top_matched)}
+<div class="sec-title r">未マッチ品目の分類 (なぜ取れていないか)</div>
+<table class="dt sm">
+<tr><th>分類</th><th class="r">品目</th><th class="r">出数</th><th class="r">売上</th></tr>
+{''.join(f"<tr><td>{c['category'][:30]}</td><td class='r'>{c['count']}</td><td class='r b'>{c['qty']}</td><td class='r'>{fmt_yen(c['sales'])}</td></tr>" for c in classes)}
 </table>
-<div class="sec-title" style="margin-top:8px">名寄せ未完 — 出数Top (要追補)</div>
+<div class="sec-title" style="margin-top:8px">代表サンプル</div>
 <table class="dt xs">
-<tr><th>POS商品名</th><th class="r">出数</th><th class="r">売上</th></tr>
-{''.join(f"<tr><td>{m['pos_name'][:24]}</td><td class='r b'>{m['qty']}</td><td class='r'>{fmt_yen(m['sales'])}</td></tr>" for m in top_unmatched_by_qty)}
+<tr><th>分類</th><th>例</th></tr>
+{''.join(f"<tr><td>{c['category'][:18]}</td><td>{', '.join(c['samples'][:3])}</td></tr>" for c in classes[:6])}
 </table>
-<div class="info-box" style="margin-top:6px">未マッチは <strong>tablecharge / ハウスハイボール / 飲み放題コース / ウイスキーボトル類 / 黒板メニュー</strong>。レシピ側にこれらの個別レシピがない (OPE用簡易レシピ別シート参照が必要)</div>
 </div>
 </div>
 </div>
 </div>''')
 
-# Slide 12: 第4章 乖離考察
-food_april = pl_apr_food
-drink_april = pl_apr_drink
+# Slide 12: 第4章(B)-ii データ補完計画 + POS↔レシピ価格不一致チェック
+pms = DATA['recipe_match']['price_mismatches']
 slides.append(f'''<div class="slide" id="slide-12">
-<div class="slide-header"><h2><span class="ch-badge">第4章(B)</span>理論原価 vs 実原価 乖離分析</h2><span class="pn">12 / {TOTAL}</span></div>
-<div class="msg-bar">乖離の方向性: <strong>matched理論原価率{tc_rate_matched*100:.1f}% &lt; PL F&D率{pl_apr_food_drink/pl_apr_sales*100:.1f}%</strong> → 未matched商品 / ロス・廃棄 / 仕入単価上振れ等が要因</div>
+<div class="slide-header"><h2><span class="ch-badge">第4章(B)-ii</span>データ補完計画 / POS価格 vs レシピ売価チェック</h2><span class="pn">12 / {TOTAL}</span></div>
+<div class="msg-bar">理論原価率の確定には<strong>4つの補完作業</strong>が必要。まず本月は数値判定を保留し、補完計画を提示</div>
 <div class="slide-body">
 <div class="two-col">
 <div class="col-half">
-<div class="sec-title r">月次推移 (食材+ドリンク仕入)</div>
-<table class="dt sm">
-<tr><th>月</th><th class="r">PL売上</th><th class="r">食材費</th><th class="r">ドリンク費</th><th class="r">F&D率</th></tr>
-{''.join(f"<tr><td>{ym}</td><td class='r b'>{fmt_yen(d.get('sales_total',0))}</td><td class='r'>{fmt_yen(d.get('expenses',{}).get('食材',0))}</td><td class='r'>{fmt_yen(d.get('expenses',{}).get('ドリンク',0))}</td><td class='r b'>{((d.get('expenses',{}).get('食材',0)+d.get('expenses',{}).get('ドリンク',0))/d.get('sales_total',1)*100 if d.get('sales_total',0) else 0):.1f}%</td></tr>" for ym,d in [('2026-01',pl_jan),('2026-02',pl_feb),('2026-04',pl_april)])}
-</table>
-<div class="info-box" style="margin-top:8px">2月のドリンク仕入は<strong>¥420k</strong>と1月の2倍。仕入タイミング(月跨ぎ大量発注) or 在庫変動の可能性。4月はドリンク¥550k = 通常水準を上振れ</div>
+<div class="sec-title r">本月の判定: 理論原価率の数値考察は<strong>保留</strong></div>
+<div class="warn-box">名寄せ出数 <strong>43.3%</strong> では<u>matched部分の理論原価率 (¥{int(tc['apr_total']):,} / matched売上 = {tc_rate_matched*100:.1f}%)</u> を全体の代表値として扱えない。<strong>来月以降に補完して再算出する</strong>。</div>
+<div class="sec-title o" style="margin-top:10px">補完計画 (5月内に着手すべき4項目)</div>
+<ol class="nl o">
+<li><strong>オペ用簡易レシピ取り込み</strong>: ハイボール (152本) / ウイスキー単品 (28品/83本) / コース・飲み放題 (6品/128本) — 別シート (1WjJaog... の「オペレーション用簡易レシピ」) から原価追加登録</li>
+<li><strong>レシピ「位置付け」タグの埋め</strong>: 99品中 51品目で位置付け空欄。看板/準看板/スピード を埋めて第2章の判定強化</li>
+<li><strong>POS価格 vs レシピ売価の整合確認</strong>: 右表のとおり大幅乖離が3件あり (グラス/ボトル混在の疑い)</li>
+<li><strong>POSカテゴリ「未設定」「その他」の整理</strong>: 飲み放題コース系がここに入っている</li>
+</ol>
 </div>
 <div class="col-half">
-<div class="sec-title o">乖離の解釈ロジック</div>
-<ul class="bl o">
-<li><strong>未マッチ43.3%出数</strong>: ハイボール/ウイスキー類のレシピ未登録 → 簡易レシピシートで補完すれば理論原価率は変動見込</li>
-<li><strong>4月ドリンク仕入¥550k vs 理論</strong>: 大幅乖離。<strong>飲み放題コースの想定外注文 / ボトル系の在庫変動</strong>の可能性</li>
-<li><strong>食材ロス兆候</strong>: 日報に「補充ペース」「ストック場所」記載あり → ロス管理の課題が記録されている</li>
-<li>仕入タイミング差: 2月→4月の食材/ドリンク仕入は<strong>月跨ぎ計上</strong>の可能性</li>
-</ul>
-<div class="warn-box" style="margin-top:6px">乖離率の確定値は<strong>名寄せ補完 + 月内棚卸計上の確認</strong>後。本月の判定は「方向性: 仕入が想定より重い」</div>
+<div class="sec-title">POS価格 vs レシピ売価 不一致 (差¥50以上)</div>
+<table class="dt sm">
+<tr><th>商品</th><th class="r">POS価格</th><th class="r">レシピ価格</th><th class="r">差</th><th class="r">出数</th></tr>
+{''.join(f"<tr><td>{p['name'][:18]}</td><td class='r b'>¥{int(p['pos_price']):,}</td><td class='r'>¥{int(p['recipe_price']):,}</td><td class='r {'pos' if p['diff']>=0 else 'neg'} b'>¥{int(p['diff']):+,}</td><td class='r'>{p['qty']}</td></tr>" for p in pms[:10])}
+</table>
+<div class="data-gap" style="margin-top:8px">⚠ <strong>テバルド・ビアンコ/ロッソ</strong>: POS¥6,500 vs レシピ¥1,200 (+¥5,300差) → ボトル/グラス混在の可能性。レシピ側はグラス価格の登録</div>
+<div class="sec-title" style="margin-top:6px">参考: F&D率 月次推移 (1-3月=スプレッドシート / 4月=DB)</div>
+<div id="chart-costrate" style="height:200px"></div>
 </div>
 </div>
 </div>

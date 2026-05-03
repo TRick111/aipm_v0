@@ -5,7 +5,7 @@ category: RestaurantAILab
 state: in_progress
 priority: high
 created_at: '2026-05-03T16:02:17.088Z'
-updated_at: '2026-05-03T18:37:01.596Z'
+updated_at: '2026-05-03T18:46:43.391Z'
 created_by: mt-cli
 description: >-
   BFA(bfa-001)の2026年4月分 月報を、分析観点ガイドv2に準拠したフル章立て(第0章〜第9章)でHTML出力。出力先=Flow/202605/2026-05-04/RestaurantAILab/月報/。データソース:
@@ -437,3 +437,46 @@ decisions:
         - upload API の --title 引数は別物。HTML 内 <title> は API title に影響しない (今回は API 側を「月次経営判断資料 — 2026-04」で統一)
         - 月表記: 「2026年4月」 vs 「2026-04」 (HTML 内表示は読みやすさ優先で OK)
       - 結論: 修正不要、そのままアップロード可能。
+  - at: '2026-05-03T18:46:43.391Z'
+    type: commitment
+    by: ai
+    content: |-
+      【BFA月報】月報作成手順書 v2 を作成
+
+      ▼ 成果物
+      ファイル: /Users/rikutanaka/aipm_v0/Flow/202605/2026-05-04/RestaurantAILab/月報/月報作成手順書_v2.md (35KB / 795行)
+
+      ▼ 構成 (週報 00_週報作成_統合プロンプト.md と同じ粒度)
+      0. この手順書の使い方
+      1. 必要なインプット (運営会社/対象月/必読ファイル)
+      2. データソース疎通確認 (本番DB / Spreadsheet / レシピ)
+      3. データ取得 Phase 1 (fetch_prod.mjs / gws sheets / レシピcleaning)
+      4. 分析計算 Phase 2 (analyze2.py の柱: 月次サマリ / 主因分解 / ヒートマップ / 商品ランキング / 客単価分布 / PL集計 / 名寄せ / 価格不一致)
+      5. POS×レシピ マッピング詳細 Markdown 生成 (3月/4月分類版)
+      6. HTML月報生成 Phase 3 (配色 / 18スライド構成 / SVG aspect ratio 問題対処 / .compact クラス / 第10章チャート設計 / 第5章修正 / 商品戦略除外リスト)
+      7. 付随ドキュメント (assumptions.md / review_checklist.md)
+      8. 成果物登録 Phase 4 (deliverables.yaml + mt CLI)
+      9. トラブルシューティング (10件)
+      10. 付録A データソースURL一覧
+      11. 付録B 出力ファイル一覧
+      12. 付録C 用語定義
+      13. 付録D 章ごとの最低含有要素
+      14. 改訂履歴
+
+      ▼ 田中さんからの累積フィードバック (v1〜v6) を全て反映
+      - 予約vsウォークイン記述削除 (POSフラグ未取得)
+      - tablecharge 等除外したランキング
+      - PL: 1-3月=スプレッドシート / 4月=本番DB
+      - 理論原価: 考察前にデータ確認スライドを置く
+      - POS×レシピ マッピングを 3月/4月 分類で再分類 (リニューアル考慮)
+      - SVG aspect ratio 問題への対処法 (W=1208 fitting)
+      - スライド縦幅見切れ対策 (.compact クラス)
+      - 第10章チャート: 利益バー削除、売上 vs 費用 横並び棒グラフ
+
+      ▼ 次回月報作成時
+      - 本ファイルを Stock/RestaurantAILab/月報/ 直下に移管 (00_月報作成_統合プロンプト.md と差し替え)
+      - 田中さん判断で決定
+
+      deliverables.yaml に4件目として登録、mt CLI のシステム制約 (deliverable_refs APIなし) は v3 commitmentで既に明記済。
+
+      タスククローズしてください。

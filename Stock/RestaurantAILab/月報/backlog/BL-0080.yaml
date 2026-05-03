@@ -5,7 +5,7 @@ category: RestaurantAILab
 state: in_progress
 priority: high
 created_at: '2026-04-30T13:29:01.461Z'
-updated_at: '2026-05-03T13:00:41.715Z'
+updated_at: '2026-05-03T13:34:06.898Z'
 created_by: mt-cli
 description: >-
   BFA店舗の2026年4月分 月報を作成。提出期限: 2026-05-03 (毎月3日まで)。週報の運用 (Phase1: POSデータ準備 → Phase2: 月報作成 → Dashboard アップロード)
@@ -14,25 +14,7 @@ deliverable_refs: []
 schema_version: 2
 cockpit_task_ids:
   - 69b873c3
-pending_questions:
-  - id: q-BL-0080-1-20260503130035
-    at: '2026-05-03T13:00:35.880Z'
-    cockpit_task_id: 69b873c3
-    content: >-
-      月報カードの配色を indigo (border-l-indigo-500 + bg-indigo-100) としましたが、これで OK ですか？ 代替案: emerald (深緑) / violet (紫) / rose
-      (赤紫) など。差し替える場合 weekly-reports/page.tsx の ReportRow 関数と monthly-reports/[monthId]/page.tsx の 2 箇所のみ修正で済みます。
-  - id: q-BL-0080-2-20260503130038
-    at: '2026-05-03T13:00:38.878Z'
-    cockpit_task_id: 69b873c3
-    content: >-
-      週報・月報マージ時、同 endDate (例: 2026-04-30 が月報 M04 と週報 W17 の終端で一致) の並び順を **monthly を上 (先)** にしましたが、逆 (weekly を上)
-      の方が直感的ですか？
-  - id: q-BL-0080-3-20260503130041
-    at: '2026-05-03T13:00:41.715Z'
-    cockpit_task_id: 69b873c3
-    content: >-
-      Stock/RestaurantAILab/月報/00〜05 のプロンプトは既存ですが、今回の API (/api/monthly-reports/upload) と整合しているかは未確認です。(a)
-      4月分生成と同時に整合性チェックする運用、(b) 先に整合性監査を別タスクで切り出す、どちらが良いですか？
+pending_questions: []
 decisions:
   - at: '2026-05-03T00:46:37.614Z'
     type: commitment
@@ -69,3 +51,53 @@ decisions:
       errors 無関係)。レビュー項目チェックリスト: Flow/202605/2026-05-03/RestaurantAILab/月報/review_checklist.md (deliverable id:
       d-bl0080-20260503-implementation, 同フォルダ deliverables.yaml に登録済 — review_state=unreviewed)。コミット/PR/migrate deploy
       は田中さん review 後に実施。
+  - at: '2026-05-03T13:27:31.482Z'
+    type: answer
+    by: user
+    content: >-
+      月報カードの配色は一旦これで問題ありません。エンドデートが同じ場合、月報が上でOKです。プロンプトとAPIの整合性については後ほどチェックします。
+
+
+      一回ダミーというか仮のHTMLを作って、月報がちゃんと見えるかを確かめたいので、仮で作った後、検証用のサーバーを立ち上げてそこで表示してください。また、月報生成は手法のようにAIエージェントで行いますが、そのエージェントが月報を作成する際の要件というかインターフェースなどがあれば、それも定義してマークダウンにまとめてください。
+  - at: '2026-05-03T13:27:58.159Z'
+    type: answer
+    by: user
+    content: 月報カードの配色は一旦 indigo (現状実装) で問題なし。
+  - at: '2026-05-03T13:27:59.717Z'
+    type: answer
+    by: user
+    content: 同 endDate 時の並び順は monthly を上 (現状実装) で OK。
+  - at: '2026-05-03T13:28:01.279Z'
+    type: answer
+    by: user
+    content: プロンプト (00-05) と API の整合性チェックは後ほど実施。今は不要。
+  - at: '2026-05-03T13:28:09.809Z'
+    type: commitment
+    by: ai
+    content: >-
+      次タスク着手: (1) ダミー月報 HTML を生成 (BFA 4月分の偽データで週報と同じ D3.js v7 + 内蔵 CSS フォーマット) → (2) Dashboard dev サーバーを起動して Blob
+      経由で表示確認 → (3) AI エージェント向けの月報作成インターフェース仕様書を Markdown で作成 (入力スキーマ・出力スキーマ・関数 I/F・エラー条件・呼び出し手順)。完了後 deliverable 登録。
+  - at: '2026-05-03T13:34:06.898Z'
+    type: commitment
+    by: ai
+    content: |-
+      ダミー HTML 検証完了 + エージェント I/F 仕様書作成完了。
+
+      【動作確認】
+      - Prisma migration 適用済 (Neon DB に monthly_reports テーブル作成)
+      - Dashboard dev サーバー起動: http://127.0.0.1:3002
+      - ダミー HTML (5 スライド, 13KB, D3.js v7) を /api/monthly-reports/upload に POST 成功
+      - 検証結果:
+        - 月報リスト API: GET /api/monthly-reports?storeId=bfa-001 → 200, 1件
+        - 統合 API: GET /api/store-reports?storeId=bfa-001 → 200, monthly が weekly より上に並ぶ (期待通り)
+        - HTML プロキシ: GET /api/monthly-reports/<id>/html → 200, text/html
+        - UI ページ: /store/bfa-001/weekly-reports (merged), /store/bfa-001/monthly-reports/<id> いずれも 200
+
+      【田中さん確認用 URL】(ローカル dev、admin ログイン要)
+      - 月報リスト: http://127.0.0.1:3002/store/bfa-001/weekly-reports
+      - 月報ビューア: http://127.0.0.1:3002/store/bfa-001/monthly-reports/747bd4de-0dca-45d8-b15d-7becc44d6447
+      - admin ログイン: http://127.0.0.1:3002/login (storeCode=admin)
+
+      【新規 deliverable】
+      - d-bl0080-20260503-dummy-html (ダミー HTML 本体)
+      - d-bl0080-20260503-agent-interface (エージェント I/F 仕様書、§10 に田中さんへの確認事項 5件)

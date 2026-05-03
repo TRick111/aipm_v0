@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BAR FIVE Arrows 月次営業報告 — 2026-04 (DUMMY)</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;font-size:20px;color:#334155;}
+.slide{width:1280px;height:720px;position:relative;overflow:hidden;background:#ffffff;}
+.slide-header{background:#3730A3;color:#fff;padding:14px 40px;display:flex;align-items:center;justify-content:space-between;position:relative;}
+.slide-header h2{font-size:32px;font-weight:700;white-space:nowrap;}
+.slide-header .pn{font-size:16px;opacity:0.7;white-space:nowrap;margin-left:20px;}
+.progress-bar{position:absolute;bottom:0;left:0;height:3px;background:rgba(255,255,255,0.4);border-radius:0 2px 2px 0;}
+.slide-header .section-tag{background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:4px;font-size:14px;font-weight:500;margin-right:10px;}
+.msg-bar{background:#EEF2FF;border-left:5px solid #6366F1;padding:12px 40px;font-size:24px;font-weight:800;color:#1E293B;line-height:1.4;}
+.slide-body{padding:24px 40px;height:calc(720px - 60px - 60px - 40px);overflow:hidden;}
+.kpi-grid{display:flex;gap:20px;justify-content:center;align-items:stretch;margin-top:16px;}
+.kpi-card{background:#F8FAFC;border-radius:12px;padding:20px 24px;box-shadow:0 2px 8px rgba(0,0,0,0.06);flex:1;text-align:center;}
+.kpi-label{font-size:17px;font-weight:600;color:#64748B;display:block;margin-bottom:8px;}
+.kpi-value{font-size:42px;font-weight:800;color:#1E293B;display:block;}
+.kpi-change{font-size:20px;font-weight:700;display:block;margin-top:6px;}
+.kpi-change-sub{font-size:16px;font-weight:400;color:#64748B;display:block;margin-top:4px;}
+.positive{color:#22C55E;}
+.negative{color:#EF4444;}
+.dummy-banner{position:absolute;top:14px;right:40px;background:#FCA5A5;color:#7F1D1D;padding:6px 14px;border-radius:8px;font-size:14px;font-weight:800;z-index:10;letter-spacing:0.5px;}
+table.dt{width:100%;border-collapse:collapse;font-size:17px;margin-top:10px;}
+table.dt th{background:#3730A3;color:#fff;padding:10px 14px;text-align:left;font-size:16px;font-weight:700;}
+table.dt td{padding:9px 14px;border-bottom:1px solid #E2E8F0;font-size:17px;}
+table.dt tr:nth-child(even){background:#F8FAFC;}
+table.dt tr.highlight{background:#EEF2FF;border-left:4px solid #6366F1;}
+table.dt tr.highlight td{font-weight:800;color:#3730A3;}
+.chart-container{background:#F8FAFC;border-radius:12px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.bullet-list{list-style:none;padding:0;}
+.bullet-list li{display:flex;align-items:flex-start;gap:14px;padding:12px 16px;border-radius:10px;margin-bottom:8px;background:#F8FAFC;box-shadow:0 1px 4px rgba(0,0,0,0.05);}
+.bullet-list .icon{font-size:28px;flex-shrink:0;}
+.bullet-list .text{font-size:17px;line-height:1.5;}
+.bullet-list .text strong{font-size:18px;color:#1E293B;}
+@media print{body{margin:0;padding:0;}.slide{page-break-after:always;page-break-inside:avoid;break-after:page;break-inside:avoid;}.slide:last-child{page-break-after:auto;}}
+@media screen{.slide{margin:0 auto 40px auto;box-shadow:0 4px 20px rgba(0,0,0,0.12);}}
+</style>
+</head>
+<body>
+
+<!-- ==================== スライド1: タイトル ==================== -->
+<div class="slide" id="slide-1" style="background:linear-gradient(135deg,#3730A3 0%,#1E1B4B 100%);display:flex;flex-direction:column;justify-content:center;align-items:center;color:#fff;text-align:center;">
+<div class="dummy-banner">DUMMY DATA — 動作確認用</div>
+<div style="font-size:48px;font-weight:800;">BAR FIVE Arrows</div>
+<div style="font-size:28px;font-weight:400;margin-top:12px;opacity:0.9;">月次営業報告</div>
+<div style="font-size:22px;margin-top:24px;opacity:0.7;">2026年4月 / 4月1日〜4月30日</div>
+<div style="margin-top:40px;width:80px;height:3px;background:rgba(255,255,255,0.4);border-radius:2px;"></div>
+<div style="margin-top:60px;font-size:14px;opacity:0.5;">※ このレポートは月報ビューア動作確認のためのダミーです。実データではありません。</div>
+</div>
+
+<!-- ==================== スライド2: エグゼクティブサマリー ==================== -->
+<div class="slide" id="slide-2">
+<div class="dummy-banner">DUMMY</div>
+<div class="slide-header"><h2><span class="section-tag">月次サマリー</span>エグゼクティブサマリー</h2><span class="pn">2 / 5</span><div class="progress-bar" style="width:40%"></div></div>
+<div class="msg-bar">月間売上 ¥6,842,500（前月比 +12.4%、前年同月比 +8.7%）— 春の宴会需要を取り込み目標達成</div>
+<div class="slide-body">
+<div class="kpi-grid">
+<div class="kpi-card">
+<span class="kpi-label">月間売上</span>
+<span class="kpi-value">¥6,842,500</span>
+<span class="kpi-change positive">▲ 前月比 +12.4%</span>
+<span class="kpi-change-sub">前年同月比 +8.7%</span>
+</div>
+<div class="kpi-card">
+<span class="kpi-label">月間客数</span>
+<span class="kpi-value">1,247人</span>
+<span class="kpi-change positive">▲ 前月比 +9.2%</span>
+<span class="kpi-change-sub">前年同月比 +6.1%</span>
+</div>
+<div class="kpi-card">
+<span class="kpi-label">客単価</span>
+<span class="kpi-value">¥5,488</span>
+<span class="kpi-change positive">▲ 前月比 +2.9%</span>
+<span class="kpi-change-sub">前年同月比 +2.4%</span>
+</div>
+<div class="kpi-card">
+<span class="kpi-label">営業日数</span>
+<span class="kpi-value">26日</span>
+<span class="kpi-change-sub">定休日 4日 + 4/27 臨時休業</span>
+</div>
+</div>
+<div style="margin-top:24px;background:#F8FAFC;border-radius:12px;padding:16px 20px;font-size:18px;line-height:1.6;">
+<strong style="color:#1E293B;">特記事項:</strong> GW 前の歓送迎会需要が 4/19-26 の週で集中。高級ウイスキー（響21年・山崎12年）の月内販売額¥184,000 が客単価上昇に寄与。一方で 4/27-29 は雨天で予約キャンセル 4 組発生。
+</div>
+</div>
+</div>
+
+<!-- ==================== スライド3: 週別売上トレンド ==================== -->
+<div class="slide" id="slide-3">
+<div class="dummy-banner">DUMMY</div>
+<div class="slide-header"><h2><span class="section-tag">数値分析</span>週別売上推移</h2><span class="pn">3 / 5</span><div class="progress-bar" style="width:60%"></div></div>
+<div class="msg-bar">第3-4週（4/13-26）の宴会シーズンが月間売上の53.6%を占める</div>
+<div class="slide-body">
+<div class="chart-container" style="height:380px;">
+<svg id="weekly-chart" width="100%" height="100%" viewBox="0 0 1100 360"></svg>
+</div>
+<table class="dt" style="margin-top:14px;">
+<tr><th>週</th><th>期間</th><th>売上</th><th>客数</th><th>客単価</th></tr>
+<tr><td>W14</td><td>3/30 - 4/5</td><td>¥1,420,800</td><td>268人</td><td>¥5,302</td></tr>
+<tr><td>W15</td><td>4/6 - 4/12</td><td>¥1,247,200</td><td>241人</td><td>¥5,175</td></tr>
+<tr class="highlight"><td>W16</td><td>4/13 - 4/19</td><td>¥1,892,400</td><td>342人</td><td>¥5,533</td></tr>
+<tr class="highlight"><td>W17</td><td>4/20 - 4/26</td><td>¥1,775,300</td><td>318人</td><td>¥5,583</td></tr>
+<tr><td>W18(部分)</td><td>4/27 - 4/30</td><td>¥506,800</td><td>78人</td><td>¥6,497</td></tr>
+</table>
+</div>
+</div>
+
+<script>
+// Weekly sales bar chart
+(function(){
+  const data = [
+    {week:'W14', sales:1420800},
+    {week:'W15', sales:1247200},
+    {week:'W16', sales:1892400},
+    {week:'W17', sales:1775300},
+    {week:'W18*', sales:506800},
+  ];
+  const svg = d3.select('#weekly-chart');
+  const W = 1100, H = 360, m = {t:30, r:20, b:50, l:90};
+  const x = d3.scaleBand().domain(data.map(d=>d.week)).range([m.l, W-m.r]).padding(0.25);
+  const y = d3.scaleLinear().domain([0, d3.max(data,d=>d.sales)*1.15]).range([H-m.b, m.t]);
+  svg.selectAll('rect').data(data).join('rect')
+    .attr('x',d=>x(d.week)).attr('y',d=>y(d.sales))
+    .attr('width',x.bandwidth()).attr('height',d=>H-m.b-y(d.sales))
+    .attr('fill', d=> (d.week==='W16'||d.week==='W17') ? '#6366F1' : '#94A3B8')
+    .attr('rx',6);
+  svg.selectAll('text.lbl').data(data).join('text').attr('class','lbl')
+    .attr('x',d=>x(d.week)+x.bandwidth()/2).attr('y',d=>y(d.sales)-8)
+    .attr('text-anchor','middle').attr('font-size','15').attr('font-weight','700').attr('fill','#1E293B')
+    .text(d=>'¥'+(d.sales/10000).toFixed(0)+'万');
+  svg.append('g').attr('transform',`translate(0,${H-m.b})`)
+    .call(d3.axisBottom(x)).selectAll('text').attr('font-size','15');
+  svg.append('g').attr('transform',`translate(${m.l},0)`)
+    .call(d3.axisLeft(y).ticks(5).tickFormat(d=>'¥'+(d/10000).toFixed(0)+'万')).selectAll('text').attr('font-size','13');
+})();
+</script>
+
+<!-- ==================== スライド4: カテゴリ別売上構成 ==================== -->
+<div class="slide" id="slide-4">
+<div class="dummy-banner">DUMMY</div>
+<div class="slide-header"><h2><span class="section-tag">商品分析</span>カテゴリ別売上構成</h2><span class="pn">4 / 5</span><div class="progress-bar" style="width:80%"></div></div>
+<div class="msg-bar">高級ウイスキー構成比 8.7% (¥595,000) — 前月比 +2.1pt で月間最大の伸長</div>
+<div class="slide-body">
+<div style="display:flex;gap:30px;align-items:center;">
+<div class="chart-container" style="flex:1;height:380px;">
+<svg id="cat-chart" width="100%" height="100%" viewBox="0 0 500 380"></svg>
+</div>
+<div style="flex:1.2;">
+<table class="dt">
+<tr><th>カテゴリ</th><th>売上</th><th>構成比</th></tr>
+<tr><td>料理（コース）</td><td>¥2,189,600</td><td>32.0%</td></tr>
+<tr><td>料理（アラカルト）</td><td>¥1,711,000</td><td>25.0%</td></tr>
+<tr><td>ドリンク（一般）</td><td>¥1,505,400</td><td>22.0%</td></tr>
+<tr class="highlight"><td>ウイスキー（高級）</td><td>¥595,000</td><td>8.7%</td></tr>
+<tr><td>ワイン・カクテル</td><td>¥513,200</td><td>7.5%</td></tr>
+<tr><td>ソフトドリンク</td><td>¥328,300</td><td>4.8%</td></tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+// Donut chart
+(function(){
+  const data = [
+    {name:'コース',  v:2189600, c:'#6366F1'},
+    {name:'アラカルト', v:1711000, c:'#8B5CF6'},
+    {name:'ドリンク', v:1505400, c:'#A78BFA'},
+    {name:'高級ウイスキー', v:595000, c:'#F59E0B'},
+    {name:'ワイン他', v:513200, c:'#FB7185'},
+    {name:'ソフト', v:328300, c:'#94A3B8'},
+  ];
+  const svg = d3.select('#cat-chart');
+  const W=500, H=380, R=140, r=70;
+  const g = svg.append('g').attr('transform',`translate(${W/2},${H/2})`);
+  const pie = d3.pie().value(d=>d.v).sort(null);
+  const arc = d3.arc().innerRadius(r).outerRadius(R);
+  g.selectAll('path').data(pie(data)).join('path').attr('d',arc).attr('fill',d=>d.data.c).attr('stroke','#fff').attr('stroke-width',2);
+  g.selectAll('text').data(pie(data)).join('text')
+    .attr('transform',d=>`translate(${arc.centroid(d)})`).attr('text-anchor','middle')
+    .attr('font-size','13').attr('font-weight','700').attr('fill','#fff')
+    .text(d=>d.data.name);
+})();
+</script>
+
+<!-- ==================== スライド5: 来月アクション ==================== -->
+<div class="slide" id="slide-5">
+<div class="dummy-banner">DUMMY</div>
+<div class="slide-header"><h2><span class="section-tag">アクション</span>2026年5月の重点施策</h2><span class="pn">5 / 5</span><div class="progress-bar" style="width:100%"></div></div>
+<div class="msg-bar">GW 商戦に向けて高単価コース＋ボトル提案体制を強化</div>
+<div class="slide-body">
+<ul class="bullet-list">
+<li><span class="icon">🥇</span><div class="text"><strong>GW 限定 5 月コース投入（5/1-5/8）</strong><br>4月の高級ウイスキー販売実績を踏まえ、ボトル提示演出を組み込んだ ¥12,000/¥15,000 の特別コース 2 種を 5/1 から提供。</div></li>
+<li><span class="icon">📊</span><div class="text"><strong>水曜・木曜の集客テコ入れ</strong><br>4 月の曜日別客単価で水・木が他曜日より平均 ¥420 低い。法人向けの平日コース提案を強化（営業日 4 日確保）。</div></li>
+<li><span class="icon">🌧️</span><div class="text"><strong>悪天候時のキャンセル対応フロー整備</strong><br>4/27-29 の雨天キャンセル 4 組を踏まえ、悪天候予報時の前日確認 + 振替日 1 案提示の運用を 5/1 から導入。</div></li>
+<li><span class="icon">🍶</span><div class="text"><strong>高級ウイスキー在庫の発注見直し</strong><br>響21年の月末在庫 0 本まで減少。発注リードタイム 3 週間を踏まえ、5 月上旬 +4 本発注。山崎12年・白州12年も同様。</div></li>
+<li><span class="icon">📱</span><div class="text"><strong>Google マップ口コミ返信の徹底</strong><br>4 月の口コミ 12 件中 4 件が未返信。営業終了後 5 分の確認タイムを各店長日次運用に組込。</div></li>
+</ul>
+</div>
+</div>
+
+</body>
+</html>

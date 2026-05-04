@@ -20,3 +20,19 @@
   4. 根治: マンション管理会社へ「ダブル NAT 解消 / 上位ルーター再起動 / セッション制限緩和」を相談
   5. 個別回線契約（光コンセントがあれば）— 当面は対象外
 - 詳細レポートを `診断レポート_2026-05-04.md` に保存
+
+### 同日 (2026-05-04) WARP 検証
+- `brew install --cask cloudflare-warp` で導入（パスワード入力はユーザー手動）
+- 初期状態は `Mode: DnsOverHttps`（=1.1.1.1 のみ、トンネル無し）
+- フルトンネル化を試行
+  - まず `warp-cli mode warp+doh`（既定 MASQUE）→ `CF_DNS_LOOKUP_FAILURE`
+  - 仮説「上位が UDP/443 MASQUE を遮断」→ `warp-cli tunnel protocol set WireGuard` に切替
+  - 再度 `warp-cli mode warp+doh` → 同じく `CF_DNS_LOOKUP_FAILURE`、ハッピーアイボール `162.159.192.3:2408` 宛で 13 秒粘って失敗
+  - 但し curl では `https://www.cloudflare.com/cdn-cgi/trace` が `warp=on` で着弾（`ip=2a09:bac1:3b00:10::16:231 / colo=NRT`）→ トンネルは「片肺」状態
+- 切戻し: `warp-cli mode doh`（ユーザー手動）。プロトコルは WireGuard のまま保持
+- ユーザー判断で「DoH のみで体感が改善している」ためプラン A（utun MTU 1024 手動）は保留
+- DoH のみ状態で curl ベンチ再実施 → **「CONN ぴったり 1.000 秒」現象が完全消失**
+  - 例: yahoo.co.jp 1 回目 CONN `1.019s → 0.031s`、yahoo 2 回目 `1.010s → 0.010s`、asahi 2 回目 `1.008s → 0.011s`
+- 推察: マンション上位の DNS 経路に介入／レート制限あり。DoH（TLS）でカプセル化したことで透過介入を回避できた
+- 1〜2 日運用してぶり返しが無ければ本採用、再発したらプラン A（utun MTU 1024）へ進む
+- 切り戻しワンライナー（緊急時）: `warp-cli mode doh ; warp-cli tunnel protocol reset`

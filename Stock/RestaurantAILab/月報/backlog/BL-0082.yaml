@@ -5,7 +5,7 @@ category: RestaurantAILab
 state: in_progress
 priority: high
 created_at: '2026-05-03T16:02:17.088Z'
-updated_at: '2026-05-03T19:41:14.069Z'
+updated_at: '2026-05-04T02:25:35.928Z'
 created_by: mt-cli
 description: >-
   BFA(bfa-001)の2026年4月分 月報を、分析観点ガイドv2に準拠したフル章立て(第0章〜第9章)でHTML出力。出力先=Flow/202605/2026-05-04/RestaurantAILab/月報/。データソース:
@@ -632,3 +632,59 @@ decisions:
       - GET /store/bfa-001/monthly-reports/<新id> → 200
 
       Vercel 本番 deploy は f277e7e (READY) で稼働中なので、田中さんが本番 URL の /store/bfa-001/weekly-reports を開けば更新版の月報が見える状態。
+  - at: '2026-05-04T02:25:35.928Z'
+    type: commitment
+    by: ai
+    content: |-
+      【BFA月報】4月分 完全データ反映 確定版 v2
+
+      ▼ 田中さんから提供いただいた最新CSVを使用
+      ソース: /Users/rikutanaka/Downloads/会計明細_20260401-20260430.csv (Apr 30 までフルデータ)
+
+      ▼ 実行プロセス
+      1. ✅ CSV を .local/bulkupload/bfa-001/ に配置
+      2. ✅ bulk-upload-airregi.mjs --store bfa-001 --env prod で本番DBへ
+         - 新規: 4月+38件 / 5月+2件 / 既存重複: 126件 (skipped)
+      3. ✅ fetch_prod.mjs 再実行
+         - April sales: 126件 → 166件 (+40)
+         - 範囲: 4/1〜4/26 → 4/1〜4/30 フルカバー
+      4. ✅ analyze2.py / generate_html2.py / generate_mapping_md.py 再実行
+
+      ▼ 主要数値の変化 (Before → After)
+
+      | 指標 | Before (4/26まで) | After (4/30まで) | 変化 |
+      |---|---|---|---|
+      | 営業日 | 23日 | 26日 | +3日 |
+      | POS売上 | ¥2,300,900 | ¥3,024,490 | +¥723k |
+      | 客数 | 456人 | 584人 | +128人 |
+      | 会計 | 126件 | 166件 | +40件 |
+      | 客単価 | ¥5,046 | ¥5,179 | +¥133 |
+      | 日平均売上 | ¥100k | ¥116k | +¥16k |
+      | コース利用 | 1.6% (2件) | 3.0% (5件) | +1.4pt |
+      | 1組人数 | 3.62人 | 3.52人 | -0.10 |
+
+      ▼ 月報メッセージの主要書き換え (180度反転)
+      - 旧: 「売上 -21.3% / 主因は客数減 (62件減)」
+      - 新: 「売上 +3.5% / 客数 +12.1% / 主因は客単価減 (-7.7%)」
+      - 旧: 「日平均 -19.2% で減少」
+      - 新: 「日平均 +23.4% で増加 / 予算ライン¥113kは達成済」
+      - 旧: 第5章「停滞」評価
+      - 新: 第5章「進展」評価 (看板商品が安定定着、客数増)
+      - 旧: 「コース化機能不全 (1.6%)」
+      - 新: 「コース利用3.0% (5件) は3月10.1%(19件)から半減水準、改善余地」
+
+      ▼ 翌月の意思決定論点 (確定版)
+      1. コース提案フロー強化 (5月10日まで)
+      2. 5月集客強化策の選定 — 4月予算ライン達成済 / CLP込み利益確保には日平均¥150k必要 (5月7日まで)
+      3. PL月次計上ガバナンス (5月5日まで)
+      4. リニューアル後のレシピ補完 (5月20日まで)
+
+      ▼ 成果物 (確定版 v2)
+      - 202604_BFA_月報.html (330KB / 18スライド)
+      - mapping/pos_recipe_mapping_detail.md (30KB / 426行)
+      - assumptions.md (確定版)
+      - review_checklist.md (確定版)
+      - 月報作成手順書_v2.md (35KB)
+      - data/analytics2.json (262KB)
+
+      タスククローズしてください。

@@ -5,7 +5,7 @@ category: RestaurantAILab
 state: in_progress
 priority: high
 created_at: '2026-05-03T16:02:17.088Z'
-updated_at: '2026-05-04T02:25:35.928Z'
+updated_at: '2026-05-04T02:50:50.164Z'
 created_by: mt-cli
 description: >-
   BFA(bfa-001)の2026年4月分 月報を、分析観点ガイドv2に準拠したフル章立て(第0章〜第9章)でHTML出力。出力先=Flow/202605/2026-05-04/RestaurantAILab/月報/。データソース:
@@ -686,5 +686,50 @@ decisions:
       - review_checklist.md (確定版)
       - 月報作成手順書_v2.md (35KB)
       - data/analytics2.json (262KB)
+
+      タスククローズしてください。
+  - at: '2026-05-04T02:50:50.164Z'
+    type: commitment
+    by: ai
+    content: |-
+      【BFA月報】PL ↔ POS 不一致¥88,800 を解消
+
+      ▼ 田中さん指示
+      (B) 月報の数値はPOS基準で統一 + ダッシュボード本番DBのPL値も置き換え
+
+      ▼ 実行内容
+
+      1. ✅ Dashboard 本番DB (plDailySales / 総売上カテゴリ) を POS基準に修正
+         - 4/4: ¥64,810 → ¥75,000 (UPDATE / 差+¥10,190 = PL未入力分)
+         - 4/26: ¥0 → ¥78,610 (INSERT / 差+¥78,610 = PL未入力分)
+         - 4/29: ¥50,000 → 削除 (DELETE / POS会計0件のため誤計上)
+         - 4/30: ¥346,430 → ¥396,430 (UPDATE / 差+¥50,000 = 4/29からの振替復元)
+         - 修正後 PL 4月合計: ¥3,024,490 (POSと完全一致 ✅)
+
+      2. ✅ 月報HTML再生成
+         - 旧 ¥2,935,690 表示: 0件 (削除済)
+         - 新 ¥3,024,490 表示: 4箇所
+         - 第0章サマリ KPI / 第4章PL推移チャート / 損益分岐ライン表 すべてPOS基準に統一
+
+      3. ✅ 修正スクリプトを保存 (再現性確保)
+         - scripts/sync_pl_to_pos.mjs (Prisma経由でplDailySales操作)
+
+      ▼ 検証ログ
+      === 2026-04-04: UPDATE amount=¥75,000 ===   before: ¥64,810   → ¥75,000
+      === 2026-04-26: UPSERT amount=¥78,610 ===   before: (not exists)   → ¥78,610
+      === 2026-04-29: DELETE amount=¥0 ===   before: ¥50,000   → DELETED
+      === 2026-04-30: UPDATE amount=¥396,430 === before: ¥346,430 → ¥396,430
+      4月 PL total売上 (修正後): ¥3,024,490
+      期待値 (POS基準):           ¥3,024,490
+      差:                         ✅ OK
+
+      ▼ 次回月報以降への効果
+      本番DB上の plDailySales が POS と整合した状態になったため、次回からは POS / PL の二重表記が不要 (=同じ数値を出す)。週報の集計値も同DBを参照するので、自動的に整合します。
+
+      ▼ 成果物 (確定版 v3)
+      - 202604_BFA_月報.html (330KB / POS基準統一)
+      - scripts/sync_pl_to_pos.mjs (DB修正の再現用)
+      - mapping/pos_recipe_mapping_detail.md (29.5KB)
+      - assumptions.md / review_checklist.md / 月報作成手順書_v2.md
 
       タスククローズしてください。

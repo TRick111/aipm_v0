@@ -84,6 +84,38 @@ constants:
 
 ---
 
+## 認証情報の取得元（重要）
+
+**`companyCode` / `username` / `password` が呼び出し時に明示指定されていない場合は、以下のYAMLから取得すること**:
+
+```
+/Users/rikutanaka/aipm_v0/Stock/RestaurantAILab/週報/1_input/pos_store_accounts.yaml
+```
+
+このYAMLには全店舗のPOSアカウントが一元管理されている。各種 `.env` / `/tmp/*_creds.json` を探し回らず、**まずこのファイルを読むこと**。
+
+抜粋（USENレジ店舗の例）:
+```yaml
+stores:
+  - name: '麻布しき'
+    store_id: 'shiki-001'
+    operator_company: '麻布しき'
+    pos:
+      type: 'USENレジ'
+      login:
+        store_code: '700600'   # ← companyCode に渡す
+        id: '0101'             # ← username に渡す
+        password: '<plain-text>' # ← password に渡す
+```
+
+呼び出し時は `operator_company` または `store_id` で対象店舗を特定する。
+
+**セキュリティ**:
+- このYAMLは平文認証情報を含む。**Gitコミット禁止 / 共有禁止 / ログ・出力にpasswordを漏らさないこと**
+- 実行ログでは `password: "****"` にマスクすること
+
+---
+
 ## 実装手順
 
 ### 全体フロー

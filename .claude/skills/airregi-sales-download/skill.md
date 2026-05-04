@@ -67,6 +67,37 @@ constants:
 
 ---
 
+## 認証情報の取得元（重要）
+
+**`airIDOrEmail` / `password` が呼び出し時に明示指定されていない場合は、以下のYAMLから取得すること**:
+
+```
+/Users/rikutanaka/aipm_v0/Stock/RestaurantAILab/週報/1_input/pos_store_accounts.yaml
+```
+
+このYAMLには全店舗のPOSアカウント（AirRegi / USENレジ / Dinii）が一元管理されている。各種ローカル `.env` / `/tmp/*_creds.json` / `accounts.csv` を探し回らず、**まずこのファイルを読むこと**。
+
+抜粋（AirRegi店舗の例）:
+```yaml
+stores:
+  - name: 'BAR FIVE Arrows'
+    store_id: 'bfa-001'
+    operator_company: 'BFA'
+    pos:
+      type: 'AirRegi'
+      login:
+        id: 'info@five-arrows.bar'   # ← airIDOrEmail に渡す
+        password: '<plain-text>'      # ← password に渡す
+```
+
+呼び出し時は `operator_company` または `store_id` で対象店舗を特定する。
+
+**セキュリティ**:
+- このYAMLは平文認証情報を含む。**Gitコミット禁止 / 共有禁止 / ログ・出力にpasswordを漏らさないこと**
+- 実行ログでは `password: "****"` にマスクすること
+
+---
+
 ## 実行前の確認事項
 
 このSkillを実行する前に、以下を確認してください：

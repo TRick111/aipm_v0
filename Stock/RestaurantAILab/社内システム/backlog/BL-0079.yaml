@@ -5,7 +5,7 @@ category: RestaurantAILab
 state: in_progress
 priority: normal
 created_at: '2026-04-30T13:26:51.867Z'
-updated_at: '2026-05-05T01:50:22.076Z'
+updated_at: '2026-05-05T13:15:25.080Z'
 created_by: mt-cli
 description: >-
   RestaurantAILab
@@ -15,12 +15,6 @@ schema_version: 2
 cockpit_task_ids:
   - ab2f1e5a
 pending_questions:
-  - id: q-BL-0079-2-20260505014300
-    at: '2026-05-05T01:43:00.534Z'
-    cockpit_task_id: ab2f1e5a
-    content: >-
-      Q-B WP 管理権限保有者: WP 管理画面 / FTP / wp-content アクセスは誰が持っていますか? (田中さん本人 / 制作会社 / 社内エンジニア)。子テーマ ZIP
-      のアップロード経路と作業担当を確定するため。
   - id: q-BL-0079-3-20260505014300
     at: '2026-05-05T01:43:00.637Z'
     cockpit_task_id: ab2f1e5a
@@ -51,6 +45,28 @@ pending_questions:
     content: >-
       Q-H [新規] Cloudflare は core-driven.com に既導入ですか? Phase 3 (Tier 5B: ルート別リバースプロキシで /v2/* だけ Vercel 等の別 origin に振る)
       を将来採用するか判断するため。Xserver は単独で nginx 設定変更不可のため、CF Workers 前段が現実解になる。
+  - id: q-BL-0079-7-20260505131524
+    at: '2026-05-05T13:15:24.704Z'
+    cockpit_task_id: ab2f1e5a
+    content: Q-I [新規] 既存 TOP の固定ページのタイトルとスラッグは何ですか? (WP 管理画面 → ページ → 固定ページ一覧で確認可能)。v3 計画 Step 2 でどのページを編集するか確定するため。
+  - id: q-BL-0079-8-20260505131524
+    at: '2026-05-05T13:15:24.819Z'
+    cockpit_task_id: ab2f1e5a
+    content: >-
+      Q-J [新規] 内部リンク先 /biz-core/ /ai-core/ /company/ /contact/ は既に存在するスラッグですか? AI HTML 内のボタン (相談する / Biz Core を見る / AI
+      Core を見る / メンバー詳細を見る) のリンク切れ判定に必要。
+  - id: q-BL-0079-9-20260505131524
+    at: '2026-05-05T13:15:24.926Z'
+    cockpit_task_id: ab2f1e5a
+    content: >-
+      Q-K [新規] 画像配置パスは固定パス /wp-content/uploads/coredriven-html/ にしたいですか? (FTP かファイルマネージャで 1 度だけフォルダ作成・アップロード必要 / 将来更新が楽)
+      それとも WP 標準の /wp-content/uploads/2026/05/ のままにしますか? (アップロード後に貼付 HTML の URL を 5 箇所書き換え必要)
+  - id: q-BL-0079-10-20260505131525
+    at: '2026-05-05T13:15:25.080Z'
+    cockpit_task_id: ab2f1e5a
+    content: >-
+      Q-L [新規] Phase 0 (TOP 置換) は本番直置換しますか? それとも下書きでプレビュー確認後に公開しますか? 既存 TOP ページの停止リスク管理のため、推奨は『既存 TOP のリビジョン保存 → 下書きで貼付
+      → プレビュー OK 後に公開』。
 decisions:
   - at: '2026-05-03T00:46:41.425Z'
     type: commitment
@@ -114,3 +130,43 @@ decisions:
       に同梱。成果物: Flow/202605/2026-05-05/0.Other/CoreDriven/wordpress_replace_strategy_v2.md (deliverable id:
       d-bl0079-20260505-wp-replace-strategy, deliverables.yaml 登録済 review_state=unreviewed)。先行キット
       d-bl0079-20260505-wp-impl-kit も review_state を unreviewed に更新。
+  - at: '2026-05-05T13:08:31.350Z'
+    type: answer
+    by: user
+    content: |-
+      WP管理者権限を持っています。
+      WPってコマンドラインから編集できたりしますか？
+
+      最新版のHTMLは以下のとおりです。
+      '/Users/rikutanaka/Downloads/Core Driven_20260426.zip'
+
+      カスタムHTMLは管理者のみでOK
+
+      URL構造はルートに置き換える予定です。更新頻度は今のところそんなにないので、自動化までは入れなくていいと思います。対象ページはトップページです。
+
+      この条件をもとに、再度移行計画を立ててください。
+
+      というか全体を置き換えたいですが、まずトップページの置き換えをやりたいです。Cloudflareは何で必要なんでしたっけ?
+  - at: '2026-05-05T13:15:00.184Z'
+    type: answer
+    by: user
+    content: >-
+      Q-C 確定: AI 生成 HTML 最新版は ~/Downloads/Core Driven_20260426.zip (5.8MB) で受領。中身は index.html +
+      ai-core/biz-core/company/contact.html の 5 ページ + assets (styles.css 13KB / site.js 2.5KB / 画像5枚
+      logo-core-driven.png/logo.svg/tanaka.jpg/machida.jpg/yoshida.webp)。Q-D 確定: カスタム HTML ブロックの編集権限は管理者のみで OK。Q-E 確定:
+      URL 構造はルートに置き換え (別 path 並走しない)。Q-F 確定: 更新頻度は低、自動化スコープ外。Q-G 確定: Phase 0 対象ページはトップページ。追加: 田中さんは WP 管理者権限あり。質問: WP
+      コマンドライン編集の可否 / Cloudflare の必要性。
+  - at: '2026-05-05T13:15:16.132Z'
+    type: commitment
+    by: ai
+    content: >-
+      [5/5 v3 計画完了] 田中さん回答を反映した最終実行計画を生成。ZIP 解析で重要発見: AI HTML は assets/site.js の injectHeaderFooter() で動的 header/footer
+      注入する設計のため、SWELL ヘッダーを残しつつ本文だけ流す『選択肢 A』が技術的にクリーン。Cloudflare は path 別 origin 切替 (Tier 5B) 用で全体置換方針なら不要、と回答。WP
+      コマンドライン編集は (1)管理画面のテーマファイルエディタ (2)Xserver SSH+WP-CLI (3)ファイルマネージャ の 3 経路、ただし TOP 置換だけなら全部不要 (固定ページ編集だけで完結)
+      と回答。実行用貼付 HTML coredriven_top_paste_ready.html (36KB/922 行) を同梱生成: assets/styles.css と index.html の <style>
+      をインライン化、内部リンクを WP パーマリンク形式 (/contact/ 等) に変換、画像パスを /wp-content/uploads/coredriven-html/
+      に統一、injectHeaderFooter('home') を削除済。田中さんは WP 管理画面で画像 5 枚アップ → 固定ページのカスタム HTML ブロックにこの 1 ファイルを丸ごとコピペ → 公開 で 30 分で
+      TOP 置換完了。残り 4 ページは Phase 1 (5/6〜5/8) で同方式量産。成果物:
+      Flow/202605/2026-05-05/0.Other/CoreDriven/wordpress_migration_plan_v3.md (id:
+      d-bl0079-20260505-wp-migration-plan-v3) + coredriven_top_paste_ready.html。新規確認事項 Q-I (TOP 固定ページのスラッグ) / Q-J
+      (内部リンク先ページ存在確認) / Q-K (画像配置パス確定) / Q-L (本番直置換 or 下書きプレビュー) を追加。

@@ -5,7 +5,7 @@ category: RestaurantAILab
 state: in_progress
 priority: normal
 created_at: '2026-04-30T13:26:51.867Z'
-updated_at: '2026-05-05T13:15:25.080Z'
+updated_at: '2026-05-05T15:48:07.632Z'
 created_by: mt-cli
 description: >-
   RestaurantAILab
@@ -170,3 +170,22 @@ decisions:
       Flow/202605/2026-05-05/0.Other/CoreDriven/wordpress_migration_plan_v3.md (id:
       d-bl0079-20260505-wp-migration-plan-v3) + coredriven_top_paste_ready.html。新規確認事項 Q-I (TOP 固定ページのスラッグ) / Q-J
       (内部リンク先ページ存在確認) / Q-K (画像配置パス確定) / Q-L (本番直置換 or 下書きプレビュー) を追加。
+  - at: '2026-05-05T15:47:54.700Z'
+    type: answer
+    by: user
+    content: >-
+      Q-I 確定: 既存スラッグは company / contact / news / privacy-policy / top の 5 件。TOP のタイトルは 'TOP'。Q-J 確定: contact と company
+      は既存ありなので新規 AI 版は別スラッグ (新規ページ作成 + 既存ページ残し) で運用したい。biz-core, ai-core は既存無し。Q-K 確定: 画像配置パスは
+      /wp-content/uploads/coredriven-html/ で OK。Q-L 田中さん指示: HTML 化を進めてください、WP-CLI は一旦置いておく、実装手順を別途作成希望。
+  - at: '2026-05-05T15:48:07.632Z'
+    type: commitment
+    by: ai
+    content: >-
+      [5/6 実装手順書 + 貼付HTMLv2 完成] 田中さん指示 (HTML化進めて + WP-CLI なしで手順書) を反映。新スラッグを暫定確定: /biz-core/ /ai-core/ /contact-new/
+      /company-new/ (既存 company/contact は残す)。成果物 2 件を Flow/202605/2026-05-06/0.Other/CoreDriven/ に同梱: (1)
+      wordpress_top_implementation_steps.md = TOP 置換専用の画面操作版手順書。Step 1 (Xserver ファイルマネージャで
+      /wp-content/uploads/coredriven-html/ 作成 + 画像5枚アップ) → Step 2 (新規ページ4つ作成・スラッグ指定・下書き保存) → Step 3 (既存 TOP
+      固定ページ編集・リビジョン保存・既存ブロック削除・カスタム HTML ブロック追加・貼付 HTML コピペ・プレビュー6項目チェック・公開) → Step 4 (本番動作確認・SP 実機テスト・Lighthouse) の 45
+      分手順。トラブル時ロールバック手順 + 用語集 11 項目同梱。(2) coredriven_top_paste_ready_v2.html = 5/5 v1 から内部リンクを新スラッグに sed 置換した版 (917 行 /
+      36KB)。田中さんは Step 3-5 でこのファイルを丸ごとコピペするだけ。Phase 1 (5/7 以降) は AI 側で残り 4 ページの貼付 HTML 化を実施予定。deliverable id:
+      d-bl0079-20260506-wp-top-impl-steps + d-bl0079-20260506-wp-top-paste-v2 (review_state=unreviewed)。

@@ -50,28 +50,48 @@ deliverables:
   - id: d-bl0079-20260505-wp-migration-plan-v3
     file: wordpress_migration_plan_v3.md
     bl_id: BL-0079
-    title: 'CoreDriven WP 移行・最終実行計画 v3 (Q-C〜Q-G 確定後の TOP 置換具体手順 + 残ページ移行ロードマップ)'
+    title: CoreDriven WP 移行・最終実行計画 v3 (Q-C〜Q-G 確定後の TOP 置換具体手順 + 残ページ移行ロードマップ)
     created_at: '2026-05-05T13:15:00.000Z'
     created_by: cockpit-task-ab2f1e5a
     created_by_agent: claude
-    cockpit_task_id: ab2f1e5a
-    review_state: unreviewed
+    review_state: done
     review_log:
       - at: '2026-05-05T13:15:00.000Z'
         action: created
         to: unreviewed
         comment: >-
-          田中さん回答 (WP管理者権限あり / AI HTML zip 受領 / カスタムHTML管理者のみ / ルート置換 / 自動化不要 / 対象=TOP) を反映。
-          ZIP 内容調査完了 (index.html + 4ページ + assets/styles.css/site.js + 画像5枚)。
-          AI HTML が site.js による動的 header/footer 注入設計と判明 → SWELL ヘッダー残し本文だけ流す選択肢Aを採用。
-          Cloudflare 不要の説明 / WP-CLI 3 選択肢 / TOP 置換 30分手順 / 残ページ Phase 1〜4 ロードマップを同梱。
-          新規確認事項 Q-I〜Q-L 4件追加。
+          田中さん回答 (WP管理者権限あり / AI HTML zip 受領 / カスタムHTML管理者のみ / ルート置換 / 自動化不要 / 対象=TOP) を反映。 ZIP 内容調査完了 (index.html +
+          4ページ + assets/styles.css/site.js + 画像5枚)。 AI HTML が site.js による動的 header/footer 注入設計と判明 → SWELL
+          ヘッダー残し本文だけ流す選択肢Aを採用。 Cloudflare 不要の説明 / WP-CLI 3 選択肢 / TOP 置換 30分手順 / 残ページ Phase 1〜4 ロードマップを同梱。 新規確認事項 Q-I〜Q-L
+          4件追加。
       - at: '2026-05-05T13:15:30.000Z'
         action: bundled_artifact
         to: unreviewed
         comment: >-
-          実行用貼付HTML 'coredriven_top_paste_ready.html' (36KB / 922行) を同フォルダに同梱生成。
-          assets/styles.css + index.html head <style> をインライン化 / 内部リンクを WP パーマリンク形式に変換 /
-          画像パスを /wp-content/uploads/coredriven-html/ に統一 / injectHeaderFooter 削除済。
-          田中さんは WP の固定ページにこの 1 ファイルを丸ごとコピペするだけで Phase 0 完了。
-    last_modified: '2026-05-05T13:15:30.000Z'
+          実行用貼付HTML 'coredriven_top_paste_ready.html' (36KB / 922行) を同フォルダに同梱生成。 assets/styles.css + index.html head
+          <style> をインライン化 / 内部リンクを WP パーマリンク形式に変換 / 画像パスを /wp-content/uploads/coredriven-html/ に統一 / injectHeaderFooter
+          削除済。 田中さんは WP の固定ページにこの 1 ファイルを丸ごとコピペするだけで Phase 0 完了。
+      - at: '2026-05-05T15:44:29.695Z'
+        action: state_change
+        from: unreviewed
+        to: done
+        comment: |-
+          既存のスラッグは以下の５つです。
+          company
+          contact
+          news
+          privacy-policy
+          top
+
+          トップページタイトルは
+          TOPです
+
+          contact, companyだけ既存があるので、ちょっと変えたいです。
+          画像配置パスは/wp-content/uploads/coredriven-htmlでOK
+          新しいページを作って、既存のページは残しておいて、TOPページを変更するというのはできる？
+
+          HTML化は進めてください。
+
+          一旦WP-CLIは置いておきます。これで実装するための手順をもう一個作って。
+    last_modified: '2026-05-05T15:44:29.695Z'
+    cockpit_task_id: ab2f1e5a

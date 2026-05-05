@@ -5,7 +5,7 @@ category: RestaurantAILab
 state: in_progress
 priority: normal
 created_at: '2026-04-30T13:26:51.867Z'
-updated_at: '2026-05-05T15:48:07.632Z'
+updated_at: '2026-05-05T16:26:26.901Z'
 created_by: mt-cli
 description: >-
   RestaurantAILab
@@ -67,6 +67,27 @@ pending_questions:
     content: >-
       Q-L [新規] Phase 0 (TOP 置換) は本番直置換しますか? それとも下書きでプレビュー確認後に公開しますか? 既存 TOP ページの停止リスク管理のため、推奨は『既存 TOP のリビジョン保存 → 下書きで貼付
       → プレビュー OK 後に公開』。
+  - id: q-BL-0079-11-20260505162626
+    at: '2026-05-05T16:26:26.604Z'
+    cockpit_task_id: ab2f1e5a
+    content: >-
+      Q-M [新規/最重要] 戦略選択をしてください: (X) SWELL のメインビジュアル (大画面画像) を残したまま AI HTML を本文に追加 / (Y 推奨) メインビジュアルを『表示しない』に変更してから AI
+      HTML を本文に貼付 / (Z) 子テーマに page-fullhtml-bare.php 追加して SWELL の枠も全て消し AI HTML を完全表示 のどれですか? 推奨は Y (MV と AI Hero
+      が二段になる冗長を回避、デザインがクリーン)。
+  - id: q-BL-0079-12-20260505162626
+    at: '2026-05-05T16:26:26.764Z'
+    cockpit_task_id: ab2f1e5a
+    content: >-
+      Q-N [新規] AI HTML 内のボタン『相談する』(計4箇所) の Phase 0 暫定対応: (a) 既存の Google Form 直リンク (https://forms.gle/GbRSdeKqWngAqx4WA)
+      に sed 置換した v3 貼付 HTML を AI 側で生成、(b) /contact-new/ を空のまま公開してリンク先は『準備中』、(c) Phase 1 (5/7) で /contact-new/ を AI HTML
+      化してから TOP 公開、のどれが良いですか? 推奨は (a) Google Form 直リンクで動線維持。
+  - id: q-BL-0079-13-20260505162626
+    at: '2026-05-05T16:26:26.901Z'
+    cockpit_task_id: ab2f1e5a
+    content: >-
+      Q-O [新規] 既存ナビメニュー (TOP/Business[#ai/#career/#biz]/Company/News/Contact[Google Form]) の AI 構成 (Biz Core/AI
+      Core/会社概要/お問い合わせ) への再編タイミング: (a) Phase 0 と同時 (今夜) / (b) Phase 1 完了後 (5/8 頃) / (c) Phase 2 で SWELL ヘッダー自体を消す時
+      のどれですか? 推奨は (b) — 残ページの AI HTML 化を先に終わらせてからメニュー全体を一気に切替。
 decisions:
   - at: '2026-05-03T00:46:41.425Z'
     type: commitment
@@ -189,3 +210,16 @@ decisions:
       分手順。トラブル時ロールバック手順 + 用語集 11 項目同梱。(2) coredriven_top_paste_ready_v2.html = 5/5 v1 から内部リンクを新スラッグに sed 置換した版 (917 行 /
       36KB)。田中さんは Step 3-5 でこのファイルを丸ごとコピペするだけ。Phase 1 (5/7 以降) は AI 側で残り 4 ページの貼付 HTML 化を実施予定。deliverable id:
       d-bl0079-20260506-wp-top-impl-steps + d-bl0079-20260506-wp-top-paste-v2 (review_state=unreviewed)。
+  - at: '2026-05-05T16:26:12.672Z'
+    type: answer
+    by: ai
+    content: >-
+      [5/6 needs_revision 対応] 田中さん指摘『TOP 編集画面にブロックが無い』の原因を core-driven.com 実 HTML 解析で特定: (1) TOP 固定ページ (page-id-10, スラッグ
+      /top/) の post_content は本当に空、(2) 現状の TOP 表示は SWELL カスタマイザーの『メインビジュアル』(フルスクリーン画像 03-scaled.jpg 等) で構成、(3) 加えて
+      w-frontTop ウィジェットエリアにカスタム HTML ウィジェット (id=custom_html-2) があるが中身も空、(4) ナビメニュー Contact は固定ページではなく Google Form
+      (forms.gle/GbRSdeKqWngAqx4WA) 直リンクで構成。よって田中さんが見ているフルスクリーン画像は 『外観 → カスタマイズ → メインビジュアル』 設定由来。実装手順書を v2 として書き直し: 戦略選択
+      X (MV残す)/Y (MV消す・推奨)/Z (Bare完全置換) を提示し、Y を推奨ルートとして Step 1 (カスタマイザーで MV を非表示) → Step 2 画像アップ → Step 3 新規4ページ → Step
+      4 TOP 固定ページに貼付 HTML をペースト → §8 Google Form 暫定直リンク → §9 メニュー再編 (Phase 1) を整理。新規 Q-M (戦略選択 X/Y/Z) / Q-N (Contact
+      暫定リンク) / Q-O (メニュー再編タイミング) を追加。成果物:
+      Flow/202605/2026-05-06/0.Other/CoreDriven/wordpress_top_implementation_steps_v2.md (id:
+      d-bl0079-20260506-wp-top-impl-steps-v2, review_state=unreviewed)。

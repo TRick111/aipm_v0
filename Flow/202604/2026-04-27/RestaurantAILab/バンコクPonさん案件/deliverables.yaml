@@ -10,13 +10,6 @@ deliverables:
     created_by: agent
     created_by_agent: claude
     review_state: unreviewed
-    summary: >-
-      v1 (4 案比較) を Power Platform / 読み取り専用 / サービスアカウント / ローカル PC + MCP・CLI 前提に書き換えた v2。
-      アーキテクチャ図 (mermaid)、リスク × 緩和策マッピング (R1-R12)、サービスアカウント運用ルール、
-      想定 Q&A 15 件 (IT 担当者向け)、残懸念事項 C1-C8 を含む。月曜セッションでの進め方も差し替え。
-    related_files:
-      - sales_data_architecture.mmd
-      - ../../2026-04-26/RestaurantAILab/バンコクPonさん案件/sales_data_ai_security_design.md
     review_log:
       - at: '2026-04-27T00:00:00+09:00'
         action: spawned
@@ -35,9 +28,7 @@ deliverables:
     created_by: agent
     created_by_agent: claude
     review_state: unreviewed
-    summary: >-
-      v2 資料に埋め込んだ mermaid 図の単体ファイル。Cursor / MCP/CLI / Entra ID サービスプリンシパル /
-      Power Platform セキュリティロール / Dataverse・SharePoint / Anthropic Claude (ZDR) の構成。
+    review_log: []
   - id: d-bl0073-20260427-session6-outline-v2
     file: session6_outline_v2.md
     bl_id: BL-0073
@@ -46,14 +37,6 @@ deliverables:
     created_by: bl-0073-agent
     created_by_agent: claude
     review_state: unreviewed
-    summary: >-
-      田中さん指示でスコープ差し替え。旧 v1 (繰り返しタスク / iCloudカレンダー / 会話履歴) を温存しつつ
-      v2 として書き換え。新3本柱: (1) Cursor で AI を自動実行 / (2) 能動的自動実行 + ntfy.sh で iPhone push /
-      (3) Google Calendar 連携。冒頭に v1→v2 差分サマリ。90/120 分版両対応。未確定事項 7 項目は INBOX.md
-      Q1-Q4 へ展開。
-    related_files:
-      - session6_content_draft_v2.md
-      - ../../2026-04-26/RestaurantAILab/バンコクPonさん案件/session6_outline.md
     review_log:
       - at: '2026-04-27T09:00:00+09:00'
         action: created
@@ -67,15 +50,6 @@ deliverables:
     created_by: bl-0073-agent
     created_by_agent: claude
     review_state: unreviewed
-    summary: >-
-      新スコープ対応の内容ドラフト v2。各 Part にハンズオン手順 (Step 1〜7 形式) ・シェル/launchd plist/curl
-      の実コード例・想定 Q&A (各 6〜7 件)・進行台本を完備。補足資料 A〜E (URL/コマンド集 / トピック名ガイド /
-      launchd トラブルシュート / ntfy 不達チェックリスト / Google Calendar OAuth 手順) 同梱。
-      ntfy.sh / NTY.SH 表記揺れ問題に明示対応 (公式は ntfy.sh)。安全運用ルール (推測困難なトピック名 /
-      機密本文を流さない) を Part 3 に明記。未確定事項 10 項目を末尾チェックリスト化。
-    related_files:
-      - session6_outline_v2.md
-      - ../../2026-04-26/RestaurantAILab/バンコクPonさん案件/session6_content_draft.md
     review_log:
       - at: '2026-04-27T09:00:00+09:00'
         action: created
@@ -89,18 +63,6 @@ deliverables:
     created_by: bl-0073-agent
     created_by_agent: claude
     review_state: unreviewed
-    summary: >-
-      田中さん 4/27 PM 指示 (Q1 回答 + 追加調査依頼) を受けて作成した v2 補強メモ。
-      (1) Cursor「自動実行エージェント」= Cursor Automations (cron + クラウドAI、開発文脈前提) と整理し、
-      Auto-Run / Background Agent / Automations の3層を明示。日常プロンプト定期実行は Claude Desktop
-      Scheduled Tasks / ChatGPT Tasks / Zapier 等への分岐を台本化。
-      (2) iCloud カレンダー一括 .icbu は Google 取り込み不可 (Apple独自形式) と確定 →
-      `.ics` 個別書き出しが正攻法。完全移行運用 (Mac カレンダー.app → ファイル → 書き出す → calendar.google.com 設定 →
-      インポート → iPhone/Mac で Google を既定カレンダーに → iCloud は表示OFF) を Step 化。
-      v2 outline / content_draft への反映ポイント、PONさん即答カード、田中さん次アクションを末尾に明示。
-    related_files:
-      - session6_outline_v2.md
-      - session6_content_draft_v2.md
     review_log:
       - at: '2026-04-27T15:00:00+09:00'
         action: created
@@ -108,44 +70,31 @@ deliverables:
         comment: 田中さん 4/27 PM 追加指示で作成。本日の予定外タスクとして deliverable 登録 (mini-tachyon 運用乗せ)。本番までに v2 への反映が必要。
   - id: d-bl0068-20260427-wise-billing-full-procedure-v1
     file: wise_billing_full_procedure_v1.md
-    bl_id: BL-0068
+    bl_id: null  # archived 2026-05-05: BL-0068 統合により紐付け解除 (orig: BL-0068)
     title: PONさん月次請求 — Wise 完全運用手順 v1（25万円/月）
     created_at: '2026-04-27T09:00:00+09:00'
     created_by: bl-0068-agent
     created_by_agent: claude
-    review_state: unreviewed
-    summary: >-
-      田中さん 4/27 共有前提（月25万円固定・毎月発生・アカウント開設〜月次請求まで）に基づく完全手順 v1。
-      §0 通貨経路試算（推奨= JPY 250,000 円固定で田中さん手取り固定）／ §1 Q-A〜Q-G（受取メール追加）／
-      §2 Phase A 田中さん側 Wise 個人開設（KYC マイナンバー、当日〜3 営業日）／
-      §3 Phase B PONさん側開設（法人 1〜2 週 / 個人 1〜3 日で分岐）／ §4 顧客登録／
-      §5 月次請求書発行（Wise Invoice Generator、英語、輸出免税）／ §6 入金確認・Wise→国内銀行出金・記帳／
-      §7 月次運用カレンダー＋リマインダ／ §8 SWIFT バックアップ／ §9 リスク 6 項目／ §10 ネクストアクション。
-      v1 の前提（Q-A〜Q-G 田中さん回答後に v2 で確定値埋込）。
-    related_files:
-      - wise_invoice_template.md
-      - ../../2026-04-26/RestaurantAILab/バンコクPonさん案件/payment_switch_comparison.md
+    review_state: done
     review_log:
       - at: '2026-04-27T09:00:00+09:00'
         action: created
         to: unreviewed
         comment: BL-0068 v1 完全手順を作成。Q-A〜Q-G を INBOX.md に転記済 → 田中さん回答待ち。回答後 v2 化。
+      - at: '2026-05-05T08:09:42.932Z'
+        action: state_change
+        from: unreviewed
+        to: done
+        comment: 'BL-0068 deliverable 統合(2026-05-05): v1手順書。v2(確定版)に置換済のためアーカイブ。差分は v2 §scope_change に集約。'
+    last_modified: '2026-05-05T08:09:42.932Z'
   - id: d-bl0068-20260427-wise-invoice-template
     file: wise_invoice_template.md
-    bl_id: BL-0068
+    bl_id: null  # archived 2026-05-05: BL-0068 統合により紐付け解除 (orig: BL-0068)
     title: PONさん向け 月次請求書テンプレ — Wise Invoice Generator 入力用
     created_at: '2026-04-27T09:05:00+09:00'
     created_by: bl-0068-agent
     created_by_agent: claude
-    review_state: unreviewed
-    summary: >-
-      Wise Invoice Generator 入力用テンプレ。Invoice number 体系 RAL-YYYY-MM、項目テンプレ
-      "AI Strategy & Development Consulting Fee — {YYYY年M月}"、金額 250,000 JPY 固定、消費税 0（輸出免税）、
-      振込先は Wise JPY 受取専用口座（銀行コード 0200 / Wise Payments Japan）。
-      §1 フィールド対応表（Bill to は Q-A 法人/個人 で分岐両記載）／ §2 メール件名・本文テンプレ（日英併記）／
-      §3 月次運用 5 分チェックリスト（複製→月名・番号・日付の3点更新）／ §4 年明けの注意。
-    related_files:
-      - wise_billing_full_procedure_v1.md
+    review_state: done
     review_log:
       - at: '2026-04-27T09:05:00+09:00'
         action: created
@@ -155,6 +104,12 @@ deliverables:
         action: superseded
         to: needs_revision
         comment: 田中さん回答 (Q-A〜Q-G) で LINE 送付に確定 → wise_invoice_template_v2.md で置換
+      - at: '2026-05-05T08:09:43.188Z'
+        action: state_change
+        from: unreviewed
+        to: done
+        comment: 'BL-0068 deliverable 統合(2026-05-05): v1請求書テンプレ。v2に置換済のためアーカイブ。'
+    last_modified: '2026-05-05T08:09:43.188Z'
   - id: d-bl0068-20260427-wise-billing-full-procedure-v2
     file: wise_billing_full_procedure_v2.md
     bl_id: BL-0068
@@ -163,17 +118,6 @@ deliverables:
     created_by: bl-0068-agent
     created_by_agent: claude
     review_state: unreviewed
-    summary: >-
-      田中さん 2026-04-27 回答 (Q-A〜Q-G) を反映した v2 確定版。送金経路= Pon さん個人 Wise → 田中さん個人 Wise の単一ルート、
-      受取口座= みずほメインバンク、請求書送付= LINE トーク (メール非採用)、SWIFT バックアップ削除、
-      初回バッチ= 2 月稼働分 (2/19-3/18) + 3 月稼働分 (3/19-4/18) + 4 月稼働分 (4/19-5/18) の遡及 3 件まとめ発行 (合計 750,000 JPY)。
-      9 章構成: §0 v1→v2 差分／§1 ロードマップ Phase A〜E／§2 田中さん側 Wise 開設＋みずほ出金先／§3 Pon さん側 Wise 開設＋
-      LINE 依頼メッセージ／§4 顧客登録／§5 Phase D 遡及 3 件発行＋LINE 送付テンプレ (日英併記)／§6 入金確認・みずほ出金・記帳／
-      §7 Phase E 月次運用カレンダー／§8 リスク／§9 ネクストアクション。
-    related_files:
-      - wise_invoice_template_v2.md
-      - wise_billing_full_procedure_v1.md
-      - ../../2026-04-26/RestaurantAILab/バンコクPonさん案件/payment_switch_comparison.md
     review_log:
       - at: '2026-04-27T10:50:00+09:00'
         action: created
@@ -187,15 +131,6 @@ deliverables:
     created_by: bl-0068-agent
     created_by_agent: claude
     review_state: unreviewed
-    summary: >-
-      v2 完全手順 §5 の付属テンプレ (LINE 送付対応版)。6 章構成:
-      §1 初回バッチ Phase D 遡及 3 件 (RAL-2026-02 / 03 / 04 各 250,000 JPY、合計 750,000 JPY)／
-      §2 Wise Invoice Generator 入力フィールド対応表 (Bill to= Pon さん個人 単一)／§3 LINE 送付テンプレ
-      (Phase D 4 通構成: 説明テキスト + PDF 3 ファイル / Phase E 月次 2 通構成: テキスト + PDF 1 ファイル、日英併記)／
-      §4 月次運用 5 分チェックリスト (複製→3 点更新→PDF→LINE)／§5 年次更新の注意／§6 LINE 送付運用の注意点
-      (1:1 トーク限定 / 既読確認 / PDF 開けない時の対処 等)。
-    related_files:
-      - wise_billing_full_procedure_v2.md
     review_log:
       - at: '2026-04-27T10:55:00+09:00'
         action: created
@@ -203,27 +138,22 @@ deliverables:
         comment: BL-0068 v2 完全手順 §5 の付属テンプレ。LINE 1:1 送付運用に確定。
   - id: d-bl0068-20260427-pon-wise-confirmation
     file: pon_wise_confirmation.md
-    bl_id: BL-0068
+    bl_id: null  # archived 2026-05-05: BL-0068 統合により紐付け解除 (orig: BL-0068)
     title: Pon さんへの Wise 切替 事前確認資料 (前提条件・影響・LINE 送付テンプレ)
     created_at: '2026-04-27T11:20:00+09:00'
     created_by: bl-0068-agent
     created_by_agent: claude
-    review_state: unreviewed
-    summary: >-
-      v2 手順書 Phase B の前段として、Pon さんに Wise 切替で良いかを確認するための資料。
-      §1 Pon さん側 Wise アカウントは必須 (理由: Wise の本質は両者経由でミッドマーケット為替実現)／
-      §2 必要書類 (パスポート + 住所証明 3 ヶ月以内 + セルフィー + タイ銀行口座 + 環境)／
-      §3 メリット 5 項目 (PayPal 不可解消・低手数料・速着金・履歴管理・PromptPay 統合) と
-      デメリット 5 項目 (送金手数料 Pon 側負担 1,000-2,000 円/月・為替変動 ±10,000 円/月・
-      個人立替→法人精算・KYC 提出・タイ BOT 規制)／§4 田中さん→Pon さん確認チェックリスト 8 項目／
-      §5 代替案 (Payoneer / SWIFT) / Pon さんが Wise を渋った場合のシナリオ／
-      §6 LINE 送付テンプレ (日英併記、6.1 で 1 通構成)／§7 田中さんネクストアクション
-      (4/27 セッション口頭確認 or LINE 送付 → パターン A/B/C/D で分岐)。
-    related_files:
-      - wise_billing_full_procedure_v2.md
-      - wise_invoice_template_v2.md
+    review_state: done
     review_log:
       - at: '2026-04-27T11:20:00+09:00'
         action: created
         to: unreviewed
         comment: Pon さん事前確認資料。Q-H として田中さん側に確認結果を待機。回答後パターン A/B/C/D で進路分岐。
+      - at: '2026-05-05T08:09:42.623Z'
+        action: state_change
+        from: unreviewed
+        to: done
+        comment: >-
+          BL-0068 deliverable 統合(2026-05-05): Pon さんへの Wise 切替確認 LINE テンプレ。Q-H 用途は完了済(田中さん→Ponさん確認済の前提)。v2手順書(§6.1
+          で参照)を残すためアーカイブ。
+    last_modified: '2026-05-05T08:09:42.623Z'

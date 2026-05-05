@@ -14,13 +14,16 @@ deliverables:
       - at: '2026-04-26T19:00:00.000Z'
         action: created
         to: unreviewed
-        comment: |-
+        comment: >-
           BL-0074 (P0, Due 2026-04-27 セッション本番) のドラフト v1 を作成。
-          5 章構成: 懸念リスト 8 項目 / セキュア構成案 4 案 (A:ローカルLLM, B:API+マスキング, C:VPC+Bedrock, D:集計値のみ) / コスト・期間比較 / 推奨「案D→案B 2段階導入」+ 説得ロジック / 想定 Q&A 8 件。
+
+          5 章構成: 懸念リスト 8 項目 / セキュア構成案 4 案 (A:ローカルLLM, B:API+マスキング, C:VPC+Bedrock, D:集計値のみ) / コスト・期間比較 / 推奨「案D→案B 2段階導入」+
+          説得ロジック / 想定 Q&A 8 件。
+
           月曜セッションで IT 担当者を説得するための材料。Q&A は読み上げ可能形式。
+
           要レビュー: 推奨案 (案D→案B) で田中さん OK か、コスト数値の精度、ZDR 契約条件の最新状況確認。
     last_modified: '2026-04-26T19:00:00.000Z'
-    cockpit_task_id: null
   - id: d-bl0070-20260426-jbeauty-signage-requirements
     file: jbeauty_signage_requirements.md
     bl_id: BL-0070
@@ -44,15 +47,14 @@ deliverables:
           + 6.Pon さん確認事項 6 件 / 7.ネクストアクション。
           Pon さんチームへの送付前に田中さんレビュー待ち。送付メッセージドラフトは別途作成予定。
     last_modified: '2026-04-26T19:30:00.000Z'
-    cockpit_task_id: null
   - id: d-bl0068-20260426-payment-switch-comparison
     file: payment_switch_comparison.md
-    bl_id: BL-0068
+    bl_id: null  # archived 2026-05-05: BL-0068 統合により紐付け解除 (orig: BL-0068)
     title: PONさんへの請求方法切替 — 5 候補比較 (PayPal→WISE 等)
     created_at: '2026-04-26T20:00:00.000Z'
     created_by: bl-0068-agent
     created_by_agent: claude
-    review_state: unreviewed
+    review_state: done
     review_log:
       - at: '2026-04-26T20:00:00.000Z'
         action: created
@@ -68,7 +70,12 @@ deliverables:
           実装は Phase A (初回個人 WISE で即時運用開始) → Phase B (継続 Business 化) → Phase C (SWIFT バックアップ整備)。
           田中さん最終選定ポイント Q-A〜Q-F (送金者名義 / 初回タイミング / 月次想定額 / 受取口座 / PONさん側決裁者 / SWIFT 整備優先度) を末尾に明記。
           確認事項.md B1 に要約を流し込み予定。
-    last_modified: '2026-04-26T20:00:00.000Z'
+      - at: '2026-05-05T08:09:43.450Z'
+        action: state_change
+        from: unreviewed
+        to: done
+        comment: 'BL-0068 deliverable 統合(2026-05-05): PayPal→WISE 等5候補比較(初期検討)。Wise採択により役割完了、参考扱いでアーカイブ。'
+    last_modified: '2026-05-05T08:09:43.450Z'
     cockpit_task_id: 89196e3c
   - id: d-bl0073-20260426-session6-outline
     file: session6_outline.md

@@ -5,19 +5,15 @@ category: RestaurantAILab
 state: awaiting_user
 priority: high
 created_at: '2026-04-26T00:00:00+09:00'
-updated_at: '2026-05-04T13:57:51.429Z'
+updated_at: '2026-05-05T08:09:55.178Z'
 created_by: central-backlog
 description: >-
   BL-0068 v2 確定版 (2026-04-27 田中さん回答反映)。送金経路= Pon さん個人 Wise → 田中さん個人 Wise → みずほメインバンク。請求= LINE 送付・JPY 250,000
   円固定・輸出免税。初回バッチ= 2 月分 (2/19-3/18) + 3 月分 (3/19-4/18) + 4 月分 (4/19-5/18) の遡及 3 件 (合計 750,000 JPY) を Phase A
   完了直後にまとめ発行。SWIFT バックアップ不採用。手順書: wise_billing_full_procedure_v2.md / wise_invoice_template_v2.md。
 deliverable_refs:
-  - d-bl0068-20260427-pon-wise-confirmation
   - d-bl0068-20260427-wise-billing-full-procedure-v2
   - d-bl0068-20260427-wise-invoice-template-v2
-  - d-bl0068-20260427-wise-billing-full-procedure-v1
-  - d-bl0068-20260427-wise-invoice-template
-  - d-bl0068-20260426-payment-switch-comparison
 schema_version: 2
 cockpit_task_ids:
   - ab7788eb
@@ -117,3 +113,10 @@ decisions:
     type: answer
     by: user
     content: '本日: Wise Phase A (個人 Wise 開設 KYC マイナンバー、当日〜3 日) を本人作業として継続。AI spawn なし。'
+  - at: '2026-05-05T08:09:55.178Z'
+    type: commitment
+    by: user
+    content: >-
+      2026-05-05 田中さん指示: BL-0068 の成果物を v2 確定版2件に集約。アーカイブ4件 (pon_wise_confirmation / v1 procedure / v1 invoice /
+      payment_switch_comparison) は review_state=done に変更し deliverable_refs から除外。情報は v2 手順書および decisions
+      ログに集約済のため参照に支障なし。残りの ref: wise_billing_full_procedure_v2.md / wise_invoice_template_v2.md。

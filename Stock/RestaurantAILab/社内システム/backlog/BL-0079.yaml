@@ -5,21 +5,52 @@ category: RestaurantAILab
 state: in_progress
 priority: normal
 created_at: '2026-04-30T13:26:51.867Z'
-updated_at: '2026-05-05T00:35:01.612Z'
+updated_at: '2026-05-05T01:50:22.076Z'
 created_by: mt-cli
 description: >-
   RestaurantAILab
   社内IT整備プロジェクトの一環として、CoreDrivenコーポレートサイト（WordPress）のコア・テーマ・プラグインのバージョンアップを実施する。事前バックアップ→検証環境で互換性確認→本番反映→主要ページ表示・問い合わせフォーム・SSL/リダイレクトの動作確認まで行う。
 deliverable_refs: []
 schema_version: 2
-cockpit_task_ids: []
+cockpit_task_ids:
+  - ab2f1e5a
 pending_questions:
-  - id: q-BL-0079-1-20260505003501
-    at: '2026-05-05T00:35:01.612Z'
-    cockpit_task_id: e60bce35
+  - id: q-BL-0079-2-20260505014300
+    at: '2026-05-05T01:43:00.534Z'
+    cockpit_task_id: ab2f1e5a
     content: >-
-      Q.2 (5/5朝整理): 5/3 WP仕組調査レポート (deliverable d-bl0079-20260503-wp-fullhtml, unreviewed) の review + 実装着手。結論は (B)Custom
-      Page Template 推奨/暫定(A)Custom HTML。(a)今日 review→AI で WP 実装着手 (b) review のみ (c) 別日
+      Q-B WP 管理権限保有者: WP 管理画面 / FTP / wp-content アクセスは誰が持っていますか? (田中さん本人 / 制作会社 / 社内エンジニア)。子テーマ ZIP
+      のアップロード経路と作業担当を確定するため。
+  - id: q-BL-0079-3-20260505014300
+    at: '2026-05-05T01:43:00.637Z'
+    cockpit_task_id: ab2f1e5a
+    content: 'Q-C AI 生成済 HTML の最新版の所在: ファイルパス / リポジトリ / Notion / 別の共有先 のどこにありますか? 実装キットに同梱して引き渡すため。'
+  - id: q-BL-0079-4-20260505014300
+    at: '2026-05-05T01:43:00.730Z'
+    cockpit_task_id: ab2f1e5a
+    content: 'Q-D カスタム HTML ブロック編集権限: 管理者のみに制限 (推奨) で OK ですか? 編集者ロールにも開放しますか? XSS リスク許容範囲の方針確認。'
+  - id: q-BL-0079-5-20260505014300
+    at: '2026-05-05T01:43:00.830Z'
+    cockpit_task_id: ab2f1e5a
+    content: >-
+      Q-E 既存 CoreDriven HP との URL 構造: AI HTML 版を / ルートに置き換えますか? 別 path (例 /v2/, /landing/) で並走しますか? canonical /
+      リダイレクト方針も合わせて。
+  - id: q-BL-0079-6-20260505014300
+    at: '2026-05-05T01:43:00.935Z'
+    cockpit_task_id: ab2f1e5a
+    content: 'Q-F 更新頻度と自動化スコープ: AI が新しい HTML を生成 → WP 反映、を週何回想定? wp-cli ベースの自動化スクリプト (Phase D) は今期スコープに含めますか?'
+  - id: q-BL-0079-6-20260505015021
+    at: '2026-05-05T01:50:21.951Z'
+    cockpit_task_id: ab2f1e5a
+    content: >-
+      Q-G [新規] Phase 0 (即日 Tier 1A: カスタム HTML ブロック暫定公開) で最初に試す対象ページはどれですか? 候補: TOP / Business (AI Lab / Career Lab /
+      事業開発支援) / Company / News のいずれか。新規ページ (例 /v2/) で並走させるのが安全だが、本番置き換え狙いなら既存 TOP を上書きも可。
+  - id: q-BL-0079-7-20260505015022
+    at: '2026-05-05T01:50:22.076Z'
+    cockpit_task_id: ab2f1e5a
+    content: >-
+      Q-H [新規] Cloudflare は core-driven.com に既導入ですか? Phase 3 (Tier 5B: ルート別リバースプロキシで /v2/* だけ Vercel 等の別 origin に振る)
+      を将来採用するか判断するため。Xserver は単独で nginx 設定変更不可のため、CF Workers 前段が現実解になる。
 decisions:
   - at: '2026-05-03T00:46:41.425Z'
     type: commitment
@@ -39,3 +70,47 @@ decisions:
       d-bl0079-20260503-wp-fullhtml, review_state=unreviewed)。結論: 5 つの選択肢を比較し (A) Custom HTML ブロック / (B) Custom Page
       Template / (C) 静的 HTML 直置き / (D) iframe / (E) プラグイン。CoreDriven 推奨は **(B) Custom Page Template (子テーマ拡張)**、当面の暫定は
       (A)。実装手順 + セキュリティ注意点 + 確認事項を整理。
+  - at: '2026-05-05T01:42:43.185Z'
+    type: answer
+    by: ai
+    content: >-
+      5/3 調査レポート (Flow/202605/2026-05-03/0.Other/CoreDriven/wordpress_full_html_mechanism.md) を review。結論 (B)Custom Page
+      Template 推奨 / 暫定 (A)Custom HTML は妥当と判断。本日 5/5 採択方針で WP 実装第一歩として『WP 実装キット (子テーマ + Custom Page Template + 運用
+      SOP)』を生成: Flow/202605/2026-05-05/0.Other/CoreDriven/wordpress_implementation_kit.md (deliverable id:
+      d-bl0079-20260505-wp-impl-kit, deliverables.yaml 登録済)。Q.2 Q.2朝整理に対する回答: (a) 今日 review→AI で実装着手 を選択し進行。
+  - at: '2026-05-05T01:43:18.778Z'
+    type: commitment
+    by: ai
+    content: >-
+      [既知 gap] 5/5 deliverable d-bl0079-20260505-wp-impl-kit は mini-tachyon の deliverable インデックス対象外
+      (BL.deliverable_refs[] が空 + mt CLI に refs 登録 API 無し: Phase 4 既知 gap)。filesystem には
+      Flow/202605/2026-05-05/0.Other/CoreDriven/{wordpress_implementation_kit.md, deliverables.yaml} に登録済。mt deliverable
+      update-state は 5/3 分含めて 'not_found' で失敗するため、本 decision で代替記録。田中さん側で BL-0079.yaml の deliverable_refs に id を追記すれば UI
+      から見えるようになる予定。
+  - at: '2026-05-05T01:45:30.597Z'
+    type: answer
+    by: user
+    content: >-
+      https://core-driven.com/
+
+
+      これが一応、上記のURLがCoreドリブンのホームページです。この中から推測できる範囲で探して、情報を集めてください。また、このタスクの目的は、Coreドリブンのホームページもそうですが、一般にWordPressで作成されているホームページを今後HTMLでリプレイスしようとした時にどういう手段があるのかを知りたいです。
+
+
+      WordPressは結構パーツを追加したりブロックで構成されていると思いますが、昨今の生成AIの対等でシンプルにHTMLで作るのが早くなっていると思います。そのため、Coreドリブンもそうですが、一般的にHTMLで開発したものに今後WordPressを置き換える場合のやり方について知りたいです。
+
+
+      ただし、完全にHTMLでデプロイするのではなくて、ヘッダーなどはWordPressのものを残したままなど、ハイブリッドなアプローチも検討したいので、その辺を考えてください。
+  - at: '2026-05-05T01:50:14.579Z'
+    type: commitment
+    by: ai
+    content: >-
+      [5/5 v2 調査完了] core-driven.com を実 fetch して WP 構成を特定: 親テーマ=SWELL v2.12.0、子テーマ swell_child 既存、SEO=SEO SIMPLE PACK
+      3.6.2、ホスティング=Xserver/nginx、ページビルダー=Gutenberg+SWELLブロック (Elementor 不在)、お問合せ=Google Form。→ Q-A 確定、Q-B 前提変化
+      (子テーマ既設のため新規作成不要)。一般論として WP→HTML 置換は Tier 1 (カスタム HTML ブロック) → Tier 2 (Custom Page Template / 子テーマ) → Tier 3
+      (動的切替) → Tier 4 (Islands ハイブリッド) → Tier 5 (リバースプロキシ/静的化) → Tier 6 (完全ヘッドレス Astro/Next.js) の 6
+      段階を整理し判断マトリクスを作成。CoreDriven 推奨ルートは Tier 1A (即日暫定) → Tier 2A (今週/SWELL header/footer 残し本文だけ HTML)→Tier 4C (お問合せ等を
+      Island 化)→Tier 5B (CF Workers でルート別 origin) の段階移行。SWELL 用 page-fullhtml.php 完全コード + 衝突対策 CSS を deliverable
+      に同梱。成果物: Flow/202605/2026-05-05/0.Other/CoreDriven/wordpress_replace_strategy_v2.md (deliverable id:
+      d-bl0079-20260505-wp-replace-strategy, deliverables.yaml 登録済 review_state=unreviewed)。先行キット
+      d-bl0079-20260505-wp-impl-kit も review_state を unreviewed に更新。

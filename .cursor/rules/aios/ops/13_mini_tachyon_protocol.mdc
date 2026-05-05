@@ -22,8 +22,9 @@ alwaysApply: false
 
 ### 1.1 サービス
 - **Web UI / HTTP API**: `http://localhost:3000` (Mac mini 上で launchd 常駐、Tailscale 経由で iPhone からアクセス可)
-- **CLI**: `~/.agi-tools/mini-tachyon/bin/mt` (`mt --help` で全コマンド一覧)
-  - シンボリックリンク: `/usr/local/bin/mt` (PATH 通っていれば `mt ...` で実行可)
+- **CLI**: `~/mini-tachyon/bin/mt` (`mt --help` で全コマンド一覧)
+- **MCP server (Phase 5a 〜)**: `~/mini-tachyon/bin/mt-mcp` (stdio transport、MCP client から `mt_*` tool として 18 endpoint が見える)
+- **Claude Code skill (Phase 5b 〜)**: `~/.claude/skills/mini-tachyon/SKILL.md` (ユースケース別手順)
 - **データソース (Source of Truth)**:
   - 中央 Backlog 台帳: `~/aipm_v0/Stock/定型作業/バックログ/Backlog.md`
   - per-project YAML: `~/aipm_v0/Stock/<category>/<project>/backlog/BL-XXX.yaml`
@@ -34,8 +35,20 @@ alwaysApply: false
 ### 1.2 仕様書
 
 詳細仕様: `~/aipm_v0/Flow/202604/2026-04-26/ミニタキオン/spec_2026-04-26.md` を参照。
-API 詳細: `~/.agi-tools/mini-tachyon/docs/API.md`
-CLI 詳細: `~/.agi-tools/mini-tachyon/docs/CLI.md`
+API 詳細: `~/mini-tachyon/docs/API.md`
+CLI 詳細: `~/mini-tachyon/docs/CLI.md`
+MCP 詳細: `~/mini-tachyon/docs/MCP.md`
+
+### 1.3 経路の使い分け (Phase 5)
+
+| 経路 | 推奨ケース |
+|---|---|
+| **MCP server** (`mt_*` tool) | Claude Code / Cursor / Cockpit の MCP 対応セッション (drift しにくく tool description で誘導される) |
+| **mt CLI** | terminal、shell pipeline、MCP 未対応の cockpit task |
+| **HTTP API** | curl テスト、別言語 |
+| **/mini-tachyon skill** | ユースケース別手順を見ながら作業したい時 (Claude Code 内) |
+
+すべて同じ Next.js HTTP API を叩くので結果は完全に等価。**MCP が使える環境では MCP を優先**。
 
 ---
 

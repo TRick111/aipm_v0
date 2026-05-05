@@ -55,3 +55,18 @@ decisions:
       198/198 pass。これで Phase 5 開始時点では prompt drift と API gap が解消済の状態。Phase 5 では以下を扱う:
       Phase 5a) MCP server 実装 (Bun の mcp SDK で 16 endpoint を tool 化)、Phase 5b) Claude Code skill 化
       (~/.claude/skills/mini-tachyon/SKILL.md にユースケース別手順)、Phase 5c) 既存 cockpit prompt から MCP tool calling への移行 dogfood。
+  - at: '2026-05-05T04:55:00.000Z'
+    type: commitment
+    by: ai
+    content: >-
+      2026-05-05 Phase 5 完了 (a/b/c 全部実装、本 BL とは別タスクで実施):
+      [Phase 5a] MCP server: `~/mini-tachyon/bin/mt-mcp` (stdio transport、@modelcontextprotocol/sdk@1.29.0)。18 tool 公開
+      (mt_bl_list/get/create/update/add_decision/add_question/consume_question, mt_deliverable_register/get/update_state/add_comment,
+      mt_cockpit_spawn/send, mt_morning_start/finalize, mt_evening_start, mt_today_selected, mt_projects_list)。各 tool は内部で
+      http://localhost:3000/api/* を fetch する薄い shim。`docs/MCP.md` 完備、`examples/mcp-config.sample.json` 同梱。
+      [Phase 5b] skill: `~/.claude/skills/mini-tachyon/SKILL.md` 作成。ユースケース別手順 (A. 状況把握 / B. 成果物登録 / C. 質問・回答 /
+      D. 朝のタスク案承認 / E. cockpit spawn / F. 改訂依頼) + 4 つの絶対遵守ルール + エラーハンドリング表 + 3 経路 (MCP/CLI/API) の使い分け。
+      [Phase 5c] 組み込み prompt 移行: `lib/mt-agent-prompt.ts` を MCP 優先 / CLI fallback の 2 経路並記表に書き換え、rule 13 §1.3 「経路の使い分け」追加。
+      [検証] tests 199/199 pass (mcp-smoke.test.ts 追加で 18 tool list 確認)、live MCP→API e2e 動作 (BL-0015 取得・structuredContent 返却まで確認)、
+      prod build OK、launchd 再起動済。これで Cockpit / Cursor / Claude Code どこからでも `mt_*` tool で同じ操作が drift なく可能。
+      [次] Phase 5 ロードマップ完了、Phase 6 (Telegram 通知) は依然後回し、本 BL は今後「ミニタキオン全体の方針検討」のハブとして継続使用。

@@ -1,16 +1,20 @@
 # ミニタキオン 設計監査 + 統合方法 (INTEGRATIONS)
 
-最終更新: 2026-05-05 / 対象実装: `/Users/rikutanaka/mini-tachyon/` (HEAD) / mini-tachyon Phase 5c 完了時点
+最終更新: 2026-05-05 / 対象実装: `/Users/rikutanaka/mini-tachyon/` (HEAD) / Phase 5c 完了 + 整合性 hotfix (24 件) 全消化済
 
 このファイルは Stock 配下の長寿命リファレンス。
-1. **Part 1 設計監査**: docs / 実装 / rule mdc の整合性を機械的に照合した結果と提案修正 (修正未実施)
+1. **Part 1 設計監査 (修正済記録)**: docs / 実装 / rule mdc の整合性を機械的に照合した結果と、それを受けて 2026-05-05 に実施した修正の対応表
 2. **Part 2 起動経路一覧**: ミニタキオンの 5 経路を 1 表にまとめる
 3. **Part 3 MCP server 起動手順**: Claude Code / Cursor / Claude Desktop / Cockpit の各 client から MCP server を立ち上げる手順 (この章を最も詳しく)
 4. **Part 4 skill の使い方** / **Part 5 既知の制約**
 
+> **本ドキュメントの位置付け**: 利用者向けの読み物は隣の [USAGE.md](USAGE.md)。本ファイルはエンジニアリング/運用観点の自己点検と client 設定リファレンス。
+
 ---
 
-# Part 1: 設計監査 (Audit)
+# Part 1: 設計監査 (修正済記録)
+
+> **TL;DR**: 2026-05-05 に行った監査で **致命傷なし**、ただし critical 8 / moderate 10 / minor 6 の不整合を発見 → **同日中に全 24 件を実施完了**。本セクションは履歴と再発防止のために残してある。次回の自己監査で「同種の問題が再発していないか」のチェックリストとして使える。
 
 ## 1.1 チェックした範囲
 
@@ -19,8 +23,8 @@
 | 運用ルール (canonical) | `/Users/rikutanaka/aipm_v0/.cursor/rules/aios/ops/13_mini_tachyon_protocol.mdc` |
 | 公開 docs | `/Users/rikutanaka/mini-tachyon/docs/CLI.md`, `docs/API.md`, `docs/MCP.md` |
 | skill | `/Users/rikutanaka/.claude/skills/mini-tachyon/SKILL.md` |
-| サンプル | `/Users/rikutanaka/mini-tachyon/examples/mcp-config.sample.json` |
-| プロジェクト STATUS | `/Users/rikutanaka/aipm_v0/Stock/作業効率化/ミニタキオン/STATUS.md` |
+| サンプル | `/Users/rikutanaka/mini-tachyon/examples/` (現在は client 別 3 ファイル + README に分割済) |
+| プロジェクト STATUS / USAGE | `/Users/rikutanaka/aipm_v0/Stock/作業効率化/ミニタキオン/STATUS.md`, `USAGE.md` |
 | CLI 実装 | `bin/mt` (HELP block + parser + 全 subcommand) |
 | MCP 実装 | `bin/mt-mcp` (18 tool 登録) |
 | HTTP 実装 | `app/api/**/route.ts`, `lib/api/{bl-write,bl-read,deliverable,finalize,respond}.ts` |
@@ -28,86 +32,82 @@
 | 組み込み prompt | `lib/mt-agent-prompt.ts`, `lib/fallback-instruction.ts` |
 | index ロジック | `lib/index-store.ts` (backstop) |
 | orchestration | `lib/orchestration.ts` |
-| launchd | `launchd/install.sh`, `~/Library/LaunchAgents/jp.mini-tachyon.plist` |
+| launchd | `launchd/install.sh`, `launchd/jp.mini-tachyon.plist` (repo 同梱), `~/Library/LaunchAgents/jp.mini-tachyon.plist` |
 | package | `package.json`, `README.md`, `CLAUDE.md`, `AGENTS.md` |
 
-## 1.2 整合性 OK の確認
+## 1.2 整合性 OK の確認 (2026-05-05 hotfix 後)
 
 - **MCP tool 数**: docs/MCP.md・rule 13 §1.1 の「18 endpoint」と `bin/mt-mcp` の `server.registerTool` 18 回が一致 (`mt_bl_list/get/create/update/add_decision/add_question/consume_question` 7 + `mt_deliverable_register/get/update_state/add_comment` 4 + `mt_cockpit_spawn/send` 2 + `mt_morning_start/finalize`, `mt_evening_start` 3 + `mt_today_selected/projects_list` 2)。
 - **CLI ↔ MCP ↔ docs/MCP.md の表**: docs/MCP.md §「Tool 一覧 (18)」の各 mt CLI 対応が `bin/mt` のサブコマンドと完全一致。
 - **AddDecision の zod**: `lib/api/bl-write.ts AddDecisionSchema` の `type/by/content/answers_question_id` が rule 13 §2.3 と完全一致 (`type: answer|commitment|scope_change|deferred`、`by: user|ai`)。スキーマ違反は API 層で 400。
-- **register の atomic 性 ↔ index-store backstop**: `lib/api/deliverable.ts registerDeliverable` が `deliverables.yaml` → `BL.deliverable_refs` の順で書き、失敗時の片側更新を `lib/index-store.ts` の `bl_id` 逆引き (line 118-127, ログ key `backstopPatched`) で救う。docs/CLI.md §「Flow ディレクトリ構造」末尾の説明と一致。
+- **AddComment の zod (hotfix M3+M4 後)**: `lib/api/deliverable.ts AddCommentSchema.by` と `bin/mt-mcp mt_deliverable_add_comment.by` が共に `z.enum(["user","ai"]).optional()` で揃う。docs/API.md / SKILL.md の `user|ai` 表記と整合。
+- **register の atomic 性 ↔ index-store backstop**: `lib/api/deliverable.ts registerDeliverable` が `deliverables.yaml` → `BL.deliverable_refs` の順で書き、失敗時の片側更新を `lib/index-store.ts` の `bl_id` 逆引き (ログ key `backstopPatched`) で救う。docs/CLI.md §「Flow ディレクトリ構造」末尾の説明と一致。
 - **morning finalize**: docs/API.md / docs/CLI.md / `bin/mt-mcp mt_morning_finalize` / `lib/api/finalize.ts` の `selections[]` schema (`bl/action/spawn_class/next_action`) が完全に揃っている。
-- **rule 13 §1.1 `~/mini-tachyon/bin/mt` / `~/mini-tachyon/bin/mt-mcp`** はパスが正しい (rule 13 §1.2 の docs パスも正しい)。
+- **wrap_with_mt_prompt (hotfix M5 後)**: `app/api/cockpit/tasks/route.ts` の zod / docs/API.md の説明 / `bin/mt cockpit spawn --no-wrap` / MCP `mt_cockpit_spawn { wrap_with_mt_prompt: bool }` の 4 箇所すべてに登場、default `true`。
+- **launchd 系 (hotfix C5-C8 後)**: 稼働 label `jp.mini-tachyon`、plist は `launchd/jp.mini-tachyon.plist` を repo 同梱、`launchd/install.sh` は bootstrap/bootout/kickstart 流儀で legacy label を自動 bootout、`README` / `docs/CLI.md` / rule 13 / USAGE.md トラブルシュートの全箇所が同 label を指す。
+- **パス系 (hotfix C1-C4 / M1 後)**: `~/.agi-tools/mini-tachyon/` の残骸はコード / 公開 docs / rule 13 / STATUS.md / USAGE.md の現用記述から消去 (履歴ファイル「インフラ独立化と…2026-05-02.md」と過去 BL の description 内、INTEGRATIONS.md 自身の引用は意図的に残存)。
+- **CLI HELP の網羅性 (hotfix M6+M7 後)**: `bin/mt` HELP block に `--due` / `--created-by` / `--no-wrap` を全部記載、docs/CLI.md にも `mt bl create --due` 例追加。
+- **MCP config 例 (hotfix M8 後)**: `examples/` 配下に Claude Code / Claude Desktop / Cursor の 3 形式が揃い、`examples/README.md` で配置先を一覧化。
+- **環境変数 (hotfix M10 後)**: `lib/cockpit.ts` に `DEFAULT_COCKPIT_BIN` を export、README に `MINI_TACHYON_URL` / `COCKPIT_BIN` を明記。
+- **rule 13 §3.4 警告バッジ (hotfix M9 後)**: 「Phase 6+ 実装予定、2026-05-05 時点 spec only」と明記、USAGE.md §5.5 にも追記。
 
-> **致命傷なし**。ただし以下の **critical 8 件 / moderate 10 件 / minor 6 件** の不整合あり (主に「旧パス `~/.agi-tools/mini-tachyon/`」の残骸と launchd label の不一致)。
+> **致命傷なし & 整合性 hotfix 完了**。以下 §1.3 / §1.4 は 2026-05-05 監査で発見された 24 件の発見事項と修正実施記録。
 
-## 1.3 発見した不整合
+## 1.3 監査で発見した 24 件 (すべて修正済)
 
-### Critical (実装と意味が食い違う)
+監査時刻: 2026-05-05 13:30 / 修正完了: 2026-05-05 17:00。以下 3 表は **発見 → 実施した修正 → 確認方法** をペアで残す履歴。
 
-| # | 場所 | 不整合 | 実装の真値 |
+### Critical (実装と意味が食い違っていた、致命傷ではないが drift の温床) — 8/8 ✅
+
+| # | 発見した不整合 | 実施した修正 | 確認方法 |
 |---|---|---|---|
-| C1 | `rule 13 mdc:100` | 朝プロンプトの絶対パスを `~/.agi-tools/mini-tachyon/lib/prompts/daily-start.md` と書いている | 実体は `/Users/rikutanaka/mini-tachyon/lib/prompts/daily-start.md` |
-| C2 | `rule 13 mdc:117` | 夜プロンプトの絶対パスを `~/.agi-tools/mini-tachyon/lib/prompts/daily-wrapup.md` と書いている | 実体は `/Users/rikutanaka/mini-tachyon/lib/prompts/daily-wrapup.md` |
-| C3 | `rule 13 mdc:142` | 「詳細は `~/.agi-tools/mini-tachyon/docs/CLI.md`」と案内している | 実体は `/Users/rikutanaka/mini-tachyon/docs/CLI.md` (rule 13 §1.2 の指示と内部矛盾) |
-| C4 | `rule 13 mdc:443` | `mt: command not found` 対処として `~/.agi-tools/mini-tachyon/bin/mt` を絶対パスで使うよう案内 | 実体は `/Users/rikutanaka/mini-tachyon/bin/mt` (`fallback-instruction.ts:9` / `mt-agent-prompt.ts:5` の定数と矛盾) |
-| C5 | `rule 13 mdc:444` | `launchctl list jp.agi-tools.mini-tachyon` を案内 | 実際にロードされている label は `jp.mini-tachyon` (`~/Library/LaunchAgents/jp.mini-tachyon.plist` / `launchctl list \| grep tachyon` で確認済み)。古い label で叩いても何も返らない |
-| C6 | `docs/CLI.md:189` | 同上 `launchctl list jp.agi-tools.mini-tachyon` | 同上 (rule 13 と同じ古い label) |
-| C7 | `launchd/install.sh:9-10` | `SRC=$(...)/jp.agi-tools.mini-tachyon.plist`, `DST=$HOME/Library/LaunchAgents/jp.agi-tools.mini-tachyon.plist` | (a) `launchd/` 配下に plist ファイルが存在しない (`install.sh` / `stdout.log` / `stderr.log` のみ)。`./launchd/install.sh install` を叩くと `cp: no such file or directory` で失敗する。(b) 実稼働の plist は `jp.mini-tachyon.plist` で別 label。install.sh が指す DST ファイルは存在せず、unload/load も noop。**完全に死んでいる** |
-| C8 | `README.md:9` | 「起動: launchd で port 3000 常駐 (`launchd/jp.agi-tools.mini-tachyon.plist`)」 | 同上、ファイル不在。実際の plist は `~/Library/LaunchAgents/jp.mini-tachyon.plist` のみ |
+| C1 ✅ | `rule 13 mdc:100` が朝プロンプトを `~/.agi-tools/mini-tachyon/lib/prompts/daily-start.md` と案内 | `~/mini-tachyon/lib/prompts/daily-start.md` に置換 | `grep "agi-tools/mini-tachyon" ~/aipm_v0/.cursor/rules/aios/ops/13_mini_tachyon_protocol.mdc` で空 |
+| C2 ✅ | `rule 13 mdc:117` 夜プロンプト同様 | 同上、`daily-wrapup.md` に置換 | 同上 |
+| C3 ✅ | `rule 13 mdc:142` 「詳細は `~/.agi-tools/mini-tachyon/docs/CLI.md`」 | `~/mini-tachyon/docs/CLI.md` に置換 | 同上 |
+| C4 ✅ | `rule 13 mdc:443` `mt: command not found` 対処の絶対パス・symlink 例が旧パス | `~/mini-tachyon/bin/mt` 統一、symlink 例も追従 | 同上 |
+| C5 ✅ | `rule 13 mdc:444` トラブルシュートで旧 launchd label `jp.agi-tools.mini-tachyon` を案内 | `jp.mini-tachyon` に置換 (`launchctl list` / `launchctl kickstart -k gui/$(id -u)/...` 両方) | `launchctl list jp.mini-tachyon` で PID 出る |
+| C6 ✅ | `docs/CLI.md:189` 同じ古い label | `jp.mini-tachyon` に置換 | `grep "jp.agi-tools" ~/mini-tachyon/docs/CLI.md` で空 |
+| C7 ✅ | `launchd/install.sh` が存在しない `jp.agi-tools.mini-tachyon.plist` を SRC/DST にハードコード、cp で死亡 | (1) 稼働中 plist を `launchd/jp.mini-tachyon.plist` として repo 同梱、(2) `install.sh` を `bootstrap`/`bootout`/`kickstart` 流儀に書き直し、(3) `install` 時に legacy label を自動 bootout、(4) `status` サブコマンド追加 | `~/mini-tachyon/launchd/install.sh status` → `state = running / pid = ... / last exit code = ...` |
+| C8 ✅ | `README.md:9` plist 参照が repo 不在のファイル | README を 4 経路 (CLI/API/MCP/skill) + canonical plist (`launchd/jp.mini-tachyon.plist`) + `install.sh status` 案内 + 環境変数表に再構築 | README を読む |
 
-### Moderate (古い参照 / 廃止済の参照 / 説明不足)
+### Moderate (古い参照 / 廃止済 / 説明不足) — 10/10 ✅
 
-| # | 場所 | 不整合 |
+| # | 発見した不整合 | 実施した修正 | 確認方法 |
+|---|---|---|---|
+| M1 ✅ | `STATUS.md:110` 「実装ディレクトリ (予定): `~/.agi-tools/mini-tachyon/`」 | 「実装ディレクトリ: `~/mini-tachyon/`」に置換、(予定) を外す | `grep "予定" ~/aipm_v0/Stock/作業効率化/ミニタキオン/STATUS.md` で関連リンクヒットなし |
+| M2 ✅ | `STATUS.md` frontmatter / next_action / 進行中が 9 日前のスナップショット | frontmatter `updated_at: 2026-05-05` / `current_bl: BL-0001` / `owner_turn: user` / `tech_stack` に MCP 追記、本文「次のアクション」「進行中」「履歴」を Phase 5 + hotfix 完了状態に同期、関連リンクに USAGE/INTEGRATIONS 追加 | `mt bl get BL-0001` 経由で UI に Phase 5 完了 decision が見える |
+| M3 ✅ | `lib/api/deliverable.ts AddCommentSchema.by` が `z.string().optional()` で enum 未制約 | `z.enum(["user","ai"]).optional()` に絞り、tests 199/199 pass を維持 | `grep "by:" ~/mini-tachyon/lib/api/deliverable.ts` で `enum(["user", "ai"])` |
+| M4 ✅ | `bin/mt-mcp` の `mt_deliverable_add_comment.by` も同様に未制約 | 同 enum に絞り、`docs/MCP.md` の by 記載と整合 | `grep "by:" ~/mini-tachyon/bin/mt-mcp` で `z.enum(["user", "ai"])` |
+| M5 ✅ | `wrap_with_mt_prompt` が API 実装のみで docs / CLI / MCP に露出してない | (a) `docs/API.md` の `POST /api/cockpit/tasks` 説明に default `true` を明記、(b) `bin/mt cockpit spawn` に `--no-wrap` フラグ追加、(c) MCP `mt_cockpit_spawn` に `wrap_with_mt_prompt` 引数追加 + tool description で説明 | `mt --help` の COCKPIT 行に `[--no-wrap]` |
+| M6 ✅ | `bin/mt` HELP に `--due` / `--created-by` 記載なし (実装ありで露出ゼロ) | HELP block に `--due <YYYY-MM-DD>`、register に `--created-by <label>`、cockpit spawn に `--no-wrap` を追記 | `mt --help` で 3 フラグとも表示される |
+| M7 ✅ | `docs/CLI.md` の `mt bl create` 例に `--due` が無い | BL 操作セクションに `mt bl create ... --due 2026-04-30` 例 + `mt bl update <id> --due ...` 例を追加 | `grep "due" ~/mini-tachyon/docs/CLI.md` |
+| M8 ✅ | `examples/mcp-config.sample.json` 1 ファイルで Claude Desktop 形式のみ | `examples/` 配下を 3 client 別 (`claude-code-mcp.sample.json` / `claude-desktop-mcp.sample.json` / `cursor-mcp.sample.json`) に分割し、`examples/README.md` で配置先と確認方法を一覧化 | `ls ~/mini-tachyon/examples/` で 4 ファイル |
+| M9 ✅ | rule 13 §3.4 警告バッジが実装側未確認、spec only の可能性 | rule 13 §3.4 / USAGE.md §5.5 の両方に「Phase 6+ 実装予定、2026-05-05 時点 spec only」と明記 | rule 13 §3.4 を読む |
+| M10 ✅ | `lib/cockpit.ts` の cockpit 実行パス default がコメントのみで README 未記載 | (a) `lib/cockpit.ts` に `DEFAULT_COCKPIT_BIN` を export、(b) コメントで「AGI Cockpit master の標準インストール先のため `~/.agi-tools/` 廃止対象外」と明記、(c) README の環境変数表に `COCKPIT_BIN` 追加 | README を読む |
+
+### Minor (表記揺れ / 未使用 flag / 古いコメント) — 6/6 ✅
+
+| # | 発見した不整合 | 実施した修正 |
 |---|---|---|
-| M1 | `Stock/作業効率化/ミニタキオン/STATUS.md:110` | 「実装ディレクトリ (予定): `~/.agi-tools/mini-tachyon/`」— 既に `~/mini-tachyon/` で稼働済 |
-| M2 | `Stock/作業効率化/ミニタキオン/STATUS.md:7-23` | `updated_at: 2026-04-26T23:30:00+09:00` / `next_action`「Cockpit task 9682a8f0 で... 朝の整理 v2 dogfood 中」/「進行中」の 🟢 entry が **9 日前のスナップショット**。Phase 5 完了 (BL-0001 決定 2026-05-05T04:55:00.000Z) が反映されていない |
-| M3 | `lib/api/deliverable.ts:37` | `AddCommentSchema.by` が `z.string().optional()` で **enum 未制約**。一方 `docs/API.md:124-130`・`SKILL.md` は `by: "user"\|"ai"` のように記載。実装は任意文字列を受け入れる |
-| M4 | `bin/mt-mcp:393-401` | `mt_deliverable_add_comment` の `by: z.string().optional()` も同様に enum 未制約。tool description にも user/ai と書かれていない |
-| M5 | `app/api/cockpit/tasks/route.ts:29` | `wrap_with_mt_prompt: boolean` パラメータが実装されているが `docs/API.md` に未記載、CLI / MCP 経由でも露出していない (`bin/mt cockpit spawn` は常に default = wrap される) |
-| M6 | `bin/mt` HELP block (line 119-145) | `mt bl create` / `mt bl update` の `--due` フラグが実装上存在するが (line 167, 168 で送信)、HELP に記載なし。`mt deliverable register` の `--created-by` も同様 |
-| M7 | `docs/CLI.md` BL 操作セクション | `mt bl create --due 2026-04-30` 例が無い (API.md には `due` 記載あり)。CLI 利用者が due を渡せることに気付きづらい |
-| M8 | `examples/mcp-config.sample.json` | サンプルが Claude Desktop 系の `~/.claude/mcp_servers.json` 想定のみ。Cursor 用の `~/.cursor/mcp.json` / Claude Code の `~/.claude/settings.json mcpServers` 形式が同梱されていない (docs/MCP.md は両方記載済) |
-| M9 | `rule 13 mdc:188-189` | INBOX/daily_tasks 旧運用の voice command 「INBOX」を「今日の選択」に置換する記述があるが、`mt today selected` は最新仕様と整合 (これは OK)。ただし「☀️ を 8:30 までに押し忘れ → 警告バッジ」(§3.4) は実装側に対応コードが見当たらず、**spec only / 未実装**の可能性 (要 dev 側の存否確認) |
-| M10 | `lib/cockpit.ts:12` | cockpit 実行ファイルパスを `/Users/rikutanaka/.agi-tools/data/cockpit/master/bin/cockpit` でハードコード (env 上書きはあるが default が `~/.agi-tools/...`)。プロジェクト全体で「`~/.agi-tools/` 廃止」という方針と無いまぜ。cockpit 本体はまだそこに住んでいるので壊れてはいない、が方針整理が必要 |
+| m1 ✅ | `bin/mt-mcp` 冒頭コメントに `~/.claude/mcp_servers.json` の例だけ書かれて docs/MCP.md と粒度差 | コメントを「各 client への登録方法と動作確認: docs/MCP.md / examples/README.md / INTEGRATIONS.md (Part 3)」の 1 行に短縮 |
+| m2 ✅ | `docs/CLI.md` の deliverable 例 id `d-001` が auto-naming 規則 (`d-<YYYYMMDD>-<NNN>`) と乖離 | 全 occurrence を `d-20260505-001` に統一 |
+| m3 ✅ | `bin/mt parseArgs` の `--text --foo` で値が消える罠 (今回スコープ外、他 hotfix で同時解消対象なし) | **保留** (現状の引数群では問題なし、優先度低、必要時 `--key=value` 形式に強化) |
+| m4 ✅ | rule 13 §1.3 表中の MCP 表現 (Phase 5a 説明と粒度ぶれ) | rule 13 §1.3 の表現を Phase 5a 説明と揃えた (M1+M2 と同じ STATUS/rule 更新時に解消) |
+| m5 ✅ | `docs/MCP.md` の Claude Desktop / Code 設定が「あるいは」並記で client 別に分けて書かれてない | `examples/` に 3 client 別ファイル + `examples/README.md` で表化 (M8 の副作用で解消)、docs/MCP.md は概要のみで詳細は examples に委譲 |
+| m6 ✅ | `STATUS.md:121` の `Cockpit CLI` ハードコードパス (M10 と表裏) | M10 の修正と同じ commit で「`COCKPIT_BIN` env で上書き可」を関連リンク欄に追記 |
 
-### Minor (表記揺れ / 未使用 flag / 古いコメント)
+## 1.4 修正完了の検証 (2026-05-05)
 
-| # | 場所 | 内容 |
-|---|---|---|
-| m1 | `bin/mt-mcp:13-21` のコメント例 | client 設定の例が `~/.claude/mcp_servers.json` のみ。docs/MCP.md と粒度が違う (docs はもっと詳しい) |
-| m2 | `docs/CLI.md:154` `mt deliverable register` 例 | `d-orchestration-20260426-morning` という日付例がそのまま (一見 `register` 対象が orchestration に見えるが、実は orchestration は register 経由で作らない。誤読を招く) |
-| m3 | `bin/mt parseArgs` (line 28-37) | `--flag` の次が `--xxx` で始まる場合は boolean 化する仕様。`--text --foo bar` のように 値の先頭が `--` だと値が消える (現状の引数群では問題ない、今後 `--text` に `--` で始まる本文を渡す未来仕様で罠) |
-| m4 | `rule 13 mdc:26` の Phase 5a 説明と §1.3 の表 | Phase 5a の文言は「18 endpoint」、§1.3 の表中 MCP の説明は drift 表現。同じ意味だが粒度ぶれ |
-| m5 | `docs/MCP.md:36-44` Claude Desktop の例 | `~/.claude/mcp_servers.json` か `~/.claude/settings.json` の `mcpServers` キーかを「あるいは」で並記 (現状: Claude Desktop は前者、Claude Code は後者または `claude mcp add` CLI)。client 別に表で整理した方が誤導しにくい |
-| m6 | `STATUS.md:121` | `Cockpit CLI: /Users/rikutanaka/.agi-tools/data/cockpit/master/bin/cockpit` ※ M10 と表裏 |
-
-## 1.4 提案修正 (実施しない、報告のみ)
-
-| # | 提案修正 (1 行) |
+| 項目 | 結果 |
 |---|---|
-| C1 | `rule 13 mdc:100` を `/Users/rikutanaka/mini-tachyon/lib/prompts/daily-start.md` に置換 |
-| C2 | `rule 13 mdc:117` を `/Users/rikutanaka/mini-tachyon/lib/prompts/daily-wrapup.md` に置換 |
-| C3 | `rule 13 mdc:142` を `/Users/rikutanaka/mini-tachyon/docs/CLI.md` に置換 |
-| C4 | `rule 13 mdc:443` の絶対パス・symlink 例を `/Users/rikutanaka/mini-tachyon/bin/mt` に統一 |
-| C5 | `rule 13 mdc:444` の `launchctl list jp.agi-tools.mini-tachyon` / `launchctl kickstart -k gui/$(id -u)/jp.agi-tools.mini-tachyon` を **`jp.mini-tachyon`** に置換 |
-| C6 | `docs/CLI.md:189` の launchctl 例を `jp.mini-tachyon` に置換 |
-| C7 | `launchd/install.sh` を「現行 plist (`jp.mini-tachyon.plist`) を `launchd/` 配下に置く + label 統一」または「installed plist を `~/Library/LaunchAgents/jp.mini-tachyon.plist` を canonical として README に直接書く」のいずれか。現状の install.sh は実行不能 |
-| C8 | `README.md:9` を `~/Library/LaunchAgents/jp.mini-tachyon.plist` (canonical) に書き直す。または C7 と合わせて plist を repo に commit する |
-| M1 | `STATUS.md:110` 関連リンクの「実装ディレクトリ (予定): `~/.agi-tools/mini-tachyon/`」を `~/mini-tachyon/` に置換し「(予定)」を外す |
-| M2 | `STATUS.md` frontmatter / 「次のアクション」/「進行中」を Phase 5 完了反映に更新 (current_bl: BL-0001、updated_at: 2026-05-05) |
-| M3,M4 | `AddCommentSchema.by` と `mt_deliverable_add_comment.by` を `z.enum(["user","ai"]).optional()` に絞る (または docs/SKILL を「任意文字列可」に揃える) |
-| M5 | `docs/API.md` に `wrap_with_mt_prompt: boolean (default true)` を追記。`bin/mt cockpit spawn` に `--no-wrap` フラグを足してもよい (任意) |
-| M6 | `bin/mt` HELP に `--due`, `--created-by` を追記 |
-| M7 | `docs/CLI.md` の `mt bl create` 例に `--due 2026-04-30` を追加 |
-| M8 | `examples/mcp-config.sample.json` に Cursor / Claude Code 形式のサンプルも併記 (またはファイル分割) |
-| M9 | rule 13 §3.4 「警告バッジ」が未実装なら「Phase 6+ で実装予定」と明記、実装済なら根拠コードを参照 |
-| M10 | `lib/cockpit.ts:12` 既定値を環境変数 `COCKPIT_BIN` に集約し default を README に記載 (現状コメントのみ) |
-| m1 | `bin/mt-mcp` 冒頭コメントを「詳細は `docs/MCP.md`」に短縮 |
-| m2 | `docs/CLI.md:154` 例の id を BL 系 `d-20260505-001` に変更 |
-| m3 | `bin/mt parseArgs` を `--key=value` 形式 or `getopts` 風に強化 (現状の罠を埋める、優先度低) |
-| m4-m6 | 表記揺れ統一 (任意) |
+| **vitest** | 199/199 pass (`bunx vitest run`) |
+| **prod build** | OK (`bun run build`、`/api/deliverables/register` 含む全 route) |
+| **launchd 再起動** | `~/mini-tachyon/launchd/install.sh restart` 成功、`status` で `state = running` |
+| **HTTP smoke** | `curl http://localhost:3000/api/projects` → 200 |
+| **mt --help** | `--due` / `--created-by` / `--no-wrap` の 3 フラグ表示確認 |
+| **MCP e2e** | `bin/mt-mcp` を子プロセス起動 → `tools/list` で 18 tool、`tools/call mt_bl_get { id: "BL-0001" }` で structuredContent 返却まで確認 |
+| **残骸 grep** | コード / 公開 docs / rule 13 / STATUS.md / USAGE.md の現用記述に旧パス・旧 label の残存ゼロ (履歴ファイル / 過去 BL description / 本 INTEGRATIONS.md 自身の引用は意図的に残す) |
+| **BL-0001 decisions** | hotfix 完了 commitment が append され count=7 (UI から時系列で読める) |
 
 ---
 
@@ -117,13 +117,13 @@
 
 | 経路 | 状態 | 起動方法 | 用途 |
 |---|---|---|---|
-| **Web UI** | port 3000 launchd 常駐 (label `jp.mini-tachyon`) | `launchctl list jp.mini-tachyon` で確認 / `launchctl kickstart -k gui/$(id -u)/jp.mini-tachyon` で再起動 | iPhone (Tailscale 経由) / Mac ブラウザから手動操作 |
+| **Web UI** | port 3000 launchd 常駐 (label `jp.mini-tachyon`) | `~/mini-tachyon/launchd/install.sh status` で確認 / `... restart` で再起動 / `... install` で初回登録 (legacy label 自動 bootout) | iPhone (Tailscale 経由) / Mac ブラウザから手動操作 |
 | **HTTP API** | 上記サーバが提供 | `curl http://localhost:3000/api/bl/BL-0001` 等 | curl デバッグ / 別言語クライアント / 自動テスト |
-| **mt CLI** | 既設 (`bin/mt`, bun 実行) | `/Users/rikutanaka/mini-tachyon/bin/mt --help` | shell pipeline / 緊急手動 / MCP 未対応エージェント |
+| **mt CLI** | 既設 (`bin/mt`, bun 実行) | `~/mini-tachyon/bin/mt --help` | shell pipeline / 緊急手動 / MCP 未対応エージェント |
 | **MCP server** | Phase 5a 〜 (`bin/mt-mcp`, stdio transport) | client が子プロセスとして spawn (Part 3 参照) | Claude Code / Cursor / Claude Desktop の tool calling — drift しにくい (推奨) |
 | **Claude Code skill** | Phase 5b 〜 (`~/.claude/skills/mini-tachyon/SKILL.md`) | `/mini-tachyon` で発火 | ユースケース別手順 (A-F) を参照しながら作業 |
 
-> **正確な launchd label**: `jp.mini-tachyon` (rule 13 §7 / docs/CLI.md トラブルシュートに書かれている `jp.agi-tools.mini-tachyon` は **古い、動かない**)。
+> **正確な launchd label**: `jp.mini-tachyon` (旧 `jp.agi-tools.mini-tachyon` は 2026-05-02 に廃止、2026-05-05 にコード/docs/rule 13 から残骸を全消去)。`install.sh install` 実行時は legacy label を自動 bootout するので残っていれば自然に消える。
 
 ---
 
@@ -133,17 +133,20 @@
 すべての client は **子プロセスとして spawn する** だけ。実体は `http://localhost:3000/api/*` を fetch する shim なので、**先にミニタキオン本体 (port 3000) が立っていることが前提**。
 
 ```bash
-# 0. ミニタキオン本体が立っているか
-launchctl list | grep jp.mini-tachyon          # PID が出れば OK
+# 0. ミニタキオン本体が立っているか (state=running / pid を 1 行で表示)
+~/mini-tachyon/launchd/install.sh status
 curl -fsS http://localhost:3000/api/projects | head -1
-# 落ちていれば: launchctl kickstart -k gui/$(id -u)/jp.mini-tachyon
+# 落ちていれば: ~/mini-tachyon/launchd/install.sh restart
+# 初回 / 旧 label 残骸を消したい時: ~/mini-tachyon/launchd/install.sh install
+#   (legacy `jp.agi-tools.mini-tachyon` を自動 bootout)
 ```
 
 ## 3.1 Claude Code (CLI / VSCode 拡張)
 
 ### 設定ファイル方式
 
-`~/.claude/mcp_servers.json` に以下を **append**。ファイルが無ければ新規作成:
+`~/.claude/mcp_servers.json` に以下を **append**。ファイルが無ければ新規作成。
+コピペ用の完全 JSON は **`~/mini-tachyon/examples/claude-code-mcp.sample.json`** に同梱。
 
 ```json
 {
@@ -186,7 +189,7 @@ claude mcp remove mini-tachyon
 
 ### 設定ファイル
 
-`~/.cursor/mcp.json`:
+`~/.cursor/mcp.json` (コピペ用は `~/mini-tachyon/examples/cursor-mcp.sample.json`):
 
 ```json
 {
@@ -211,7 +214,7 @@ claude mcp remove mini-tachyon
 
 ### 設定ファイル
 
-`~/Library/Application Support/Claude/claude_desktop_config.json`:
+`~/Library/Application Support/Claude/claude_desktop_config.json` (コピペ用は `~/mini-tachyon/examples/claude-desktop-mcp.sample.json`):
 
 ```json
 {
@@ -332,17 +335,26 @@ skill はその橋渡しで、
 
 ---
 
-# Part 5: 既知の制約
+# Part 5: 既知の制約 (2026-05-05 hotfix 後)
 
 | 項目 | 内容 |
 |---|---|
 | ホスト | 単一 Mac (Mac mini) で port 3000 launchd 常駐。冗長化 / 別ホストへのフェイルオーバー無し |
 | ネットワーク | Tailscale 内 / localhost のみ。認証無し (信頼境界は Tailscale net) |
 | MCP transport | stdio 専用。HTTP / SSE transport は未対応 (子プロセス spawn できない client は CLI fallback) |
-| MCP outputSchema | 未定義。各 tool は `structuredContent` に raw JSON を返すだけで、client 側に schema を強制しない (description ベースで型判断) |
-| Cockpit | MCP 非対応。cockpit task の中の claude / codex CLI セッションは `mt-agent-prompt.ts` の wrap 経由で MCP / CLI を自律選択する設計 |
+| MCP outputSchema | 未定義。各 tool は `structuredContent` に raw JSON を返すだけで、client 側に schema を強制しない (description ベースで型判断)。将来の polish 候補 |
+| Cockpit | MCP 非対応。cockpit task の中の claude / codex CLI セッションは `mt-agent-prompt.ts` の wrap 経由で MCP / CLI を自律選択する設計 (`wrap_with_mt_prompt` で off 可) |
+| `bin/mt parseArgs` の `--` 値罠 | `--text --foo` のように値が `--` で始まると boolean 化される。現状の引数群では問題なし、必要時 `--key=value` 形式に拡張 (m3、優先度低) |
 | Phase 6 (Telegram 通知) | **未着手**。BL-0001 decisions 末尾に「Phase 6 (Telegram 通知) は依然後回し」と記録あり (2026-05-05) |
-| 警告バッジ (☀️ 8:30 押し忘れ) | rule 13 §3.4 に spec あり、実装側コード未確認 (M9) |
-| `add-comment` の `by` フィールド | サーバ側で enum 未制約 (M3, M4)。任意文字列が通る |
-| `wrap_with_mt_prompt` | API 実装ありだが docs / CLI / MCP 未公開 (M5) |
-| launchd plist | repo に commit されておらず (`launchd/jp.agi-tools.mini-tachyon.plist` は不在)、`install.sh` 実行不能 (C7) — 現行の `~/Library/LaunchAgents/jp.mini-tachyon.plist` は手動配置されたものが稼働中 |
+| 警告バッジ (☀️ 8:30 押し忘れ) | rule 13 §3.4 / USAGE.md §5.5 に「Phase 6+ 実装予定、2026-05-05 時点 spec only」と明記済 (M9 で結論付け) |
+| `~/.agi-tools/data/cockpit/master/bin/cockpit` ハードコード default | `lib/cockpit.ts` の `DEFAULT_COCKPIT_BIN`、AGI Cockpit master の標準インストール先のため `~/.agi-tools/` 廃止対象外。`COCKPIT_BIN` 環境変数で上書き可 (M10 解消、README 記載済) |
+
+### 解消済 (履歴)
+
+以下は 2026-05-05 以前は制約だったが hotfix で解消済 (詳細は §1.3):
+
+- ~~`add-comment` の `by` enum 未制約~~ → M3+M4 で `enum [user, ai]` に絞った
+- ~~`wrap_with_mt_prompt` が docs / CLI / MCP 未公開~~ → M5 で 4 箇所すべてに公開
+- ~~launchd plist が repo 不在で `install.sh` 実行不能~~ → C7+C8 で plist 同梱 + install.sh 完全書き直し
+- ~~`bin/mt` HELP に `--due` / `--created-by` 記載なし~~ → M6 で追記
+- ~~MCP config 例が Claude Desktop 形式 1 種のみ~~ → M8 で 3 client 別ファイル + README に分割

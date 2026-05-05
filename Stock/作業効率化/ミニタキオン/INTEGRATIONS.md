@@ -3,10 +3,11 @@
 最終更新: 2026-05-05 / 対象実装: `/Users/rikutanaka/mini-tachyon/` (HEAD) / Phase 5c 完了 + 整合性 hotfix (24 件) 全消化済
 
 このファイルは Stock 配下の長寿命リファレンス。
-1. **Part 1 設計監査 (修正済記録)**: docs / 実装 / rule mdc の整合性を機械的に照合した結果と、それを受けて 2026-05-05 に実施した修正の対応表
+1. **Part 1 設計監査 (修正済記録)**: docs / 実装 / rule mdc の整合性を機械的に照合した結果と、2026-05-05 に実施した修正の対応表
 2. **Part 2 起動経路一覧**: ミニタキオンの 5 経路を 1 表にまとめる
 3. **Part 3 MCP server 起動手順**: Claude Code / Cursor / Claude Desktop / Cockpit の各 client から MCP server を立ち上げる手順 (この章を最も詳しく)
-4. **Part 4 skill の使い方** / **Part 5 既知の制約**
+4. **Part 4 ルール認識経路**: Claude Code / Cursor / Claude Desktop / Cockpit がミニタキオンの運用ルールを **どこから / どう知るか** の 5 経路 + 検証方法
+5. **Part 5 skill の使い方** / **Part 6 既知の制約**
 
 > **本ドキュメントの位置付け**: 利用者向けの読み物は隣の [USAGE.md](USAGE.md)。本ファイルはエンジニアリング/運用観点の自己点検と client 設定リファレンス。
 
@@ -306,7 +307,93 @@ CLI でも同じことができる:
 
 ---
 
-# Part 4: skill (`/mini-tachyon`) の使い方
+# Part 4: Claude Code (および他エージェント) がミニタキオンのルールを認識する経路
+
+エージェントが「YAML を直接編集しない、`mt deliverable register` で atomic 登録、質問は `mt bl add-question` で BL に書き戻す」といった**運用ルール**を **どこから / どう知るか** を明示する。
+経路は重複しているが、これは意図的 (1 つが切れても他が拾う安全策)。
+
+## 4.1 5 つの認識経路
+
+| # | 経路 | いつ発火 | 何が読み込まれる | 担当 client |
+|---|---|---|---|---|
+| 1 | **`~/aipm_v0/CLAUDE.md`** (project memory) | `~/aipm_v0/` 配下で Claude Code セッションを開始した瞬間に自動ロード | 「ルーティング表」(ユーザー意図 → どの mdc を読むか) — 朝の整理 / 終業 / 並行タスク運用は全て `13_mini_tachyon_protocol.mdc` に飛ばす | **Claude Code** (主)、Claude Desktop |
+| 2 | **`~/aipm_v0/.cursor/rules/aios/ops/13_mini_tachyon_protocol.mdc`** (canonical 運用ルール) | 経路 1 が指示した時点 / Cursor では `.cursor/rules/` 自動展開 | 4 つの絶対遵守ルール / mt CLI クイックリファレンス / Scenario A-G / トラブルシュート | Claude Code (経路 1 から間接), **Cursor** (直接 `.cursor/rules/` auto-load) |
+| 3 | **MCP server `mt_*` tool description** | クライアントが MCP server を子プロセス起動した時点 (Part 3 設定済) | 各 tool の `description` に「何の用途で / どう呼ぶか」が 1-2 文で書かれている。tool 自体が呼べるので「ルールに従わせる」のではなく「ルール違反の操作ができない」物理的制約に近い | Claude Code / Cursor / Claude Desktop |
+| 4 | **Claude Code skill `/mini-tachyon`** | ユーザーまたはエージェントが `/mini-tachyon` で発火 | `~/.claude/skills/mini-tachyon/SKILL.md` が context に展開: 4 つの絶対遵守ルール / ユースケース手順 A-F / エラー対応表 / 3 経路使い分け | **Claude Code** 専用 |
+| 5 | **`buildMtAgentInstruction` wrap** | ミニタキオン経由で cockpit task が `POST /api/cockpit/tasks` で起動された時、サーバが instruction の前に rule 13 / mt CLI / 4 つの遵守ルールを **強制的に巻く** (`wrap_with_mt_prompt: true` がデフォルト) | rule 13 への絶対パス参照 / MCP/CLI 並記表 / 4 つの絶対遵守ルール / 関連 BL+成果物 / エラー対応 | Cockpit から spawn される **全エージェント** (claude / codex / gemini / cockpit) |
+
+## 4.2 Claude Code の典型シナリオ
+
+### シナリオ A: AIPM 配下で田中さんが Claude Code を開く
+
+```
+1. cd ~/aipm_v0
+2. claude     # または VSCode で Claude Code 拡張を開く
+   ↓
+3. Claude Code が ~/aipm_v0/CLAUDE.md を自動ロード (経路 1)
+   → 田中さんが「朝の整理して」と言う
+4. CLAUDE.md ルーティング表が「朝の整理 / 終業 → 13_mini_tachyon_protocol.mdc」を指す
+   → エージェントがそれを Read で読む (経路 2)
+5. その時点で MCP が登録済なら mt_* tool が見えている (経路 3) → tool calling でそのまま実行
+   登録済でなければ mt CLI を Bash で叩く (rule 13 §1.1 にパス記載)
+```
+
+### シナリオ B: ミニタキオン UI からエージェント起動 (☀️ ボタン / done コメント)
+
+```
+1. iPhone or Mac から Web UI で「☀️ 今日を始める」を押下
+   ↓
+2. Next.js が POST /api/morning/start を受け、cockpit_task を作る時に
+   `buildMtAgentInstruction` で instruction を wrap (経路 5)
+   wrap には rule 13 絶対パス + MT_CLI/MT_MCP 絶対パス + 4 遵守ルール表が入る
+   ↓
+3. cockpit が claude エージェントを spawn → 起動直後の prompt 先頭で rule 13 を Read
+4. もし MCP が cockpit 側で登録されていれば mt_* tool で操作、無ければ mt CLI
+```
+
+→ **田中さん (UI 操作) と Claude Code (CLI 操作) のどちらから始めても、最終的には同じ rule 13 + 4 遵守ルールに合流する**。これが Phase 5c の「drift しにくい設計」の核。
+
+## 4.3 経路ごとの優先度と冗長性
+
+| シーン | 効く経路 | 効かない経路 | 補足 |
+|---|---|---|---|
+| Claude Code を `~/aipm_v0/` 以外で開く | 4 (skill が呼ばれれば) / 3 (MCP 登録済なら) | 1, 2 | CLAUDE.md は cwd 依存 |
+| Claude Code を `~/aipm_v0/` で開く + MCP 未登録 | 1, 2, (4) | 3 | mt CLI で全部叩ける |
+| Cursor で `~/aipm_v0/` を開く | 2 (`.cursor/rules/` auto-load) / 3 (MCP 登録済なら) | 1 (Cursor は CLAUDE.md 非対応) / 4 | mdc が一次情報源 |
+| Cockpit から spawn された claude エージェント | 5 (instruction wrap) / 3 (もし MCP 渡されたら、現状非対応) | 1 (cwd は AIPM だが auto-load されない場合あり) / 4 | wrap が最後の砦 |
+| Claude Desktop で `~/aipm_v0` 文脈なし | 3 (MCP 登録済なら) | 1, 2, 4, 5 | tool description だけで察するしかない |
+
+> **重要**: 経路 1 (CLAUDE.md) は **Claude Code 固有**。Cursor / Claude Desktop は読まない。逆に経路 2 (.mdc) は **Cursor が auto-load する慣習**で、Claude Code は明示的 Read が必要。互いを補うために `~/aipm_v0/CLAUDE.md` が「`.cursor/rules/aios/ops/*.mdc` を最初に Read せよ」と指示している。
+
+## 4.4 経路の検証方法
+
+各経路が生きているかセルフチェック:
+
+```bash
+# 経路 1: AIPM CLAUDE.md
+ls ~/aipm_v0/CLAUDE.md && head -10 ~/aipm_v0/CLAUDE.md
+
+# 経路 2: rule 13 mdc
+ls ~/aipm_v0/.cursor/rules/aios/ops/13_mini_tachyon_protocol.mdc
+
+# 経路 3: MCP server
+~/mini-tachyon/bin/mt-mcp <<< '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"selfcheck","version":"0.0.1"}}}' 2>&1 | head -1
+# {"result":{"protocolVersion":"2024-11-05",...,"serverInfo":{"name":"mini-tachyon",...}}}
+
+# 経路 4: Claude Code skill
+ls ~/.claude/skills/mini-tachyon/SKILL.md
+
+# 経路 5: instruction wrap
+curl -fsS -X POST http://localhost:3000/api/cockpit/tasks \
+  -H 'Content-Type: application/json' \
+  -d '{"instruction":"test","wrap_with_mt_prompt":true,"directory":"/tmp"}' \
+  --no-progress-meter -o /dev/null -w "%{http_code}\n"
+# 201 (新エージェントの instruction には rule 13 + 4 遵守ルールが巻かれている)
+```
+
+---
+
+# Part 5: skill (`/mini-tachyon`) の使い方
 
 Claude Code の skill は `~/.claude/skills/mini-tachyon/SKILL.md` で定義済 (Phase 5b)。
 
@@ -335,7 +422,7 @@ skill はその橋渡しで、
 
 ---
 
-# Part 5: 既知の制約 (2026-05-05 hotfix 後)
+# Part 6: 既知の制約 (2026-05-05 hotfix 後)
 
 | 項目 | 内容 |
 |---|---|

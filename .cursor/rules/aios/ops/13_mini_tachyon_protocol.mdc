@@ -97,7 +97,7 @@ mt CLI の引数は API の zod スキーマと完全に一致させる:
 
 田中さんが iPhone で「☀️ 今日を始める」を押下 → mini-tachyon が朝の整理エージェントを cockpit task として spawn。
 
-**朝のエージェントの役割** (固定プロンプト `~/.agi-tools/mini-tachyon/lib/prompts/daily-start.md` で規定):
+**朝のエージェントの役割** (固定プロンプト `~/mini-tachyon/lib/prompts/daily-start.md` で規定):
 1. 中央 Backlog.md を読んで active な BL を抽出
 2. backlog/ がある active プロジェクトのみ対象 (全 Stock 走査ではない)
 3. 前日 (最大 7 日遡る) の `Flow/<前日>/_orchestration/今日の振り返り.md` を読む
@@ -114,7 +114,7 @@ mt CLI の引数は API の zod スキーマと完全に一致させる:
 
 田中さんが「🌙 今日を締める」を押下 → 夜の振り返りエージェントが spawn。
 
-固定プロンプト `~/.agi-tools/mini-tachyon/lib/prompts/daily-wrapup.md` の規定通り:
+固定プロンプト `~/mini-tachyon/lib/prompts/daily-wrapup.md` の規定通り:
 - 当日完了したこと / 残課題 / 翌日への申し送りを集計
 - `Flow/<today>/_orchestration/今日の振り返り.md` に保存
 - `lib/merge.ts` で Flow → Stock STATUS.md マージ
@@ -131,7 +131,7 @@ mt CLI の引数は API の zod スキーマと完全に一致させる:
 
 ### 3.4 セーフティネット
 
-- `☀️` を 8:30 までに押し忘れ → ホームに警告バッジ (UI のみ、自動実行しない)
+- `☀️` を 8:30 までに押し忘れ → ホームに警告バッジ (UI のみ、自動実行しない) 【Phase 6+ 実装予定、2026-05-05 時点 spec only】
 - `🌙` 押し忘れ → 03:00 cron が autorun で自動 endDailyLoop (Phase 3c で実装予定)
 - 翌朝の整理エージェントが「前日 wrap-up なし」を検知して履歴なしモードで進行
 
@@ -139,7 +139,7 @@ mt CLI の引数は API の zod スキーマと完全に一致させる:
 
 ## 4. mt CLI クイックリファレンス
 
-詳細は `~/.agi-tools/mini-tachyon/docs/CLI.md`。エージェントが頻繁に使うものを抜粋:
+詳細は `~/mini-tachyon/docs/CLI.md`。エージェントが頻繁に使うものを抜粋:
 
 ```bash
 # BL 操作
@@ -440,8 +440,8 @@ Cursor / Claude Code / Codex / Cockpit から AIPM プロジェクト (`~/aipm_v
 
 | 症状 | 対応 |
 |---|---|
-| `mt: command not found` | `~/.agi-tools/mini-tachyon/bin/mt` を絶対パスで使う、または `sudo ln -s ~/.agi-tools/mini-tachyon/bin/mt /usr/local/bin/mt` |
-| `error: network` | mini-tachyon が落ちてる → `launchctl list jp.agi-tools.mini-tachyon` で確認、必要なら `launchctl kickstart -k gui/$(id -u)/jp.agi-tools.mini-tachyon` |
+| `mt: command not found` | `~/mini-tachyon/bin/mt` を絶対パスで使う、または `sudo ln -s ~/mini-tachyon/bin/mt /usr/local/bin/mt` |
+| `error: network` | mini-tachyon が落ちてる → `launchctl list jp.mini-tachyon` で確認、必要なら `launchctl kickstart -k gui/$(id -u)/jp.mini-tachyon` |
 | `error: validation` 400 | スキーマ違反 → エラーメッセージで違反フィールド特定、引数を修正して再試行 |
 | `error: conflict` 409 | optimistic lock → `mt bl get <id>` で最新 `updated_at` を取得し、`--expected-updated-at` を指定して再送 |
 | `error: cockpit` 502 | cockpit binary 経路で失敗 → 三段 fallback (send → resume → create) 全滅、`detail.attempts[]` で失敗履歴確認 |

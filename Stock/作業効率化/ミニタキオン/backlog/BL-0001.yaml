@@ -5,7 +5,7 @@ category: 作業効率化
 state: in_progress
 priority: high
 created_at: '2026-05-03T00:45:47.390Z'
-updated_at: '2026-05-05T07:09:13.124Z'
+updated_at: '2026-05-05T07:29:23.047Z'
 created_by: mt-cli
 description: >-
   ミニタキオン (mini-tachyon) の現状を棚卸しし、今後の方針を検討する。タスクの目的: (1) 現在の実装状況の整理 (Phase 1〜4 の到達点 / Daily Loop / mt CLI / HTTP API / UI
@@ -86,3 +86,17 @@ decisions:
       'jp.agi-tools.mini-tachyon' (実体は ~/mini-tachyon/ と jp.mini-tachyon)。MCP 起動手順: Claude Code / Cursor / Claude
       Desktop / Cockpit 4 client を絶対パス + 動作確認 (mt_bl_get BL-0001) + エラー読み方まで記述。要点: 監査では実装と意味が食い違うパス/label の置換が最優先、統合では
       MCP server を子プロセス spawn する 4 client 別 JSON 設定を copy-paste できる形でまとめた。
+  - at: '2026-05-05T07:29:23.047Z'
+    type: commitment
+    by: ai
+    content: >-
+      2026-05-05 17:00 INTEGRATIONS.md 監査の Critical 8 + Moderate 10 + Minor 6 を全件修正。実施: rule 13 mdc / docs/CLI.md /
+      docs/API.md / README.md / USAGE.md の旧パス '~/.agi-tools/mini-tachyon/' → '~/mini-tachyon/' 一括置換、launchd label
+      'jp.agi-tools.mini-tachyon' → 'jp.mini-tachyon' 統一、launchd/install.sh を bootstrap/bootout/kickstart 流儀に書き直し
+      canonical な 'launchd/jp.mini-tachyon.plist' を repo に commit、STATUS.md frontmatter+本文を Phase 5
+      完了状態に同期、AddCommentSchema.by を enum [user,ai] に絞り mt-mcp も追従、docs/API.md に wrap_with_mt_prompt 追記+bin/mt cockpit
+      spawn に --no-wrap+MCP tool に wrap_with_mt_prompt 引数、bin/mt HELP に --due/--created-by/--no-wrap 追記、docs/CLI.md に
+      --due 例と d-20260505-001 形式の id 例、examples/ を 3 client 別 (claude-desktop/claude-code/cursor) に分割し
+      examples/README.md 同梱、rule 13 §3.4 警告バッジに 'Phase 6+ 予定' 明記、lib/cockpit.ts に DEFAULT_COCKPIT_BIN export+README に
+      COCKPIT_BIN env 説明追加、bin/mt-mcp 冒頭コメントを短縮。検証: tests 199/199 pass、prod build OK、launchd restart 成功 (HTTP
+      200)、./launchd/install.sh status で running 確認。これで監査由来の不整合は全件解消、ミニタキオンは Phase 5 完了+整合性ベースライン確立済み。

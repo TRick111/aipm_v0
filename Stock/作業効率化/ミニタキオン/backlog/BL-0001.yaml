@@ -5,7 +5,7 @@ category: 作業効率化
 state: in_progress
 priority: high
 created_at: '2026-05-03T00:45:47.390Z'
-updated_at: '2026-05-05T07:51:08.401Z'
+updated_at: '2026-05-05T08:27:03.500Z'
 created_by: mt-cli
 description: >-
   ミニタキオン (mini-tachyon) の現状を棚卸しし、今後の方針を検討する。タスクの目的: (1) 現在の実装状況の整理 (Phase 1〜4 の到達点 / Daily Loop / mt CLI / HTTP API / UI
@@ -113,3 +113,12 @@ decisions:
       を ✅ status / 実施修正 / 確認方法 の 3 列表に再構築、§1.4 を '修正完了の検証' (tests 199/199, build, launchd, smoke, MCP e2e) に置換、Part 2
       起動経路の Web UI 行を install.sh status/restart/install に書き換え、Part 3 各 client 設定で examples/ ファイルを参照、Part 5 既知の制約から
       hotfix 解消済 5 項目を '解消済 (履歴)' セクションに移動。これでドキュメントと実装が完全同期。
+  - at: '2026-05-05T08:27:03.500Z'
+    type: commitment
+    by: ai
+    content: >-
+      2026-05-05 17:30 ミニタキオン整理中に bug 発見: `mt bl create` の auto-id 採番ロジック (lib/api/bl-paths.ts:nextNumericBLId) は
+      project-local の backlog/BL-*.yaml のみスキャンしており、グローバルに既存の ID と衝突する。具体例: 中央 Backlog.md にのみ存在する BL-0075 (ワールドネイバーズ)
+      と、新規作成した RestaurantAILab/バンコクPonさん案件/BL-0075 (動画制作) が ID 衝突。bl list は両ソースをマージ表示するが、project yaml が優先されるため中央
+      Backlog.md 側が見えなくなる事故が発生した。recovery: 衝突 yaml を退避→central Backlog.md からの復元を確認→explicit --id BL-0086 で再作成。Phase 6+ で
+      nextNumericBLId をグローバルスキャン (全 backlog/ + 中央 Backlog.md) に直す必要あり。

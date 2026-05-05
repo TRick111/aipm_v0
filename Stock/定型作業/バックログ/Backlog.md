@@ -54,7 +54,7 @@
 | BL-0030 | todo | P1 | 2026-04-30 | 健康管理: 睡眠データのAIOS自動連携の構築 | ゴール管理 | 健康管理 | 健康,睡眠,自動連携,API | BL-0028完了後。デバイスAPIからAIOSへ睡眠スコア等を自動取り込み。4月中完成目標 |
 | BL-0031 | todo | P2 |  | LINE連携: LINE APIの調査・技術選定・通知送信の実装 | 作業効率化 | LINE連携 | LINE,通知,API,自動化 | AIOSからLINEへ通知を飛ばす仕組み。リマインド・日次サマリー等 |
 | BL-0033 | done | P1 | 2026-03-25 | ダッシュボード改: LINE連携配信の改修 | RestaurantAILab | ダッシュボード改 | ダッシュボード,LINE,連携,改修,配信 | 4/12完了 |
-| BL-0034 | todo | P1 |  | ダッシュボードアプリのあり方・進め方の検討 | RestaurantAILab | ダッシュボード改 | ダッシュボード,週報,手法,方針,竹谷さん | 3/23竹谷さんとのMTGを受けて。週報やダッシュボードを含むアプリ全体の方向性・進め方を再検討する |
+| BL-0034 | doing | P1 |  | ダッシュボードアプリのあり方・進め方の検討 | RestaurantAILab | ダッシュボード改 | ダッシュボード,週報,手法,方針,竹谷さん,竹矢さん,MTG調整中 | 3/23竹谷さんとのMTGを受けて。週報やダッシュボードを含むアプリ全体の方向性・進め方を再検討する。**2026-05-05 田中さん指示: 竹矢さんとミーティング調整中。次タスク = 日程を決めること** |
 | BL-0035 | done | P1 | 2026-04-01 | PONさんAI活用サポート: 第5回セッション資料作成 | RestaurantAILab | バンコクPonさん案件 | ponさん,セッション,資料,第5回 | 4/12完了 |
 | BL-0036 | done | P1 | 2026-04-01 | PONさん案件: 店舗内観イメージ生成方法の確立 | RestaurantAILab | バンコクPonさん案件 | ponさん,内観,イメージ生成,AI,Gemini,改装 | 4/12完了 |
 | BL-0037 | doing | P2 |  | PONさん案件: チャット履歴の整理 | RestaurantAILab | バンコクPonさん案件 | ponさん,チャット,履歴,整理 | PONさんとのチャット履歴を整理・構造化する。2026-04-21再開 |
@@ -80,7 +80,7 @@
 | BL-0057 | done | P1 | 2026-04-28 | カンナさん: デート店の予約 | 生活管理 | 恋愛 | デート,予約 | 4/28デート。店未予約のため事前予約が必要。**2026-04-26 18:19 田中さん完了承認**（予約済の店名・詳細は確認事項.md で確認） |
 | BL-0058 | done | P2 | 2026-05-02 | ワカナさん: ビリヤード当日対応 | 生活管理 | 恋愛 | ビリヤード,予定 | 5/2にビリヤード。店予約は不要。**2026-04-27 田中さん完了承認**（当日対応のみで AI 化不要と判断） |
 | BL-0059 | todo | P1 | 2026-05-06 | サトコさん: ドライブ計画（車予約・行き先決定） | 生活管理 | 恋愛 | ドライブ,車予約,行き先 | 5/6実施に向けて車予約と行き先の決定が必要 |
-| BL-0060 | doing | P1 | 2026-04-26 | Claude Code アップデート | 作業効率化 | 環境整備 | claude-code,アップデート,環境 | Claude Codeの最新バージョンへのアップデートと設定見直し。Mac + Windows両端末対応。**期日: 今週末（2026-04-26 日）まで**。2026-04-22 Mac完了・Win手順書化 |
+| BL-0060 | done | P1 | 2026-04-26 | Claude Code アップデート | 作業効率化 | 環境整備 | claude-code,アップデート,環境 | Claude Codeの最新バージョンへのアップデートと設定見直し。Mac + Windows両端末対応。**期日: 今週末（2026-04-26 日）まで**。2026-04-22 Mac完了・Win手順書化。**2026-05-04 完了（5/4 タスク案で完了済明記、5/5 田中さん確認）** |
 | BL-0061 | done | P1 | 2026-04-22 | AIコア PL作成 | RestaurantAILab | AI-Core | ai-core,PL,price-list,提供メニュー,notion | **Phase 1 完了 ✅ (2026-04-22)** 公開URL: https://ai-core-pl.vercel.app/ ／ GitHub: RestaurantAILab/ai-core-pl ／ Vercel: restaurant-ai-lab/ai-core-pl ／ Notion: ServiceCases(50件 seed済) + ClientRequests ／ E2E動作確認済(Status=未対応 + Relations付与)。詳細: Flow/202604/2026-04-22/AI-Core/implementation_log.md。Phase 2候補(PDF/認証/集計/通知復活/HTML v2)は別BL起票で対応 |
 | BL-0062 | done | P1 | 2026-04-22 | 低速タキオン: 会議終了後に全トランスクリプトからToDo生成 | RestaurantAILab | Tachyon | tachyon,低速,トランスクリプト,todo,生成,notion,agent-sdk | **Phase 1 完了 ✅ (2026-04-22)** 実装場所: ~/tachyon-workspace/tachyon/（独立repo）。7 commits (7e1f284〜c548019)。生成=Claude Sonnet 4.6 SDK直接／実行=@anthropic-ai/claude-agent-sdk bypassPermissions+allowedTools=B（Read/Write/Edit/Glob/Grep/WebFetch/WebSearch/Bash）／破壊的コマンドブロック＋cwd隔離／Notion DB 'Tachyon ToDos' 同期／テキストアップロード対応。E2E動作確認3会議以上。詳細: Flow/202604/2026-04-22/Tachyon/implementation_log.md。Phase2候補(Notion Meeting Notes直接取込/confidence自動承認/MCP拡張)は別起票予定 |
 | BL-0063 | blocked | P1 |  | OMI と AIOS の統合検討 | 作業効率化 | 会議議事録の自動反映 | omi,aios,統合,検討 | OMIデバイスで取得した音声・文字起こしをAIOSに連携する方式を検討。BL-0026（議事録自動反映フロー設計）と関連。**2026-04-23 OMIデバイスが電池切れで故障。BL-0069（返品作業）が前提のため一旦 blocked** |

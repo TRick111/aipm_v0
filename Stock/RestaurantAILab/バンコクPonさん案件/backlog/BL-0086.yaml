@@ -2,10 +2,10 @@ id: BL-0086
 title: 'PONさん案件: 動画制作相談・ヒアリング/調査'
 project: バンコクPonさん案件
 category: RestaurantAILab
-state: pending
+state: awaiting_user
 priority: normal
 created_at: '2026-05-05T08:25:49.675Z'
-updated_at: '2026-05-05T08:26:01.968Z'
+updated_at: '2026-05-05T09:05:11.332Z'
 created_by: mt-cli
 description: >-
   ポンさんから受けた「動画制作」相談の深掘り・調査を進めるためのヒアリング準備および調査方針の整理。次回打ち合わせで目的(集客/採用/ブランディング/商品紹介等)、配信先(SNS/サイネージ/LINE/YouTube)、本数・尺、言語、予算・納期、AI生成
@@ -16,4 +16,18 @@ deliverable_refs:
 schema_version: 2
 cockpit_task_ids: []
 pending_questions: []
-decisions: []
+decisions:
+  - at: '2026-05-05T09:05:11.044Z'
+    type: answer
+    by: user
+    content: >-
+      2026-05-05 ミニタキオン整理時の確認: d-20260501-001 (動画制作ヒアリング準備) の紐づけ先について cockpit ask で質問→ (A) 新規 BL 作成を選択。これに従い BL-0086
+      を起票。
+  - at: '2026-05-05T09:05:11.192Z'
+    type: commitment
+    by: ai
+    content: >-
+      2026-05-05 17:26 deliverable 登録完了: d-20260501-001 を mt deliverable register 経由で BL-0086.deliverable_refs に追加
+      (atomic)。md ファイルを canonical path Flow/202605/2026-05-01/RestaurantAILab/バンコクPonさん案件/動画制作ヒアリング準備_2026-05-01.md に移動
+      (元の category 抜け Flow/202605/2026-05-01/バンコクPonさん案件/ から)。state=unreviewed なので田中さんレビュー待ち。次アクション: 田中さんが本資料をレビューして 3章
+      (確認事項) のヒアリング項目を ✓/✗/追加で絞り込む → 確定したら次回ポンさんミーティングのアジェンダに反映。

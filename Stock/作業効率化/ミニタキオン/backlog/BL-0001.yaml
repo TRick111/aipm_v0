@@ -5,7 +5,7 @@ category: 作業効率化
 state: in_progress
 priority: high
 created_at: '2026-05-03T00:45:47.390Z'
-updated_at: '2026-05-05T08:27:03.500Z'
+updated_at: '2026-05-05T09:03:43.169Z'
 created_by: mt-cli
 description: >-
   ミニタキオン (mini-tachyon) の現状を棚卸しし、今後の方針を検討する。タスクの目的: (1) 現在の実装状況の整理 (Phase 1〜4 の到達点 / Daily Loop / mt CLI / HTTP API / UI
@@ -15,21 +15,9 @@ description: >-
   は実装タスクで、本 BL はその上位の方針検討。成果物: Stock/作業効率化/ミニタキオン/ 配下に方針検討ドキュメント (棚卸し+ロードマップ)。
 deliverable_refs: []
 schema_version: 2
-cockpit_task_ids: []
-pending_questions:
-  - id: q-BL-0001-1-20260504135744
-    at: '2026-05-04T13:57:44.927Z'
-    cockpit_task_id: 50e5f6ad
-    content: >-
-      Q. 5/3 棚卸し v1 (Flow/202605/2026-05-03/作業効率化/ミニタキオン/future_direction_v1.md, deliverable
-      id=d-bl0001-20260503-future-direction, review_state=unreviewed) を今日 review しますか? Sprint 0-3 ロードマップの採択判断ができれば、Phase
-      3c/3d (BL-TBD-006/007) 含む実装着手が一気に進みます。(a) 今日 review → ロードマップ確定 / (b) 別日
-  - id: q-BL-0001-2-20260505003529
-    at: '2026-05-05T00:35:29.322Z'
-    cockpit_task_id: e60bce35
-    content: >-
-      Q.5-3 (5/5朝整理): 5/3 棚卸し v1 (deliverable d-bl0001-20260503-future-direction, unreviewed) の review。Sprint 0-3
-      ロードマップ採択で BL-TBD-006/007 が一気に動く。(a) 今日 review→ロードマップ確定→Phase 3c/3d 着手 (b) 別日
+cockpit_task_ids:
+  - 48436d8b
+pending_questions: []
 decisions:
   - at: '2026-05-03T01:55:48.548Z'
     type: commitment
@@ -122,3 +110,14 @@ decisions:
       と、新規作成した RestaurantAILab/バンコクPonさん案件/BL-0075 (動画制作) が ID 衝突。bl list は両ソースをマージ表示するが、project yaml が優先されるため中央
       Backlog.md 側が見えなくなる事故が発生した。recovery: 衝突 yaml を退避→central Backlog.md からの復元を確認→explicit --id BL-0086 で再作成。Phase 6+ で
       nextNumericBLId をグローバルスキャン (全 backlog/ + 中央 Backlog.md) に直す必要あり。
+  - at: '2026-05-05T09:03:14.293Z'
+    type: answer
+    by: user
+    content: その後、ミニタキオンをアップデートしました。このバックログ自体はもうクローズでOKです。
+  - at: '2026-05-05T09:03:43.169Z'
+    type: commitment
+    by: ai
+    content: >-
+      2026-05-05 田中さんから「ミニタキオンを更新済み、本 BL クローズで OK」との回答受領 (decisions[user/answer])。pending question (5/5朝整理の Q.5-3) は
+      consume 済。本 BL は方針検討ハブとしての役割を完了とし、田中さん側で complete してクローズ予定。今後の追加機能 (Phase 6 Telegram 通知 / nextNumericBLId
+      のグローバルスキャン bug fix / 過去運用ビュー / search 等) は新規 BL を立ち上げて分割管理する想定。

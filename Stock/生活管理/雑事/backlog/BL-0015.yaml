@@ -2,10 +2,10 @@ id: BL-0015
 title: 失業保険の詳細について調べる
 project: 雑事
 category: 生活管理
-state: in_progress
+state: completed
 priority: normal
 created_at: '2026-04-30T12:21:38.268Z'
-updated_at: '2026-05-05T07:05:57.305Z'
+updated_at: '2026-05-05T09:04:17.062Z'
 created_by: mt-cli
 description: >-
   失業保険（雇用保険の基本手当）の制度詳細を調査する。受給資格・必要書類・手続きの流れ・受給金額の計算方法・受給期間・自己都合/会社都合の違い・申請場所（ハローワーク）・待機期間/給付制限・所得との関係などを整理し、自分のケースに当てはめて手続き可否と段取りを把握できる状態にする。
@@ -14,13 +14,7 @@ deliverable_refs:
 schema_version: 2
 cockpit_task_ids:
   - 8c10f6da
-pending_questions:
-  - id: q-BL-0015-1-20260505003459
-    at: '2026-05-05T00:34:59.293Z'
-    cockpit_task_id: e60bce35
-    content: >-
-      Q.1 (5/5朝整理): 5/3 失業保険調査レポート (deliverable d-bl0015-20260503-unemployment, unreviewed) の review 方針。(a) 今日
-      review→done (b) 修正指示→AI修正 (c) 別日
+pending_questions: []
 decisions:
   - at: '2026-05-03T00:46:39.899Z'
     type: commitment
@@ -41,3 +35,8 @@ decisions:
       個人事業主 (青色申告)・前年事業所得約100万円・2026年6月退職予定という田中さん固有状況に対応するため、レポートに Section 12 (個人事業主との並行ケース) を追記。要点: (1)
       開業届提出中は原則「失業状態」に該当せず受給不可、(2) 廃業届を出せば受給可能、(3) 「再就職手当」狙いで一旦廃業→受給→再開業の選択肢あり (ただし管轄ハローワーク事前確認必須)、(4)
       前年所得100万円は基本手当日額には影響せず (賃金日額は給与のみで計算)、国保/年金の軽減判定には有利。最終判断は管轄ハローワーク + 税理士/社労士で要確認。
+  - at: '2026-05-05T09:04:02.759Z'
+    type: answer
+    by: user
+    content: (b) 修正→AI修正→OK。Stockに確定反映 (Stock/生活管理/雑事/unemployment_insurance_investigation.md)。
+completed_at: '2026-05-05T09:04:17.062Z'

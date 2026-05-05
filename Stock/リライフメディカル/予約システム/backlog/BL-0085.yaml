@@ -5,7 +5,7 @@ category: リライフメディカル
 state: pending
 priority: high
 created_at: '2026-05-04T14:12:35.379Z'
-updated_at: '2026-05-05T00:35:31.185Z'
+updated_at: '2026-05-05T15:37:25.848Z'
 created_by: mt-cli
 description: >-
   BL-0065 で作成した PoC を本番システムとして実装する。変更点: (1) Gmail アカウントが PoC とは別 (新橋店用)、(2) 店舗数は複数ではなく新橋店限定。予約システムの仕組み・予約 UI は PoC
@@ -14,9 +14,20 @@ description: >-
 deliverable_refs: []
 schema_version: 2
 cockpit_task_ids: []
-pending_questions:
-  - id: q-BL-0085-1-20260505003531
-    at: '2026-05-05T00:35:31.185Z'
-    cockpit_task_id: e60bce35
-    content: 'Q (5/5朝整理): 田中さんからの新LP HTML受領待ち。受領タイミングの目安? (a) 今日中 (b) 今週中 (c) 未定'
-decisions: []
+pending_questions: []
+decisions:
+  - at: '2026-05-05T15:37:20.597Z'
+    type: commitment
+    by: ai
+    content: >-
+      BL-0085 実装方針確定 (5/6): (1) 配置: /Users/rikutanaka/RestaurantAILab/c5med-shimbashi (2) 初期化: PoC c5med-booking
+      を丸ごと複製して新規リポジトリ化 (3) 環境変数: .env.local は田中さんから後日受領 (4) 店舗モード: 新橋店専用にハードコード (5) LINE 相談ボタン → https://lin.ee/y4yB6lD
+      (6) LP は受領した C5med_LP.html (mobile-first / rose-beige パレット / Shippori Mincho) のデザインを React/Next.js で踏襲、予約システム部分は
+      PoC の BookingWidget を組み込む。
+  - at: '2026-05-05T15:37:25.848Z'
+    type: answer
+    by: user
+    content: >-
+      新LP HTML受領済み (5/6): /Users/rikutanaka/Downloads/c5 med beauty.zip として受領 → /tmp/c5med_design/C5med_LP.html を
+      BL-0085 実装の design source とする
+    answers_question_id: q-BL-0085-1-20260505003531

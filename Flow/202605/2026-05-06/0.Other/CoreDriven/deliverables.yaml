@@ -43,6 +43,25 @@ deliverables:
           /company/#members→/company-new/#members を sed 置換。917 行 / 36KB。WP 固定ページ TOP のカスタム HTML ブロックに丸ごとコピペするだけで動作。
     last_modified: '2026-05-06T00:00:30.000Z'
     cockpit_task_id: ab2f1e5a
+  - id: d-bl0079-20260506-wp-existing-widget-backup
+    file: coredriven_existing_widget_backup.html
+    bl_id: BL-0079
+    title: CoreDriven 既存ウィジェット (w-frontTop) バックアップ (削除前)
+    created_at: '2026-05-06T02:09:00.000Z'
+    created_by: cockpit-task-ab2f1e5a
+    created_by_agent: claude
+    cockpit_task_id: ab2f1e5a
+    review_state: unreviewed
+    review_log:
+      - at: '2026-05-06T02:09:00.000Z'
+        action: created
+        to: unreviewed
+        comment: >-
+          田中さん提供 coredriven.html (871 行 / シークレットウィンドウで取得した実物) から、#content 直下〜 <main> 開始の間に出力されている
+          w-frontTop ウィジェット内容 (custom-message + biz__container = Hero メッセージ「すべての人や企業」+ Restaurant AI
+          Lab./Career Lab./事業開発支援 セクション) を 116KB 抽出して保存。田中さんが「外観→ウィジェット→フロントトップ用」のカスタム HTML
+          ウィジェットを削除する前に、このバックアップで復元可能な状態を保証。
+    last_modified: '2026-05-06T02:09:00.000Z'
   - id: d-bl0079-20260506-wp-top-impl-steps-v2
     file: wordpress_top_implementation_steps_v2.md
     bl_id: BL-0079

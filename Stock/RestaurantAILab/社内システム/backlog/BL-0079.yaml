@@ -5,7 +5,7 @@ category: RestaurantAILab
 state: in_progress
 priority: normal
 created_at: '2026-04-30T13:26:51.867Z'
-updated_at: '2026-05-05T16:26:26.901Z'
+updated_at: '2026-05-05T17:09:46.380Z'
 created_by: mt-cli
 description: >-
   RestaurantAILab
@@ -223,3 +223,17 @@ decisions:
       暫定リンク) / Q-O (メニュー再編タイミング) を追加。成果物:
       Flow/202605/2026-05-06/0.Other/CoreDriven/wordpress_top_implementation_steps_v2.md (id:
       d-bl0079-20260506-wp-top-impl-steps-v2, review_state=unreviewed)。
+  - at: '2026-05-05T17:09:46.380Z'
+    type: commitment
+    by: ai
+    content: >-
+      [5/6 needs_revision 第二弾対応] 田中さんが提供した実 HTML ソース (coredriven.html / 871 行) を解析した結果、コンテンツの正体を特定: 『外観 → ウィジェット』の
+      w-frontTop (フロントトップ用) ウィジェットエリアに配置された『カスタム HTML ウィジェット』の中身。具体的には #content 開始〜<main id=main_content>
+      開始までの間に出力されており、内容は (1) <div class=custom-message> = Hero メッセージ『すべての人や企業には、それぞれ独自の価値観やビジョンがあります』+ 3 人写真
+      (Φテスト用.png), (2) <div class=biz__container> = Restaurant AI Lab. / Restaurant Career Lab. / 事業開発支援事業 の 3 セクション
+      (アンカー id=ai/career/biz でメニューと連動), (3) head 内 <style> に .custom-message__* / .biz__* の独自 CSS。固定ページ TOP
+      のブロックエディタには出ないので田中さんが見えなかった。バックアップ取得済:
+      Flow/202605/2026-05-06/0.Other/CoreDriven/coredriven_existing_widget_backup.html (116 KB / 641 行) と
+      coredriven_live_snapshot_20260506.html (176 KB / 871 行)。次の対処: 田中さんが (a) 『外観 → ウィジェット → w-frontTop』の中の『カスタム HTML
+      ウィジェット』を【使用停止中のウィジェット】エリアに移動 (or 中身空にして保存) → ヘッダー＋空＋フッターの clean 状態 → AI HTML を貼付。または (b) ウィジェットを残したまま AI HTML を
+      post_content に貼ると 2 重表示になるので非推奨。

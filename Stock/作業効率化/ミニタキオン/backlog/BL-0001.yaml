@@ -38,3 +38,20 @@ decisions:
       2026-05-03 棚卸しドキュメント v1 完成: Flow/202605/2026-05-03/作業効率化/ミニタキオン/future_direction_v1.md (deliverable id:
       d-bl0001-20260503-future-direction, review_state=unreviewed)。内訳: アーキテクチャ俯瞰 / 実装済み機能 9 カテゴリ詳細 / 既知 7 + 新規発見 5 ギャップ
       / 戦略候補 10 機能 / 運用ポリシー 6 検討事項 / Sprint 0-3 ロードマップ。今日 0-byte placeholder 問題発見も計上。
+  - at: '2026-05-05T04:10:00.000Z'
+    type: commitment
+    by: user
+    content: >-
+      2026-05-05 田中さん指示: 今後は CLI に加えて MCP server / Claude Code skill としてもまとめる方針で正式着手。背景は BL-0015 で発覚した
+      「deliverables.yaml だけ手書きされて BL.deliverable_refs が更新されない」bug。原因は (1) API gap (deliverable register が未整備)、(2)
+      prompt が rule mdc 経由の rule-following で drift しやすい。Phase 4a/4b の延長として Phase 5「MCP + skill 化」を本 BL 配下に追加し、ロードマップに織り込む。
+  - at: '2026-05-05T04:11:00.000Z'
+    type: commitment
+    by: ai
+    content: >-
+      2026-05-05 Phase 5 着手前の hotfix 完了 (本 BL とは別タスクで実施): (A) `mt deliverable register --bl <id> --file <basename>` 新設 (atomic に
+      deliverables.yaml + BL.deliverable_refs を両方更新)、(B) index-store に bl_id 逆引き backstop 追加 (BL.refs 未登録でも UI 表示)、(C) 組み込み
+      prompt (mt-agent-prompt / fallback-instruction) と rule 13 を register 1 発に書き換え、(D) BL-0015 の deliverable_refs 永続化救済、(E) tests
+      198/198 pass。これで Phase 5 開始時点では prompt drift と API gap が解消済の状態。Phase 5 では以下を扱う:
+      Phase 5a) MCP server 実装 (Bun の mcp SDK で 16 endpoint を tool 化)、Phase 5b) Claude Code skill 化
+      (~/.claude/skills/mini-tachyon/SKILL.md にユースケース別手順)、Phase 5c) 既存 cockpit prompt から MCP tool calling への移行 dogfood。

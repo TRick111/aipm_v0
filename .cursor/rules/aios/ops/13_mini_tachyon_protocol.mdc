@@ -57,6 +57,7 @@ CLI 詳細: `~/.agi-tools/mini-tachyon/docs/CLI.md`
 |---|---|
 | 短い factual 回答 | `mt bl add-decision <id> --type commitment --by ai --content "..."` |
 | 別の質問が必要 | `mt bl add-question <id> --content "..."` |
+| 新規成果物 .md を作成 | `mt deliverable register --bl <BL-ID> --file <basename>.md --title "..."` (deliverables.yaml + BL.deliverable_refs 両方 atomic 更新) |
 | 設計や成果物を改訂 | 該当 markdown を編集 + `mt deliverable update-state <id> --state unreviewed` |
 | 朝のタスク案承認の処理 | `mt morning finalize <deliverable_id> --selections '...'` |
 | 新規 BL 作成 | `mt bl create --title ... --project ... --category ...` |
@@ -137,6 +138,7 @@ mt bl list [--state X] [--project Y] [--ids id1,id2] [--today-selected] [--human
 mt bl get <id> [--human]
 
 # Deliverable
+mt deliverable register --bl <BL-ID> --file <basename> [--title T] [--id <d-XXX>] [--date YYYY-MM-DD] [--agent claude|codex|gemini|manual] [--task <cockpit_task_id>]
 mt deliverable update-state <id> --state unreviewed|reviewing|done|needs_revision|generating [--comment "..."]
 mt deliverable add-comment <id> --content "..." [--by user|ai]
 mt deliverable get <id> [--human]
@@ -223,18 +225,31 @@ mt bl update BL-0073 --state planned          # [-] (見送り) に相当
 **旧の動作**:
 1. `Flow/<today>/<project>/my_report.md` を新規作成
 2. `Flow/<today>/<project>/deliverables.yaml` に entry を追加 (or 同階層に新設)
+3. `Stock/<category>/<project>/backlog/<BL-ID>.yaml` の `deliverable_refs` にも append
 
-**新で置き換える** (現状: API gap あり、暫定対応):
+旧運用では (2) と (3) を両方手書きする必要があり、(3) を忘れると BL 画面に成果物が
+出ない bug が発生した (実例: BL-0015、2026-05-05 田中さん発見)。
+
+**新運用 (2026-05-05〜): `mt deliverable register` 1 発で atomic に処理**:
 
 ```bash
-# 1. .md ファイル作成は OK (Flow への書き込みは制限なし)
-#    単層・2層どちらでも mini-tachyon が resolve する (2026-04-27〜)。
-#    AIOS 6.1.1 Stock 構造ミラーに合わせ Flow も 2層が一般化。
-echo "# レポート..." > Flow/<today>/<category>/<project>/my_report.md
+# 1. canonical 2層 dir に .md を書き出す (mt が BL から自動算出するので
+#    自分で path を組み立てる必要はない)
+echo "# レポート..." > ~/aipm_v0/Flow/<YYYYMM>/<YYYY-MM-DD>/<category>/<project>/my_report.md
 
-# 2. deliverables.yaml に entry 追加 — API 側に「register deliverable」が未整備なので
-#    schema 厳守でファイル直接編集 OK (Phase 4 の既知 gap、将来 mt deliverable create で改善予定)
+# 2. register: deliverables.yaml + BL.yaml.deliverable_refs を atomic に更新
+mt deliverable register \
+  --bl BL-0015 \
+  --file my_report.md \
+  --title "失業保険 調査レポート" \
+  --agent claude \
+  --task <この cockpit task id>
+# 出力: registered d-20260505-001 -> .../my_report.md (BL BL-0015 refs: 1)
 ```
+
+`--file` は **basename のみ** (絶対パス禁止)、`--bl` 指定で category/project は自動解決、
+`--id` 省略時は `d-<YYYYMMDD>-<NNN>` で自動採番。
+**deliverables.yaml / BL.yaml の手書きは禁止**。
 
 **Flow ディレクトリ構造 (どちらでも可)**:
 
@@ -402,7 +417,7 @@ Cursor / Claude Code / Codex / Cockpit から AIPM プロジェクト (`~/aipm_v
 1. **タスク状態を変更したい時** → `mt bl update` / `mt bl add-decision`
 2. **新規 BL を作りたい時** → `mt bl create` (Backlog.md に追加 or per-project YAML 自動採番)
 3. **田中さんに質問したい時** → `mt bl add-question` (会話だけで終わらせない)
-4. **成果物を出した時** → `Flow/<today>/<project>/deliverables.yaml` を直接編集する **代わりに** `mt deliverable add-comment` 等を使うか、書込後に `mt deliverable update-state --state unreviewed` で登録する
+4. **成果物を出した時** → `Flow/<today>/<category>/<project>/<basename>.md` に書き出して `mt deliverable register --bl <BL-ID> --file <basename>.md --title "..."` で登録 (deliverables.yaml と BL.deliverable_refs を atomic に更新)。手書き禁止
 
 エージェントが mini-tachyon (ローカル port 3000) に到達できない環境 (例: 別 Mac、出先など) は **読み取り専用 mode** で動作: `Stock/` の YAML を読むのは可、書き込みは禁止 → 必要なら作業メモを Flow に残し、後で田中さんが mini-tachyon で取り込む。
 

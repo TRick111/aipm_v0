@@ -5,13 +5,14 @@ category: RestaurantAILab
 state: in_progress
 priority: normal
 created_at: '2026-04-30T13:26:51.867Z'
-updated_at: '2026-05-06T05:20:17.595Z'
+updated_at: '2026-05-06T06:46:51.755Z'
 created_by: mt-cli
 description: >-
   RestaurantAILab
   社内IT整備プロジェクトの一環として、CoreDrivenコーポレートサイト（WordPress）のコア・テーマ・プラグインのバージョンアップを実施する。事前バックアップ→検証環境で互換性確認→本番反映→主要ページ表示・問い合わせフォーム・SSL/リダイレクトの動作確認まで行う。
 deliverable_refs:
   - d-bl0079-20260506-phase0-log
+  - d-bl0079-20260506-phase1-log
 schema_version: 2
 cockpit_task_ids:
   - ab2f1e5a
@@ -373,3 +374,35 @@ decisions:
 
 
       田中さんの『Phase 2』が (a) 計画書通りの Phase 2 (クリーンアップ) を指すのか (b) 残ページの AI HTML 化 (= 計画書 Phase 1) を指すのかが不明 → 着手前に意思確認したい。
+  - at: '2026-05-06T06:46:51.755Z'
+    type: commitment
+    by: ai
+    content: |-
+      [5/6 15:44 Phase 1 完了 ✅] 残4ページ (biz-core / ai-core / contact-new / company-new) を AI HTML 化 + 公開。
+
+      実施:
+      (1) Phase 1 バックアップ (db_dump_pre_phase1.sql 3.2MB + 各 post_content/status) 取得
+      (2) 共通変換スクリプト transform_ai_html.py で 4 ファイル一括生成 → scp + wp post update + post_status=publish
+      (3) Playwright PC 検証で 4 ページ表示確認 → スクショ phase1_pc_*.png 4 枚保存
+      (4) SP 確認で company-new の田中画像が修正未適用と判明 → 原因 (member 親 class 不統一: member-card/deliver-card/member-block) 特定
+      (5) 田中ルール汎用化 (.avatar img[alt=田中利空]{object-position:center 22%}) → 5 ページ全部再投入
+      (6) SP 再検証で田中の顔全体表示確認 (phase1_sp_company-new_tanaka_v3.png)
+
+      最終状態:
+      - ID=10 top: publish 36372 bytes
+      - ID=704 biz-core: publish 34462 bytes
+      - ID=706 ai-core: publish 53807 bytes
+      - ID=708 contact-new: publish 23506 bytes
+      - ID=710 company-new: publish 32072 bytes
+      - 全ページ HTTP 200 ✅
+
+      成果物: 06_phase1_execution_log.md (id=d-bl0079-20260506-phase1-log) + 5 ページの paste-ready HTML + Playwright スクショ群。
+
+      Phase 2 (クリーンアップ) の判断事項:
+      - ナビメニュー再編 (TOP/Business→Biz Core/AI Core/Company/News/Contact)
+      - フォーム送信実装 (現状 /contact-new/ のフォームは送信ハンドラ未実装)
+      - main.js の #main_visual 関連処理整理 (コンソールエラー 3 件)
+      - 旧 CSS (.custom-message__*, .biz__*) 削除可否
+      - 既存 /contact/(draft) /company/(publish 独自メディアセクション付き) の整理
+
+      田中さんの最終確認: シークレットウィンドウで 5 ページを巡回 + Phase 2 着手判断

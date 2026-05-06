@@ -1,0 +1,740 @@
+<!--
+  CoreDriven Company — WordPress 貼付用 HTML (Phase 1)
+  生成日: 2026-05-06
+  使い方: WP 固定ページの「カスタム HTML」ブロックに丸ごと貼付
+  生成元: ~/Downloads/Core Driven_20260426.zip の company.html
+  改変点:
+    - <script src="assets/site.js"> + injectHeaderFooter() 削除
+    - assets/styles.css と <head> 内 <style> をインライン化
+    - 内部リンクを WP パーマリンク形式に変換
+    - 画像パスを /wp-content/uploads/coredriven-html/ に統一
+    - 田中利空モバイル画像 object-position:center 22%
+    - 全体を <!-- wp:html --> でラップ (wpautop 回避)
+-->
+<!-- wp:html -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+/* === Core Driven 共通 design system (assets/styles.css) === */
+/* Core Driven — Design System */
+:root{
+  --ink-900:#0B1530;
+  --ink-700:#1B2444;
+  --ink-500:#3A4566;
+  --ink-400:#5A6685;
+  --ink-300:#8A93AE;
+  --ink-200:#C4CADE;
+  --ink-100:#E3E7F2;
+  --ink-50:#F2F4FB;
+  --paper:#FAFBFE;
+  --white:#FFFFFF;
+  --blue-900:#0B1FB3;
+  --blue-700:#1230FF;
+  --blue-600:#2A6BFF;
+  --blue-500:#3D86FF;
+  --blue-400:#5BC8FF;
+  --blue-300:#9FE0FF;
+  --blue-100:#E3F1FF;
+  --blue-50:#F0F7FF;
+  --grad-deep: linear-gradient(135deg,#1230FF 0%,#2A6BFF 50%,#5BC8FF 100%);
+  --grad-light: linear-gradient(135deg,#E3F1FF 0%,#F0F7FF 50%,#F7FBFF 100%);
+  --grad-hero: linear-gradient(160deg,#F0F7FF 0%,#DCEBFF 35%,#C5E2FF 70%,#9FE0FF 100%);
+  --grad-text: linear-gradient(120deg,#1230FF 0%,#2A6BFF 45%,#5BC8FF 100%);
+  --shadow-sm: 0 1px 2px rgba(11,21,48,.04), 0 1px 3px rgba(11,21,48,.06);
+  --shadow-md: 0 4px 14px rgba(11,21,48,.06), 0 2px 6px rgba(11,21,48,.04);
+  --shadow-lg: 0 18px 48px rgba(18,48,255,.08), 0 4px 12px rgba(11,21,48,.05);
+  --shadow-xl: 0 30px 80px rgba(18,48,255,.10), 0 8px 24px rgba(11,21,48,.06);
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-xl: 32px;
+  --font-sans: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  --font-display: 'Inter', 'Noto Sans JP', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --max: 1240px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family: var(--font-sans);
+  background: var(--paper);
+  color: var(--ink-900);
+  font-feature-settings:"palt";
+  line-height:1.7;
+  -webkit-font-smoothing: antialiased;
+  font-size: 15px;
+}
+a{color:inherit;text-decoration:none}
+img,svg{display:block;max-width:100%}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+/* Layout */
+.container{max-width:var(--max);margin:0 auto;padding:0 32px}
+@media(max-width:720px){.container{padding:0 20px}}
+section{padding:120px 0;position:relative}
+@media(max-width:720px){section{padding:72px 0}}
+.eyebrow{
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing:.18em;
+  font-weight:600;
+  color: var(--blue-700);
+  text-transform: uppercase;
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+}
+.eyebrow::before{
+  content:"";
+  width:24px;height:1px;
+  background: var(--grad-deep);
+  display:inline-block;
+}
+h1,h2,h3,h4{font-family:var(--font-display);font-weight:800;letter-spacing:-.02em;color:var(--ink-900);line-height:1.25}
+h1{font-size: clamp(40px, 6vw, 72px); letter-spacing:-.035em; line-height:1.1}
+h2{font-size: clamp(26px, 3.6vw, 48px); letter-spacing:-.025em; line-height:1.18}
+h3{font-size: clamp(20px, 2vw, 26px)}
+h4{font-size: 17px}
+p{color: var(--ink-500); line-height:1.85}
+.lead{font-size: 17px; color: var(--ink-500); line-height:1.95}
+.grad-text{
+  background: var(--grad-text);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+/* Header */
+.site-header{
+  position:sticky; top:0; z-index:50;
+  background: rgba(250,251,254,.82);
+  backdrop-filter: blur(14px);
+  border-bottom:1px solid rgba(195,202,222,.4);
+}
+.site-header .inner{
+  max-width: var(--max); margin:0 auto;
+  padding: 18px 32px;
+  display:flex; align-items:center; gap:32px;
+}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.02em;font-size:17px}
+.brand-logo{height:32px;width:auto;display:block}
+.brand-mark{
+  width:30px;height:30px; border-radius:7px;
+  background: var(--grad-deep);
+  position:relative; flex-shrink:0;
+  box-shadow: 0 4px 12px rgba(18,48,255,.25);
+}
+.brand-mark::after{
+  content:""; position:absolute; inset:7px;
+  background: var(--white);
+  clip-path: polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);
+}
+.brand-mark::before{
+  content:""; position:absolute; inset:0; border-radius:7px;
+  background: var(--grad-deep);
+  clip-path: polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);
+}
+.nav{display:flex;gap:28px;margin-left:auto;align-items:center}
+.nav a{font-size:14px;color:var(--ink-700);font-weight:500;transition:color .2s}
+.nav a:hover{color:var(--blue-700)}
+.nav a.active{color:var(--blue-700)}
+.nav a.btn-primary{color:var(--white)}
+.nav a.btn-primary:hover{color:var(--white)}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  padding:12px 22px;
+  border-radius:999px;
+  font-weight:600;
+  font-size:14px;
+  transition:transform .2s, box-shadow .2s, background .2s;
+  white-space:nowrap;
+}
+.btn-primary{
+  background: var(--grad-deep);
+  color:var(--white);
+  box-shadow: 0 8px 22px rgba(18,48,255,.28);
+}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 12px 28px rgba(18,48,255,.36)}
+.btn-ghost{
+  background: var(--white);
+  color: var(--ink-900);
+  border:1px solid var(--ink-100);
+}
+.btn-ghost:hover{border-color:var(--blue-500); color:var(--blue-700)}
+.btn-arrow::after{content:"→"; font-weight:400}
+.menu-toggle{display:none}
+@media(max-width:880px){
+  .nav{display:none}
+  .nav.open{display:flex;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:var(--white);padding:24px;border-bottom:1px solid var(--ink-100);align-items:stretch}
+  .nav.open a{padding:8px 0}
+  .menu-toggle{display:flex;margin-left:auto;width:40px;height:40px;align-items:center;justify-content:center;border-radius:8px;border:1px solid var(--ink-100)}
+}
+/* Footer minimal */
+.site-footer-mini{
+  background: #0B1530;
+  color: rgba(255,255,255,.6);
+  padding: 36px 0 32px;
+  font-size: 13px;
+  position:relative;
+}
+.site-footer-mini .container{padding-left:32px; padding-right:32px}
+.site-footer-mini .footer-row{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:24px; flex-wrap:wrap;
+  padding-bottom:20px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.site-footer-mini .footer-brand img{height:26px; width:auto; display:block; filter: brightness(0) invert(1); opacity:.92}
+.site-footer-mini .footer-links{display:flex; gap:24px; flex-wrap:wrap}
+.site-footer-mini .footer-links a{color:rgba(255,255,255,.78); font-size:13px; transition:color .2s}
+.site-footer-mini .footer-links a:hover{color:#9FE0FF}
+.site-footer-mini .footer-bottom{
+  margin-top:18px;
+  display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+  font-family: var(--font-mono);
+  font-size:11.5px; letter-spacing:.04em;
+  color: rgba(255,255,255,.45);
+}
+.site-footer-mini .footer-bottom .sep{color:rgba(255,255,255,.25)}
+@media(max-width:640px){
+  .site-footer-mini{padding:28px 0 24px}
+  .site-footer-mini .footer-row{gap:16px; padding-bottom:16px}
+  .site-footer-mini .footer-links{gap:16px 18px}
+  .site-footer-mini .footer-links a{font-size:12.5px}
+  .site-footer-mini .footer-bottom{flex-direction:column; align-items:flex-start; gap:4px}
+  .site-footer-mini .footer-bottom .sep{display:none}
+}
+/* Footer */
+.site-footer{
+  background: linear-gradient(180deg,#0B1530 0%,#0E1A3D 100%);
+  color: var(--white);
+  padding: 96px 0 40px;
+  position:relative;
+  overflow:hidden;
+}
+.site-footer::before{
+  content:""; position:absolute; inset:0;
+  background: radial-gradient(ellipse at top right, rgba(91,200,255,.18) 0%, transparent 55%);
+  pointer-events:none;
+}
+.site-footer .inner{position:relative}
+.footer-headline{
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight:800;
+  letter-spacing:-.02em;
+  margin-bottom: 56px;
+  line-height: 1.25;
+  background: linear-gradient(120deg,#FFFFFF 0%,#9FE0FF 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  max-width: 720px;
+}
+.footer-grid{display:grid;grid-template-columns: 1.4fr repeat(3,1fr); gap:48px; padding-top:48px; border-top:1px solid rgba(255,255,255,.1)}
+@media(max-width:880px){.footer-grid{grid-template-columns:1fr 1fr; gap:32px}}
+.footer-grid .brand{color:var(--white);font-size:17px}
+.footer-grid h5{
+  font-family: var(--font-mono);
+  font-size:11px; letter-spacing:.2em;
+  color: var(--blue-300);
+  margin-bottom:18px;
+  font-weight:600;
+}
+.footer-grid ul{list-style:none;display:flex;flex-direction:column;gap:12px}
+.footer-grid a{color:rgba(255,255,255,.78);font-size:14px;transition:color .2s}
+.footer-grid a:hover{color:var(--blue-300)}
+.footer-meta{
+  margin-top: 56px;
+  padding-top:24px;
+  border-top:1px solid rgba(255,255,255,.08);
+  display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px;
+  font-size: 12px; color: rgba(255,255,255,.55);
+  font-family: var(--font-mono);
+}
+/* Generic blocks */
+.section-head{display:flex;flex-direction:column;align-items:flex-start;gap:24px;max-width:780px;margin-bottom:64px}
+.section-head .lead{margin-top:8px}
+.section-head h2{white-space:pre-wrap}
+.card{
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  border:1px solid var(--ink-100);
+  padding: 36px;
+  transition: transform .25s, box-shadow .25s, border-color .25s;
+}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:rgba(91,134,255,.3)}
+.tag{
+  display:inline-flex;align-items:center;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--blue-50);
+  color: var(--blue-700);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing:.02em;
+}
+.num-label{
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue-700);
+  letter-spacing:.05em;
+}
+/* Bullet list with gradient dot */
+.bullet-list{list-style:none;display:flex;flex-direction:column;gap:14px}
+.bullet-list li{position:relative; padding-left:28px; color:var(--ink-700); line-height:1.7; font-size:15px}
+.bullet-list li::before{
+  content:"";
+  position:absolute; left:0; top:.7em;
+  width:10px; height:10px; border-radius:3px;
+  background: var(--grad-deep);
+}
+/* Hero gradient panel */
+.hero-grad{
+  background: var(--grad-hero);
+  position:relative;
+  overflow:hidden;
+}
+.hero-grad::before{
+  content:""; position:absolute;
+  width:600px;height:600px;border-radius:50%;
+  background: radial-gradient(circle, rgba(255,255,255,.55) 0%, rgba(255,255,255,0) 70%);
+  top:-200px; right:-200px;
+  pointer-events:none;
+}
+.hero-grad::after{
+  content:""; position:absolute;
+  width:500px;height:500px;border-radius:50%;
+  background: radial-gradient(circle, rgba(18,48,255,.15) 0%, rgba(18,48,255,0) 70%);
+  bottom:-200px; left:-100px;
+  pointer-events:none;
+}
+/* Divider line */
+.hr-grad{
+  height:1px;
+  background: linear-gradient(90deg, transparent, var(--blue-400), transparent);
+  border:0;
+  margin: 0;
+}
+/* Animation */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .9s cubic-bezier(.2,.7,.2,1) both}
+/* Service split tag */
+.svc-pill{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:6px 14px; border-radius:999px;
+  font-size:11px; font-weight:600;
+  font-family: var(--font-mono);
+  letter-spacing:.1em; text-transform:uppercase;
+}
+.svc-biz{background:#EAF1FF; color:#1230FF; border:1px solid #C8D8FF}
+.svc-ai{background:#E5F6FF; color:#0E6FD1; border:1px solid #B6E2FF}
+/* Page hero */
+.page-hero{
+  padding: 140px 0 100px;
+  background: var(--grad-hero);
+  position:relative; overflow:hidden;
+}
+.page-hero::before{
+  content:""; position:absolute;
+  width:700px;height:700px;border-radius:50%;
+  background: radial-gradient(circle, rgba(255,255,255,.5) 0%, rgba(255,255,255,0) 70%);
+  top:-300px; right:-200px;
+  pointer-events:none;
+}
+.page-hero .container{position:relative}
+/* Forms */
+.field{display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
+.field label{font-size:13px;font-weight:600;color:var(--ink-700)}
+.field input,.field textarea,.field select{
+  padding:14px 16px;
+  border-radius:12px;
+  border:1px solid var(--ink-100);
+  background: var(--white);
+  font: inherit;
+  color: var(--ink-900);
+  transition: border-color .2s, box-shadow .2s;
+}
+.field input:focus,.field textarea:focus,.field select:focus{
+  outline:0;
+  border-color: var(--blue-500);
+  box-shadow: 0 0 0 4px rgba(61,134,255,.12);
+}
+.required{color: var(--blue-700)}
+/* ===== Mobile optimizations (SP) ===== */
+@media(max-width:640px){
+  h1{font-size:38px; line-height:1.12}
+  h2{font-size:24px; line-height:1.3}
+  h3{font-size:18px}
+  .lead{font-size:14.5px; line-height:1.85}
+  section{padding:56px 0}
+  /* Section heads: tighten + let auto-wrap handle line breaks */
+  .section-head{margin-bottom:32px; gap:14px; max-width:100%}
+  .section-head h2 br{display:none}
+  .section-head .lead{margin-top:0}
+  /* Page hero (Biz Core / AI Core) */
+  .page-hero{padding:80px 0 48px}
+  .page-hero h1{font-size:64px; margin:16px 0 12px}
+  .page-hero .catch{font-size:22px; line-height:1.35; margin-bottom:18px}
+  .page-hero .catch br{display:none}
+  .page-hero .lead{font-size:14.5px}
+  .page-hero .actions{margin-top:24px}
+  .page-hero .pills{gap:6px}
+  /* Index hero */
+  .hero h1 br{display:none}
+  .hero .lead{font-size:14.5px}
+  /* Member / deliver cards padding tighten */
+  .deliver-card .body,
+  .member-block .body{padding:28px 22px}
+  .deliver-card .ja,
+  .member-block .ja{font-size:22px}
+  /* Process step */
+  .process-step{padding:24px 22px}
+  .process-step .step-num{font-size:28px}
+  /* Value cards */
+  .val-card,
+  .value-card,
+  .ch-list,
+  .fit-card{padding:24px 22px}
+  /* Cards & generic */
+  .card{padding:24px 22px}
+}
+
+/* === ページ固有 <style> (company.html <head>) === */
+
+.page-hero h1{font-size: clamp(40px, 6vw, 72px); margin: 24px 0 32px; letter-spacing:-.03em}
+.page-hero h1 .accent{background:var(--grad-text); -webkit-background-clip:text; background-clip:text; color:transparent}
+.page-hero .lead{max-width:780px; white-space:pre-line; color:var(--ink-700); font-size:16px}
+/* MVV */
+.mvv-section{}
+.mvv-card{
+  background:var(--white); border-radius: var(--radius-xl);
+  border:1px solid var(--ink-100); padding: 56px;
+  margin-bottom: 24px; position:relative; overflow:hidden;
+  display:grid; grid-template-columns: 220px 1fr; gap:48px; align-items:start;
+}
+@media(max-width:880px){.mvv-card{grid-template-columns:1fr; gap:24px; padding:36px}}
+.mvv-card::before{content:""; position:absolute; left:0; top:0; bottom:0; width:5px; background:var(--grad-deep)}
+.mvv-card .label{font-family:var(--font-mono); font-size:12px; letter-spacing:.2em; color:var(--blue-700); font-weight:700}
+.mvv-card .headline{font-size: clamp(24px,2.6vw,34px); font-weight:800; letter-spacing:-.02em; line-height:1.4; margin-bottom:18px; white-space:pre-line; background:var(--grad-text); -webkit-background-clip:text; background-clip:text; color:transparent}
+.mvv-card .body{font-size:15px; color:var(--ink-700); line-height:1.9; white-space:pre-line}
+.values-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin-top: 36px}
+@media(max-width:880px){.values-grid{grid-template-columns:1fr}}
+.value-card{background:var(--white); border-radius:var(--radius-lg); border:1px solid var(--ink-100); padding:36px; position:relative}
+.value-card::before{content:""; position:absolute; top:0; left:0; right:0; height:4px; background:var(--grad-deep); border-radius: var(--radius-lg) var(--radius-lg) 0 0}
+.value-card .num{font-family:var(--font-mono); font-size:13px; color:var(--blue-700); font-weight:700; letter-spacing:.06em; margin-bottom:14px; display:block}
+.value-card h3{font-size:22px; margin-bottom:6px; letter-spacing:-.02em; background:var(--grad-text); -webkit-background-clip:text; background-clip:text; color:transparent}
+.value-card .ja-sub{font-size:14px; font-weight:700; color:var(--ink-900); margin-bottom:16px; letter-spacing:-.01em}
+.value-card p{font-size:14px; line-height:1.85; white-space:pre-line; color:var(--ink-500)}
+/* Members */
+.members-section{background:var(--ink-50)}
+.member-block{
+  background:var(--white); border-radius: var(--radius-xl);
+  border:1px solid var(--ink-100); padding: 0;
+  margin-bottom: 24px; overflow:hidden;
+  display:grid; grid-template-columns: 360px 1fr;
+}
+@media(max-width:880px){.member-block{grid-template-columns:1fr}}
+.member-block .avatar{
+  background: var(--grad-light); position:relative;
+  display:flex; align-items:center; justify-content:center; min-height:380px; overflow:hidden;
+}
+.member-block .avatar::before{content:""; position:absolute; inset:0; background: repeating-linear-gradient(45deg, transparent 0 14px, rgba(18,48,255,.05) 14px 15px)}
+.member-block .avatar.has-photo::before{display:none}
+.member-block .avatar img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:2}
+.member-block .avatar .initials{position:relative; z-index:1; font-size:96px; font-weight:800; letter-spacing:-.04em; background:var(--grad-text); -webkit-background-clip:text; background-clip:text; color:transparent}
+.member-block .body{padding:48px}
+@media(max-width:880px){.member-block .body{padding:32px}}
+.member-block .label{font-family:var(--font-mono); font-size:11px; letter-spacing:.18em; color:var(--blue-700); margin-bottom:18px}
+.member-block .en{font-family:var(--font-mono); font-size:12px; letter-spacing:.18em; color:var(--ink-400); margin-bottom:6px}
+.member-block .ja{font-size:30px; font-weight:800; letter-spacing:-.02em; margin-bottom:6px}
+.member-block .pos{font-size:13px; color:var(--ink-500); margin-bottom:24px}
+.member-block .bio{font-size:14.5px; color:var(--ink-500); margin-bottom:24px; white-space:pre-line; line-height:1.9}
+.member-block .meta-grid{display:grid; grid-template-columns:1fr 1fr; gap:24px}
+@media(max-width:600px){.member-block .meta-grid{grid-template-columns:1fr}}
+.member-block .meta-block{background:var(--blue-50); border-radius:var(--radius-md); padding:18px 20px}
+.member-block .meta-block h4{font-size:11px; letter-spacing:.16em; color:var(--blue-700); font-family:var(--font-mono); margin-bottom:10px}
+.member-block .meta-block .skills{display:flex; flex-wrap:wrap; gap:6px}
+.member-block .meta-block .role-text{font-size:13px; line-height:1.8; color:var(--ink-700); white-space:pre-line}
+/* Company table */
+.company-section{}
+.company-table{
+  background:var(--white); border-radius:var(--radius-lg);
+  border:1px solid var(--ink-100); overflow:hidden;
+}
+.company-table .row{
+  display:grid; grid-template-columns: 200px 1fr; gap:24px;
+  padding: 22px 32px; border-bottom: 1px solid var(--ink-100);
+  font-size:14.5px; align-items:flex-start;
+}
+@media(max-width:600px){.company-table .row{grid-template-columns:1fr; gap:6px; padding:20px 24px}}
+.company-table .row:last-child{border-bottom:0}
+.company-table .row dt{font-weight:700; color:var(--ink-900); font-size:13px}
+.company-table .row dd{color:var(--ink-700); line-height:1.8}
+.company-note{margin-top:16px; font-size:12px; color:var(--ink-400); font-family:var(--font-mono)}
+/* Final CTA */
+.final-cta{background: var(--grad-hero); position:relative; overflow:hidden}
+.final-cta::before{content:""; position:absolute; width:800px; height:800px; border-radius:50%; background:radial-gradient(circle, rgba(255,255,255,.5) 0%, rgba(255,255,255,0) 65%); top:-300px; left:-200px}
+.final-cta .container{position:relative; text-align:center}
+.final-cta h2{margin-bottom:24px}
+.final-cta p{font-size:16px; color: var(--ink-700); max-width:680px; margin:0 auto 36px; white-space:pre-line}
+
+/* === SWELL header との衝突回避 === */
+.ai-fullhtml-wrap section{padding:120px 0;position:relative}
+.ai-fullhtml-wrap .container{max-width:1240px;margin:0 auto;padding:0 32px}
+@media(max-width:720px){.ai-fullhtml-wrap section{padding:72px 0}.ai-fullhtml-wrap .container{padding:0 20px}}
+
+.avatar img[alt="田中利空"]{object-position:center 22%}
+</style>
+<div class="ai-fullhtml-wrap">
+
+<!-- HERO -->
+<section class="page-hero">
+  <div class="container">
+    <span class="eyebrow">ABOUT</span>
+    <h1><span class="accent">Core Driven</span>について</h1>
+    <p class="lead">Core Drivenは、経営者の熱意を構想に変え、構想を事業として実現へ導く事業共創パートナーです。
+
+経営者の頭の中にある想い、違和感、構想を整理し、
+事業として成立する形に落とし込み、
+必要に応じてマーケティング、営業、現場運営、AI業務OS化まで伴走します。
+
+構想を語るだけで終わらせず、
+実現に向けて共に考え、共に動き、
+継続的に価値が生まれる仕組みへ変えていきます。</p>
+  </div>
+</section>
+
+<!-- MVV -->
+<section class="mvv-section" id="mvv">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">MISSION / VISION / VALUES</span>
+      <h2>私たちが大切にしていること</h2>
+    </div>
+
+    <div class="mvv-card">
+      <div class="label">MISSION</div>
+      <div>
+        <div class="headline">熱意を構想に、
+構想を事業に。</div>
+        <p class="body">経営者の内側には、まだ言葉になっていない熱意、違和感、本音、構想がある。
+
+Core Drivenは、その熱意に向き合い、実現可能な構想へ整理する。
+そして、その構想を理想論で終わらせず、
+事業、収益、体制、現場、仕組みへ落とし込み、実現へ導く。
+
+熱意を構想に変え、構想を事業に変える。
+それがCore Drivenの使命です。</p>
+      </div>
+    </div>
+
+    <div class="mvv-card">
+      <div class="label">VISION</div>
+      <div>
+        <div class="headline">ビジネスを心から
+楽しめる社会へ。</div>
+        <p class="body">ビジネスは、本来もっと面白いものである。
+
+本心から生まれた構想があり、
+信じたい可能性があり、
+実現したい未来がある。
+
+しかし多くの経営者は、日々の意思決定、現場の課題、属人的な業務、情報の散在に追われ、
+本来向き合うべき構想や価値創造に集中しきれていない。
+
+Core Drivenは、経営者の側に立ち、
+人とAIの力で、構想を整理し、事業化し、継続的に回る仕組みへ変えていく。
+
+本心から生まれた挑戦が、価値を生み、
+経営者も、チームも、ビジネスそのものを心から楽しめる社会を目指します。</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 24px">
+      <div class="label" style="font-family:var(--font-mono); font-size:12px; letter-spacing:.2em; color:var(--blue-700); font-weight:700">VALUES</div>
+      <div class="values-grid">
+        <div class="value-card">
+          <span class="num">VALUE 01</span>
+          <h3>Face the Core</h3>
+          <div class="ja-sub">核心に向き合う</div>
+          <p>表面的な要望や、言いやすい課題だけを扱わない。
+
+経営者の本音、違和感、熱意、恐れ、可能性まで見にいき、
+本当に向き合うべきCoreを捉える。
+
+耳ざわりの良い答えではなく、
+事業の出発点となる本質に向き合う。</p>
+        </div>
+        <div class="value-card">
+          <span class="num">VALUE 02</span>
+          <h3>Lead with Intelligence</h3>
+          <div class="ja-sub">知性と戦略で導く</div>
+          <p>熱意や感覚だけで、事業は実現しない。
+
+市場、顧客、収益、体制、優先順位を冷静に見極め、
+構想が実現するための勝ち筋を描く。
+
+勢いや思いつきに頼らず、
+知性と戦略によって、経営者の構想を実現へ導く。</p>
+        </div>
+        <div class="value-card">
+          <span class="num">VALUE 03</span>
+          <h3>Enjoy Creating</h3>
+          <div class="ja-sub">価値創造を楽しむ</div>
+          <p>難しい構想、複雑な現場、不確実な挑戦を、
+重荷としてではなく、面白さとして捉える。
+
+本質に向き合い、知性と戦略で考え抜いた先にある、
+事業づくりの楽しさを大切にする。
+
+経営者がビジネスを心から楽しめるように、
+私たち自身が価値創造を楽しむ。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MEMBERS -->
+<section class="members-section" id="members">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">MEMBERS</span>
+      <h2>経営・AI・実装を横断するチーム</h2>
+      <p class="lead" style="white-space:pre-line">経営と事業を前に進める吉田柾長。
+AI Coreと業務OS化を担う町田大地。
+システム導入と実装・運用を担う田中利空。
+
+それぞれの専門性を組み合わせ、構想から実装まで一気通貫で支援します。</p>
+    </div>
+
+    <!-- Member 01 -->
+    <div class="member-block">
+      <div class="avatar has-photo"><img src="/wp-content/uploads/coredriven-html/yoshida.webp" alt="吉田柾長"/></div>
+      <div class="body">
+        <div class="label">MEMBER · 01</div>
+        <div class="en">MASANAGA YOSHIDA</div>
+        <div class="ja">吉田柾長</div>
+        <div class="pos">代表取締役</div>
+        <div class="bio">青山学院大学国際政治経済学部卒業後、ぐるなびにて営業・企画を経験。
+アスラボで経営企画・マーケティングを担った後、フリーランスとして大手企業からスタートアップまで幅広く事業開発・マーケティング支援を推進。
+不動産再生スタートアップのスペリアルを取締役COOとして創業し、上場企業ではマーケティング部長を歴任。
+2021年にCore Drivenを創業。
+「これからの飲食店DXの教科書」を飲食業界の著名人と共同商業出版。</div>
+        <div class="meta-grid">
+          <div class="meta-block">
+            <h4>STRENGTHS</h4>
+            <div class="skills">
+              <span class="tag">経営伴走</span>
+              <span class="tag">事業開発</span>
+              <span class="tag">マーケティング戦略</span>
+              <span class="tag">事業構造設計</span>
+              <span class="tag">フロント推進</span>
+            </div>
+          </div>
+          <div class="meta-block">
+            <h4>担う領域</h4>
+            <div class="role-text">経営者の構想整理、事業開発、マーケティング戦略、案件フロント、事業推進。
+経営者の本音や違和感を引き出し、実現に向けた論点と優先順位を整理する。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Member 02 -->
+    <div class="member-block">
+      <div class="avatar has-photo"><img src="/wp-content/uploads/coredriven-html/machida.jpg" alt="町田大地"/></div>
+      <div class="body">
+        <div class="label">MEMBER · 02</div>
+        <div class="en">DAICHI MACHIDA</div>
+        <div class="ja">町田大地</div>
+        <div class="pos">執行役員 / CAIO</div>
+        <div class="bio">東京大学大学院修了後、化学メーカーで研究開発に従事。
+ITベンチャーへ転じ、ライブ配信サービスや広報PR部門の立ち上げ、新規事業開発などを経験。
+現職のSaaS企業ではプロダクトマネージャーとして新規機能開発を牽引。
+並行して生成AIを活用したサービス開発を行い、AIを業務に組み込む実践知を蓄積。</div>
+        <div class="meta-grid">
+          <div class="meta-block">
+            <h4>STRENGTHS</h4>
+            <div class="skills">
+              <span class="tag">AI事業開発</span>
+              <span class="tag">業務設計</span>
+              <span class="tag">プロダクト設計</span>
+              <span class="tag">データ活用</span>
+              <span class="tag">スケール設計</span>
+            </div>
+          </div>
+          <div class="meta-block">
+            <h4>担う領域</h4>
+            <div class="role-text">AI Core設計、業務OS化、プロダクト設計、AI活用のユースケース設計、情報集約と自動化。
+AIを単なるツールとして導入するのではなく、業務フロー、組織、プロダクトに組み込む形で設計する。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Member 03 -->
+    <div class="member-block">
+      <div class="avatar has-photo"><img src="/wp-content/uploads/coredriven-html/tanaka.jpg" alt="田中利空"/></div>
+      <div class="body">
+        <div class="label">MEMBER · 03</div>
+        <div class="en">RIKU TANAKA</div>
+        <div class="ja">田中利空</div>
+        <div class="pos">執行役員 / CTO</div>
+        <div class="bio">東京大学大学院工学系研究科修士課程修了後、大手ITコンサルティング企業にてM365を中心としたSaaS導入支援に従事。
+個人ではiOSアプリを開発・リリースし、App Store評価4.7、累計1.2万ダウンロードを記録。
+メンサ会員・帰国子女として、論理性と国際的視野を兼ね備える。</div>
+        <div class="meta-grid">
+          <div class="meta-block">
+            <h4>STRENGTHS</h4>
+            <div class="skills">
+              <span class="tag">システム導入</span>
+              <span class="tag">実装力</span>
+              <span class="tag">運用設計</span>
+              <span class="tag">技術翻訳</span>
+              <span class="tag">最適化力</span>
+            </div>
+          </div>
+          <div class="meta-block">
+            <h4>担う領域</h4>
+            <div class="role-text">システム導入、SaaS実装、AI Coreの環境構築、運用設計、現場定着。
+導入して終わりではなく、現場で動くまで作り切る。
+論理性と技術翻訳によって、非エンジニアの現場にも仕組みを定着させる。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPANY INFO -->
+<section class="company-section">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">COMPANY</span>
+      <h2>会社情報</h2>
+    </div>
+    <dl class="company-table">
+      <div class="row"><dt>会社名</dt><dd>株式会社Core Driven</dd></div>
+      <div class="row"><dt>代表者</dt><dd>吉田柾長</dd></div>
+      <div class="row"><dt>設立</dt><dd>2021年9月16日</dd></div>
+      <div class="row"><dt>事業内容</dt><dd>経営伴走、事業開発、マーケティング支援、AI導入支援、業務システム導入支援</dd></div>
+      <div class="row"><dt>所在地</dt><dd>東京都内（詳細はお問い合わせください）</dd></div>
+      <div class="row"><dt>お問い合わせ</dt><dd>お問い合わせフォームよりご連絡ください</dd></div>
+    </dl>
+    <div class="company-note">※ 公開前に、会社情報は最新情報に更新します。</div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div class="container">
+    <span class="eyebrow">LET'S TALK</span>
+    <h2 style="margin-top:20px">まずは、今考えていることをお聞かせください。</h2>
+    <p>相談内容が整理されていない段階でも構いません。
+Core Drivenが、経営者の熱意や構想を整理し、実現に向けて伴走します。</p>
+    <a href="/contact-new/" class="btn btn-primary btn-arrow" style="font-size:15px; padding:16px 32px">相談する</a>
+  </div>
+</section>
+
+
+</div>
+<!-- /wp:html -->

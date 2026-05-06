@@ -5,7 +5,7 @@ category: RestaurantAILab
 state: in_progress
 priority: normal
 created_at: '2026-04-30T13:26:51.867Z'
-updated_at: '2026-05-06T12:24:43.297Z'
+updated_at: '2026-05-06T12:36:28.236Z'
 created_by: mt-cli
 description: >-
   RestaurantAILab
@@ -14,6 +14,8 @@ deliverable_refs:
   - d-bl0079-20260506-phase0-log
   - d-bl0079-20260506-phase1-log
   - d-bl0079-20260506-phase2-menu-log
+  - d-bl0079-20260506-gas-form-setup
+  - d-bl0079-20260506-gas-script
 schema_version: 2
 cockpit_task_ids:
   - ab2f1e5a
@@ -454,3 +456,41 @@ decisions:
       - C-5 (低): 既存 /contact/ /company/ の整理
 
       - C-6 (中): ヘッダー CTA『相談する』ボタン追加 (SWELL カスタマイザー)
+  - at: '2026-05-06T12:36:28.236Z'
+    type: commitment
+    by: ai
+    content: >-
+      [5/6 21:35 Phase 2 ヘッダー CTA 追加 + News 削除 完了 ✅ / GAS 実装ガイド作成 ✅] 
+
+
+      実施:
+
+      (1) News メニュー削除: グローバルナビ db_id=68 + フッター db_id=657 を削除
+
+      (2) ヘッダー CTA 『相談する』ボタン追加: SWELL ヘッダー内ウィジェットエリア (head_box) に custom_html ウィジェット (custom_html-3) を追加。/contact-new/
+      行きの青グラデボタン (#1230FF→#5BC8FF / 15px / 高さ 39px / 画面右上 x=1102)
+
+      (3) Playwright PC で確認、ヘッダー右上に CTA 表示 ✅
+
+      (4) GAS フォームハンドラ実装: 田中さん指示『案 5 + メール通知』を反映した GAS スクリプト + AI HTML JS 注入ガイドを作成。設定値 (Sheets:
+      1ED_UKHB3QatCcRVj0aEyPzAgt6RPJrfdJ7HtbLKRzQs / 通知: info@core-driven.com) は固定済。
+
+
+      成果物:
+
+      - 07_phase2_menu_log.md (既登録)
+
+      - gas_contact_handler.js (id=d-bl0079-20260506-gas-script) — GAS の Code.gs に貼るコード本体 (140 行 / Sheets 自動初期化 + メール通知
+      + テスト関数同梱)
+
+      - 08_gas_form_handler_setup.md (id=d-bl0079-20260506-gas-form-setup) — 田中さんの GAS デプロイ手順 + AI 側のフォーム JS 注入手順 +
+      トラブルシュート + セキュリティ考慮事項
+
+
+      田中さんへの依頼:
+
+      GAS デプロイは AI からは実行できないため (Google アカウント認可が必要)、田中さんが script.google.com でプロジェクト作成 → gas_contact_handler.js の中身を貼付 →
+      『全員』アクセスで Web App デプロイ → URL を AI に共有してください (08_gas_form_handler_setup.md §1 の Step 1.1〜1.5)。
+
+
+      URL 受領後 AI が AI HTML form に JS 注入 → wp post update → Playwright テスト送信 → Sheets/メール受信確認まで 5 分で完了予定。

@@ -5,7 +5,7 @@ category: RestaurantAILab
 state: in_progress
 priority: normal
 created_at: '2026-04-30T13:26:51.867Z'
-updated_at: '2026-05-06T01:23:25.427Z'
+updated_at: '2026-05-06T05:20:17.595Z'
 created_by: mt-cli
 description: >-
   RestaurantAILab
@@ -89,6 +89,13 @@ pending_questions:
       Q-O [新規] 既存ナビメニュー (TOP/Business[#ai/#career/#biz]/Company/News/Contact[Google Form]) の AI 構成 (Biz Core/AI
       Core/会社概要/お問い合わせ) への再編タイミング: (a) Phase 0 と同時 (今夜) / (b) Phase 1 完了後 (5/8 頃) / (c) Phase 2 で SWELL ヘッダー自体を消す時
       のどれですか? 推奨は (b) — 残ページの AI HTML 化を先に終わらせてからメニュー全体を一気に切替。
+  - id: q-BL-0079-14-20260506052017
+    at: '2026-05-06T05:20:17.595Z'
+    cockpit_task_id: ab2f1e5a
+    content: >-
+      Q-P-2 [新規] 『フェーズ2に進んで良い』の解釈確認: (a) 計画書通りの Phase 1 (残 4 ページ biz-core/ai-core/contact-new/company-new の AI HTML
+      化、5/7-5/8 想定) を指していますか? それとも (b) 計画書通りの Phase 2 (旧 CSS 削除・tmp/ 整理・メニュー再編、クリーンアップフェーズ、5/9 以降) を指していますか? 推奨は (a)
+      で、残ページを AI HTML 化してから (b) クリーンアップに進む流れ。
 decisions:
   - at: '2026-05-03T00:46:41.425Z'
     type: commitment
@@ -343,3 +350,26 @@ decisions:
 
 
       田中さん最終確認待ち: シークレットウィンドウで https://core-driven.com/ を確認 → OK なら Phase 1 (残4ページ) に進めます。
+  - at: '2026-05-06T05:20:14.647Z'
+    type: commitment
+    by: ai
+    content: >-
+      [5/6 14:21 Phase 0 完全完了 / v4 田中モバイル画像修正済] 田中さん指摘『田中利空のモバイル画像で顔上部が切れている』を Playwright で確認 → 原因特定 (画像 tanaka.jpg は
+      600x960 縦長 / .avatar は 1.1:1 で SP では 715×650 / object-fit:cover + デフォルト object-position:center で顔上半分がクロップされる) → v4
+      修正 (.member-card .avatar img[alt=田中利空]{object-position:center 22%} を追加) → wp post update で投入 → Playwright SP
+      再撮影で『顔全体 (目・鼻・口 + スーツ上半身) が綺麗に表示』を確認。スクショ: phase0_sp_v4_tanaka_fixed.png。
+
+
+      田中さんから『これを治したらフェーズ2進んで良い』との承認受領。
+
+
+      なお現計画書での Phase 順序:
+
+      - Phase 0: TOP 置換 ← 14:21 完全完了
+
+      - Phase 1: 残 4 ページ (biz-core / ai-core / contact-new / company-new) AI HTML 化 (5/7-5/8 想定)
+
+      - Phase 2: クリーンアップ (旧 CSS 削除、tmp/ 整理、メニュー再編、5/9 以降)
+
+
+      田中さんの『Phase 2』が (a) 計画書通りの Phase 2 (クリーンアップ) を指すのか (b) 残ページの AI HTML 化 (= 計画書 Phase 1) を指すのかが不明 → 着手前に意思確認したい。

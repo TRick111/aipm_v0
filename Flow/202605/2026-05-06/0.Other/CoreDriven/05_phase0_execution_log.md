@@ -369,6 +369,90 @@ TypeError: Cannot read properties of null (reading 'classList')
 
 ---
 
+## Step 0.7 — モバイル画像微調整 (v4) ✅ 完了
+
+**開始**: 2026-05-06 14:18 JST
+**所要**: 3 分
+
+### 0.7.1 田中さんからの問題指摘
+スマホ実機 (iPhone) スクリーンショット 2 枚が共有された。判明した問題:
+- **田中利空の写真で顔の上部 (目から上) が切れている**
+- 鼻と口だけが見える状態 → 違和感あり
+
+### 0.7.2 原因分析
+田中の画像: `tanaka.jpg` (600×960 / **縦長 5:8**)
+他メンバー: 吉田 958×958 (正方形) / 町田 1822×1216 (横長 3:2)
+
+CSS:
+```css
+.member-card .avatar { aspect-ratio: 1.1/1 }  /* ほぼ正方形 */
+.member-card .avatar img { object-fit: cover; /* object-position: center (default) */ }
+```
+
+→ SP では .members-grid が 1 カラムになり .avatar が画面幅 (~715×~650px) に拡大。
+→ 縦長 600×960 を 1.1:1 (≒ 715×650) フレームに `object-fit:cover` でフィット = 上下が大きくクロップ
+→ デフォルト center クロップ = 顔の中央が切り取られる (= 顔の上半分が消失)
+
+吉田・町田は元々正方形〜横長なので影響軽微。
+
+### 0.7.3 修正 (v4)
+田中専用セレクタで `object-position` を上方向にシフト:
+
+```css
+.member-card .avatar img[alt="田中利空"]{object-position:center 22%}
+```
+
+→ 画像の上から 22% 地点を中央配置 = 顔がフレーム上方に来る = 顔全体が見える
+
+PC 表示への影響: 田中の画像も上 22% 位置になるが、PC では 276×251 の小さい正方形クロップなので顔の見え方の差はわずか (改善はあれど悪化なし)。
+
+### 0.7.4 v4 投入
+
+```bash
+scp v4.html xserver:/tmp/coredriven_top_paste_v4.html
+ssh xserver 'wp post update 10 --post_content="$(cat ...)" --path=...'
+# → Success: Updated post 10. (36385 bytes / +73 bytes from v3)
+```
+
+### 0.7.5 Playwright 検証 (SP 390×844)
+
+```js
+.avatar img[alt="田中利空"] {
+  objectPosition: "50% 22%"   ← 適用 OK ✅
+  objectFit: "cover"
+}
+```
+
+スクリーンショット: `screenshots/phase0_sp_v4_tanaka_fixed.png`
+→ **田中の顔全体 (目・鼻・口 + スーツ上半身) が綺麗に表示** ✅
+
+### 0.7.6 v4 で確定
+
+| バージョン | 状態 |
+|---|:-:|
+| v2 (旧) | wpautop で CSS 破壊 → 廃版 |
+| v3 (旧) | 中身 OK だが田中 SP 顔切れ → 廃版 |
+| **v4 (現役)** | wpautop 対策 + 田中モバイル位置調整 ✅ |
+
+---
+
+## Phase 0 完全完了 ✅
+
+**最終確定**: 2026-05-06 14:21 JST
+**全所要**: 4 時間 15 分 (10:06〜14:21、ただし大半が AI HTML 修正待ち)
+
+### 全成果
+- バックアップ 5 種 (リモート + ローカル二重保管) 取得済
+- TOP 公開状態の AI HTML 表示 ✅
+- PC / SP 両対応、Members 写真 3 人とも顔全体表示 ✅
+- 既存ページ (`/news/` `/privacy-policy/` `/company/`) 影響なし
+- ロールバック手順整備済
+
+### Phase 2 への引き継ぎ
+田中さんの「Phase 2 進んで良い」承認を受けて、計画書 §10 (クリーンアップ) または §3 (Phase 1 = 残 4 ページ) に進む。要意思確認。
+
+---
+
 ## 異常検知 / ロールバック実施履歴
 
 (該当なし — 異常があれば追記)

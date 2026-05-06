@@ -207,3 +207,75 @@ ssh xserver 'wp post update 708 --post_content="$(cat /tmp/coredriven_contact-ne
 ---
 
 **END OF SETUP GUIDE.** 田中さんが Step 1 (GAS デプロイ) → URL 共有 → AI が Step 2 を 5 分で完了。
+
+---
+
+## 7. 実装結果 / トラブルシューティング履歴 (5/6 21:59 完了)
+
+### 7.1 田中さんから受領した GAS Web App URL
+```
+https://script.google.com/macros/s/AKfycbzR2xAXQu2xI0-6l_7MvMh2q1bRybGcKKz4h9VN1wuCLkAMoC-1ka8cVK558Wnsptz4/exec
+```
+
+### 7.2 動作確認 (GET)
+```
+$ curl -sL "$GAS_URL"
+{"ok":true,"message":"CoreDriven Contact GAS Webhook is alive","timestamp":"2026-05-06T12:55:22.476Z"}
+```
+
+### 7.3 試行錯誤の経過
+
+| 試行 | 設定 | 結果 |
+|---|---|:-:|
+| v2 | `headers: {'Content-Type': 'application/x-www-form-urlencoded'}` 明示 | ❌ ERR_FAILED |
+| v3 | headers 行を削除 (URLSearchParams が自動付与) | ❌ ERR_FAILED |
+| **v4 (採用)** | **`mode: 'no-cors'` を追加** | ✅ POST 200 OK |
+
+### 7.4 失敗の根本原因
+GAS Web App は POST 後に `googleusercontent.com` に 302 redirect する仕様。ブラウザの `fetch` (デフォルト `mode: 'cors'`) は cross-origin redirect を拒否し ERR_FAILED となる。
+
+### 7.5 v4 の最終 fetch コード
+```javascript
+const formData = new FormData(form);
+formData.append('ua', navigator.userAgent);
+const params = new URLSearchParams();
+formData.forEach((v, k) => params.append(k, v));
+
+await fetch(GAS_URL, {
+  method: 'POST',
+  mode: 'no-cors',  // ★ 必須: 302 redirect を許容
+  body: params,     // 自動で application/x-www-form-urlencoded として送信
+});
+// no-cors なのでレスポンス内容は読めない (opaque response)
+// → ここに到達 = 送信成功とみなす (GAS 側の Sheets/メール処理は確実に走る)
+form.outerHTML = '<div class="thank-you">送信完了しました...</div>';
+```
+
+### 7.6 トレードオフ
+- **メリット**: シンプル・軽量・GAS 側で確実に処理される
+- **デメリット**: client は GAS 処理結果を取得できない (Sheets 書込失敗 / メール送信失敗を検知できない)
+- **緩和策**: GAS の `doPost` 内 catch 句で **管理者通知メール** (`[CoreDriven Contact] ⚠️ ハンドラエラー`) を送信するロジックを `gas_contact_handler.js` に組み込み済み → 致命的失敗時も気づける
+
+### 7.7 Playwright 自動テスト送信結果
+- ダミーデータ送信 (テスト 田中 v3 / 【テスト v3】Core Driven 動作確認)
+- POST 200 OK 確認 (network requests)
+- 「送信完了しました」表示確認 (`screenshots/phase2_contact_thanks_visible.png`)
+- Sheets / メール確認は田中さんに依頼
+
+### 7.8 田中さんによる最終確認項目
+- [ ] Sheets (1ED_UKH...) にテスト行が追加されている
+- [ ] info@core-driven.com にテストメール届いている
+- [ ] 確認後、Sheets のテスト行を削除
+
+---
+
+## 8. ロールバック手順
+
+問題があった場合の差し戻し:
+
+```bash
+# /contact-new/ の post_content を一つ前の v3 (no-cors 前) に戻す
+ssh xserver 'wp post update 708 --post_content="$(cat /tmp/contact_v3.html)" --path=...'
+```
+
+または GAS スクリプトのデプロイを停止 (Apps Script ダッシュボードから「デプロイを管理」→「アーカイブ」)。

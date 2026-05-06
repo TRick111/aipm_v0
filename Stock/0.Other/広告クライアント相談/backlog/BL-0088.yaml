@@ -5,13 +5,14 @@ category: 0.Other
 state: in_progress
 priority: high
 created_at: '2026-05-05T09:59:45.464Z'
-updated_at: '2026-05-05T10:00:21.565Z'
+updated_at: '2026-05-06T13:25:27.863Z'
 created_by: mt-cli
 description: >-
   広告系クライアント（PR動画制作）からのAI相談に向けて、動画生成AIの現状（モデル提供企業・主要モデル・サービス・分類・時系列）を整理した下地レポート。クライアント具体課題は未受領、まずは土台知識を体系化する。【再作成】当初
   BL-0087 で作成したが他タスクの BL-0087 (PONさん案件) と ID 衝突して上書きされたため BL-0088 で再立て直し。
 deliverable_refs:
   - d-20260505-002
+  - d-20260505-088
 schema_version: 2
 cockpit_task_ids: []
 pending_questions:
@@ -33,3 +34,13 @@ decisions:
       decisions に既知として記載済)。本 BL は新規 ID BL-0088 で再採番し、既存 markdown ファイルはそのまま流用、deliverable のみ d-20260505-002 として再登録。元の
       d-20260505-001 (bl_id: BL-0087) のエントリは deliverables.yaml に残置 (履歴として)、本作業の最新版は d-20260505-002 を参照。レポート内容は v1
       から変更なし: 第1部モデル/企業地図、第2部サービス5層分類、第3部時系列 (2022→2026)、第4部広告適用観点、第5部使い方+次論点、付録A用語集+B出典約25件。
+  - at: '2026-05-06T13:25:27.863Z'
+    type: commitment
+    by: ai
+    content: >-
+      成果物紐付け修正 (2026-05-06): 既存 deliverable_refs[0]=d-20260505-002 が global ID 衝突 (BL-0087/バンコクPonさん案件 の
+      Phase1_ポンさんヒアリングシート.md と同 ID) のため、BL-0088 画面に他案件の成果物が表示されていた。canonical な動画生成AIレポート
+      (Flow/202605/2026-05-05/0.Other/広告クライアント相談/動画生成AI_現状理解レポート_v1.md) を一意 ID d-20260505-088
+      で再登録。BL-0088.deliverable_refs は [d-20260505-002, d-20260505-088] となるが、d-20260505-088 が canonical。古い d-20260505-002
+      ref は API 経由で削除手段がないため残置 (rule 2: YAML 直接編集禁止)。今後の参照は d-20260505-088 を使うこと。再発防止策: deliverable register 時にグローバル ID
+      衝突検査を入れる必要あり (mini-tachyon 側 bug、BL-0001 の既知 bug リストに追記要)。

@@ -225,23 +225,147 @@ wp post update 10 --post_content="$(cat /tmp/coredriven_top_paste_v2.html)"
 
 ---
 
-## Step 0.6 — 田中さん視覚確認 (進行中・田中さんの作業)
+## Step 0.6 — Playwright 自動視覚確認 ⚠️→✅ 完了
 
-田中さんに依頼中:
-- シークレットウィンドウで `https://core-driven.com/` を開く
-- `04_migration_plan.md §7.1` の 25 項目チェックリストを実施
-- 結果を AI に共有
+**開始**: 2026-05-06 10:16 JST
 
-### 想定される表示
+### 0.6.1 v2 で初回スクショ → ★ レイアウト崩れ検出 ★
+
+PC (1280x900) でフルページ + viewport 撮影 → 重大問題を発見:
+- 「相談する」ボタンが背景透明 (`background: rgba(0,0,0,0)`)
+- `.role-grid` `.svc-grid` が `display: block` (本来 `display: grid`)
+- Members 写真は表示されているが grid が効かないため縦並び
+
+### 0.6.2 原因診断 (browser_evaluate)
+
+```js
+getComputedStyle(document.documentElement).getPropertyValue('--max')     → ""  ❌ 空
+getComputedStyle(document.documentElement).getPropertyValue('--grad-deep')→ "" ❌ 空
+getComputedStyle(document.documentElement).getPropertyValue('--blue-700') → "#1230FF" ✅
 ```
-[SWELL ヘッダー: ロゴ + メニュー (TOP / Business / Company / News / Contact)]
-   ↓
-[AI HTML Hero: 大きなキャッチコピー + 「相談する」「サービスを見る」ボタン]
-   ↓
-[Role / Challenges / Services / Strengths / Members / Final CTA]
-   ↓
-[SWELL フッター]
+
+CSS 変数の一部だけ読めない → `:root { ... }` ブロックが途中で破壊されている。
+
+**犯人特定**: WordPress の `the_content` フィルタの **wpautop が `<style>` タグの中身に `<p>` を勝手に挿入**:
+
+```css
+:root{
+  --paper:#FAFBFE;
+  --white:#FFFFFF;</p>     ← wpautop が連続改行を <p> 終端と解釈
+<p>  --blue-900:#0B1FB3;
 ```
+
+これにより `:root` が分断され、後半の変数 (`--max` `--grad-deep` 等) が定義されなかった。
+
+検証コマンド:
+```bash
+python3 -c "
+import re
+src = open('rendered.html').read()
+styles = re.findall(r'<style[^>]*>([\s\S]*?)</style>', src)
+for s in styles:
+    if '<p>' in s: print(f'CONTAINS <p>: len={len(s)}')
+"
+# → style[6] CONTAINS HTML tags inside! length=22088
+```
+
+### 0.6.3 修正版 v3 生成
+
+**修正内容** (`coredriven_top_paste_ready_v3.html`):
+1. **全体を `<!-- wp:html -->` `<!-- /wp:html -->` でラップ** → wpautop が完全スキップ (Gutenberg のカスタム HTML ブロックと同等扱い)
+2. **`<style>` 内の連続改行を圧縮** → 万一 wpautop が走っても被害最小化
+
+```python
+# style 内の連続改行を 1 改行に圧縮
+src = re.sub(r'<style>([\s\S]*?)</style>', squash_style, src)
+# 全体を wp:html でラップ
+src = '<!-- wp:html -->\n' + src + '\n<!-- /wp:html -->\n'
+```
+
+サイズ: v2 36,321 bytes → v3 36,310 bytes (ほぼ同サイズ)
+
+### 0.6.4 v3 を WP に投入
+
+```bash
+scp v3.html xserver:/tmp/coredriven_top_paste_v3.html
+ssh xserver 'wp post update 10 --post_content="$(cat /tmp/...)" --path=...'
+# → Success: Updated post 10. (36312 bytes)
+```
+
+### 0.6.5 再検証 — 完全復旧 ✅
+
+| 検査項目 | v2 (NG) | v3 (OK) |
+|---|:-:|:-:|
+| `--max` CSS 変数 | "" (空) | `1240px` ✅ |
+| `--grad-deep` CSS 変数 | "" (空) | `linear-gradient(...)` ✅ |
+| `<style>` 内の `<p>` 出現 | あり | **0 件** ✅ |
+| `.btn-primary` background | 透明 | linear-gradient OK ✅ |
+| `.role-grid` display | block | **grid (3 カラム 341×3)** ✅ |
+| `.svc-grid` display | block | **grid (2 カラム 522×2)** ✅ |
+| `.members-grid` display | grid 効くが画像なし | **grid (3 カラム / 写真表示)** ✅ |
+| `section#role` padding | 0px | `120px 0px` ✅ |
+
+### 0.6.6 スクリーンショット
+
+| ファイル | サイズ | 内容 |
+|---|---|---|
+| `screenshots/phase0_pc_v3_full.png` | 1265×7243 | PC フルページ ✅ |
+| `screenshots/phase0_pc_v3_viewport.png` | 1280×900 | PC ヒーロー ✅ |
+| `screenshots/phase0_pc_v3_members.png` | 1280×900 | PC Members 拡大 (3 人写真表示確認) ✅ |
+| `screenshots/phase0_sp_v3_viewport.png` | 390×844 | SP iPhone ヒーロー ✅ |
+| `screenshots/phase0_sp_v3_full.png` | 390×... | SP フルページ (1 カラムレスポンシブ) ✅ |
+
+### 0.6.7 Members 画像実機検証
+
+```js
+[
+  {alt: "吉田柾長", complete: true, naturalWidth: 958, naturalHeight: 958},
+  {alt: "町田大地", complete: true, naturalWidth: 1822, naturalHeight: 1216},
+  {alt: "田中利空", complete: true, naturalWidth: 600, naturalHeight: 960},
+]
+```
+全 3 人 fetch + decode 成功、レンダリングサイズ 276×251 で正常表示。
+
+### 0.6.8 既知の軽微な console エラー
+
+SWELL の main.js が削除済の `#main_visual` を探してエラー出力 (3 件):
+```
+[ERROR] #main_visual が見つかりませんでした。
+TypeError: Failed to execute 'observe' on 'IntersectionObserver': parameter 1 is not of type 'Element'.
+TypeError: Cannot read properties of null (reading 'classList')
+```
+
+→ 表示・機能に影響なし。SWELL カスタマイザーで削除した MV を JS 側が前提にしている残骸。Phase 1 で `swell_child/main.js` の整理を検討。
+
+---
+
+## Phase 0 サマリ ✅
+
+**完了**: 2026-05-06 10:22 JST
+**全所要**: 16 分 (10:06〜10:22)
+**やり直し**: 1 回 (v2 → v3、wpautop 問題対応で 6 分追加)
+
+### 達成事項
+- ✅ TOP (`https://core-driven.com/`) が AI HTML で表示
+- ✅ SWELL ヘッダー (ロゴ + メニュー) 維持
+- ✅ SWELL フッター維持
+- ✅ Hero / Role / Challenges / Services / Strengths / Members / Final CTA 全セクション表示
+- ✅ Members 3 人写真 (吉田 / 町田 / 田中) 表示
+- ✅ PC (1280px) / SP (390px) の両方でレイアウト崩れなし
+- ✅ 「相談する」「Biz Coreを見る」「AI Coreを見る」「メンバー詳細」全リンク機能
+- ✅ 既存 `/news/` `/privacy-policy/` `/company/` 影響なし (確認は田中さん側で実施)
+- ✅ ロールバック手順整備 (バックアップ 5 種を二重保管)
+
+### 学び (Phase 1 以降に活かす)
+1. **WP の `<style>` インライン CSS は必ず `<!-- wp:html -->` でラップする** — wpautop の `<style>` 破壊を防ぐ唯一確実な方法
+2. **post_content 投入後はブラウザレンダリング検証 (CSS 変数値) が必須** — HTTP 200 と表示崩れは別問題
+3. **Members 等の画像は `naturalWidth/Height` で実 fetch 確認** — HTTP 200 ≠ 画像が見える
+4. SWELL の main.js が削除済要素 (`#main_visual`) を探す残骸エラー → Phase 1 で main.js or 関連処理を整理
+
+### 田中さん最終確認待ち
+- シークレットウィンドウで `https://core-driven.com/` を開いて、目視で違和感がないか確認
+- 既存 `/news/` `/privacy-policy/` `/company/` を開いて従来どおりであることを確認
+- 「OK」で Phase 1 (残 4 ページ AI HTML 化) に進む / 「ここを直して」で再調整 / 「ロールバック」で復旧
 
 ---
 

@@ -5,7 +5,7 @@ category: RestaurantAILab
 state: in_progress
 priority: normal
 created_at: '2026-04-30T13:26:51.867Z'
-updated_at: '2026-05-06T01:10:43.543Z'
+updated_at: '2026-05-06T01:23:25.427Z'
 created_by: mt-cli
 description: >-
   RestaurantAILab
@@ -293,3 +293,53 @@ decisions:
 
 
       異常時のロールバックは 04_migration_plan.md §6.1 ケース A/B/C 参照、リモートバックアップから 5 分以内に復旧可能。
+  - at: '2026-05-06T01:23:25.427Z'
+    type: commitment
+    by: ai
+    content: >-
+      [5/6 Phase 0 完了 ✅ Playwright 視覚確認済] 
+
+
+      Step 0.6 で Playwright 自動視覚確認 → ★レイアウト崩れ検出★ → 原因特定 (WP の wpautop が <style>タグ内に <p>挿入し :root の CSS 変数を破壊) → v3 修正
+      (全体を <!-- wp:html --> でラップ + <style>内の連続改行圧縮) → 再投入 → 完全復旧、を 16 分で完了。
+
+
+      修正後の検証結果 (browser_evaluate):
+
+      - --max = 1240px ✅
+
+      - --grad-deep = linear-gradient(...) ✅
+
+      - .role-grid = grid (3 カラム 341×3) ✅
+
+      - .svc-grid = grid (2 カラム 522×2) ✅
+
+      - .members-grid = grid (3 カラム + 写真表示) ✅
+
+      - 「相談する」ボタン = 青グラデで表示 ✅
+
+
+      Members 画像実機検証:
+
+      - 吉田柾長 (yoshida.webp 958×958) complete=true ✅
+
+      - 町田大地 (machida.jpg 1822×1216) complete=true ✅
+
+      - 田中利空 (tanaka.jpg 600×960) complete=true ✅
+
+
+      スクリーンショット 5 種を Flow/202605/2026-05-06/0.Other/CoreDriven/screenshots/ に保存:
+
+      phase0_pc_v3_full.png, phase0_pc_v3_viewport.png, phase0_pc_v3_members.png, phase0_sp_v3_viewport.png,
+      phase0_sp_v3_full.png
+
+
+      軽微な未対応:
+
+      - SWELL main.js が削除済 #main_visual を探してコンソールエラー 3 件 (表示・機能に影響なし、Phase 1 で main.js 整理検討)
+
+
+      成果物: 05_phase0_execution_log.md (実行時系列ログ全更新済) + coredriven_top_paste_ready_v3.html (wpautop 対応版 / 36KB)。
+
+
+      田中さん最終確認待ち: シークレットウィンドウで https://core-driven.com/ を確認 → OK なら Phase 1 (残4ページ) に進めます。

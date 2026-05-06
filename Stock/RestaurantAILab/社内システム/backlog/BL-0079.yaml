@@ -5,12 +5,13 @@ category: RestaurantAILab
 state: in_progress
 priority: normal
 created_at: '2026-04-30T13:26:51.867Z'
-updated_at: '2026-05-05T17:09:46.380Z'
+updated_at: '2026-05-06T01:10:43.543Z'
 created_by: mt-cli
 description: >-
   RestaurantAILab
   社内IT整備プロジェクトの一環として、CoreDrivenコーポレートサイト（WordPress）のコア・テーマ・プラグインのバージョンアップを実施する。事前バックアップ→検証環境で互換性確認→本番反映→主要ページ表示・問い合わせフォーム・SSL/リダイレクトの動作確認まで行う。
-deliverable_refs: []
+deliverable_refs:
+  - d-bl0079-20260506-phase0-log
 schema_version: 2
 cockpit_task_ids:
   - ab2f1e5a
@@ -237,3 +238,58 @@ decisions:
       coredriven_live_snapshot_20260506.html (176 KB / 871 行)。次の対処: 田中さんが (a) 『外観 → ウィジェット → w-frontTop』の中の『カスタム HTML
       ウィジェット』を【使用停止中のウィジェット】エリアに移動 (or 中身空にして保存) → ヘッダー＋空＋フッターの clean 状態 → AI HTML を貼付。または (b) ウィジェットを残したまま AI HTML を
       post_content に貼ると 2 重表示になるので非推奨。
+  - at: '2026-05-06T01:05:42.325Z'
+    type: commitment
+    by: ai
+    content: >-
+      [5/6 設計書 4 点完成・Phase 0 着手前 review 待ち] 田中さん指示『計画を Markdown で 4 つ作って』に対し下記を作成し全て review_state=unreviewed で登録済
+      (BL.deliverable_refs にも反映): (1) d-bl0079-20260506-requirements / 01_requirements.md = 要件定義 (機能 F-1〜F-11 / 非機能
+      NF-1〜NF-8 / 制約 / 成功基準 / リスク R-1〜R-7), (2) d-bl0079-20260506-current-arch / 02_current_architecture.md = 現状構成 (SSH
+      実機調査) インフラ構成・swell_child 全ファイル・page.php 挙動・固定ページ 9 件・データフロー・既知負債 K-1〜K-7, (3) d-bl0079-20260506-future-arch /
+      03_future_architecture.md = 移行後構成 (tmp/front.php を 8 行に最小化 → 全固定ページが post_content 経由で表示される統一設計), (4)
+      d-bl0079-20260506-migration-plan / 04_migration_plan.md = 移行計画 (Phase 0 TOP 置換 / Step 0.0〜0.6 / バックアップ 5 種 + 二重保管
+      / ロールバック ケース A B C / 検証チェックリスト 25 項目). 田中さんの review + Phase 0 開始承認を待機。承認の合図 = 『Phase 0 進めて OK』 → AI が SSH 経由で
+      30〜45 分で実行予定。
+  - at: '2026-05-06T01:10:43.543Z'
+    type: commitment
+    by: ai
+    content: >-
+      [5/6 Phase 0 自動実行完了 / 田中さん視覚確認待ち] SSH 経由で Step 0.1〜0.5 完了。所要 4 分 (10:06〜10:10 JST)。
+
+
+      成果:
+
+      (1) バックアップ 5 種取得 (リモート: tmp/front.php.backup_20260506_100631 +
+      ~/backups/coredriven/20260506_phase0/{tmp_front.php.original 112KB, swell_child_snapshot.tar.gz 393KB, db_dump.sql
+      3.2MB} + ローカル: backup_swell_child_phase0.tar.gz, backup_top_post_content_20260506.html 0bytes)
+
+      (2) /wp-content/uploads/coredriven-html/ 作成 + 画像5枚アップロード + HTTP 200 確認
+      (logo-core-driven.png/logo.svg/tanaka.jpg/machida.jpg/yoshida.webp)
+
+      (3) /contact-new/ (ID=708) を publish に変更 (TOP の『相談する』ボタンの 404 防止)
+
+      (4) tmp/front.php を 112KB → 1,081 bytes に最小化 (the_content() を呼ぶプロキシ化)、PHP 8.3.30 で構文チェック OK 後アトミック置換、HTTP 200 維持
+
+      (5) WP-CLI で TOP (ID=10) の post_content に AI HTML 36,323 bytes 投入
+
+
+      自動検証結果:
+
+      - HTTP/2 200 OK
+
+      - 旧 Hero『すべての人や企業』残存=0
+
+      - 新 Hero『経営者の熱意を実現する』出現=2 (SEO meta + 本文)
+
+      - Members 田中/吉田/町田 全員出現
+
+      - 新画像パス 4 件出現
+
+      - ナビメニュー内の『Restaurant AI Lab』Sub-menu リンクは残存 (Phase 1 のメニュー再編で対応予定)
+
+
+      田中さん視覚確認待ち: シークレットウィンドウで https://core-driven.com/ を開いて 04_migration_plan.md §7.1 の 25項目チェックリストを通してください。OK なら Phase
+      1 (残4ページ) に進めます。
+
+
+      異常時のロールバックは 04_migration_plan.md §6.1 ケース A/B/C 参照、リモートバックアップから 5 分以内に復旧可能。

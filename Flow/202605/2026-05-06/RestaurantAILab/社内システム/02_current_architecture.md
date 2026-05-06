@@ -1,0 +1,1 @@
+../../0.Other/CoreDriven/02_current_architecture.md

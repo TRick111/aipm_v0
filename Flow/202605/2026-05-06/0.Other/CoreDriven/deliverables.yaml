@@ -62,6 +62,71 @@ deliverables:
           Lab./Career Lab./事業開発支援 セクション) を 116KB 抽出して保存。田中さんが「外観→ウィジェット→フロントトップ用」のカスタム HTML
           ウィジェットを削除する前に、このバックアップで復元可能な状態を保証。
     last_modified: '2026-05-06T02:09:00.000Z'
+  - id: d-bl0079-20260506-requirements
+    file: 01_requirements.md
+    bl_id: BL-0079
+    title: CoreDriven HP 移行 要件定義書 (機能要件 F-1〜F-11 / 非機能要件 NF-1〜NF-8 / リスク R-1〜R-7)
+    created_at: '2026-05-06T03:30:00.000Z'
+    created_by: cockpit-task-ab2f1e5a
+    created_by_agent: claude
+    cockpit_task_id: ab2f1e5a
+    review_state: unreviewed
+    review_log:
+      - at: '2026-05-06T03:30:00.000Z'
+        action: created
+        to: unreviewed
+        comment: >-
+          田中さん要望「ヘッダーは WP 仕組み維持で AI HTML を表示」を技術要件 F-1〜F-11 に分解。非機能要件 NF-1〜NF-8 (可用性・復旧性・編集容易性・パフォーマンス・SEO・テーマ更新耐性等)、制約条件、成功基準 (Phase 0/1/全体)、リスク R-1〜R-7、用語集を整備。
+    last_modified: '2026-05-06T03:30:00.000Z'
+  - id: d-bl0079-20260506-current-arch
+    file: 02_current_architecture.md
+    bl_id: BL-0079
+    title: CoreDriven HP 現状構成設計書 (SSH 経由実機調査結果)
+    created_at: '2026-05-06T03:35:00.000Z'
+    created_by: cockpit-task-ab2f1e5a
+    created_by_agent: claude
+    cockpit_task_id: ab2f1e5a
+    review_state: unreviewed
+    review_log:
+      - at: '2026-05-06T03:35:00.000Z'
+        action: created
+        to: unreviewed
+        comment: >-
+          SSH (my0126@my0126.xsrv.jp) + WP-CLI (PHP 8.3.30) 経由で実機調査。インフラ構成・ファイル配置 (swell_child 全ファイル)・テンプレート階層・固定ページ全件 (9 件) リスト・page.php の挙動 (is_front_page() で tmp/front.php 呼び出し)・データフロー図・ナビメニュー・既知の技術的負債 K-1〜K-7 を整理。
+    last_modified: '2026-05-06T03:35:00.000Z'
+  - id: d-bl0079-20260506-future-arch
+    file: 03_future_architecture.md
+    bl_id: BL-0079
+    title: CoreDriven HP 移行後構成設計書 (tmp/front.php 最小化 + post_content に AI HTML)
+    created_at: '2026-05-06T03:40:00.000Z'
+    created_by: cockpit-task-ab2f1e5a
+    created_by_agent: claude
+    cockpit_task_id: ab2f1e5a
+    review_state: unreviewed
+    review_log:
+      - at: '2026-05-06T03:40:00.000Z'
+        action: created
+        to: unreviewed
+        comment: >-
+          設計方針 5 原則・採用しない選択肢 5 件・全体図・コア変更点 (tmp/front.php 8行最小化 + AI HTML を post_content 投入)・データフロー
+          (TOP/残ページ)・ファイル変更一覧・各ページ仕様・ナビメニュー方針・SEO/パフォーマンス影響・運用イメージ (5 分で更新可能)・クリーンアップ対象 (Phase 2 候補)。
+    last_modified: '2026-05-06T03:40:00.000Z'
+  - id: d-bl0079-20260506-migration-plan
+    file: 04_migration_plan.md
+    bl_id: BL-0079
+    title: CoreDriven HP 移行計画書 (Phase 0/1/2 の作業手順 + バックアップ + ロールバック)
+    created_at: '2026-05-06T03:45:00.000Z'
+    created_by: cockpit-task-ab2f1e5a
+    created_by_agent: claude
+    cockpit_task_id: ab2f1e5a
+    review_state: unreviewed
+    review_log:
+      - at: '2026-05-06T03:45:00.000Z'
+        action: created
+        to: unreviewed
+        comment: >-
+          Phase 0 (TOP 置換 / Step 0.0〜0.6 / 30〜45分) → Phase 1 (残4ページ / 各30分) → Phase 2 (クリーンアップ) の作業手順。バックアップ戦略 (tmp/front.php 物理 + swell_child snapshot + DB dump + post_content) と二重保管 (リモート + ローカル)。ロールバック手順 (ケース A 500エラー / B レイアウト崩れ / C 大規模破損)。検証チェックリスト 25項目。監視・コミュニケーション・Q&A・承認フロー。
+    last_modified: '2026-05-06T03:45:00.000Z'
   - id: d-bl0079-20260506-wp-top-impl-steps-v2
     file: wordpress_top_implementation_steps_v2.md
     bl_id: BL-0079

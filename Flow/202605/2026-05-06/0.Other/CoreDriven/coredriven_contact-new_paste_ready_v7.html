@@ -1,0 +1,645 @@
+<!--
+  CoreDriven Contact — WordPress 貼付用 HTML (Phase 1)
+  生成日: 2026-05-06
+  使い方: WP 固定ページの「カスタム HTML」ブロックに丸ごと貼付
+  生成元: ~/Downloads/Core Driven_20260426.zip の contact.html
+  改変点:
+    - <script src="assets/site.js"> + injectHeaderFooter() 削除
+    - assets/styles.css と <head> 内 <style> をインライン化
+    - 内部リンクを WP パーマリンク形式に変換
+    - 画像パスを /wp-content/uploads/coredriven-html/ に統一
+    - 田中利空モバイル画像 object-position:center 22%
+    - 全体を <!-- wp:html --> でラップ (wpautop 回避)
+-->
+<!-- wp:html -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+/* === Core Driven 共通 design system (assets/styles.css) === */
+/* Core Driven — Design System */
+:root{
+  --ink-900:#0B1530;
+  --ink-700:#1B2444;
+  --ink-500:#3A4566;
+  --ink-400:#5A6685;
+  --ink-300:#8A93AE;
+  --ink-200:#C4CADE;
+  --ink-100:#E3E7F2;
+  --ink-50:#F2F4FB;
+  --paper:#FAFBFE;
+  --white:#FFFFFF;
+  --blue-900:#0B1FB3;
+  --blue-700:#1230FF;
+  --blue-600:#2A6BFF;
+  --blue-500:#3D86FF;
+  --blue-400:#5BC8FF;
+  --blue-300:#9FE0FF;
+  --blue-100:#E3F1FF;
+  --blue-50:#F0F7FF;
+  --grad-deep: linear-gradient(135deg,#1230FF 0%,#2A6BFF 50%,#5BC8FF 100%);
+  --grad-light: linear-gradient(135deg,#E3F1FF 0%,#F0F7FF 50%,#F7FBFF 100%);
+  --grad-hero: linear-gradient(160deg,#F0F7FF 0%,#DCEBFF 35%,#C5E2FF 70%,#9FE0FF 100%);
+  --grad-text: linear-gradient(120deg,#1230FF 0%,#2A6BFF 45%,#5BC8FF 100%);
+  --shadow-sm: 0 1px 2px rgba(11,21,48,.04), 0 1px 3px rgba(11,21,48,.06);
+  --shadow-md: 0 4px 14px rgba(11,21,48,.06), 0 2px 6px rgba(11,21,48,.04);
+  --shadow-lg: 0 18px 48px rgba(18,48,255,.08), 0 4px 12px rgba(11,21,48,.05);
+  --shadow-xl: 0 30px 80px rgba(18,48,255,.10), 0 8px 24px rgba(11,21,48,.06);
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-xl: 32px;
+  --font-sans: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  --font-display: 'Inter', 'Noto Sans JP', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --max: 1240px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family: var(--font-sans);
+  background: var(--paper);
+  color: var(--ink-900);
+  font-feature-settings:"palt";
+  line-height:1.7;
+  -webkit-font-smoothing: antialiased;
+  font-size: 15px;
+}
+a{color:inherit;text-decoration:none}
+img,svg{display:block;max-width:100%}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+/* Layout */
+.container{max-width:var(--max);margin:0 auto;padding:0 32px}
+@media(max-width:720px){.container{padding:0 20px}}
+section{padding:120px 0;position:relative}
+@media(max-width:720px){section{padding:72px 0}}
+.eyebrow{
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing:.18em;
+  font-weight:600;
+  color: var(--blue-700);
+  text-transform: uppercase;
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+}
+.eyebrow::before{
+  content:"";
+  width:24px;height:1px;
+  background: var(--grad-deep);
+  display:inline-block;
+}
+h1,h2,h3,h4{font-family:var(--font-display);font-weight:800;letter-spacing:-.02em;color:var(--ink-900);line-height:1.25}
+h1{font-size: clamp(40px, 6vw, 72px); letter-spacing:-.035em; line-height:1.1}
+h2{font-size: clamp(26px, 3.6vw, 48px); letter-spacing:-.025em; line-height:1.18}
+h3{font-size: clamp(20px, 2vw, 26px)}
+h4{font-size: 17px}
+p{color: var(--ink-500); line-height:1.85}
+.lead{font-size: 17px; color: var(--ink-500); line-height:1.95}
+.grad-text{
+  background: var(--grad-text);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+/* Header */
+.site-header{
+  position:sticky; top:0; z-index:50;
+  background: rgba(250,251,254,.82);
+  backdrop-filter: blur(14px);
+  border-bottom:1px solid rgba(195,202,222,.4);
+}
+.site-header .inner{
+  max-width: var(--max); margin:0 auto;
+  padding: 18px 32px;
+  display:flex; align-items:center; gap:32px;
+}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.02em;font-size:17px}
+.brand-logo{height:32px;width:auto;display:block}
+.brand-mark{
+  width:30px;height:30px; border-radius:7px;
+  background: var(--grad-deep);
+  position:relative; flex-shrink:0;
+  box-shadow: 0 4px 12px rgba(18,48,255,.25);
+}
+.brand-mark::after{
+  content:""; position:absolute; inset:7px;
+  background: var(--white);
+  clip-path: polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);
+}
+.brand-mark::before{
+  content:""; position:absolute; inset:0; border-radius:7px;
+  background: var(--grad-deep);
+  clip-path: polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);
+}
+.nav{display:flex;gap:28px;margin-left:auto;align-items:center}
+.nav a{font-size:14px;color:var(--ink-700);font-weight:500;transition:color .2s}
+.nav a:hover{color:var(--blue-700)}
+.nav a.active{color:var(--blue-700)}
+.nav a.btn-primary{color:var(--white)}
+.nav a.btn-primary:hover{color:var(--white)}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  padding:12px 22px;
+  border-radius:999px;
+  font-weight:600;
+  font-size:14px;
+  transition:transform .2s, box-shadow .2s, background .2s;
+  white-space:nowrap;
+}
+.btn-primary{
+  background: var(--grad-deep);
+  color:var(--white);
+  box-shadow: 0 8px 22px rgba(18,48,255,.28);
+}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 12px 28px rgba(18,48,255,.36)}
+.btn-ghost{
+  background: var(--white);
+  color: var(--ink-900);
+  border:1px solid var(--ink-100);
+}
+.btn-ghost:hover{border-color:var(--blue-500); color:var(--blue-700)}
+.btn-arrow::after{content:"→"; font-weight:400}
+.menu-toggle{display:none}
+@media(max-width:880px){
+  .nav{display:none}
+  .nav.open{display:flex;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:var(--white);padding:24px;border-bottom:1px solid var(--ink-100);align-items:stretch}
+  .nav.open a{padding:8px 0}
+  .menu-toggle{display:flex;margin-left:auto;width:40px;height:40px;align-items:center;justify-content:center;border-radius:8px;border:1px solid var(--ink-100)}
+}
+/* Footer minimal */
+.site-footer-mini{
+  background: #0B1530;
+  color: rgba(255,255,255,.6);
+  padding: 36px 0 32px;
+  font-size: 13px;
+  position:relative;
+}
+.site-footer-mini .container{padding-left:32px; padding-right:32px}
+.site-footer-mini .footer-row{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:24px; flex-wrap:wrap;
+  padding-bottom:20px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.site-footer-mini .footer-brand img{height:26px; width:auto; display:block; filter: brightness(0) invert(1); opacity:.92}
+.site-footer-mini .footer-links{display:flex; gap:24px; flex-wrap:wrap}
+.site-footer-mini .footer-links a{color:rgba(255,255,255,.78); font-size:13px; transition:color .2s}
+.site-footer-mini .footer-links a:hover{color:#9FE0FF}
+.site-footer-mini .footer-bottom{
+  margin-top:18px;
+  display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+  font-family: var(--font-mono);
+  font-size:11.5px; letter-spacing:.04em;
+  color: rgba(255,255,255,.45);
+}
+.site-footer-mini .footer-bottom .sep{color:rgba(255,255,255,.25)}
+@media(max-width:640px){
+  .site-footer-mini{padding:28px 0 24px}
+  .site-footer-mini .footer-row{gap:16px; padding-bottom:16px}
+  .site-footer-mini .footer-links{gap:16px 18px}
+  .site-footer-mini .footer-links a{font-size:12.5px}
+  .site-footer-mini .footer-bottom{flex-direction:column; align-items:flex-start; gap:4px}
+  .site-footer-mini .footer-bottom .sep{display:none}
+}
+/* Footer */
+.site-footer{
+  background: linear-gradient(180deg,#0B1530 0%,#0E1A3D 100%);
+  color: var(--white);
+  padding: 96px 0 40px;
+  position:relative;
+  overflow:hidden;
+}
+.site-footer::before{
+  content:""; position:absolute; inset:0;
+  background: radial-gradient(ellipse at top right, rgba(91,200,255,.18) 0%, transparent 55%);
+  pointer-events:none;
+}
+.site-footer .inner{position:relative}
+.footer-headline{
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight:800;
+  letter-spacing:-.02em;
+  margin-bottom: 56px;
+  line-height: 1.25;
+  background: linear-gradient(120deg,#FFFFFF 0%,#9FE0FF 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  max-width: 720px;
+}
+.footer-grid{display:grid;grid-template-columns: 1.4fr repeat(3,1fr); gap:48px; padding-top:48px; border-top:1px solid rgba(255,255,255,.1)}
+@media(max-width:880px){.footer-grid{grid-template-columns:1fr 1fr; gap:32px}}
+.footer-grid .brand{color:var(--white);font-size:17px}
+.footer-grid h5{
+  font-family: var(--font-mono);
+  font-size:11px; letter-spacing:.2em;
+  color: var(--blue-300);
+  margin-bottom:18px;
+  font-weight:600;
+}
+.footer-grid ul{list-style:none;display:flex;flex-direction:column;gap:12px}
+.footer-grid a{color:rgba(255,255,255,.78);font-size:14px;transition:color .2s}
+.footer-grid a:hover{color:var(--blue-300)}
+.footer-meta{
+  margin-top: 56px;
+  padding-top:24px;
+  border-top:1px solid rgba(255,255,255,.08);
+  display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px;
+  font-size: 12px; color: rgba(255,255,255,.55);
+  font-family: var(--font-mono);
+}
+/* Generic blocks */
+.section-head{display:flex;flex-direction:column;align-items:flex-start;gap:24px;max-width:780px;margin-bottom:64px}
+.section-head .lead{margin-top:8px}
+.section-head h2{white-space:pre-wrap}
+.card{
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  border:1px solid var(--ink-100);
+  padding: 36px;
+  transition: transform .25s, box-shadow .25s, border-color .25s;
+}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:rgba(91,134,255,.3)}
+.tag{
+  display:inline-flex;align-items:center;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--blue-50);
+  color: var(--blue-700);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing:.02em;
+}
+.num-label{
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue-700);
+  letter-spacing:.05em;
+}
+/* Bullet list with gradient dot */
+.bullet-list{list-style:none;display:flex;flex-direction:column;gap:14px}
+.bullet-list li{position:relative; padding-left:28px; color:var(--ink-700); line-height:1.7; font-size:15px}
+.bullet-list li::before{
+  content:"";
+  position:absolute; left:0; top:.7em;
+  width:10px; height:10px; border-radius:3px;
+  background: var(--grad-deep);
+}
+/* Hero gradient panel */
+.hero-grad{
+  background: var(--grad-hero);
+  position:relative;
+  overflow:hidden;
+}
+.hero-grad::before{
+  content:""; position:absolute;
+  width:600px;height:600px;border-radius:50%;
+  background: radial-gradient(circle, rgba(255,255,255,.55) 0%, rgba(255,255,255,0) 70%);
+  top:-200px; right:-200px;
+  pointer-events:none;
+}
+.hero-grad::after{
+  content:""; position:absolute;
+  width:500px;height:500px;border-radius:50%;
+  background: radial-gradient(circle, rgba(18,48,255,.15) 0%, rgba(18,48,255,0) 70%);
+  bottom:-200px; left:-100px;
+  pointer-events:none;
+}
+/* Divider line */
+.hr-grad{
+  height:1px;
+  background: linear-gradient(90deg, transparent, var(--blue-400), transparent);
+  border:0;
+  margin: 0;
+}
+/* Animation */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .9s cubic-bezier(.2,.7,.2,1) both}
+/* Service split tag */
+.svc-pill{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:6px 14px; border-radius:999px;
+  font-size:11px; font-weight:600;
+  font-family: var(--font-mono);
+  letter-spacing:.1em; text-transform:uppercase;
+}
+.svc-biz{background:#EAF1FF; color:#1230FF; border:1px solid #C8D8FF}
+.svc-ai{background:#E5F6FF; color:#0E6FD1; border:1px solid #B6E2FF}
+/* Page hero */
+.page-hero{
+  padding: 140px 0 100px;
+  background: var(--grad-hero);
+  position:relative; overflow:hidden;
+}
+.page-hero::before{
+  content:""; position:absolute;
+  width:700px;height:700px;border-radius:50%;
+  background: radial-gradient(circle, rgba(255,255,255,.5) 0%, rgba(255,255,255,0) 70%);
+  top:-300px; right:-200px;
+  pointer-events:none;
+}
+.page-hero .container{position:relative}
+/* Forms */
+.field{display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
+.field label{font-size:13px;font-weight:600;color:var(--ink-700)}
+.field input,.field textarea,.field select{
+  padding:14px 16px;
+  border-radius:12px;
+  border:1px solid var(--ink-100);
+  background: var(--white);
+  font: inherit;
+  color: var(--ink-900);
+  transition: border-color .2s, box-shadow .2s;
+}
+.field input:focus,.field textarea:focus,.field select:focus{
+  outline:0;
+  border-color: var(--blue-500);
+  box-shadow: 0 0 0 4px rgba(61,134,255,.12);
+}
+.required{color: var(--blue-700)}
+/* ===== Mobile optimizations (SP) ===== */
+@media(max-width:640px){
+  h1{font-size:38px; line-height:1.12}
+  h2{font-size:24px; line-height:1.3}
+  h3{font-size:18px}
+  .lead{font-size:14.5px; line-height:1.85}
+  section{padding:56px 0}
+  /* Section heads: tighten + let auto-wrap handle line breaks */
+  .section-head{margin-bottom:32px; gap:14px; max-width:100%}
+  .section-head h2 br{display:none}
+  .section-head .lead{margin-top:0}
+  /* Page hero (Biz Core / AI Core) */
+  .page-hero{padding:80px 0 48px}
+  .page-hero h1{font-size:64px; margin:16px 0 12px}
+  .page-hero .catch{font-size:22px; line-height:1.35; margin-bottom:18px}
+  .page-hero .catch br{display:none}
+  .page-hero .lead{font-size:14.5px}
+  .page-hero .actions{margin-top:24px}
+  .page-hero .pills{gap:6px}
+  /* Index hero */
+  .hero h1 br{display:none}
+  .hero .lead{font-size:14.5px}
+  /* Member / deliver cards padding tighten */
+  .deliver-card .body,
+  .member-block .body{padding:28px 22px}
+  .deliver-card .ja,
+  .member-block .ja{font-size:22px}
+  /* Process step */
+  .process-step{padding:24px 22px}
+  .process-step .step-num{font-size:28px}
+  /* Value cards */
+  .val-card,
+  .value-card,
+  .ch-list,
+  .fit-card{padding:24px 22px}
+  /* Cards & generic */
+  .card{padding:24px 22px}
+}
+
+/* === ページ固有 <style> (contact.html <head>) === */
+
+.page-hero h1{font-size: clamp(48px, 7vw, 88px); margin: 24px 0 32px; letter-spacing:-.03em; line-height:1.1}
+.page-hero h1 .accent{background:var(--grad-text); -webkit-background-clip:text; background-clip:text; color:transparent}
+.page-hero .lead{max-width:780px; white-space:pre-line; color:var(--ink-700); font-size:16px}
+/* Examples */
+.examples-section{}
+.examples-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:14px}
+@media(max-width:720px){.examples-grid{grid-template-columns:1fr}}
+.ex-item{
+  background:var(--white); border-radius: var(--radius-md);
+  border:1px solid var(--ink-100); padding: 18px 22px;
+  display:flex; gap:14px; align-items:center; font-size:14.5px; color:var(--ink-700);
+}
+.ex-item::before{
+  content:""; flex-shrink:0;
+  width:10px; height:10px; border-radius:3px; background: var(--grad-deep);
+}
+/* Form */
+.form-section{background:var(--ink-50)}
+.form-card{
+  background:var(--white); border-radius: var(--radius-xl);
+  border:1px solid var(--ink-100); padding: 56px;
+  box-shadow: var(--shadow-md);
+  max-width: 880px; margin: 0 auto;
+}
+@media(max-width:720px){.form-card{padding:32px}}
+.form-card h3{font-size:20px; margin-bottom:18px}
+.area-grid{display:grid; grid-template-columns: 1fr 1fr 1fr; gap:14px; margin-bottom:36px}
+@media(max-width:720px){.area-grid{grid-template-columns:1fr}}
+.area-option{
+  cursor:pointer; position:relative;
+  background:var(--paper); border:1.5px solid var(--ink-100); border-radius: var(--radius-md);
+  padding: 22px; display:flex; flex-direction:column; gap:6px;
+  transition: border-color .2s, background .2s, box-shadow .2s;
+}
+.area-option input{position:absolute; opacity:0; pointer-events:none}
+.area-option .opt-name{font-size:16px; font-weight:800; letter-spacing:-.01em}
+.area-option .opt-sub{font-size:13px; color:var(--ink-500)}
+.area-option:has(input:checked){
+  border-color: var(--blue-700); background: var(--blue-50);
+  box-shadow: 0 0 0 4px rgba(18,48,255,.08);
+}
+.area-option:has(input:checked) .opt-name{color: var(--blue-700)}
+.fields-grid{display:grid; grid-template-columns: 1fr 1fr; gap:20px}
+@media(max-width:720px){.fields-grid{grid-template-columns:1fr; gap:0}}
+.fields-grid .full{grid-column: 1 / -1}
+.field textarea{min-height: 120px; resize: vertical; font-family:inherit}
+.privacy-note{
+  font-size: 13px; color: var(--ink-500); line-height:1.7;
+  background: var(--blue-50); padding: 14px 16px; border-radius: 10px;
+  margin-top: 8px;
+}
+.submit-row{margin-top:36px; display:flex; justify-content:flex-end}
+.submit-row button{
+  background: var(--grad-deep); color:#fff;
+  padding: 16px 40px; border-radius: 999px;
+  font-weight:700; font-size:15px;
+  display:inline-flex; align-items:center; gap:10px;
+  box-shadow: 0 8px 22px rgba(18,48,255,.28);
+  transition: transform .2s, box-shadow .2s;
+}
+.submit-row button:hover{transform:translateY(-2px); box-shadow:0 12px 28px rgba(18,48,255,.36)}
+.submit-row button::after{content:"→"; font-weight:400}
+.success-msg, .error-msg{
+  display:none;
+  margin-top:24px; padding:18px 20px; border-radius: 12px;
+  font-size:14px; line-height:1.7;
+}
+.success-msg{background:#E8F5FF; color:#0E6FD1; border:1px solid #B6E2FF}
+.error-msg{background:#FFF1F0; color:#C42424; border:1px solid #FFCFCB}
+.success-msg.show, .error-msg.show{display:block}
+
+/* === SWELL header との衝突回避 === */
+.ai-fullhtml-wrap section{padding:120px 0;position:relative}
+.ai-fullhtml-wrap .container{max-width:1240px;margin:0 auto;padding:0 32px}
+@media(max-width:720px){.ai-fullhtml-wrap section{padding:72px 0}.ai-fullhtml-wrap .container{padding:0 20px}}
+
+.avatar img[alt="田中利空"]{object-position:center 22%}
+</style>
+<div class="ai-fullhtml-wrap">
+
+<!-- HERO -->
+<section class="page-hero">
+  <div class="container">
+    <span class="eyebrow">CONTACT</span>
+    <h1>まずは<br/><span class="accent">ご相談ください。</span></h1>
+    <p class="lead">事業構想の整理、新規事業の推進、マーケティング改善、現場運営、AI導入まで。
+相談内容がまだ整理されていなくても問題ありません。
+
+今考えていること、困っていること、実現したいことをお聞かせください。</p>
+  </div>
+</section>
+
+<!-- EXAMPLES -->
+<section class="examples-section">
+  <div class="container">
+    <div class="section-head">
+      <h2>このような相談が可能です</h2>
+    </div>
+    <div class="examples-grid">
+      <div class="ex-item">新規事業の構想を整理したい</div>
+      <div class="ex-item">経営者の頭の中にある構想を事業計画に落としたい</div>
+      <div class="ex-item">事業の優先順位を整理したい</div>
+      <div class="ex-item">マーケティングや営業の方針を見直したい</div>
+      <div class="ex-item">施策を前に進めるPMOがほしい</div>
+      <div class="ex-item">店舗・FC・運営改善について相談したい</div>
+      <div class="ex-item">AIを自社業務に導入したい</div>
+      <div class="ex-item">会議・議事録・タスク管理を仕組み化したい</div>
+      <div class="ex-item">情報が散在していて、AIで整理したい</div>
+      <div class="ex-item">Biz CoreとAI Coreのどちらが合うか相談したい</div>
+    </div>
+  </div>
+</section>
+
+<!-- FORM -->
+<section class="form-section">
+  <div class="container">
+    <form class="form-card" id="contactForm" novalidate>
+      <h3>相談したい領域</h3>
+      <div class="area-grid">
+        <label class="area-option">
+          <input type="radio" name="area" value="biz" required>
+          <span class="opt-name">Biz Core</span>
+          <span class="opt-sub">人による経営伴走</span>
+        </label>
+        <label class="area-option">
+          <input type="radio" name="area" value="ai">
+          <span class="opt-name">AI Core</span>
+          <span class="opt-sub">AIによる経営伴走</span>
+        </label>
+        <label class="area-option">
+          <input type="radio" name="area" value="unknown">
+          <span class="opt-name">どちらか分からない</span>
+          <span class="opt-sub">まずは話したい</span>
+        </label>
+      </div>
+
+      <div class="fields-grid">
+        <div class="field">
+          <label>会社名 <span class="required">*</span></label>
+          <input type="text" name="company" required>
+        </div>
+        <div class="field">
+          <label>役職</label>
+          <input type="text" name="position">
+        </div>
+        <div class="field">
+          <label>氏名 <span class="required">*</span></label>
+          <input type="text" name="name" required>
+        </div>
+        <div class="field">
+          <label>メールアドレス <span class="required">*</span></label>
+          <input type="email" name="email" required>
+        </div>
+        <div class="field">
+          <label>電話番号</label>
+          <input type="tel" name="tel">
+        </div>
+        <div class="field">
+          <label>希望する打ち合わせ時期</label>
+          <select name="schedule">
+            <option value="">選択してください</option>
+            <option>できるだけ早く</option>
+            <option>2週間以内</option>
+            <option>1ヶ月以内</option>
+            <option>未定</option>
+          </select>
+        </div>
+        <div class="field full">
+          <label>現在の課題 <span class="required">*</span></label>
+          <textarea name="issue" required placeholder="例: 新規事業の構想はあるが、社内に推進役がおらず着手できていない。"></textarea>
+        </div>
+        <div class="field full">
+          <label>実現したいこと</label>
+          <textarea name="goal" placeholder="例: 既存事業と連続性のある新規事業を立ち上げ、2年以内に収益化したい。"></textarea>
+        </div>
+      </div>
+
+      <div class="privacy-note">送信いただいた内容を確認のうえ、担当者よりご連絡いたします。</div>
+
+      <div class="submit-row">
+        <button type="submit">送信する</button>
+      </div>
+
+      <div class="success-msg" id="successMsg">お問い合わせありがとうございます。<br/>送信内容を確認のうえ、担当者よりご連絡いたします。</div>
+      <div class="error-msg" id="errorMsg">入力内容をご確認ください。</div>
+    </form>
+
+<script>
+(function() {
+  const GAS_URL = 'https://script.google.com/macros/s/AKfycbzR2xAXQu2xI0-6l_7MvMh2q1bRybGcKKz4h9VN1wuCLkAMoC-1ka8cVK558Wnsptz4/exec';
+  const form = document.getElementById('contactForm');
+  if (!form) return;
+
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    if (!form.checkValidity()) { form.reportValidity(); return; }
+
+    const submitBtn = form.querySelector('[type="submit"]');
+    const originalText = submitBtn ? submitBtn.textContent : '';
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = '送信中...';
+    }
+
+    try {
+      // FormData そのまま送信 = multipart/form-data (simple POST, preflight 不要)
+      // mode はデフォルトの cors / GAS は Access-Control-Allow-Origin:* を返すので OK
+      const formData = new FormData(form);
+      formData.append('ua', navigator.userAgent);
+
+      const res = await fetch(GAS_URL, {
+        method: 'POST',
+        body: formData,
+        redirect: 'follow',  // GAS の 302 を追跡
+      });
+      const data = await res.json();
+
+      if (data && data.ok) {
+        form.outerHTML = '<div class="form-card thank-you" style="text-align:center;padding:80px 32px;background:var(--white);border-radius:var(--radius-lg);border:1px solid var(--ink-100);box-shadow:var(--shadow-md)"><h3 style="font-size:24px;margin-bottom:16px;color:var(--ink-900);font-weight:800">送信完了しました</h3><p style="color:var(--ink-500);font-size:15px;line-height:1.85">担当者より 1〜3 営業日以内にご連絡いたします。<br>お問い合わせありがとうございました。</p></div>';
+        window.scrollTo({ top: document.body.scrollHeight * 0.4, behavior: 'smooth' });
+      } else {
+        throw new Error((data && data.error) || 'GAS returned ok=false');
+      }
+    } catch (err) {
+      console.error('[Contact] submit failed:', err);
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+      }
+      alert('送信に失敗しました (' + err.message + ')。
+お手数ですが時間をおいて再度お試しいただくか、info@core-driven.com まで直接ご連絡ください。');
+    }
+  });
+})();
+</script>
+
+  </div>
+</section>
+
+<!-- 元 contact.html の e.preventDefault() スクリプトを削除 (GAS 送信を妨げるため) -->
+
+
+</div>
+<!-- /wp:html -->

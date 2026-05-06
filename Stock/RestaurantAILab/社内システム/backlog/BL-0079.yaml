@@ -5,7 +5,7 @@ category: RestaurantAILab
 state: in_progress
 priority: normal
 created_at: '2026-04-30T13:26:51.867Z'
-updated_at: '2026-05-06T06:46:51.755Z'
+updated_at: '2026-05-06T12:24:43.297Z'
 created_by: mt-cli
 description: >-
   RestaurantAILab
@@ -13,6 +13,7 @@ description: >-
 deliverable_refs:
   - d-bl0079-20260506-phase0-log
   - d-bl0079-20260506-phase1-log
+  - d-bl0079-20260506-phase2-menu-log
 schema_version: 2
 cockpit_task_ids:
   - ab2f1e5a
@@ -406,3 +407,50 @@ decisions:
       - 既存 /contact/(draft) /company/(publish 独自メディアセクション付き) の整理
 
       田中さんの最終確認: シークレットウィンドウで 5 ページを巡回 + Phase 2 着手判断
+  - at: '2026-05-06T12:24:43.297Z'
+    type: commitment
+    by: ai
+    content: >-
+      [5/6 21:23 Phase 2 ヘッダー/フッター再編完了 ✅] 田中さん指示『案A』で実装。
+
+
+      実施:
+
+      (1) DB 全体 + メニュー JSON バックアップ取得
+
+      (2) グローバルナビ (term_id=6) 再編: 削除6件 (Business + サブ3 + 旧Contact + 旧Company) + 追加4件 (Biz Core/AI
+      Core/Company新/Contact新)
+
+      (3) フッター (term_id=117) 再編: 削除2件 (旧Company + 旧Contact-Form) + 追加4件 (Biz Core/AI Core/Company新/Contact新)
+
+      (4) ★ SWELL のメニューフラグメントキャッシュ問題発見 ★ → wp cache flush + wp transient delete --all で対処 → 即時反映
+
+      (5) Playwright PC + SP (ハンバーガー展開) で確認、両方とも『TOP / Biz Core / AI Core / Company / News / Contact』に統一
+
+
+      最終メニュー (header):
+
+      TOP → / / Biz Core → /biz-core/ / AI Core → /ai-core/ / Company → /company-new/ / News → /news/ / Contact →
+      /contact-new/
+
+
+      最終メニュー (footer):
+
+      TOP / Biz Core / AI Core / Company / News / Contact / Privacy Policy
+
+
+      成果物: 07_phase2_menu_log.md (id=d-bl0079-20260506-phase2-menu-log) + Playwright スクショ phase2_pc_top_header_after.png
+      / phase2_sp_menu_open.png
+
+
+      Phase 2 残課題:
+
+      - C-2 (高): /contact-new/ フォーム送信ハンドラ未実装 (要田中さん方針判断: Google Form 統合 / プラグイン / 自前)
+
+      - C-3 (中): SWELL main.js の #main_visual 関連コンソールエラー整理
+
+      - C-4 (低): 旧 CSS 削除
+
+      - C-5 (低): 既存 /contact/ /company/ の整理
+
+      - C-6 (中): ヘッダー CTA『相談する』ボタン追加 (SWELL カスタマイザー)

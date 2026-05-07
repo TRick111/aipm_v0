@@ -50,7 +50,7 @@ deliverables:
     title: Phase 2(2/N) GAS フォームハンドラ実装ガイド
     created_at: '2026-05-06T12:36:27.909Z'
     created_by_agent: claude
-    review_state: unreviewed
+    review_state: done
     review_log:
       - at: '2026-05-06T12:36:27.909Z'
         action: registered
@@ -64,7 +64,16 @@ deliverables:
           5/6 21:59 GAS フォームハンドラ実装完了 ✅。田中さんから Web App URL 受領 → AI HTML form に JS 注入 (v2→v4 で CORS preflight + 302
           redirect 問題を mode:no-cors で解決) → wp post update 708 → Playwright 自動テスト送信 → POST 200 OK + 『送信完了しました』表示確認。最終待ち =
           田中さん側で Sheets 書込 + info@core-driven.com メール受信確認。
-    last_modified: '2026-05-06T13:01:53.309Z'
+      - at: '2026-05-07T13:23:52.729Z'
+        action: state_change
+        from: unreviewed
+        to: done
+        comment: >-
+          5/7 22:21 GAS フォームハンドラ完全動作確認 ✅。Sheets に Playwright 経由テスト送信が正しく記録 (2026-05-07 22:21:32 / 【テスト v10 権限付与後】 / テスト
+          田中 v10 / User-Agent 含む全フィールド)。doPost 経由で iframe target + multipart/form-data 標準 form submit が成功。原因は (a) 当初の
+          fetch + cors mode の 302 redirect 問題 (b) no-cors モードでの content-type 強制 ダウングレード (c) 元 contact.html の
+          preventDefault 干渉 (d) JS 構文エラー (生改行) (e) Sheets 権限未承認 の 5 段階。最終的に iframe target + multipart で全部解決。
+    last_modified: '2026-05-07T13:23:52.729Z'
     cockpit_task_id: ab2f1e5a
   - id: d-bl0079-20260506-gas-script
     file: gas_contact_handler.js

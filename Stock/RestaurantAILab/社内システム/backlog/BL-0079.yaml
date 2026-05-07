@@ -5,7 +5,7 @@ category: RestaurantAILab
 state: in_progress
 priority: normal
 created_at: '2026-04-30T13:26:51.867Z'
-updated_at: '2026-05-06T13:01:53.491Z'
+updated_at: '2026-05-07T13:23:52.932Z'
 created_by: mt-cli
 description: >-
   RestaurantAILab
@@ -544,3 +544,51 @@ decisions:
       成果物更新: 08_gas_form_handler_setup.md (§7-§8 追記、トラブル経緯 + 最終 fetch コード + ロールバック手順)
 
       スクショ: phase2_contact_thanks_visible.png
+  - at: '2026-05-07T13:23:52.932Z'
+    type: commitment
+    by: ai
+    content: >-
+      [5/7 22:22 Phase 2 GAS フォームハンドラ完全動作確認 ✅✅✅] 
+
+
+      Sheets に 2 行記録確認:
+
+      (1) 22:20:30 testHandler() / テスト株式会社 / テスト 太郎 / Manual Test
+
+      (2) 22:21:32 Playwright /【テスト v10 権限付与後】/ テスト 田中 v10 / Mozilla/5.0 (本番 UA)
+
+
+      最終仕様:
+
+      - form: action=GAS_URL / target=cd-form-iframe / method=POST / enctype=multipart/form-data
+
+      - 標準 form submit (JavaScript fetch ではなく) で iframe へ送信 → CORS / preflight / redirect 問題を完全回避
+
+      - 送信成功表示は setTimeout 1.5 秒後に thank-you カードへ form を置換
+
+      - GAS doPost が e.parameter で受信 → SHEET_ID=1ED_UKH... の最初のシートに行追加 + info@core-driven.com に件名/本文整形済メール
+
+
+      試行錯誤 (技術的学び):
+
+      v2 fetch+headers明示 ❌ preflight / v3 fetch+URLSearchParams ❌ 302 redirect / v4 fetch+no-cors ❌ content-type ダウングレード
+      / v5 iframe+元script ❌ preventDefault 干渉 / v6 iframe+生改行 ❌ JS 構文 / v7-v8 fetch+multipart ❌ 302 redirect / **v9-v10
+      iframe+multipart+Sheets権限承認 ✅**
+
+
+      田中さん対応:
+
+      - GAS テンプレ作成 + Web App デプロイ + Sheets/Mail 権限承認 (5/7)
+
+      - Sheets テスト行確認 → 削除可
+
+
+      Phase 2 フォーム実装は完全完了。残 Phase 2 課題:
+
+      - C-3 SWELL main.js の #main_visual エラー整理
+
+      - C-4 旧 CSS (.custom-message__* / .biz__*) 削除可否
+
+      - C-5 既存 /contact/ /company/ の整理
+
+      - (任意) Bot 対策 (honeypot / Turnstile) の追加

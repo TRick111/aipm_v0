@@ -5,7 +5,7 @@ category: RestaurantAILab
 state: in_progress
 priority: normal
 created_at: '2026-04-30T13:26:51.867Z'
-updated_at: '2026-05-08T16:37:13.883Z'
+updated_at: '2026-05-08T17:08:48.468Z'
 created_by: mt-cli
 description: >-
   RestaurantAILab
@@ -638,3 +638,47 @@ decisions:
 
       田中さん視覚確認待ち: シークレットウィンドウで TOP + 各ページ (biz-core/ai-core/contact-new/company-new) を確認、特に Hero タイトルサイズ + ロゴ表示 +
       重複タイトル削除を check。
+  - at: '2026-05-08T17:05:50.728Z'
+    type: commitment
+    by: ai
+    content: |-
+      [5/9 02:05 追加修正完了 ✅ パンくず+横線削除]
+
+      田中さん追加指示『#main_content > div の中だけ表示、上のパンくず+横線は不要』対応。
+
+      DOM 解析結果:
+      - パンくず: <nav class=p-breadcrumb -bg-on>#breadcrumb (#content の上に配置)
+      - 横線: <h1 class=c-pageTitle> 自体が height:1px で残存し border-bottom 1px solid rgba(199,199,199,0.5) が見えていた
+        → 前回の修正 (#main_content > div > h1 > span だけ display:none) では h1 本体が残っていた
+
+      対処 (assets/style.css に追記):
+      - .p-breadcrumb, nav.p-breadcrumb { display:none!important } (パンくず非表示)
+      - h1.c-pageTitle, .c-pageTitle, #main_content > div > h1 { display:none!important } (h1 ごと非表示で border-bottom も消える)
+
+      検証:
+      - Biz Core: ヘッダー直下スッキリ ✅ phase2fix_pc_bizcore_v3.png
+      - AI Core: 同上 ✅ phase2fix_pc_aicore_v3.png
+
+      成果物: 09_phase2_fix_log.md 更新 (§8 追加修正セクション)
+
+      田中さん最終視覚確認待ち: シークレットウィンドウで TOP / Biz Core / AI Core / Contact / Company 巡回、ヘッダー直下のスッキリ感を確認。
+  - at: '2026-05-08T17:08:48.468Z'
+    type: commitment
+    by: ai
+    content: |-
+      [5/9 02:08 ヘッダー直下と page-hero の隙間 0 化 完了 ✅]
+
+      田中さん指示『ページ上部のグラデ長方形とヘッダーの間の隙間を無くす』対応。
+
+      DOM 解析: 隙間の正体は #content の padding-top:60px + .post_content の margin-top:64px の合計 124px。
+
+      修正: assets/style.css に追記
+      - body:has(.ai-fullhtml-wrap) #content { padding-top:0 !important }
+      - .post_content:has(.ai-fullhtml-wrap) { margin-top:0 !important }
+      - body.top #content { padding-top:0 !important } (TOP の SWELL .top #content {padding-top:4em} 上書き)
+
+      :has() で AI HTML ページのみ限定 → 既存 /privacy-policy/ /news/ /company/ には影響なし。
+
+      検証: Biz Core で page-hero y=210 → y=86 に詰まった (ヘッダー高さ=86 と一致 = 隙間 0)。スクショ phase2fix_pc_bizcore_v4_nogap.png。
+
+      成果物: 09_phase2_fix_log.md §9 追加。

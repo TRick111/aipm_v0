@@ -182,4 +182,92 @@ wp transient delete --all
 
 ---
 
+---
+
+## 8. 追加修正 (5/9 後半) — パンくず + 横線削除
+
+### 8.1 田中さんからの追加指示
+> `#main_content > div` の中だけ表示すれば良くて、それ以外の上にあるもの (パンくず + 横線) はいらない
+
+→ §2-3 の対応では `#main_content > div > h1 > span` だけ非表示にしたが、**h1 自体が残り border-bottom が 1px の横線として残存** + パンくず `<nav class="p-breadcrumb">` も残存していた。
+
+### 8.2 追加 CSS (assets/style.css 末尾)
+```css
+/* パンくず非表示 */
+.p-breadcrumb,
+nav.p-breadcrumb,
+.p-breadcrumb__list,
+.l-pageBody > nav.p-breadcrumb { display: none !important; }
+
+/* main_content の上にある可能性のある hr / セパレータ */
+#main_content + hr,
+.l-content > hr,
+.l-pageBody > hr,
+.l-mainContent::before { display: none !important; }
+
+/* c-pageTitle h1 自体を非表示 (border-bottom も一緒に消える) */
+h1.c-pageTitle,
+.c-pageTitle,
+#main_content > div > h1 { display: none !important; }
+```
+
+### 8.3 検証 (Playwright)
+- Biz Core: ヘッダー直下スッキリ ✅ → スクショ `phase2fix_pc_bizcore_v3.png`
+- AI Core: 同上 ✅ → スクショ `phase2fix_pc_aicore_v3.png`
+- Company / Contact-new も同様の構造なので影響反映済
+
+### 8.4 横線の正体
+DOM 解析で判明:
+```
+H1.c-pageTitle (height:1px / border-bottom: 1px solid rgba(199,199,199,0.5))
+```
+→ 元 span だけ非表示にしたが h1 本体が `1px` 高さで残っていて、その `border-bottom` が見えていた。h1 自体を `display: none` で完全に消した。
+
+---
+
 **END OF FIX LOG.** 田中さん視覚確認後にタスククローズ予定。
+
+---
+
+## 9. 追加修正 v3 (5/9 後半 第二弾) — ヘッダー直下とpage-hero の隙間を 0 に
+
+### 9.1 田中さんからの追加指示
+> ページ上部のグラデーションの長方形とヘッダー、というかページの一番上との間の隙間を無くせる?
+
+### 9.2 DOM 解析で空白の正体を特定 (124px)
+```
+header             y=0,    h=86
+#content (l-content) y=86,  padding-top: 60px  ← ★主犯
+.post_content     y=210,  margin-top: 64px   ← ★副犯
+.ai-fullhtml-wrap y=210
+.page-hero        y=210,  padding-top: 120px (内部余白なので OK)
+```
+合計 60 + 64 = **124px の隙間**
+
+### 9.3 修正 CSS (assets/style.css 末尾追記)
+```css
+body:has(.ai-fullhtml-wrap) #content,
+.l-content:has(.ai-fullhtml-wrap) {
+  padding-top: 0 !important;
+}
+.post_content:has(.ai-fullhtml-wrap) {
+  margin-top: 0 !important;
+}
+body.top #content {
+  padding-top: 0 !important;
+}
+```
+
+### 9.4 :has() で AI HTML ページ限定の理由
+- 既存 `/privacy-policy/` は AI HTML 化していない (= ai-fullhtml-wrap なし)
+- 既存 `/company/` `/news/` も同様 (現状維持希望)
+- `body.top` は TOP 専用 (AI HTML page-hero はないが Hero がある)
+
+### 9.5 検証
+- Biz Core: page-hero `y=210` → **`y=86`** ✅ (ヘッダー直下にぴったり接続)
+- スクショ: `phase2fix_pc_bizcore_v4_nogap.png`
+
+### 9.6 反映範囲
+- TOP / Biz Core / AI Core / Contact-new / Company-new (AI HTML 5 ページ)
+- 既存 `/news/` `/privacy-policy/` `/company/` は影響なし (ai-fullhtml-wrap がないため)
+

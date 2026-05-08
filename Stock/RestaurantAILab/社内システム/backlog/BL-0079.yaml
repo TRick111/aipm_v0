@@ -5,7 +5,7 @@ category: RestaurantAILab
 state: in_progress
 priority: normal
 created_at: '2026-04-30T13:26:51.867Z'
-updated_at: '2026-05-07T13:23:52.932Z'
+updated_at: '2026-05-08T16:37:13.883Z'
 created_by: mt-cli
 description: >-
   RestaurantAILab
@@ -16,6 +16,7 @@ deliverable_refs:
   - d-bl0079-20260506-phase2-menu-log
   - d-bl0079-20260506-gas-form-setup
   - d-bl0079-20260506-gas-script
+  - d-bl0079-20260509-phase2-fix-log
 schema_version: 2
 cockpit_task_ids:
   - ab2f1e5a
@@ -592,3 +593,48 @@ decisions:
       - C-5 既存 /contact/ /company/ の整理
 
       - (任意) Bot 対策 (honeypot / Turnstile) の追加
+  - at: '2026-05-08T16:37:13.883Z'
+    type: commitment
+    by: ai
+    content: >-
+      [5/9 01:35 Phase 2 修正 3 件完了 ✅] 田中さん指示の 3 件全部対応:
+
+
+      (1) TOP 右上ロゴ非表示問題:
+
+      原因 = WP の siteurl/home が http:// のまま、HTTPS ページから生成された <img src=http://...> が mixed content blocked → 解決: wp option
+      update siteurl/home を https に + wp search-replace で全 DB の http:// を https:// に置換 (--skip-columns=guid)。
+
+      結果: ロゴ src が https に、naturalWidth=800 で正常表示 ✅
+
+
+      (2) Hero h1 フォントサイズ問題:
+
+      原因 = SWELL の post_content h1 デフォルトが AI HTML の clamp(40,6vw,72) を上書きして 32px 固定 + assets/style.css?ver=1.0.0
+      ハードコードでブラウザキャッシュ → 解決: 子テーマ assets/style.css 末尾に !important 付き override CSS 追加 (.ai-fullhtml-wrap .hero h1
+      {font-size:clamp(40px,6vw,72px)!important}) + functions.php の wp_enqueue_style バージョンを filemtime() 動的化。
+
+      結果: h1 が 72px (line-height 79.2px) で正常表示 ✅
+
+
+      (3) 各ページ上部タイトル削除:
+
+      SWELL の <l-topTitleArea> 内 c-pageTitle__inner span が page-hero の上に重なって表示 → 解決: 同じ assets/style.css に {
+      display:none!important } 追加 (#main_content > div > h1 > span + .l-topTitleArea 両方)。
+
+      結果: AI Core ページで重複していた『AI Core』タイトル消失、AI HTML page-hero のみ表示 ✅
+
+
+      バックアップ: ~/backups/coredriven/20260509_phase2_fix/ (db_dump_pre_fix.sql 4MB / style.css.original /
+      functions.php.original)
+
+      スクショ: phase2fix_pc_top_v2.png + phase2fix_pc_aicore_top.png
+
+      成果物: 09_phase2_fix_log.md (id=d-bl0079-20260509-phase2-fix-log)
+
+
+      副次効果: filemtime 化により以後 CSS 編集時に自動でキャッシュバストされる (運用上の改善)。
+
+
+      田中さん視覚確認待ち: シークレットウィンドウで TOP + 各ページ (biz-core/ai-core/contact-new/company-new) を確認、特に Hero タイトルサイズ + ロゴ表示 +
+      重複タイトル削除を check。

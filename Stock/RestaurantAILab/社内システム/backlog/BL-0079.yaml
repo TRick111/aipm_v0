@@ -5,7 +5,7 @@ category: RestaurantAILab
 state: in_progress
 priority: normal
 created_at: '2026-04-30T13:26:51.867Z'
-updated_at: '2026-05-08T17:08:48.468Z'
+updated_at: '2026-05-08T17:16:44.017Z'
 created_by: mt-cli
 description: >-
   RestaurantAILab
@@ -682,3 +682,47 @@ decisions:
       検証: Biz Core で page-hero y=210 → y=86 に詰まった (ヘッダー高さ=86 と一致 = 隙間 0)。スクショ phase2fix_pc_bizcore_v4_nogap.png。
 
       成果物: 09_phase2_fix_log.md §9 追加。
+  - at: '2026-05-08T17:14:43.863Z'
+    type: commitment
+    by: ai
+    content: |-
+      [5/9 02:14 田中陸プロフィール bio 更新完了 ✅]
+
+      田中さん指示『田中陸のプロフィール変更: メンサ会員・帰国子女記載を削除、代わりにシステム導入や開発経験から技術翻訳やエンジニア知見を持ちつつ OFI Engineer の要望をソリューションに落とし込む内容に』対応。
+
+      修正:
+      - 旧: 『メンサ会員・帰国子女として、論理性と国際的視野を兼ね備える。』
+      - 新: 『これまでのシステム導入や開発の経験から、技術翻訳やエンジニアとしての知見を持ちつつ、現場の OFI Engineer の要望をソリューションに落とし込む。』
+
+      反映:
+      - /biz-core/ (ID=704, deliver-card 構造) ✅
+      - /company-new/ (ID=710, member-block 構造) ✅
+      - ssh で post_content 取得 → sed 置換 → wp post update で一括反映 → wp cache flush
+
+      検証 (Playwright):
+      - biz-core: hasMensa=false, hasNew=true ✅
+      - company-new: hasMensa=false, hasNew=true ✅
+      - スクショ phase2fix_pc_bizcore_tanaka_bio.png + phase2fix_pc_company_tanaka_bio.png
+
+      既存の経歴 (東京大学大学院 / SaaS導入 / iOSアプリ App Store 評価4.7) は維持。
+  - at: '2026-05-08T17:16:44.017Z'
+    type: commitment
+    by: ai
+    content: |-
+      [5/9 02:17 田中陸 bio 最終調整 ✅]
+
+      田中さん指示『OFI Engineer は音声入力誤認識なので削除、自然な日本語に。落とし込む→実現する』対応。
+
+      最終文言:
+      『これまでのシステム導入や開発の経験から、技術翻訳やエンジニアとしての知見を活かし、現場の要望をソリューションとして実現する。』
+
+      修正前: 『〜知見を持ちつつ、現場の OFI Engineer の要望をソリューションに落とし込む。』
+
+      差分:
+      - 『持ちつつ』 → 『活かし』 (より自然な日本語)
+      - 『現場の OFI Engineer の要望』 → 『現場の要望』 (誤認識単語を除去)
+      - 『に落とし込む』 → 『として実現する』 (田中さん指定)
+
+      反映: /biz-core/ (ID=704) + /company-new/ (ID=710) 両方 ✅
+      検証: hasOFI=false / hasMensa=false / hasOtoshikomu=false / hasJitsugen=true ✅
+      スクショ: phase2fix_pc_bizcore_tanaka_bio_v2.png

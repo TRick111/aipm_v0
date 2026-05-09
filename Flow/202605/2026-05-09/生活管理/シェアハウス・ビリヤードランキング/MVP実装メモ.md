@@ -70,15 +70,39 @@ npm run dev           # http://localhost:3000
 | 仕様書 | 実装 |
 |---|---|
 | Glicko-2 (τ=0.5, 初期 R=1500/RD=350/σ=0.06) | `lib/glicko.ts` |
-| ハンデ付き試合 50% 緩和 | `computeMatch` で blend |
+| **DAMPING_FACTOR=0.5 (全試合に適用)** | `lib/glicko.ts` `computeMatch` で blend |
+| **HANDICAP_FACTOR=0.5 (ハンデ試合の追加圧縮)** | `lib/glicko.ts` 同上 |
 | シーズン Soft Reset (R 30%引戻し / RD≥200) | `softReset` + `/api/seasons` POST |
 | FargoRate アンカー換算 (K=0.5) | `lib/fargo.ts` |
-| ハンデ自動提案 | `lib/handicap.ts` + `/api/handicap-suggest` |
+| **ハンデ自動提案 (100 diff = 3 freeball アンカー)** | `lib/handicap.ts` + `/api/handicap-suggest` |
 | LINE Messaging API push | `lib/line.ts` |
 | 真剣勝負のみ記録 | 試合登録 = 全件ランキング戦 |
 | 全種目統合レート | gameType フィールドのみ記録、計算には不使用 |
 | 初期レート恣意設定 | `/admin/players` フォーム |
 | 20人以内スケール | データモデル/UIともに小規模前提 |
+
+## 改訂履歴
+
+### v0.2 (2026-05-09)
+
+**インフラ**:
+- DB: MongoDB → **Postgres (Neon)** に移行
+- ORM: Mongoose → **Prisma**
+- 本番デプロイ: **https://sharehouse-billiards.vercel.app** (個人 Vercel アカウント)
+- `docker-compose.yml` 削除 (Neon に直接接続)
+
+**アプリ**:
+- タイトル「Share House Billiards」→ **「WNG Ranking」**
+- UI 全面モバイルファースト化 (タッチターゲット 44px+, 縦並びカード, FAB)
+- 試合登録 UX 刷新: per-player 勝利ボタン、ハンデは強者選択 + フリーボール回数のみ
+- 試合登録後にレート変動 (before → after, 差分) を表示
+- 「もう一試合」時にプレイヤー一覧を再取得して最新レート反映
+- `_id` → `id` バグ修正 (Prisma 移行漏れ)
+
+**レーティング校正**:
+- **DAMPING_FACTOR=0.5 を導入** (全試合の変動量を 50% に圧縮)
+- **ハンデ提案テーブル再校正**: 100 diff = 3 フリーボール アンカー、+100 diff ごと +1
+- 詳細は仕様書 §5.4 / §6.4 / §6.5 参照
 
 ## 残課題 (Phase 1.5 / Phase 2 へ送り)
 

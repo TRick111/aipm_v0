@@ -5,7 +5,7 @@ category: 生活管理
 state: pending
 priority: normal
 created_at: '2026-05-08T03:42:05.614Z'
-updated_at: '2026-05-09T08:18:14.132Z'
+updated_at: '2026-05-09T09:26:26.449Z'
 created_by: mt-cli
 description: >-
   ## 背景
@@ -116,3 +116,9 @@ decisions:
       MVP 技術スタック確定: Next.js 15 (App Router) + TypeScript + Tailwind CSS + Mongoose (MongoDB) + glicko2 (npm) +
       @line/bot-sdk + recharts。MongoDB 接続は MONGODB_URI 環境変数経由 (Atlas or ローカル Docker)。管理画面は Basic Auth 環境変数。配置先:
       ~/Javascript/sharehouse-billiards
+  - at: '2026-05-09T09:26:26.449Z'
+    type: commitment
+    by: ai
+    content: >-
+      レーティング校正 v0.2: DAMPING_FACTOR=0.5 を全試合に適用 (変動量 50% 圧縮)、HANDICAP_FACTOR=0.5 を追加 (ハンデ試合は標準の 25% 動き)。ハンデ提案テーブル再校正:
+      100 diff = 3 フリーボール アンカー、+100 diff ごと +1 freeball。仕様書 v0.2 / 実装メモ v0.2 に反映済。

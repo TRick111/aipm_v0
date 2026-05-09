@@ -5,7 +5,7 @@ category: 生活管理
 state: pending
 priority: normal
 created_at: '2026-05-08T03:42:05.614Z'
-updated_at: '2026-05-09T09:26:26.449Z'
+updated_at: '2026-05-09T11:34:07.550Z'
 created_by: mt-cli
 description: >-
   ## 背景
@@ -122,3 +122,10 @@ decisions:
     content: >-
       レーティング校正 v0.2: DAMPING_FACTOR=0.5 を全試合に適用 (変動量 50% 圧縮)、HANDICAP_FACTOR=0.5 を追加 (ハンデ試合は標準の 25% 動き)。ハンデ提案テーブル再校正:
       100 diff = 3 フリーボール アンカー、+100 diff ごと +1 freeball。仕様書 v0.2 / 実装メモ v0.2 に反映済。
+  - at: '2026-05-09T11:34:07.550Z'
+    type: commitment
+    by: ai
+    content: >-
+      称号システム v0.3 実装: 保持型4 (球聖/中ボス/ネイバーズカップ/ワールドカップ — 防衛戦型) + 算出型4 (新人王/週刊王/戦闘強/連勝王 — 期間集計) の計8種。中ボスはレート1700未満限定
+      (卒業ロジックあり)。ワールドカップ+ネイバーズカップ同時保持で『ワールドネイバーズ』達成 → フルスクリーン金色グラデーション + LINE通知に🏆🏆🏆絵文字。Prisma に Title/TitleHistory
+      モデル追加、Neon に push 済。仕様書 §7 / 実装メモ v0.3 反映済。

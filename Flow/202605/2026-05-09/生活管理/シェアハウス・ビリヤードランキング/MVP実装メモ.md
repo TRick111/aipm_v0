@@ -83,6 +83,24 @@ npm run dev           # http://localhost:3000
 
 ## 改訂履歴
 
+### v0.3 (2026-05-09 追加)
+
+**称号システム実装** (仕様書 §7):
+- 保持型 4種 (球聖 / 中ボス / ネイバーズカップ / ワールドカップ) — 防衛戦型ロジック
+- 算出型 4種 (新人王 / 週刊王 / 戦闘強 / 連勝王) — 試合登録時に DB から再計算
+- ワールドネイバーズ (ワールドカップ + ネイバーズカップ 2冠) 達成時のフルスクリーン金色演出
+- LINE 通知に称号変動セクション追加 (奪取/獲得/卒業/失効)
+- ホーム上部に「現在の盟主」セクション (8称号カード)
+- ランキング行のプレイヤー名横に称号バッジ
+- プレイヤー詳細に保有称号セクション
+- Prisma に Title / TitleHistory モデル追加 + Player にリレーション
+- `lib/titles.ts`: TITLE_CONFIGS / updateTitlesAfterMatch / recomputeComputedTitles / getAllTitleHolders / getTitleMapByPlayer
+
+**LINE 連携完成**:
+- Channel ID `2010023773` / シュートくん bot で稼働
+- `LineGroup` テーブルで group/user/room を webhook 経由で自動登録
+- friend add → group invite で何もせず通知対象が DB に追加される
+
 ### v0.2 (2026-05-09)
 
 **インフラ**:

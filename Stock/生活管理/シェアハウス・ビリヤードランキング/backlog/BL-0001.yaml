@@ -5,7 +5,7 @@ category: 生活管理
 state: pending
 priority: normal
 created_at: '2026-05-08T03:42:05.614Z'
-updated_at: '2026-05-09T06:20:52.319Z'
+updated_at: '2026-05-09T06:52:27.975Z'
 created_by: mt-cli
 description: >-
   ## 背景
@@ -48,22 +48,11 @@ description: >-
   - Open Questions の優先順位付け → 田中さん回答 → MVP スコープ確定
 
   - レーティング方式 (Q1) と 真剣戦/カジュアル戦の線引き (Q10) が他項目への影響大、先に決めたい
-deliverable_refs: []
+deliverable_refs:
+  - d-20260509-001
 schema_version: 2
 cockpit_task_ids: []
-pending_questions:
-  - id: q-BL-0001-1-20260508034221
-    at: '2026-05-08T03:42:21.036Z'
-    cockpit_task_id: '0'
-    content: >-
-      Q1 レーティング方式の選定: Elo / Glicko-2 / FargoRate型 (試合のラック単位でカウント) / 独自のいずれを採用する? 対戦数が初期は少ないため、Glicko-2
-      のように『不確実性』を持たせる方式が向いている可能性。判断軸が他項目 (Q2/Q3/Q8) に強く影響するため最優先で決めたい。
-  - id: q-BL-0001-2-20260508034232
-    at: '2026-05-08T03:42:32.686Z'
-    cockpit_task_id: '0'
-    content: >-
-      Q2 ハンデの定量化と勝敗ポイントへの反映方法: 例) フリーボール / ゲームボール (8番もOK等) / 狙える球の制限 / 持ち点制 — どれをハンデのバリエーションとして採用するか?
-      また、ハンデあり試合の結果をレート計算にどう反映するか (= ハンデを織り込んだ期待勝率を補正する方式 vs ハンデ込みの実質スコアで素直にElo計算)。
+pending_questions: []
 decisions:
   - at: '2026-05-09T06:20:51.270Z'
     type: answer
@@ -103,4 +92,19 @@ decisions:
     type: answer
     by: user
     content: 'Q11 想定参加人数: 20人以内を MVP の上限スケールとする。'
-    answers_question_id: q-BL-0001-11-20260508034301
+  - at: '2026-05-09T06:50:36.898Z'
+    type: answer
+    by: user
+    content: >-
+      Q1 レーティング方式: Glicko-2 を採用する。少人数・対戦数バラつきに強く、新規プレイヤーは RD が大きい状態から急速に収束、長期未対戦者の RD が膨らむ挙動がシェアハウス運用に適合。ライブラリも豊富 (npm
+      glicko2 等)。
+  - at: '2026-05-09T06:50:37.054Z'
+    type: answer
+    by: user
+    content: >-
+      Q2 ハンデ反映: 案A (ハンデ込み素直 Glicko-2 適用) + 緩和策 (ハンデあり試合は変動量を 0.5倍に絞る) を MVP
+      採用。ハンデの種類/条件は試合レコードのフィールドとして記録だけしておき、データが溜まったら案B (ハンデごとの期待勝率補正テーブル) へ後日移行可能な構造とする。
+  - at: '2026-05-09T06:50:37.320Z'
+    type: commitment
+    by: ai
+    content: 全 Open Questions (Q1〜Q11) の方針が確定したため、本日の Flow に MVP 仕様書を作成し deliverable として登録する。

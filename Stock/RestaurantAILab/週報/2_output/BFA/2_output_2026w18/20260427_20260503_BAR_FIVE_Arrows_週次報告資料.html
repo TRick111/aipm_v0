@@ -1,0 +1,2498 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BAR FIVE Arrows 週次営業報告 — 2026-W18</title>
+<script src="https://cdn.plot.ly/plotly-2.35.0.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;font-size:20px;color:#334155;}
+.slide{width:1280px;height:720px;position:relative;overflow:hidden;background:#ffffff;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;}
+@media screen{.slide{margin:0 auto 40px auto;box-shadow:0 4px 20px rgba(0,0,0,0.12);}}
+@media print{body{margin:0;padding:0;background:#fff;}.slide{page-break-after:always;page-break-inside:avoid;break-after:page;break-inside:avoid;box-shadow:none;margin:0;}.slide:last-child{page-break-after:auto;}}
+.slide-header{background:#1E3A5F;color:#fff;padding:14px 40px;display:flex;align-items:center;justify-content:space-between;position:relative;min-height:60px;}
+.slide-header h2{font-size:32px;font-weight:700;white-space:nowrap;}
+.slide-header .pn{font-size:16px;opacity:0.7;white-space:nowrap;margin-left:20px;}
+.progress-bar{position:absolute;bottom:0;left:0;height:3px;background:rgba(255,255,255,0.4);border-radius:0 2px 2px 0;}
+.slide-header .section-tag{background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:4px;font-size:14px;font-weight:500;margin-right:10px;}
+.msg-bar{background:#FFF7ED;border-left:5px solid #F97316;padding:10px 40px;font-size:22px;font-weight:800;color:#1E293B;line-height:1.35;}
+.slide-body{padding:16px 40px 16px 40px;height:calc(100% - 60px - 52px);overflow:hidden;}
+.slide-body.with-msg{height:calc(100% - 60px - 52px);}
+
+/* Title slide */
+.slide-title{background:linear-gradient(135deg,#1E3A5F 0%,#0F172A 100%);display:flex;flex-direction:column;justify-content:center;align-items:center;color:#fff;text-align:center;}
+.main-title{font-size:48px;font-weight:800;}
+.sub-title{font-size:28px;font-weight:400;margin-top:12px;opacity:0.9;}
+.period{font-size:18px;margin-top:24px;opacity:0.7;}
+
+/* KPI cards */
+.kpi-row{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:10px;}
+.kpi-card{background:#F8FAFC;border-radius:12px;padding:16px 20px;box-shadow:0 2px 8px rgba(0,0,0,0.06);text-align:center;flex:1;min-width:180px;max-width:260px;}
+.kpi-label{font-size:17px;font-weight:600;color:#64748B;display:block;}
+.kpi-value{font-size:44px;font-weight:800;color:#1E293B;display:block;margin:4px 0;}
+.kpi-change{font-size:22px;font-weight:700;display:block;}
+.kpi-change.negative{color:#EF4444;}
+.kpi-change.positive{color:#22C55E;}
+.kpi-sub{font-size:17px;color:#64748B;display:block;}
+
+/* Tables */
+.dt{width:100%;border-collapse:collapse;font-size:18px;}
+.dt th{background:#1E3A5F;color:#fff;padding:8px 12px;text-align:left;font-size:17px;font-weight:700;}
+.dt td{padding:7px 12px;border-bottom:1px solid #E2E8F0;}
+.dt tr:nth-child(even){background:#F8FAFC;}
+.dt .num{text-align:right;}
+.dt .highlight-row{background:#FFF7ED;border-left:4px solid #F97316;}
+.dt .highlight-row td{font-weight:800;color:#C2410C;}
+
+/* Action table */
+.action-table{width:100%;border-collapse:collapse;font-size:15px;}
+.action-table th{background:#1E3A5F;color:#fff;padding:6px 10px;text-align:left;font-size:15px;font-weight:700;}
+.action-table td{padding:5px 10px;border-bottom:1px solid #E2E8F0;vertical-align:top;}
+.action-table tr:nth-child(even){background:#F8FAFC;}
+
+/* Cards */
+.content-card{background:#F8FAFC;border-radius:12px;padding:16px 20px;box-shadow:0 2px 8px rgba(0,0,0,0.06);margin-bottom:10px;}
+.list-item{background:#F8FAFC;border-radius:10px;padding:12px 18px;box-shadow:0 1px 4px rgba(0,0,0,0.05);margin-bottom:8px;}
+
+/* Bullet list */
+.bullet-list{list-style:none;padding:0;}
+.bullet-list li{display:flex;align-items:flex-start;gap:12px;padding:10px 14px;border-radius:10px;margin-bottom:8px;font-size:18px;line-height:1.4;background:#F8FAFC;box-shadow:0 1px 4px rgba(0,0,0,0.05);}
+.bullet-list .icon{font-size:24px;flex-shrink:0;margin-top:2px;}
+.bullet-list .text{flex:1;}
+.bullet-list .text strong{color:#1E293B;}
+
+/* Success/challenge items */
+.success-item,.challenge-item{border-radius:10px;padding:12px 18px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,0.05);}
+.success-item{background:#F0FDF4;border-left:4px solid #22C55E;}
+.challenge-item{background:#FEF2F2;border-left:4px solid #EF4444;}
+.success-item h4{font-size:18px;font-weight:700;color:#22C55E;margin-bottom:4px;}
+.challenge-item h4{font-size:18px;font-weight:700;color:#EF4444;margin-bottom:4px;}
+.success-item p,.challenge-item p{font-size:17px;color:#334155;margin:0;}
+
+/* Blockquote */
+.daily-quote{border-left:3px solid #3B82F6;padding:8px 16px;margin-bottom:10px;background:#F8FAFC;border-radius:0 10px 10px 0;}
+.daily-quote .q-date{font-weight:700;font-size:17px;color:#1E293B;}
+.daily-quote .q-text{font-size:17px;color:#334155;line-height:1.4;margin-top:2px;display:block;}
+
+/* Layout helpers */
+.flex-row{display:flex;gap:20px;}
+.flex-col{display:flex;flex-direction:column;}
+.col-2-3{flex:2;}
+.col-1-3{flex:1;}
+.chart-container{border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.06);overflow:hidden;}
+
+/* Gauge cards */
+.gauge-row{display:flex;gap:16px;justify-content:center;margin-top:10px;}
+.gauge-card{background:#F8FAFC;border-radius:12px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.06);text-align:center;flex:1;}
+.gauge-card .g-label{font-size:17px;font-weight:600;color:#64748B;}
+.gauge-card .g-values{display:flex;justify-content:center;gap:16px;margin:8px 0;}
+.gauge-card .g-this{font-size:24px;font-weight:800;color:#1E293B;}
+.gauge-card .g-prev{font-size:18px;color:#94A3B8;}
+.gauge-card .g-pct{font-size:48px;font-weight:900;}
+.gauge-card .g-pct.neg{color:#EF4444;}
+.gauge-card .g-pct.pos{color:#22C55E;}
+
+/* Comparison table */
+.compare-table{width:100%;border-collapse:collapse;font-size:18px;}
+.compare-table th{background:#1E3A5F;color:#fff;padding:8px 12px;text-align:center;font-weight:700;}
+.compare-table td{padding:8px 12px;border-bottom:1px solid #E2E8F0;text-align:center;}
+.compare-table tr:nth-child(even){background:#F8FAFC;}
+
+/* Pillar cards */
+.pillar-card{background:#F8FAFC;border-radius:12px;padding:14px 18px;box-shadow:0 2px 8px rgba(0,0,0,0.06);margin-bottom:10px;}
+.pillar-card h4{font-size:18px;font-weight:700;color:#1E293B;margin-bottom:4px;}
+.pillar-card p{font-size:17px;color:#334155;}
+
+/* Section header in body */
+.section-title{font-size:22px;font-weight:800;color:#1E293B;margin:8px 0;}
+.sub-section{font-size:18px;font-weight:700;color:#1E293B;margin:6px 0 4px 0;}
+</style>
+</head>
+<body>
+
+<!-- ==================== SLIDE 1: Title ==================== -->
+<div class="slide slide-title" id="slide-1">
+  <div class="main-title">BAR FIVE Arrows 週次営業報告</div>
+  <div class="sub-title">2026年第18週 / 4月27日〜5月3日</div>
+  <div class="period">作成日: 2026-05-04 / GW期間（7営業日）</div>
+</div>
+
+<!-- ==================== SLIDE 2: Executive Summary ==================== -->
+<div class="slide" id="slide-2">
+  <div class="slide-header"><h2><span class="section-tag">全体サマリー</span>エグゼクティブサマリー</h2><span class="pn">2 / 35</span><div class="progress-bar" style="width:2.86%"></div></div>
+  <div class="msg-bar">売上¥850Kは直近5週で最高水準。客単価¥5,559（前週比+27%）が急回復し、組数52組（+57%）の予約活況が牽引</div>
+  <div class="slide-body with-msg">
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <span class="kpi-label">売上</span>
+        <span class="kpi-value" style="font-size:40px;">¥850,460</span>
+        <span class="kpi-change positive">▲ +25.4%<span style="font-size:16px;color:#64748B;"> 前週比</span></span>
+        <span class="kpi-sub">前年比 ▼ -1.3%</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">客数</span>
+        <span class="kpi-value">153人</span>
+        <span class="kpi-change negative">▼ -1.3%<span style="font-size:16px;color:#64748B;"> 前週比</span></span>
+        <span class="kpi-sub">前年比 ▼ -23.1%</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">組数</span>
+        <span class="kpi-value">52組</span>
+        <span class="kpi-change positive">▲ +57.6%<span style="font-size:16px;color:#64748B;"> 前週比</span></span>
+        <span class="kpi-sub">7営業日（GW期間）</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">客単価</span>
+        <span class="kpi-value" style="font-size:40px;">¥5,559</span>
+        <span class="kpi-change positive">▲ +27.1%<span style="font-size:16px;color:#64748B;"> 前週比</span></span>
+        <span class="kpi-sub">前年比 ▲ +28.4%</span>
+      </div>
+    </div>
+    <div style="margin-top:14px;">
+      <ul class="bullet-list">
+        <li><div class="icon">📈</div><div class="text"><strong>売上¥850Kは直近5週で最高水準。</strong>前週¥678K比+25%・前年比は-1.3%まで縮小</div></li>
+        <li><div class="icon">💰</div><div class="text">客単価¥5,559は前週¥4,375比+27%、前年¥4,330比+28%。<strong>コース客戻りと物販で急回復</strong></div></li>
+        <li><div class="icon">🎯</div><div class="text">組数52組は前週33組から<strong>+57%</strong>。GW期間の予約活況がインパクト</div></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 3: Revenue Trend ==================== -->
+<div class="slide" id="slide-3">
+  <div class="slide-header"><h2><span class="section-tag">全体サマリー</span>売上トレンド</h2><span class="pn">3 / 35</span><div class="progress-bar" style="width:5.71%"></div></div>
+  <div class="msg-bar">¥850,460は直近5週で最高。前年比-1.3%まで縮小し、リニューアル後の集客回復が本格化</div>
+  <div class="slide-body with-msg">
+    <div class="flex-row">
+      <div class="col-2-3"><div id="chart-s3" style="width:100%;height:440px;"></div></div>
+      <div class="col-1-3" style="padding-top:20px;">
+        <div class="content-card">
+          <div style="font-size:17px;font-weight:600;color:#64748B;">前年同週比較</div>
+          <div style="font-size:20px;font-weight:800;color:#1E293B;margin-top:6px;">今週: ¥850,460</div>
+          <div style="font-size:18px;color:#94A3B8;margin-top:4px;">前年同週: ¥861,650</div>
+          <div style="font-size:24px;font-weight:800;color:#EF4444;margin-top:4px;">▼ -1.3%</div>
+        </div>
+        <div class="content-card" style="margin-top:10px;">
+          <div style="font-size:17px;font-weight:600;color:#64748B;">トレンド</div>
+          <p style="font-size:17px;margin-top:6px;">前年比-1.3%まで縮まり、売上水準は前年並みにほぼ到達</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 4: Customer Count Trend ==================== -->
+<div class="slide" id="slide-4">
+  <div class="slide-header"><h2><span class="section-tag">全体サマリー</span>客数トレンド</h2><span class="pn">4 / 35</span><div class="progress-bar" style="width:8.57%"></div></div>
+  <div class="msg-bar">客数153人は前週比ほぼ横ばいだが前年比-23%。集客面では引き続き課題</div>
+  <div class="slide-body with-msg">
+    <div class="flex-row">
+      <div class="col-2-3"><div id="chart-s4" style="width:100%;height:440px;"></div></div>
+      <div class="col-1-3" style="padding-top:20px;">
+        <div class="content-card">
+          <div style="font-size:17px;font-weight:600;color:#64748B;">前年同週比較</div>
+          <div style="font-size:20px;font-weight:800;color:#1E293B;margin-top:6px;">今週: 153人</div>
+          <div style="font-size:18px;color:#94A3B8;margin-top:4px;">前年同週: 199人</div>
+          <div style="font-size:24px;font-weight:800;color:#EF4444;margin-top:4px;">▼ -23.1%</div>
+        </div>
+        <div class="content-card" style="margin-top:10px;">
+          <div style="font-size:17px;font-weight:600;color:#64748B;">トレンド</div>
+          <p style="font-size:17px;margin-top:6px;">前年比-23%。週後半（土日）の集客減が客数を押し下げ</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 5: Spend Per Customer Trend ==================== -->
+<div class="slide" id="slide-5">
+  <div class="slide-header"><h2><span class="section-tag">全体サマリー</span>客単価トレンド</h2><span class="pn">5 / 35</span><div class="progress-bar" style="width:11.43%"></div></div>
+  <div class="msg-bar">客単価¥5,559は前週比+27%・前年比+28%。コース客戻りと高単価商品で大幅リカバリ</div>
+  <div class="slide-body with-msg">
+    <div class="flex-row">
+      <div class="col-2-3"><div id="chart-s5" style="width:100%;height:440px;"></div></div>
+      <div class="col-1-3" style="padding-top:20px;">
+        <div class="content-card">
+          <div style="font-size:17px;font-weight:600;color:#64748B;">前年同週比較</div>
+          <div style="font-size:20px;font-weight:800;color:#1E293B;margin-top:6px;">今週: ¥5,559</div>
+          <div style="font-size:18px;color:#94A3B8;margin-top:4px;">前年同週: ¥4,330</div>
+          <div style="font-size:24px;font-weight:800;color:#22C55E;margin-top:4px;">▲ +28.4%</div>
+        </div>
+        <div class="content-card" style="margin-top:10px;">
+          <div style="font-size:17px;font-weight:600;color:#64748B;">トレンド</div>
+          <p style="font-size:17px;margin-top:6px;">SAKAYA物販＋コース＋イベントが客単価を押し上げる構造</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 6: YoY Summary ==================== -->
+<div class="slide" id="slide-6">
+  <div class="slide-header"><h2><span class="section-tag">全体サマリー</span>前年同週比サマリー</h2><span class="pn">6 / 35</span><div class="progress-bar" style="width:14.29%"></div></div>
+  <div class="msg-bar">客単価+28%・売上-1.3%まで縮小。客数前年比-23%が残る課題。客単価戦略で売上水準は前年並みに到達</div>
+  <div class="slide-body with-msg">
+    <div class="gauge-row">
+      <div class="gauge-card">
+        <div class="g-label">売上</div>
+        <div class="g-values">
+          <span class="g-this">¥850,460</span>
+          <span class="g-prev">前年 ¥861,650</span>
+        </div>
+        <div class="g-pct neg">▼ -1.3%</div>
+      </div>
+      <div class="gauge-card">
+        <div class="g-label">客数</div>
+        <div class="g-values">
+          <span class="g-this">153人</span>
+          <span class="g-prev">前年 199人</span>
+        </div>
+        <div class="g-pct neg">▼ -23.1%</div>
+      </div>
+      <div class="gauge-card">
+        <div class="g-label">客単価</div>
+        <div class="g-values">
+          <span class="g-this">¥5,559</span>
+          <span class="g-prev">前年 ¥4,330</span>
+        </div>
+        <div class="g-pct pos">▲ +28.4%</div>
+      </div>
+    </div>
+    <div style="margin-top:16px;">
+      <ul class="bullet-list">
+        <li><div class="icon">💰</div><div class="text">売上は<strong>前年並み水準にほぼ到達</strong>。客単価+28%が売上水準を支える</div></li>
+        <li><div class="icon">⚠️</div><div class="text">課題は客数前年比<strong>-23%</strong>。集客強化と週後半（土日）のテコ入れが必要</div></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 7: Day-of-Week Overview ==================== -->
+<div class="slide" id="slide-7">
+  <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>曜日別概況</h2><span class="pn">7 / 35</span><div class="progress-bar" style="width:17.14%"></div></div>
+  <div class="msg-bar">金曜+¥242K・水曜+¥115K・火曜+¥72Kの好調が売上を牽引。土曜-¥110K・木曜-¥61Kで凹凸大</div>
+  <div class="slide-body with-msg">
+    <div id="chart-s7" style="width:100%;height:470px;"></div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 8: Saturday Basic Numbers ==================== -->
+<div class="slide" id="slide-8">
+  <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>土曜日 不調の分析：基本数字</h2><span class="pn">8 / 35</span><div class="progress-bar" style="width:20.00%"></div></div>
+  <div class="msg-bar">売上¥10,200は4週平均¥120Kの8.5%。本来のピーク日が完全に機能停止</div>
+  <div class="slide-body with-msg">
+    <div class="flex-row">
+      <div class="col-2-3"><div id="chart-s8" style="width:100%;height:420px;"></div></div>
+      <div class="col-1-3" style="padding-top:10px;">
+        <ul class="bullet-list">
+          <li><div class="icon">🚨</div><div class="text">売上達成率<strong>8.5%</strong>は週内最低。GW初日の取り込みに失敗</div></li>
+          <li><div class="icon">📉</div><div class="text">客単価は4週平均並みだが、客数<strong>2人</strong>で売上は壊滅水準</div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 9: Saturday Group Size ==================== -->
+<div class="slide" id="slide-9">
+  <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>土曜日 不調の分析：グループ構成</h2><span class="pn">9 / 35</span><div class="progress-bar" style="width:22.86%"></div></div>
+  <div class="msg-bar">2名×1組のみ。1名・3-4名・5名以上の来店がゼロでパターン完全に欠落</div>
+  <div class="slide-body with-msg">
+    <div class="flex-row">
+      <div class="col-2-3"><div id="chart-s9" style="width:100%;height:420px;"></div></div>
+      <div class="col-1-3" style="padding-top:10px;">
+        <ul class="bullet-list">
+          <li><div class="icon">📉</div><div class="text">来店パターンが<strong>2名1組のみ</strong>に完全に限定（GW初日にも関わらず）</div></li>
+          <li><div class="icon">🚨</div><div class="text">大型予約・<strong>グループ需要の取り込みがゼロ</strong></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 10: Saturday Time Slot ==================== -->
+<div class="slide" id="slide-10">
+  <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>土曜日 不調の分析：時間帯別売上</h2><span class="pn">10 / 35</span><div class="progress-bar" style="width:25.71%"></div></div>
+  <div class="msg-bar">9時台（深夜帯）のみで¥10,200。コアタイム22-26時に来店ゼロ</div>
+  <div class="slide-body with-msg">
+    <div class="flex-row">
+      <div class="col-2-3"><div id="chart-s10" style="width:100%;height:420px;"></div></div>
+      <div class="col-1-3" style="padding-top:10px;">
+        <ul class="bullet-list">
+          <li><div class="icon">🚨</div><div class="text">BFAのコアタイムである<strong>22-26時に来店なし</strong></div></li>
+          <li><div class="icon">⏰</div><div class="text">終電後（9時台）の<strong>少人数客のみ</strong>で売上を構成</div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 11: Saturday Product Mix ==================== -->
+<div class="slide" id="slide-11">
+  <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>土曜日 不調の分析：商品別売上</h2><span class="pn">11 / 35</span><div class="progress-bar" style="width:28.57%"></div></div>
+  <div class="msg-bar">ウイスキー（ハイボール）と新カクテル中心。コース・フード系がゼロで商品ミックスも狭い</div>
+  <div class="slide-body with-msg">
+    <table class="dt" style="margin-top:10px;">
+      <thead><tr><th>カテゴリ</th><th class="num">売上</th><th class="num">構成比</th></tr></thead>
+      <tbody>
+        <tr class="highlight-row"><td>🥃 ウイスキー（ハイボール）</td><td class="num">¥2,400</td><td class="num">28.6%</td></tr>
+        <tr><td>🍹 FRUITS COCKTAIL</td><td class="num">¥1,500</td><td class="num">17.9%</td></tr>
+        <tr><td>🍸 NEW CLASSIC COCKTAIL</td><td class="num">¥1,500</td><td class="num">17.9%</td></tr>
+        <tr><td>🥗 COLD APPETIZERS</td><td class="num">¥1,200</td><td class="num">14.3%</td></tr>
+        <tr><td>🍷 ワイン（グラス）</td><td class="num">¥1,200</td><td class="num">14.3%</td></tr>
+        <tr><td>その他</td><td class="num">¥600</td><td class="num">6.9%</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:14px;">
+      <ul class="bullet-list">
+        <li><div class="icon">🍸</div><div class="text">売上を支える商品: オーチャードマティーニ¥1,500、トロピカルヴェール¥1,500のみ</div></li>
+        <li><div class="icon">⚠️</div><div class="text">コース料金・MAIN DISHES・JAPANESE COCKTAILの<strong>販売がゼロ</strong></div></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 12: Saturday Summary ==================== -->
+<div class="slide" id="slide-12">
+  <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>土曜日 不調の分析：まとめ</h2><span class="pn">12 / 35</span><div class="progress-bar" style="width:31.43%"></div></div>
+  <div class="msg-bar">土曜壊滅の本質は「予約客の不在」と「GW初日の取り込み失敗」。週末ピーク日の集客強化が最優先</div>
+  <div class="slide-body with-msg">
+    <div class="section-title">不調の主要因（3点）</div>
+    <ul class="bullet-list">
+      <li><div class="icon">🚨</div><div class="text"><strong>コース予約ゼロ</strong>で上振れ会計なし。最大会計¥10,200のみ</div></li>
+      <li><div class="icon">📉</div><div class="text"><strong>来店パターンが2名×1組のみ</strong>。GWでもグループ需要を取り込めず</div></li>
+      <li><div class="icon">⏰</div><div class="text"><strong>コアタイム（22-26時）に来店なし</strong>。深夜帯の流れ客のみで構成</div></li>
+    </ul>
+    <div class="section-title" style="margin-top:14px;">来週に向けた課題</div>
+    <ul class="bullet-list">
+      <li><div class="icon">📋</div><div class="text">土曜のピーク日に向けた予約獲得導線の常設化（GW・週末特化発信）</div></li>
+      <li><div class="icon">📱</div><div class="text">SNS・LINEで土曜先行予約を毎週木曜に告知</div></li>
+      <li><div class="icon">🎯</div><div class="text">GW期間の土曜限定コース・特別イベントを企画</div></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 13: Friday Basic Numbers ==================== -->
+<div class="slide" id="slide-13">
+  <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>金曜日 好調の分析：基本数字</h2><span class="pn">13 / 35</span><div class="progress-bar" style="width:34.29%"></div></div>
+  <div class="msg-bar">売上¥384,450は4週平均の271%。客数46人＋客単価¥8,358で両軸とも大幅プラス</div>
+  <div class="slide-body with-msg">
+    <div class="flex-row">
+      <div class="col-2-3"><div id="chart-s13" style="width:100%;height:420px;"></div></div>
+      <div class="col-1-3" style="padding-top:10px;">
+        <ul class="bullet-list">
+          <li><div class="icon">📈</div><div class="text">売上は4週平均の<strong>2.7倍</strong>。客単価¥8,358は通常の約2倍</div></li>
+          <li><div class="icon">💎</div><div class="text">大型予約＋<strong>ボトル購入＋イベント</strong>が集中した最強パターン</div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 14: Friday Group Size ==================== -->
+<div class="slide" id="slide-14">
+  <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>金曜日 好調の分析：グループ構成</h2><span class="pn">14 / 35</span><div class="progress-bar" style="width:37.14%"></div></div>
+  <div class="msg-bar">5名以上1組30名（¥50,000）に加え、1名・2名・3-4名まで幅広く獲得。多層的な集客</div>
+  <div class="slide-body with-msg">
+    <div class="flex-row">
+      <div class="col-2-3"><div id="chart-s14" style="width:100%;height:420px;"></div></div>
+      <div class="col-1-3" style="padding-top:10px;">
+        <ul class="bullet-list">
+          <li><div class="icon">🏆</div><div class="text">1名2件¥256,500（<strong>SAKAYA含む大口物販</strong>）が圧倒的に売上を牽引</div></li>
+          <li><div class="icon">🎉</div><div class="text">5名以上1組（<strong>30名・¥50,000</strong>）のイベント客と3-4名3組も活発</div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 15: Friday Time Slot ==================== -->
+<div class="slide" id="slide-15">
+  <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>金曜日 好調の分析：時間帯別売上</h2><span class="pn">15 / 35</span><div class="progress-bar" style="width:40.00%"></div></div>
+  <div class="msg-bar">8時台（28時相当）に¥274Kが集中（71%）。SAKAYAコース・大型ボトル購入が早朝帯にピーク</div>
+  <div class="slide-body with-msg">
+    <div class="flex-row">
+      <div class="col-2-3"><div id="chart-s15" style="width:100%;height:420px;"></div></div>
+      <div class="col-1-3" style="padding-top:10px;">
+        <ul class="bullet-list">
+          <li><div class="icon">🎯</div><div class="text">8時台に客数<strong>3人・売上¥274,100</strong>が集中（売上の71%）</div></li>
+          <li><div class="icon">⏰</div><div class="text">6-9時台の早朝帯トータルで¥384K。<strong>深夜帯コース＋物販の威力</strong></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 16: Friday Product Mix ==================== -->
+<div class="slide" id="slide-16">
+  <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>金曜日 好調の分析：商品別売上</h2><span class="pn">16 / 35</span><div class="progress-bar" style="width:42.86%"></div></div>
+  <div class="msg-bar">ボトル購入¥65K（44%）＋イベント¥50K（34%）＋コース¥15K（10%）の3本柱が客単価を押し上げ</div>
+  <div class="slide-body with-msg">
+    <table class="dt" style="margin-top:10px;">
+      <thead><tr><th>カテゴリ</th><th class="num">売上</th><th class="num">構成比</th></tr></thead>
+      <tbody>
+        <tr class="highlight-row"><td>🍾 ボトル購入</td><td class="num">¥65,128</td><td class="num">44.4%</td></tr>
+        <tr><td>🎉 イベント</td><td class="num">¥50,000</td><td class="num">34.1%</td></tr>
+        <tr><td>🥂 コース&セット</td><td class="num">¥15,000</td><td class="num">10.2%</td></tr>
+        <tr><td>未設定</td><td class="num">¥7,000</td><td class="num">4.8%</td></tr>
+        <tr><td>🍶 JAPANESE COCKTAIL</td><td class="num">¥1,900</td><td class="num">1.3%</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:14px;">
+      <ul class="bullet-list">
+        <li><div class="icon">🍾</div><div class="text">SAKAYA用ボトル販売<strong>¥63,728</strong>・イベント費用¥50,000・招待日和コース¥10,000が主要売上</div></li>
+        <li><div class="icon">🍸</div><div class="text">高単価商品: 7000円飲み放題¥7,000、5000円飲み放題¥5,000、本わさびジンソニック¥1,800</div></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 17: Friday Summary ==================== -->
+<div class="slide" id="slide-17">
+  <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>金曜日 好調の分析：まとめ</h2><span class="pn">17 / 35</span><div class="progress-bar" style="width:45.71%"></div></div>
+  <div class="msg-bar">金曜好調の本質は「ボトル販売＋イベント＋コース」3本柱の連動。再現には予約導線と物販強化が鍵</div>
+  <div class="slide-body with-msg">
+    <div class="section-title">好調の主要因（3点）</div>
+    <ul class="bullet-list">
+      <li><div class="icon">🏆</div><div class="text">1名2件<strong>¥256,500</strong>（SAKAYA用ボトル含む）の大口物販が売上の67%</div></li>
+      <li><div class="icon">🎉</div><div class="text">5名以上イベント1件（<strong>30名・¥50,000</strong>）と3-4名3組の幅広い予約獲得</div></li>
+      <li><div class="icon">💎</div><div class="text">客単価<strong>¥8,358</strong>（4週平均比189%）。ボトル＋イベント＋コースの理想形</div></li>
+    </ul>
+    <div class="section-title" style="margin-top:14px;">成功パターンの再現性</div>
+    <ul class="bullet-list">
+      <li><div class="icon">🍾</div><div class="text">SAKAYA・物販系の販売チャネルが新収益柱。継続的な仕入れと案内強化</div></li>
+      <li><div class="icon">📱</div><div class="text">イベント（CLP・法人）の予約導線をWebサイトで常設化</div></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 18: Day-of-Week Wrap-up ==================== -->
+<div class="slide" id="slide-18">
+  <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>曜日別評価まとめ</h2><span class="pn">18 / 35</span><div class="progress-bar" style="width:48.57%"></div></div>
+  <div class="msg-bar">金・水・火3日間で売上+¥430Kを稼ぐ一方、土・木・日3日で-¥223K毀損。ピーク日（土）の壊滅を要対策</div>
+  <div class="slide-body with-msg">
+    <div class="section-title">不調（土）vs 好調（金）の対比</div>
+    <table class="compare-table" style="margin-top:6px;">
+      <thead><tr><th>項目</th><th style="background:#EF4444;">土曜（不調）</th><th style="background:#22C55E;">金曜（好調）</th></tr></thead>
+      <tbody>
+        <tr><td>売上</td><td>¥10,200（4週平均比8.5%）</td><td>¥384,450（4週平均比271.2%）</td></tr>
+        <tr><td>客数</td><td>2人</td><td>46人</td></tr>
+        <tr><td>客単価</td><td>¥5,100</td><td>¥8,358</td></tr>
+        <tr><td>グループ</td><td>2名×1組のみ</td><td>1名〜5名以上まで多様</td></tr>
+        <tr><td>時間帯</td><td>9時台のみ</td><td>6-9時台の早朝帯がピーク</td></tr>
+        <tr><td>コース・物販</td><td>ゼロ</td><td>コース＋ボトル＋イベントの3本柱</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:10px;">
+      <ul class="bullet-list">
+        <li><div class="icon">📊</div><div class="text">7営業日中3日が4週平均超過（金・水・火）。<strong>土曜のピーク日壊滅</strong>が最大課題</div></li>
+        <li><div class="icon">💰</div><div class="text">客単価戦略は奏功（金曜¥8,358）。<strong>次は客数の底上げ</strong></div></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 19: Category Breakdown ==================== -->
+<div class="slide" id="slide-19">
+  <div class="slide-header"><h2><span class="section-tag">商品・カテゴリ分析</span>カテゴリ別売上構成比</h2><span class="pn">19 / 35</span><div class="progress-bar" style="width:51.43%"></div></div>
+  <div class="msg-bar">「ボトル購入」28.0%が新トップ。物販＋予約型が客単価を支える</div>
+  <div class="slide-body with-msg">
+    <div class="flex-row">
+      <div class="col-2-3"><div id="chart-s19" style="width:100%;height:440px;"></div></div>
+      <div class="col-1-3" style="padding-top:10px;">
+        <ul class="bullet-list">
+          <li><div class="icon">🍾</div><div class="text"><strong>ボトル購入28%が新トップ</strong>。SAKAYA物販が主要因</div></li>
+          <li><div class="icon">🥂</div><div class="text">コース・イベント・未設定で<strong>22%</strong>。予約型客単価の中核</div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 20: Hot Category Detail ==================== -->
+<div class="slide" id="slide-20">
+  <div class="slide-header"><h2><span class="section-tag">商品・カテゴリ分析</span>好調カテゴリの深掘り</h2><span class="pn">20 / 35</span><div class="progress-bar" style="width:54.29%"></div></div>
+  <div class="msg-bar">ボトル購入28.0%が新登場の収益柱。コース&セット・イベントとあわせて客単価¥5,559を牽引</div>
+  <div class="slide-body with-msg">
+    <table class="dt" style="margin-top:8px;">
+      <thead><tr><th>カテゴリ</th><th class="num">売上</th><th class="num">構成比</th><th class="num">前週比（pt）</th><th>要因</th></tr></thead>
+      <tbody>
+        <tr class="highlight-row"><td>🍾 ボトル購入</td><td class="num">¥233,184</td><td class="num">28.0%</td><td class="num" style="color:#22C55E;font-weight:800;">new</td><td>SAKAYA用ボトル販売が金曜に集中</td></tr>
+        <tr><td>🥂 コース&セット</td><td class="num">¥66,500</td><td class="num">8.0%</td><td class="num" style="color:#22C55E;font-weight:800;">復調</td><td>7000円・5000円飲み放題＋オズモール</td></tr>
+        <tr><td>🎉 イベント</td><td class="num">¥50,000</td><td class="num">6.0%</td><td class="num" style="color:#22C55E;">微増</td><td>CLP関連イベントが継続</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 21: Top 10 Products ==================== -->
+<div class="slide" id="slide-21">
+  <div class="slide-header"><h2><span class="section-tag">商品・カテゴリ分析</span>商品別売上 上位10</h2><span class="pn">21 / 35</span><div class="progress-bar" style="width:57.14%"></div></div>
+  <div class="msg-bar">SAKAYA用¥191K（23%）が新規TOP。tablecharge・イベント費用が定常上位。新規6商品が活発</div>
+  <div class="slide-body with-msg">
+    <div id="chart-s21" style="width:100%;height:480px;"></div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 22: Composition Change ==================== -->
+<div class="slide" id="slide-22">
+  <div class="slide-header"><h2><span class="section-tag">商品・カテゴリ分析</span>商品構成比の変化</h2><span class="pn">22 / 35</span><div class="progress-bar" style="width:60.00%"></div></div>
+  <div class="msg-bar">ワカモレ・デバルド・ドリンク等の中小商品が小幅増。イベント・ハウスハイボール・森のジントニックが大幅減</div>
+  <div class="slide-body with-msg">
+    <div class="flex-row" style="gap:24px;">
+      <div style="flex:1;">
+        <div class="section-title" style="color:#22C55E;">📈 構成比増加</div>
+        <table class="dt" style="margin-top:6px;font-size:17px;">
+          <thead><tr><th>商品名</th><th class="num">変化</th></tr></thead>
+          <tbody>
+            <tr class="highlight-row"><td>🌶️ ワカモレチップス</td><td class="num" style="color:#22C55E;">+0.56pt</td></tr>
+            <tr><td>🍷 デバルド・ビアンコ</td><td class="num" style="color:#22C55E;">+0.48pt</td></tr>
+            <tr><td>🥤 ドリンク</td><td class="num" style="color:#22C55E;">+0.43pt</td></tr>
+            <tr><td>🍺 ハートランド</td><td class="num" style="color:#22C55E;">+0.43pt</td></tr>
+            <tr><td>🍝 ボロネーゼラザニア</td><td class="num" style="color:#22C55E;">+0.39pt</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="flex:1;">
+        <div class="section-title" style="color:#EF4444;">📉 構成比減少</div>
+        <table class="dt" style="margin-top:6px;font-size:17px;">
+          <thead><tr><th>商品名</th><th class="num">変化</th></tr></thead>
+          <tbody>
+            <tr class="highlight-row"><td>🎉 イベント費用</td><td class="num" style="color:#EF4444;">-4.61pt</td></tr>
+            <tr><td>🥃 ハウスハイボール</td><td class="num" style="color:#EF4444;">-3.27pt</td></tr>
+            <tr><td>🌿 森のジントニック</td><td class="num" style="color:#EF4444;">-1.74pt</td></tr>
+            <tr><td>🌸 桜ブロッサム</td><td class="num" style="color:#EF4444;">-1.28pt</td></tr>
+            <tr><td>🍷 パナメラ・シャルドネ</td><td class="num" style="color:#EF4444;">-1.03pt</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div style="margin-top:12px;">
+      <ul class="bullet-list" style="font-size:17px;">
+        <li><div class="icon">✅</div><div class="text">フード系（ワカモレ・ボロネーゼ）・ワイン（デバルド）が小幅増。<strong>多様性が広がる</strong></div></li>
+        <li><div class="icon">⚠️</div><div class="text">前週主軸の商品群が構成比から落ちる。<strong>SAKAYA物販に置き換わる構造変化</strong></div></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 23: Product Summary ==================== -->
+<div class="slide" id="slide-23">
+  <div class="slide-header"><h2><span class="section-tag">商品・カテゴリ分析</span>商品分析まとめ</h2><span class="pn">23 / 35</span><div class="progress-bar" style="width:62.86%"></div></div>
+  <div class="msg-bar">「物販（SAKAYA）」が新たな第3の柱として登場。コース＋物販＋カクテルの三軸構造が形成</div>
+  <div class="slide-body with-msg">
+    <div class="section-title">商品戦略の3本柱（新フォーメーション）</div>
+    <div class="flex-row" style="margin-top:8px;gap:16px;">
+      <div class="pillar-card" style="flex:1;border-top:4px solid #F97316;">
+        <h4>🍾 物販（SAKAYA）</h4>
+        <p>SAKAYA用ボトル販売¥191K(23.0%)</p>
+        <div style="margin-top:8px;padding:8px;background:#FFF7ED;border-radius:8px;font-size:17px;"><strong>現状:</strong> 新規登場。継続安定化が課題</div>
+      </div>
+      <div class="pillar-card" style="flex:1;border-top:4px solid #3B82F6;">
+        <h4>🥂 コース・イベント</h4>
+        <p>コース&セット¥66K＋イベント¥50K</p>
+        <div style="margin-top:8px;padding:8px;background:#EFF6FF;border-radius:8px;font-size:17px;"><strong>現状:</strong> 復調基調。予約導線整備が鍵</div>
+      </div>
+      <div class="pillar-card" style="flex:1;border-top:4px solid #22C55E;">
+        <h4>🍸 看板カクテル</h4>
+        <p>本わさび・ゆず・ベルガモット</p>
+        <div style="margin-top:8px;padding:8px;background:#F0FDF4;border-radius:8px;font-size:17px;"><strong>現状:</strong> 安定。継続発信で定着促進</div>
+      </div>
+    </div>
+    <div class="section-title" style="margin-top:12px;">来週の方向性</div>
+    <ul class="bullet-list">
+      <li><div class="icon">🍾</div><div class="text">SAKAYA物販の継続実現に向けた仕入れと案内の標準化</div></li>
+      <li><div class="icon">⚠️</div><div class="text">失速した森のジントニック・桜ブロッサムの巻き返し</div></li>
+      <li><div class="icon">🍷</div><div class="text">ワイン・フード（デバルド・ワカモレ）の構成比増加を継続支援</div></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 24: Renewal Comparison Summary ==================== -->
+<div class="slide" id="slide-24">
+  <div class="slide-header"><h2><span class="section-tag">リニューアル前後比較</span>リニューアル比較 売上/客数/客単価</h2><span class="pn">24 / 35</span><div class="progress-bar" style="width:65.71%"></div></div>
+  <div class="msg-bar">W18で客単価¥5,559・前年比+28%を達成。リニューアル単価戦略が成果に到達。次は安定的な客数確保</div>
+  <div class="slide-body with-msg">
+    <div style="display:flex;gap:12px;"><div id="chart-s24-sales" style="flex:1;height:280px;"></div><div id="chart-s24-customers" style="flex:1;height:280px;"></div><div id="chart-s24-avgspend" style="flex:1;height:280px;"></div></div>
+    <div style="margin-top:4px;">
+      <ul class="bullet-list" style="font-size:17px;">
+        <li><div class="icon">📅</div><div class="text">Before期間: 2026/2/1〜3/31（59営業日）、After期間: 2026/4/1〜4/19（19営業日）</div></li>
+        <li><div class="icon">💰</div><div class="text">W18では客単価¥5,559で<strong>前年比+28.4%</strong>。リニューアル単価戦略の効果が浸透</div></li>
+        <li><div class="icon">⚠️</div><div class="text">客数前年比は<strong>-23.1%</strong>でやや拡大。週末（土）の集客強化が次の課題</div></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 25: Renewal Day-of-Week Pattern ==================== -->
+<div class="slide" id="slide-25">
+  <div class="slide-header"><h2><span class="section-tag">リニューアル前後比較</span>リニューアル比較 曜日別パターン変化</h2><span class="pn">25 / 35</span><div class="progress-bar" style="width:68.57%"></div></div>
+  <div class="msg-bar">水曜+104%・金曜+36%が成長。月曜-82%・木曜-52%が後退。W18も土曜壊滅で凹凸継続</div>
+  <div class="slide-body with-msg">
+    <div id="chart-s25" style="width:100%;height:310px;"></div>
+    <div style="margin-top:2px;">
+      <ul class="bullet-list" style="font-size:17px;">
+        <li><div class="icon">📈</div><div class="text">金曜（+36%）・水曜（+104%）が好調。<strong>W18も金¥384K・水¥181Kで継続</strong></div></li>
+        <li><div class="icon">🚨</div><div class="text">月曜・木曜が後退。<strong>W18でも木¥11.9Kで再発、土¥10Kは新たな課題</strong></div></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 26: Renewal Category Shift ==================== -->
+<div class="slide" id="slide-26">
+  <div class="slide-header"><h2><span class="section-tag">リニューアル前後比較</span>リニューアル比較 カテゴリ/商品の転換</h2><span class="pn">26 / 35</span><div class="progress-bar" style="width:71.43%"></div></div>
+  <div class="msg-bar">SAKAYA物販がリニューアル後期の新看板に登場。森のジントニック・新カクテル群は定着継続</div>
+  <div class="slide-body with-msg" style="font-size:16px;">
+    <div class="flex-row" style="gap:16px;">
+      <div style="flex:1;">
+        <div class="sub-section">Before期間（日本語カテゴリ）上位5</div>
+        <table class="dt" style="font-size:16px;">
+          <thead><tr><th>カテゴリ</th><th class="num">売上</th><th class="num">構成比</th></tr></thead>
+          <tbody>
+            <tr class="highlight-row"><td>🏆 コース&セット</td><td class="num">¥1,364,500</td><td class="num">24.8%</td></tr>
+            <tr><td>ジャパニーズカクテル</td><td class="num">¥558,700</td><td class="num">10.2%</td></tr>
+            <tr><td>その他</td><td class="num">¥412,000</td><td class="num">7.5%</td></tr>
+            <tr><td>オリジナルカクテル</td><td class="num">¥402,700</td><td class="num">7.3%</td></tr>
+            <tr><td>ウイスキー（ハイボール等）</td><td class="num">¥338,800</td><td class="num">6.2%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="flex:1;">
+        <div class="sub-section">After期間（英語カテゴリ）上位5</div>
+        <table class="dt" style="font-size:16px;">
+          <thead><tr><th>カテゴリ</th><th class="num">売上</th><th class="num">構成比</th></tr></thead>
+          <tbody>
+            <tr class="highlight-row"><td>🏆 コース&セット</td><td class="num">¥303,500</td><td class="num">17.2%</td></tr>
+            <tr><td>未設定（コース料金）</td><td class="num">¥182,000</td><td class="num">10.3%</td></tr>
+            <tr><td>🍸 NEW CLASSIC COCKTAIL</td><td class="num">¥179,700</td><td class="num">10.2%</td></tr>
+            <tr><td>その他</td><td class="num">¥156,000</td><td class="num">8.8%</td></tr>
+            <tr><td>🍸 JAPANESE COCKTAIL</td><td class="num">¥129,400</td><td class="num">7.3%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="sub-section" style="margin-top:8px;">W18新登場の看板商品</div>
+    <table class="dt" style="font-size:16px;">
+      <thead><tr><th>商品名</th><th class="num">売上</th><th>備考</th></tr></thead>
+      <tbody>
+        <tr class="highlight-row"><td>🍾 SAKAYA用</td><td class="num">¥191,184</td><td>物販新チャネル</td></tr>
+        <tr><td>CLP利用分</td><td class="num">¥42,000</td><td>法人ルート</td></tr>
+        <tr><td>招待日和コース</td><td class="num">¥30,000</td><td>予約サイト経由</td></tr>
+        <tr><td>🌶️ 本わさびジンソニック</td><td class="num">¥18,000</td><td>新カクテル</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 27: Renewal Overall Assessment ==================== -->
+<div class="slide" id="slide-27">
+  <div class="slide-header"><h2><span class="section-tag">リニューアル前後比較</span>リニューアル比較 総合評価と優先アクション</h2><span class="pn">27 / 35</span><div class="progress-bar" style="width:74.29%"></div></div>
+  <div class="msg-bar">W18は客単価¥5,559で前年比+28%達成。リニューアル成果到達。次は土曜壊滅対策・安定的客数確保</div>
+  <div class="slide-body with-msg" style="padding-top:10px;">
+    <div class="section-title">リニューアルの成果（5点）</div>
+    <ul class="bullet-list" style="font-size:17px;">
+      <li><div class="icon">💰</div><div class="text">客単価¥5,559で<strong>前年比+28%達成</strong>。リニューアル単価戦略が成果に到達</div></li>
+      <li><div class="icon">🍾</div><div class="text">SAKAYA物販¥191Kの<strong>新収益柱</strong>が登場。物販チャネル開拓に成功</div></li>
+      <li><div class="icon">📈</div><div class="text">売上前年比は-30.9%（After平均）→<strong>W18で-1.3%</strong>まで急縮小</div></li>
+      <li><div class="icon">🥂</div><div class="text">コース予約（オズモール・招待日和・CLP）の<strong>予約導線が複数稼働</strong></div></li>
+      <li><div class="icon">🍸</div><div class="text">新カクテル群（ベルガモット・本わさび・ゆず）の<strong>定着が継続</strong></div></li>
+    </ul>
+    <div class="section-title" style="margin-top:8px;">課題と優先アクション（W18反映）</div>
+    <table class="action-table" style="margin-top:4px;">
+      <thead><tr><th style="width:60px;">優先度</th><th>アクション</th><th style="width:160px;">期待効果</th></tr></thead>
+      <tbody>
+        <tr class="highlight-row"><td style="font-weight:800;color:#EF4444;">1（最優先）</td><td>土曜の予約獲得・GW特化発信</td><td>週末売上 +¥100K/週</td></tr>
+        <tr><td style="font-weight:700;">2（高）</td><td>客数の底上げ（SNS・地域連携）</td><td>前年比-23%→-10%へ縮小</td></tr>
+        <tr><td style="font-weight:700;">3（高）</td><td>SAKAYA物販の継続安定化</td><td>客単価¥5,500台の維持</td></tr>
+        <tr><td>4（中）</td><td>失速商品（森のジントニック）の再点火</td><td>看板商品の維持</td></tr>
+        <tr><td>5（中）</td><td>口コミ投稿促進（QRコード）</td><td>新規来店 +10%</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 28: Weekly Strengths ==================== -->
+<div class="slide" id="slide-28">
+  <div class="slide-header"><h2><span class="section-tag">今週の総括</span>今週の総括：強み</h2><span class="pn">28 / 35</span><div class="progress-bar" style="width:77.14%"></div></div>
+  <div class="msg-bar">売上¥850K・客単価¥5,559で直近5週最高水準。金曜大ヒット・水曜好調・組数52組が好調を支える</div>
+  <div class="slide-body with-msg">
+    <div class="section-title">今週の強み（5点）</div>
+    <div class="success-item" style="margin-top:8px;">
+      <h4>📈 売上¥850Kで前週比+25%・前月比+37%</h4>
+      <p>直近5週で最高水準。客単価リカバリと組数大幅増の合わせ技で大幅プラス</p>
+    </div>
+    <div class="success-item">
+      <h4>💰 客単価¥5,559 前週比+27%・前年比+28%</h4>
+      <p>SAKAYA物販＋コース＋イベントの3本柱で客単価が大幅リカバリ</p>
+    </div>
+    <div class="success-item">
+      <h4>🏆 金曜売上¥384K で4週平均比271%</h4>
+      <p>SAKAYA¥191K・イベント¥50K・コース¥15Kの3本柱が同日に集中</p>
+    </div>
+    <div class="success-item">
+      <h4>🎯 組数52組 前週比+57%（33→52）</h4>
+      <p>予約活況・GW需要の取り込みが本格化。直近5週で最高水準</p>
+    </div>
+    <div class="success-item">
+      <h4>🌟 水曜売上¥181K 客数42人</h4>
+      <p>平日好調日が4週平均比+¥189Kを寄与。客数要因がプラス</p>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 29: Weekly Challenges ==================== -->
+<div class="slide" id="slide-29">
+  <div class="slide-header"><h2><span class="section-tag">今週の総括</span>今週の総括：課題</h2><span class="pn">29 / 35</span><div class="progress-bar" style="width:80.00%"></div></div>
+  <div class="msg-bar">土曜壊滅と客数前年比-23%が最大課題。週後半（土日）の集客回復と口コミ発信が継続テーマ</div>
+  <div class="slide-body with-msg">
+    <div class="section-title">今週の課題（5点）</div>
+    <div class="challenge-item" style="margin-top:8px;">
+      <h4>🚨 土曜売上¥10.2K（4週平均比8.5%）</h4>
+      <p>ピーク日が完全に機能停止。客数2人・客単価¥5,100でコース予約ゼロ</p>
+    </div>
+    <div class="challenge-item">
+      <h4>⚠️ 木曜売上¥11.9K 客数2人</h4>
+      <p>平日不振が継続。コース予約ゼロが主因で、深夜帯の少人数客のみ</p>
+    </div>
+    <div class="challenge-item">
+      <h4>📉 客数153人 前年比-23%</h4>
+      <p>リニューアル後も客数面では前年に肉薄できず。集客基盤の強化が必要</p>
+    </div>
+    <div class="challenge-item">
+      <h4>📅 週後半（土日）の集客大幅減</h4>
+      <p>土曜-¥110K、日曜-¥52Kで週末ピーク日2日とも未達</p>
+    </div>
+    <div class="challenge-item">
+      <h4>⭐ 口コミ投稿ゼロ継続</h4>
+      <p>新規認知の獲得が停滞。会計時QRコード等の導線整備が急務</p>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 30: Daily Report 1 ==================== -->
+<div class="slide" id="slide-30">
+  <div class="slide-header"><h2><span class="section-tag">日報サマリー</span>店舗の様子① GW前後の予約来店・コース予約</h2><span class="pn">30 / 35</span><div class="progress-bar" style="width:82.86%"></div></div>
+  <div class="msg-bar">オズモール・招待日和・一休経由のコース来店が活発化。GW期間の予約導線が複数稼働</div>
+  <div class="slide-body with-msg" style="padding-top:10px;">
+    <div class="sub-section">予約サイト経由のコース来店が活発化</div>
+    <div class="daily-quote"><span class="q-date">4月27日（月）大泉さん:</span><span class="q-text">「30代女性3名が近隣で飲んだ後、Googleマップで検索して来店。」</span></div>
+    <div class="daily-quote"><span class="q-date">4月28日（火）大泉さん:</span><span class="q-text">「40代男女4名（オズモール7000円コース、会社同僚）：ジンソーダを気に入っていた。」</span></div>
+    <div class="daily-quote"><span class="q-date">4月28日（火）大泉さん:</span><span class="q-text">「20代女性＆40代男性（招待日和）、20代男女（食べログ）：会話少なく静かな食事。」</span></div>
+    <div class="daily-quote"><span class="q-date">4月30日（木）大泉さん:</span><span class="q-text">「40代女性3名がオズモール7000円コース利用、近隣オフィスワーカーでコース後アラカルト追加し約5時間滞在。」</span></div>
+    <div class="daily-quote"><span class="q-date">4月30日（木）大泉さん:</span><span class="q-text">「30〜40代男性4名が一休5000円コース利用、会社同僚で『お食事美味しかった』との感想あり。」</span></div>
+    <div class="daily-quote"><span class="q-date">5月3日（日）橋本さん:</span><span class="q-text">「40代男女2名がコース予約で来店し、パナメラ（白）ワインやキャラメルナッツキャデラック等を注文、女性から『どの料理も美味しかった』と感想あり。」</span></div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 31: Daily Report 2 ==================== -->
+<div class="slide" id="slide-31">
+  <div class="slide-header"><h2><span class="section-tag">日報サマリー</span>店舗の様子② 海外ゲスト・新規来店経路の多様性</h2><span class="pn">31 / 35</span><div class="progress-bar" style="width:85.71%"></div></div>
+  <div class="msg-bar">Googleマップ・紹介・常連紹介など多経路で活発。海外ゲスト・CLP紹介も継続</div>
+  <div class="slide-body with-msg" style="padding-top:10px;">
+    <div class="sub-section">海外ゲスト・新規来店経路の活発化</div>
+    <div class="daily-quote"><span class="q-date">4月27日（月）大泉さん:</span><span class="q-text">「30代男女3名（海外）はGoogle検索で来店、カクテルが美味しかったと好評。」</span></div>
+    <div class="daily-quote"><span class="q-date">4月27日（月）大泉さん:</span><span class="q-text">「30代男女2名（アメリカ）はGoogle検索で来店。」</span></div>
+    <div class="daily-quote"><span class="q-date">4月28日（火）大泉さん:</span><span class="q-text">「20〜30代男女5名（海外、Google検索、アメリカ）、50代男女2名（本田さま紹介、金券5000円引き利用）来店。」</span></div>
+    <div class="daily-quote"><span class="q-date">4月28日（火）大泉さん:</span><span class="q-text">「40〜50代男女8名（CLP安田さん紹介）：JINJILoung利用経験者、1杯ずつ飲んで終了。」</span></div>
+    <div class="daily-quote"><span class="q-date">4月30日（木）大泉さん:</span><span class="q-text">「50代男性2名は常連様、30代男性1名は昔の常連様の紹介で来店し、ウイスキーをおすすめして喜ばれた。」</span></div>
+    <div class="daily-quote"><span class="q-date">5月3日（日）橋本さん:</span><span class="q-text">「海外の20代女性2名がティラミスロブロイを注文、友人同士で軽く飲みに来店。」</span></div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 32: Daily Report 3 ==================== -->
+<div class="slide" id="slide-32">
+  <div class="slide-header"><h2><span class="section-tag">日報サマリー</span>店舗の様子③ 新人育成と仕込み・コース運用課題</h2><span class="pn">32 / 35</span><div class="progress-bar" style="width:88.57%"></div></div>
+  <div class="msg-bar">5/1新人勤務開始・5/2アイドル時間課題・5/3仕込みタイミング課題。育成と運用改善が継続テーマ</div>
+  <div class="slide-body with-msg" style="padding-top:10px;">
+    <div class="sub-section">新人育成・接客サポート体制</div>
+    <div class="daily-quote"><span class="q-date">5月1日（金）橋本さん:</span><span class="q-text">「本日より新人スタッフ1名が勤務開始し、ホール業務で注文取りに戸惑う場面があったため、今後はメニュー習得を重点的に指導予定。」</span></div>
+    <div class="daily-quote"><span class="q-date">5月1日（金）橋本さん:</span><span class="q-text">「料理提供時のカトラリー説明など細かい伝達が不十分だったため、今後はサポート体制を強化する方針。」</span></div>
+    <div class="sub-section" style="margin-top:8px;">アイドル時間帯・仕込み運用の課題</div>
+    <div class="daily-quote"><span class="q-date">5月2日（土）橋本さん:</span><span class="q-text">「開店後19:00頃までノーゲストでアイドル時間帯が発生し、スタッフ3名体制で依頼した業務がすぐに終了、手持ち無沙汰な時間があった。アイドル時間帯用のタスクリストを再作成する予定。」</span></div>
+    <div class="daily-quote"><span class="q-date">5月3日（日）橋本さん:</span><span class="q-text">「本日は店内が落ち着いていたため、営業中にフードの仕込みを実施。」</span></div>
+    <div class="daily-quote"><span class="q-date">5月3日（日）橋本さん:</span><span class="q-text">「コース注文が多い場合、仕込みのタイミング調整が難しく、営業中に仕込みができないことが課題。仕込み時間と保存期間の両面から、コースメニュー自体の見直しを検討中。」</span></div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 33: Actions 1 ==================== -->
+<div class="slide" id="slide-33">
+  <div class="slide-header"><h2><span class="section-tag">施策一覧</span>施策一覧① メニュー・集客</h2><span class="pn">33 / 35</span><div class="progress-bar" style="width:91.43%"></div></div>
+  <div class="msg-bar">土曜壊滅対策・SAKAYA物販継続・木曜テコ入れをTOPに繰り上げ。メニュー10＋集客10施策で集客と客単価を強化</div>
+  <div class="slide-body with-msg" style="padding-top:6px;overflow-y:auto;">
+    <div class="flex-row" style="gap:16px;">
+      <div style="flex:1;">
+        <div class="sub-section">メニュー開発</div>
+        <table class="action-table" style="font-size:14px;">
+          <thead><tr><th>#</th><th>施策内容</th><th>狙い</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>SAKAYA物販の継続的な仕入れ・案内体制の整備</td><td>物販チャネルの安定化</td></tr>
+            <tr><td>2</td><td>土曜限定の「週末プレミアムコース」を新設</td><td>土曜ピーク日の集客強化</td></tr>
+            <tr><td>3</td><td>7000円・5000円飲み放題＋イベント費の組み合わせをSNS発信を週次化</td><td>コース予約の安定確保</td></tr>
+            <tr><td>4</td><td>木曜限定の「平日カクテルセット」（2杯+おつまみ）を新設</td><td>木曜集客の動機づけ</td></tr>
+            <tr><td>5</td><td>ハイボールから高単価ウイスキー（12年もの）への「次の1杯」提案を標準化</td><td>客単価さらに向上</td></tr>
+            <tr><td>6</td><td>カクテル×フードのペアリングメニュー（3組み合わせ）を提案</td><td>フード注文率向上</td></tr>
+            <tr><td>7</td><td>失速商品（森のジントニック）の限定アレンジ・SNS発信</td><td>看板商品の巻き返し</td></tr>
+            <tr><td>8</td><td>二次会向けライトコース（90分制・フード2品+飲み放題）を新設</td><td>法人・グループ利用</td></tr>
+            <tr><td>9</td><td>新カクテル（本わさび・ゆず・ベルガモット）の春シーズン推し企画</td><td>客単価押し上げ</td></tr>
+            <tr><td>10</td><td>コース予約客への当日ウェルカムドリンク提供</td><td>満足度向上・SNS投稿促進</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="flex:1;">
+        <div class="sub-section">集客・マーケティング</div>
+        <table class="action-table" style="font-size:14px;">
+          <thead><tr><th>#</th><th>施策内容</th><th>狙い</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>土曜の予約獲得導線常設化（毎週木曜の土日予約配信）</td><td>土曜ピーク日の集客回復</td></tr>
+            <tr><td>2</td><td>月曜・木曜の常連向けDM配信（リニューアル後の再来店促進）</td><td>平日集客回復</td></tr>
+            <tr><td>3</td><td>Google Business プロフィールの最新写真・メニュー情報更新</td><td>検索経由来店増加</td></tr>
+            <tr><td>4</td><td>オズモール・招待日和・一休・食べログの平日特典設定</td><td>平日集客の動機づけ</td></tr>
+            <tr><td>5</td><td>Instagram投稿に7000円・5000円飲み放題コースの映える写真を定期掲載</td><td>コース予約問い合わせ増</td></tr>
+            <tr><td>6</td><td>公式LINE登録者向け「週末特化」配信</td><td>土日来店の動機づけ</td></tr>
+            <tr><td>7</td><td>海外ゲスト向け英語メニュー・Google Maps最適化</td><td>インバウンド来店強化</td></tr>
+            <tr><td>8</td><td>口コミ投稿促進（会計時にQRコード提示）</td><td>中長期の集客基盤強化</td></tr>
+            <tr><td>9</td><td>近隣店舗・B&F・CLP等との相互送客ネットワーク強化</td><td>大型予約の継続獲得</td></tr>
+            <tr><td>10</td><td>コース予約専用ページの公式サイト整備</td><td>予約導線の改善</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 34: Actions 2 ==================== -->
+<div class="slide" id="slide-34">
+  <div class="slide-header"><h2><span class="section-tag">施策一覧</span>施策一覧② 顧客・運営</h2><span class="pn">34 / 35</span><div class="progress-bar" style="width:94.29%"></div></div>
+  <div class="msg-bar">顧客育成10施策＋運営改善10施策でリピート率向上と大型予約対応の品質維持を推進</div>
+  <div class="slide-body with-msg" style="padding-top:6px;overflow-y:auto;">
+    <div class="flex-row" style="gap:16px;">
+      <div style="flex:1;">
+        <div class="sub-section">顧客育成・リピーター</div>
+        <table class="action-table" style="font-size:14px;">
+          <thead><tr><th>#</th><th>施策内容</th><th>狙い</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>初来店客への次回使えるクーポン配布</td><td>再来店率向上</td></tr>
+            <tr><td>2</td><td>リピーター向け限定メニュー（常連しか頼めない裏メニュー）</td><td>ロイヤルティ強化</td></tr>
+            <tr><td>3</td><td>来店回数に応じたランク制度（3回目で特典等）</td><td>リピート動機づけ</td></tr>
+            <tr><td>4</td><td>海外ゲストの口コミ投稿促進（TripAdvisor、Google）</td><td>インバウンド好循環</td></tr>
+            <tr><td>5</td><td>法人・会議利用の営業（近隣オフィスへのアプローチ）</td><td>平日グループ開拓</td></tr>
+            <tr><td>6</td><td>予約時のコース提案を標準化（電話・Web予約とも）</td><td>コース利用率向上</td></tr>
+            <tr><td>7</td><td>大型予約客（CLP紹介等）への手書き御礼カード送付</td><td>リピート受注の獲得</td></tr>
+            <tr><td>8</td><td>季節のイベント企画（ワイン会・カクテルセミナー等）</td><td>新規顧客層の開拓</td></tr>
+            <tr><td>9</td><td>来店動機・経路の記録を継続し、マーケティングに活用</td><td>データドリブン施策</td></tr>
+            <tr><td>10</td><td>1名客（ひとり飲み）の居心地向上施策（カウンター環境改善）</td><td>1名客の取り込み</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="flex:1;">
+        <div class="sub-section">運営改善</div>
+        <table class="action-table" style="font-size:14px;">
+          <thead><tr><th>#</th><th>施策内容</th><th>狙い</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>アイドル時間帯用のタスクリスト整備（5/2課題反映）</td><td>手持ち無沙汰時間の有効活用</td></tr>
+            <tr><td>2</td><td>大型予約日（金）のスタッフ3名体制シフトを徹底</td><td>サービス品質維持</td></tr>
+            <tr><td>3</td><td>予約管理システムのWチェック体制を確立</td><td>予約ミスの再発防止</td></tr>
+            <tr><td>4</td><td>プレミックスカクテルの品目を拡充し提供スピードを向上</td><td>オペレーション効率化</td></tr>
+            <tr><td>5</td><td>食材ロス管理の週次レビューを実施</td><td>原価率改善</td></tr>
+            <tr><td>6</td><td>コース注文が多い日の仕込みタイミング・保存期間の調整</td><td>営業中の仕込み課題解決</td></tr>
+            <tr><td>7</td><td>2杯目・フード追加の声がけをオペレーションに組み込み</td><td>客単価向上</td></tr>
+            <tr><td>8</td><td>会計時の口コミ依頼をルーティン化</td><td>口コミ数安定確保</td></tr>
+            <tr><td>9</td><td>日報の入力フォーマットを統一（来店経路・人数の定型記録）</td><td>データ品質の向上</td></tr>
+            <tr><td>10</td><td>週次のスタッフミーティングで売上データと日報を共有</td><td>現場の数字感覚向上</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 35: Actions 3 ==================== -->
+<div class="slide" id="slide-35">
+  <div class="slide-header"><h2><span class="section-tag">施策一覧</span>施策一覧③ スタッフ育成</h2><span class="pn">35 / 35</span><div class="progress-bar" style="width:100.00%"></div></div>
+  <div class="msg-bar">新人スタッフ教育・大型予約対応標準化・接客トーク標準化で現場力を底上げし、売上回復を支える</div>
+  <div class="slide-body with-msg" style="padding-top:8px;">
+    <div class="sub-section">スタッフ育成・組織強化</div>
+    <table class="action-table" style="margin-top:6px;">
+      <thead><tr><th style="width:30px;">#</th><th>施策内容</th><th style="width:200px;">狙い</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>新人スタッフへのメニュー教育・カトラリー説明の徹底（5/1課題反映）</td><td>新人即戦力化</td></tr>
+        <tr><td>2</td><td>新カクテル全品のレシピシート完備（デザート系含む）</td><td>提供ミス・遅れの防止</td></tr>
+        <tr><td>3</td><td>ドリンクメイク練習の定期実施（新人・アルバイト向け）</td><td>スタッフの即戦力化</td></tr>
+        <tr><td>4</td><td>メニュー説明トーク集の作成（英語版含む）</td><td>海外ゲスト対応力の向上</td></tr>
+        <tr><td>5</td><td>大型予約対応の標準オペレーション整備（席配置・配膳手順等）</td><td>大型グループ受注の品質維持</td></tr>
+        <tr><td>6</td><td>カクテル×フードのペアリング知識研修</td><td>追加注文提案力の向上</td></tr>
+        <tr><td>7</td><td>予約管理システムの操作研修（Wチェック手順の周知）</td><td>予約ミスの再発防止</td></tr>
+        <tr><td>8</td><td>接客トークの標準化（2杯目提案、フードおすすめ、口コミ依頼）</td><td>客単価向上・口コミ増加</td></tr>
+        <tr><td>9</td><td>週1回のロールプレイ研修（想定シチュエーション対応）</td><td>接客品質の底上げ</td></tr>
+        <tr><td>10</td><td>スタッフ間の情報共有ノートの運用（引き継ぎ事項の記録）</td><td>チームワーク向上・属人化防止</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ==================== CHARTS (Plotly.js) ==================== -->
+<script>
+// Color constants
+const C = {
+  blue: '#3B82F6', gray: '#94A3B8', green: '#22C55E', red: '#EF4444',
+  orange: '#F97316', navy: '#1E3A5F', text: '#334155', heading: '#1E293B',
+  bgLight: '#F8FAFC', orangeBg: '#FFF7ED'
+};
+
+// ===== SLIDE 3: Revenue Trend =====
+(function(){
+  var weeks = ['W14','W15','W16','W17','W18'];
+  var sales = [665500,356110,782180,678080,850460];
+  var trace = {
+    x: weeks, y: sales, type: 'scatter', mode: 'lines+markers+text',
+    line: {color: C.blue, width: 3},
+    marker: {size: [10,10,10,10,16], color: [C.blue,C.blue,C.blue,C.blue,C.green]},
+    text: ['','','','','¥850,460'],
+    textposition: 'top center',
+    textfont: {size: 18, color: C.green, family: 'Helvetica Neue, Hiragino Kaku Gothic ProN'}
+  };
+  var layout = {
+    margin:{t:30,r:30,b:50,l:80},
+    xaxis:{tickfont:{size:16}},
+    yaxis:{tickfont:{size:14},tickformat:',',title:{text:'売上（円）',font:{size:14}}},
+    annotations:[
+      {x:'W18',y:850460,xref:'x',yref:'y',text:'▲ +25.4%（5週で最高）',showarrow:true,arrowhead:2,arrowcolor:C.green,ax:-90,ay:-40,font:{size:15,color:C.green,weight:800},bgcolor:'#F0FDF4',bordercolor:C.green,borderwidth:1.5,borderpad:4}
+    ],
+    showlegend:false,
+    plot_bgcolor:'#fff',paper_bgcolor:'#fff'
+  };
+  Plotly.newPlot('chart-s3',[trace],layout,{displayModeBar:false,responsive:true});
+})();
+
+// ===== SLIDE 4: Customer Count Trend =====
+(function(){
+  var weeks = ['W14','W15','W16','W17','W18'];
+  var counts = [113,90,132,155,153];
+  var trace = {
+    x: weeks, y: counts, type: 'scatter', mode: 'lines+markers+text',
+    line: {color: C.blue, width: 3},
+    marker: {size: [10,10,10,10,16], color: [C.blue,C.blue,C.blue,C.blue,C.red]},
+    text: ['','','','','153人'],
+    textposition: 'top center',
+    textfont: {size: 18, color: C.red}
+  };
+  var layout = {
+    margin:{t:30,r:30,b:50,l:60},
+    xaxis:{tickfont:{size:16}},
+    yaxis:{tickfont:{size:14},title:{text:'客数（人）',font:{size:14}}},
+    annotations:[
+      {x:'W18',y:153,text:'▼ -1.3%（前年比-23%）',showarrow:true,arrowhead:2,arrowcolor:C.red,ax:-90,ay:-40,font:{size:15,color:C.red,weight:800},bgcolor:'#FEF2F2',bordercolor:C.red,borderwidth:1.5,borderpad:4}
+    ],
+    showlegend:false,plot_bgcolor:'#fff',paper_bgcolor:'#fff'
+  };
+  Plotly.newPlot('chart-s4',[trace],layout,{displayModeBar:false,responsive:true});
+})();
+
+// ===== SLIDE 5: Spend Trend =====
+(function(){
+  var weeks = ['W14','W15','W16','W17','W18'];
+  var spend = [5889,3957,5926,4375,5559];
+  var trace = {
+    x: weeks, y: spend, type: 'scatter', mode: 'lines+markers+text',
+    line: {color: C.blue, width: 3},
+    marker: {size: [10,10,10,10,16], color: [C.blue,C.blue,C.blue,C.blue,C.green]},
+    text: ['','','','','¥5,559'],
+    textposition: 'top center',
+    textfont: {size: 18, color: C.green}
+  };
+  var layout = {
+    margin:{t:30,r:30,b:50,l:70},
+    xaxis:{tickfont:{size:16}},
+    yaxis:{tickfont:{size:14},tickformat:',',title:{text:'客単価（円）',font:{size:14}}},
+    annotations:[
+      {x:'W18',y:5559,text:'▲ +27.1%',showarrow:true,arrowhead:2,arrowcolor:C.green,ax:-60,ay:-40,font:{size:16,color:C.green,weight:800},bgcolor:'#F0FDF4',bordercolor:C.green,borderwidth:1.5,borderpad:4}
+    ],
+    showlegend:false,plot_bgcolor:'#fff',paper_bgcolor:'#fff'
+  };
+  Plotly.newPlot('chart-s5',[trace],layout,{displayModeBar:false,responsive:true});
+})();
+
+// ===== SLIDE 7: Day-of-Week Sales =====
+(function(){
+  var days = ['月','火','水','木','金','土','日'];
+  var thisW = [58300,145960,181200,11980,384450,10200,58370];
+  var avg4 = [54095,73370,65338,73737,141740,120302,110320];
+  var colors = thisW.map(function(v,i){
+    if(i===4) return C.green;    // Fri best
+    if(i===5) return C.red;      // Sat worst
+    if(i===3) return C.red;      // Thu also bad
+    if(i===2) return C.green;    // Wed good
+    return C.blue;
+  });
+  var t1 = {x:days,y:thisW,name:'W18（当週）',type:'bar',marker:{color:colors},
+    text:thisW.map(function(v){return '¥'+v.toLocaleString();}),textposition:'outside',textfont:{size:14}};
+  var t2 = {x:days,y:avg4,name:'4週平均',type:'bar',marker:{color:C.gray,opacity:0.5},
+    text:avg4.map(function(v){return '¥'+v.toLocaleString();}),textposition:'outside',textfont:{size:13,color:C.gray}};
+  var layout = {
+    margin:{t:30,r:20,b:50,l:70},barmode:'group',
+    xaxis:{tickfont:{size:16}},
+    yaxis:{tickfont:{size:14},tickformat:','},
+    legend:{font:{size:16},orientation:'h',y:1.05,x:0.5,xanchor:'center'},
+    annotations:[
+      {x:'土',y:10200,text:'⚠️ -¥110,102',showarrow:true,arrowhead:0,ax:0,ay:-35,font:{size:15,color:C.red,weight:800},bgcolor:'#FEF2F2',bordercolor:C.red,borderwidth:1.5,borderpad:3},
+      {x:'金',y:384450,text:'★ +¥242,710',showarrow:true,arrowhead:0,ax:-40,ay:-35,font:{size:15,color:C.green,weight:800},bgcolor:'#F0FDF4',bordercolor:C.green,borderwidth:1.5,borderpad:3}
+    ],
+    showlegend:true,plot_bgcolor:'#fff',paper_bgcolor:'#fff'
+  };
+  Plotly.newPlot('chart-s7',[t1,t2],layout,{displayModeBar:false,responsive:true});
+})();
+
+// ===== SLIDE 8: Saturday Ratio Bar =====
+(function(){
+  var labels = ['客単価','客数','売上'];
+  var ratios = [127.2, 6.7, 8.5];
+  var actuals = ['¥5,100 / ¥4,010','2人 / 30人','¥10,200 / ¥120,302'];
+  var barColors = ratios.map(function(r){return r<80?C.red:r>120?C.green:C.blue;});
+  var trace = {
+    y:labels,x:ratios,type:'bar',orientation:'h',
+    marker:{color:barColors,line:{color:barColors.map(function(){return C.red;}),width:2.5}},
+    text:ratios.map(function(r,i){return r.toFixed(1)+'%  ('+actuals[i]+')';}),textposition:'outside',textfont:{size:16},
+    hoverinfo:'text'
+  };
+  var layout = {
+    margin:{t:20,r:230,b:40,l:100},
+    xaxis:{range:[0,150],tickfont:{size:14},title:{text:'4週平均比（%）',font:{size:14}},
+      tickvals:[0,25,50,75,100,125],ticktext:['0%','25%','50%','75%','100%','125%']},
+    yaxis:{tickfont:{size:16}},
+    shapes:[{type:'line',x0:100,x1:100,y0:-0.5,y1:2.5,line:{color:C.navy,width:2.5,dash:'solid'}}],
+    annotations:[
+      {x:100,y:2.8,text:'100%=4週平均',showarrow:false,font:{size:14,color:C.navy}},
+      {x:8.5,y:'売上',text:'▼ 要改善',showarrow:false,xanchor:'left',font:{size:14,color:C.red,weight:800},bgcolor:'#FEF2F2',bordercolor:C.red,borderwidth:1.5,borderpad:3}
+    ],
+    showlegend:false,plot_bgcolor:'#fff',paper_bgcolor:'#fff'
+  };
+  Plotly.newPlot('chart-s8',[trace],layout,{displayModeBar:false,responsive:true});
+})();
+
+// ===== SLIDE 9: Saturday Group Size =====
+(function(){
+  var labels = ['5名以上','3-4名','2名','1名'];
+  var bills = [0,0,1,0];
+  var guests = [0,0,2,0];
+  var t1 = {y:labels,x:bills,name:'会計数',type:'bar',orientation:'h',marker:{color:C.blue},
+    text:bills.map(function(v){return v+'件';}),textposition:'outside',textfont:{size:16}};
+  var t2 = {y:labels,x:guests,name:'客数',type:'bar',orientation:'h',marker:{color:C.orange},
+    text:guests.map(function(v){return v+'人';}),textposition:'outside',textfont:{size:16}};
+  var layout = {
+    margin:{t:20,r:80,b:40,l:100},barmode:'group',
+    xaxis:{tickfont:{size:14},title:{text:'件数・人数',font:{size:14}}},
+    yaxis:{tickfont:{size:16}},
+    legend:{font:{size:16},orientation:'h',y:1.08,x:0.5,xanchor:'center'},
+    annotations:[{x:2,y:'2名',text:'2名×1組のみ',showarrow:true,ax:60,ay:0,font:{size:15,color:C.orange,weight:800},bgcolor:C.orangeBg,bordercolor:C.orange,borderwidth:1.5,borderpad:3}],
+    showlegend:true,plot_bgcolor:'#fff',paper_bgcolor:'#fff'
+  };
+  Plotly.newPlot('chart-s9',[t1,t2],layout,{displayModeBar:false,responsive:true});
+})();
+
+// ===== SLIDE 10: Saturday Time Slot =====
+(function(){
+  var slots = ['28時以降','26-28時','24-26時','22-24時'];
+  var sales = [10200,0,0,0];
+  var barColors = sales.map(function(v){return v===0?C.gray:C.blue;});
+  var t1 = {y:slots,x:sales,name:'売上',type:'bar',orientation:'h',marker:{color:barColors},
+    text:sales.map(function(v){return v===0?'¥0':'¥'+v.toLocaleString();}),textposition:'outside',textfont:{size:16}};
+  var layout = {
+    margin:{t:20,r:120,b:40,l:100},
+    xaxis:{tickfont:{size:14},tickformat:',',title:{text:'売上（円）',font:{size:14}}},
+    yaxis:{tickfont:{size:16}},
+    annotations:[
+      {x:0,y:'26-28時',text:'⚠️ 来店ゼロ',showarrow:false,xanchor:'left',xshift:50,font:{size:15,color:C.red,weight:800},bgcolor:'#FEF2F2',bordercolor:C.red,borderwidth:1.5,borderpad:3},
+      {x:0,y:'24-26時',text:'⚠️ 来店ゼロ',showarrow:false,xanchor:'left',xshift:50,font:{size:15,color:C.red,weight:800},bgcolor:'#FEF2F2',bordercolor:C.red,borderwidth:1.5,borderpad:3},
+      {x:0,y:'22-24時',text:'⚠️ 来店ゼロ',showarrow:false,xanchor:'left',xshift:50,font:{size:15,color:C.red,weight:800},bgcolor:'#FEF2F2',bordercolor:C.red,borderwidth:1.5,borderpad:3}
+    ],
+    showlegend:false,plot_bgcolor:'#fff',paper_bgcolor:'#fff'
+  };
+  Plotly.newPlot('chart-s10',[t1],layout,{displayModeBar:false,responsive:true});
+})();
+
+// ===== SLIDE 13: Friday Ratio Bar =====
+(function(){
+  var labels = ['客単価','客数','売上'];
+  var ratios = [188.7, 144.0, 271.2];
+  var actuals = ['¥8,358 / ¥4,429','46人 / 32人','¥384,450 / ¥141,740'];
+  var barColors = ratios.map(function(r){return r<80?C.red:r>120?C.green:C.blue;});
+  var trace = {
+    y:labels,x:ratios,type:'bar',orientation:'h',
+    marker:{color:barColors,line:{color:barColors.map(function(){return C.green;}),width:2.5}},
+    text:ratios.map(function(r,i){return r.toFixed(1)+'%  ('+actuals[i]+')';}),textposition:'outside',textfont:{size:16},
+    hoverinfo:'text'
+  };
+  var layout = {
+    margin:{t:20,r:280,b:40,l:100},
+    xaxis:{range:[0,320],tickfont:{size:14},title:{text:'4週平均比（%）',font:{size:14}},
+      tickvals:[0,100,200,300],ticktext:['0%','100%','200%','300%']},
+    yaxis:{tickfont:{size:16}},
+    shapes:[{type:'line',x0:100,x1:100,y0:-0.5,y1:2.5,line:{color:C.navy,width:2.5,dash:'solid'}}],
+    annotations:[
+      {x:100,y:2.8,text:'100%=4週平均',showarrow:false,font:{size:14,color:C.navy}},
+      {x:271.2,y:'売上',text:'★ 圧倒的好調',showarrow:false,xanchor:'left',font:{size:14,color:C.green,weight:800},bgcolor:'#F0FDF4',bordercolor:C.green,borderwidth:1.5,borderpad:3},
+      {x:188.7,y:'客単価',text:'★ 大幅プラス',showarrow:false,xanchor:'left',font:{size:14,color:C.green,weight:800},bgcolor:'#F0FDF4',bordercolor:C.green,borderwidth:1.5,borderpad:3}
+    ],
+    showlegend:false,plot_bgcolor:'#fff',paper_bgcolor:'#fff'
+  };
+  Plotly.newPlot('chart-s13',[trace],layout,{displayModeBar:false,responsive:true});
+})();
+
+// ===== SLIDE 14: Friday Group Size =====
+(function(){
+  var labels = ['5名以上','3-4名','2名','1名'];
+  var bills = [1,3,2,2];
+  var guests = [30,10,4,2];
+  var t1 = {y:labels,x:bills,name:'会計数',type:'bar',orientation:'h',marker:{color:C.blue},
+    text:bills.map(function(v){return v+'件';}),textposition:'outside',textfont:{size:16}};
+  var t2 = {y:labels,x:guests,name:'客数',type:'bar',orientation:'h',marker:{color:C.orange,line:{width:guests.map(function(v,i){return i===0?3:0;}),color:guests.map(function(v,i){return i===0?C.navy:'transparent';})}},
+    text:guests.map(function(v){return v+'人';}),textposition:'outside',textfont:{size:16}};
+  var layout = {
+    margin:{t:20,r:100,b:40,l:100},barmode:'group',
+    xaxis:{tickfont:{size:14},title:{text:'件数・人数',font:{size:14}}},
+    yaxis:{tickfont:{size:16}},
+    legend:{font:{size:16},orientation:'h',y:1.08,x:0.5,xanchor:'center'},
+    annotations:[
+      {x:30,y:'5名以上',text:'1組 30名 / ¥50K',showarrow:true,ax:60,ay:0,font:{size:14,color:C.orange,weight:800},bgcolor:C.orangeBg,bordercolor:C.orange,borderwidth:1.5,borderpad:3},
+      {x:2,y:'1名',text:'2件 ¥256.5K（物販）',showarrow:true,ax:80,ay:0,font:{size:14,color:C.orange,weight:800},bgcolor:C.orangeBg,bordercolor:C.orange,borderwidth:1.5,borderpad:3}
+    ],
+    showlegend:true,plot_bgcolor:'#fff',paper_bgcolor:'#fff'
+  };
+  Plotly.newPlot('chart-s14',[t1,t2],layout,{displayModeBar:false,responsive:true});
+})();
+
+// ===== SLIDE 15: Friday Time Slot =====
+(function(){
+  var slots = ['9時台','8時台','7時台','6時台'];
+  var sales = [54300,274100,33650,22400];
+  var barColors = sales.map(function(v){return v===274100?C.green:C.blue;});
+  var t1 = {y:slots,x:sales,name:'売上',type:'bar',orientation:'h',marker:{color:barColors,line:{width:sales.map(function(v){return v===274100?3:0;}),color:sales.map(function(v){return v===274100?C.navy:'transparent';})}},
+    text:sales.map(function(v){return '¥'+v.toLocaleString();}),textposition:'outside',textfont:{size:16}};
+  var layout = {
+    margin:{t:20,r:160,b:40,l:100},
+    xaxis:{tickfont:{size:14},tickformat:',',title:{text:'売上（円）',font:{size:14}}},
+    yaxis:{tickfont:{size:16}},
+    annotations:[{x:274100,y:'8時台',text:'売上の71%（SAKAYA・コース）',showarrow:true,ax:60,ay:0,font:{size:14,color:C.green,weight:800},bgcolor:'#F0FDF4',bordercolor:C.green,borderwidth:1.5,borderpad:3}],
+    showlegend:false,plot_bgcolor:'#fff',paper_bgcolor:'#fff'
+  };
+  Plotly.newPlot('chart-s15',[t1],layout,{displayModeBar:false,responsive:true});
+})();
+
+// ===== SLIDE 19: Category Donut =====
+(function(){
+  var labels = ['ボトル購入','未設定','コース&セット','その他','イベント','NEW CLASSIC COCKTAIL','ウイスキー','その他カテゴリ合計'];
+  var values = [233184,69000,66500,62900,50000,48200,42800,277876];
+  var colors = ['#F97316','#FB923C','#3B82F6','#94A3B8','#FBBF24','#60A5FA','#A78BFA','#CBD5E1'];
+  var trace = {
+    labels:labels,values:values,type:'pie',hole:0.5,
+    marker:{colors:colors},
+    textinfo:'label+percent',textposition:'outside',
+    textfont:{size:14},
+    pull:[0.08,0.04,0.04,0,0,0,0,0],
+    sort:false
+  };
+  var layout = {
+    margin:{t:20,r:20,b:20,l:20},
+    showlegend:false,
+    annotations:[{text:'合計<br>¥850,460',showarrow:false,font:{size:20,color:C.heading,weight:800},x:0.5,y:0.5}],
+    plot_bgcolor:'#fff',paper_bgcolor:'#fff'
+  };
+  Plotly.newPlot('chart-s19',[trace],layout,{displayModeBar:false,responsive:true});
+})();
+
+// ===== SLIDE 21: Top 10 Products =====
+(function(){
+  var products = ['本わさびジンソニック','7000円飲み放題付（2時間制）','5000円飲み放題付（2時間制）','ハウスハイボール','招待日和コース','CLP利用分','7000円飲み放題付（3時間制）','イベント費用','tablecharge','SAKAYA用'];
+  var sales = [18000,20000,20000,28800,30000,42000,49000,50000,56300,191184];
+  var pcts = ['2.2%','2.4%','2.4%','3.5%','3.6%','5.0%','5.9%','6.0%','6.8%','23.0%'];
+  var barColors = sales.map(function(v,i){
+    if(i===9) return C.orange;
+    if(i>=7) return C.blue;
+    return '#93C5FD';
+  });
+  var trace = {
+    y:products,x:sales,type:'bar',orientation:'h',
+    marker:{color:barColors,line:{width:sales.map(function(v,i){return i===9?3:0;}),color:sales.map(function(v,i){return i===9?C.navy:'transparent';})}},
+    text:sales.map(function(v,i){return '¥'+v.toLocaleString()+' ('+pcts[i]+')';}),
+    textposition:'outside',textfont:{size:14}
+  };
+  var layout = {
+    margin:{t:10,r:200,b:40,l:240},
+    xaxis:{tickfont:{size:14},tickformat:',',title:{text:'売上（円）',font:{size:14}}},
+    yaxis:{tickfont:{size:14},automargin:true},
+    annotations:[{x:191184,y:'SAKAYA用',text:'🏆 1位 / 物販新登場',showarrow:false,xanchor:'left',xshift:170,font:{size:14,color:C.orange,weight:800}}],
+    showlegend:false,plot_bgcolor:'#fff',paper_bgcolor:'#fff'
+  };
+  Plotly.newPlot('chart-s21',[trace],layout,{displayModeBar:false,responsive:true});
+})();
+
+// ===== SLIDE 24: Renewal Before vs After — 3 separate sub-charts =====
+(function(){
+  // Sales sub-chart
+  var t1s = {x:['Before','After'],y:[96685,92791],type:'bar',
+    marker:{color:[C.gray,C.blue]},
+    text:['¥96,685','¥92,791'],textposition:'outside',textfont:{size:14,weight:700},
+    hoverinfo:'text',showlegend:false};
+  var lay1 = {
+    margin:{t:40,r:10,b:40,l:60},
+    title:{text:'日次売上',font:{size:16,color:C.heading,weight:700}},
+    xaxis:{tickfont:{size:14}},
+    yaxis:{tickfont:{size:12},tickformat:',',title:{text:'円',font:{size:12}}},
+    annotations:[{x:'After',y:92791,yshift:30,text:'▼ -4.0%',showarrow:false,font:{size:15,color:C.red,weight:800}}],
+    showlegend:false,plot_bgcolor:'#fff',paper_bgcolor:'#fff'
+  };
+  Plotly.newPlot('chart-s24-sales',[t1s],lay1,{displayModeBar:false,responsive:true});
+
+  // Customer sub-chart
+  var t1c = {x:['Before','After'],y:[16.7,17.2],type:'bar',
+    marker:{color:[C.gray,C.green]},
+    text:['16.7人','17.2人'],textposition:'outside',textfont:{size:14,weight:700},
+    hoverinfo:'text',showlegend:false};
+  var lay2 = {
+    margin:{t:40,r:10,b:40,l:50},
+    title:{text:'日次客数',font:{size:16,color:C.heading,weight:700}},
+    xaxis:{tickfont:{size:14}},
+    yaxis:{tickfont:{size:12},title:{text:'人',font:{size:12}}},
+    annotations:[{x:'After',y:17.2,yshift:30,text:'▲ +2.8%',showarrow:false,font:{size:15,color:C.green,weight:800}}],
+    showlegend:false,plot_bgcolor:'#fff',paper_bgcolor:'#fff'
+  };
+  Plotly.newPlot('chart-s24-customers',[t1c],lay2,{displayModeBar:false,responsive:true});
+
+  // Avg spend sub-chart
+  var t1a = {x:['Before','After'],y:[5556,4762],type:'bar',
+    marker:{color:[C.gray,C.blue]},
+    text:['¥5,556','¥4,762'],textposition:'outside',textfont:{size:14,weight:700},
+    hoverinfo:'text',showlegend:false};
+  var lay3 = {
+    margin:{t:40,r:10,b:40,l:60},
+    title:{text:'客単価',font:{size:16,color:C.heading,weight:700}},
+    xaxis:{tickfont:{size:14}},
+    yaxis:{tickfont:{size:12},tickformat:',',title:{text:'円',font:{size:12}}},
+    annotations:[{x:'After',y:4762,yshift:30,text:'▼ -14.3%',showarrow:false,font:{size:15,color:C.red,weight:800}}],
+    showlegend:false,plot_bgcolor:'#fff',paper_bgcolor:'#fff'
+  };
+  Plotly.newPlot('chart-s24-avgspend',[t1a],lay3,{displayModeBar:false,responsive:true});
+})();
+
+// ===== SLIDE 25: Renewal Day-of-Week =====
+(function(){
+  var days = ['月','火','水','木','金','土','日'];
+  var bSales = [102787,113511,55344,96092,140824,104052,65248];
+  var aSales = [18200,99435,113155,46497,191717,72343,54800];
+  var chg = ['-82%','-12%','+104%','-52%','+36%','-30%','-16%'];
+  var aColors = chg.map(function(c){return c.startsWith('+')?C.green:C.red;});
+
+  var t1 = {x:days,y:bSales,name:'Before（2-3月）',type:'bar',marker:{color:C.gray},
+    textfont:{size:13}};
+  var t2 = {x:days,y:aSales,name:'After（4/1-19）',type:'bar',marker:{color:aColors},
+    textfont:{size:13}};
+  var layout = {
+    margin:{t:30,r:20,b:50,l:70},barmode:'group',
+    xaxis:{tickfont:{size:16}},
+    yaxis:{tickfont:{size:14},tickformat:','},
+    legend:{font:{size:15},orientation:'h',y:1.08,x:0.5,xanchor:'center'},
+    annotations:chg.map(function(ch,i){
+      var col = ch.startsWith('+')?C.green:C.red;
+      var sym = ch.startsWith('+')?'▲':'▼';
+      return {x:days[i],y:Math.max(bSales[i],aSales[i]),yshift:22,text:sym+' '+ch.replace('+','').replace('-',''),showarrow:false,font:{size:13,color:col,weight:700}};
+    }),
+    showlegend:true,plot_bgcolor:'#fff',paper_bgcolor:'#fff'
+  };
+  Plotly.newPlot('chart-s25',[t1,t2],layout,{displayModeBar:false,responsive:true});
+})();
+</script>
+
+<!-- ===== Ranking section styles (scoped) ===== -->
+<style>
+    @page {
+      size: A4 landscape;
+      margin: 0;
+    }
+    *, *::before, *::after {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    html, body {
+      margin: 0; padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Hiragino Sans', 'Noto Sans JP', Arial, sans-serif;
+      color: #1f2a44;
+      background: #e8ecf2;
+    }
+
+    /* ── スライド共通 ── */
+    .slide {
+      width: 297mm; height: 210mm;
+      background: #ffffff;
+      position: relative;
+      overflow: hidden;
+      page-break-after: always;
+      margin: 0 auto 20px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+      display: flex;
+      flex-direction: column;
+    }
+    .slide:last-child { page-break-after: auto; }
+
+    @media print {
+      body { background: #fff; }
+      .slide {
+        box-shadow: none;
+        margin: 0;
+        page-break-after: always;
+      }
+      .slide:last-child { page-break-after: auto; }
+    }
+
+    /* ── タイトルスライド ── */
+    .title-slide .slide-header {
+      background: linear-gradient(135deg, #1e4fd6 0%, #1943b7 100%);
+      color: #fff;
+      padding: 18mm 32mm 10mm;
+    }
+    .title-slide .slide-header h1 {
+      margin: 0; font-size: 30px; font-weight: 900; letter-spacing: 0.5px;
+    }
+    .title-slide .slide-header .slide-sub {
+      margin: 6px 0 0; font-size: 15px; opacity: 0.92;
+    }
+    .title-content {
+      flex: 1;
+      padding: 6mm 32mm 0;
+      overflow: hidden;
+    }
+    .kpi-row {
+      display: flex; gap: 24px; margin-bottom: 10px;
+    }
+    .kpi {
+      background: #f0f4ff;
+      border: 1px solid #e0e6f5;
+      border-radius: 10px;
+      padding: 8px 24px;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .kpi-label { font-size: 10px; color: #6b7a99; font-weight: 600; }
+    .kpi-value { font-size: 24px; font-weight: 900; color: #1e4fd6; margin-top: 2px; }
+
+    .summary-tbl {
+      width: 100%; border-collapse: collapse; font-size: 11px;
+    }
+    .summary-tbl th {
+      background: #f0f4ff; border-bottom: 2px solid #d0d8ee;
+      padding: 4px 10px; text-align: left; font-weight: 700; font-size: 10px; color: #4a5a80;
+    }
+    .summary-tbl td {
+      padding: 3px 10px; border-bottom: 1px solid #eef1f7;
+    }
+    .summary-tbl .r { text-align: right; }
+    .color-dot {
+      display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: middle;
+    }
+    .bar {
+      height: 10px; border-radius: 4px; min-width: 2px;
+    }
+
+    /* ── コンテンツスライド ── */
+    .slide-topbar {
+      background: linear-gradient(135deg, #1e4fd6, #1943b7);
+      color: #fff;
+      padding: 8px 24px;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 12px; font-weight: 700;
+      flex-shrink: 0;
+    }
+    .slide-body {
+      flex: 1;
+      padding: 10px 20px;
+      overflow: hidden;
+    }
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      height: 100%;
+      align-content: start;
+    }
+    .slide-footer {
+      background: #f4f7fb;
+      border-top: 1px solid #e5eaf3;
+      padding: 5px 24px;
+      font-size: 10px;
+      color: #6b7a99;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    /* ── カテゴリカード ── */
+    .cat-card {
+      background: #fff;
+      border: 1px solid #e5eaf3;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .cat-header {
+      padding: 6px 10px;
+      color: #fff;
+      font-weight: 800;
+      font-size: 13px;
+    }
+    .cat-title { font-size: 13px; }
+    .cat-meta {
+      padding: 5px 10px 0;
+      color: #6b7a99;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 10px;
+    }
+    .cat-meta b { color: #1f2a44; }
+
+    table.tbl {
+      width: 100%; border-collapse: collapse; margin: 4px 0 6px;
+    }
+    table.tbl caption {
+      text-align: left; color: #6b7a99; padding: 0 10px 4px;
+      font-weight: 700; font-size: 10px;
+    }
+    table.tbl thead th {
+      background: #f0f4ff; color: #1f2a44;
+      border-top: 1px solid #e5eaf3; border-bottom: 1px solid #e5eaf3;
+      padding: 4px 8px; font-size: 10px; text-align: left;
+    }
+    table.tbl td {
+      border-bottom: 1px solid #eef1f7; padding: 3px 8px; font-size: 10px;
+    }
+    table.tbl tr:nth-child(even) td { background: #fbfcff; }
+    table.tbl td:nth-child(1) { width: 32px; }
+    table.tbl td:nth-child(3), table.tbl td:nth-child(4), table.tbl td:nth-child(5) { text-align: right; }
+    </style>
+<!-- ===== /Ranking section styles ===== -->
+
+<div class="ranking-section-divider" style="width:1280px;margin:60px auto 20px auto;padding:16px 40px;background:#1E3A5F;color:#fff;font-size:20px;font-weight:700;border-radius:6px;text-align:center;">📊 カテゴリ別商品売上ランキング（補足資料）</div>
+
+  
+    <div class="slide title-slide">
+      <div class="slide-header">
+        <h1>🏆 カテゴリ別 売り上げランキング</h1>
+        <p class="slide-sub">対象期間: 2026-04-27 〜 2026-05-03</p>
+      </div>
+      <div class="title-content">
+        <div class="kpi-row">
+          <div class="kpi"><span class="kpi-label">総売上</span><span class="kpi-value">¥832,584</span></div>
+          <div class="kpi"><span class="kpi-label">カテゴリ数</span><span class="kpi-value">28</span></div>
+        </div>
+        <table class="summary-tbl">
+          <thead><tr><th>カテゴリ</th><th class="r">売上</th><th class="r">構成比</th><th></th></tr></thead>
+          <tbody><tr><td><span class='color-dot' style='background:#ab47bc'></span>ボトル購入</td><td class='r'>¥233,184</td><td class='r'>28.0%</td><td><div class='bar' style='width:70.01816032976853px;background:#ab47bc'></div></td></tr><tr><td><span class='color-dot' style='background:#ffa726'></span>未設定</td><td class='r'>¥69,000</td><td class='r'>8.3%</td><td><div class='bar' style='width:20.718630192268886px;background:#ffa726'></div></td></tr><tr><td><span class='color-dot' style='background:#ef5350'></span>コース&セット</td><td class='r'>¥66,500</td><td class='r'>8.0%</td><td><div class='bar' style='width:19.967955185302625px;background:#ef5350'></div></td></tr><tr><td><span class='color-dot' style='background:#ffca28'></span>その他</td><td class='r'>¥62,900</td><td class='r'>7.6%</td><td><div class='bar' style='width:18.886983175271205px;background:#ffca28'></div></td></tr><tr><td><span class='color-dot' style='background:#ffa726'></span>イベント</td><td class='r'>¥50,000</td><td class='r'>6.0%</td><td><div class='bar' style='width:15.013500139325282px;background:#ffa726'></div></td></tr><tr><td><span class='color-dot' style='background:#42a5f5'></span>NEW CLASSIC COCKTAIL</td><td class='r'>¥48,200</td><td class='r'>5.8%</td><td><div class='bar' style='width:14.473014134309572px;background:#42a5f5'></div></td></tr><tr><td><span class='color-dot' style='background:#26c6da'></span>ウイスキー</td><td class='r'>¥42,800</td><td class='r'>5.1%</td><td><div class='bar' style='width:12.85155611926244px;background:#26c6da'></div></td></tr><tr><td><span class='color-dot' style='background:#78909c'></span>ウイスキー（ハイボール・ボトル・オリジナル）</td><td class='r'>¥30,200</td><td class='r'>3.6%</td><td><div class='bar' style='width:9.06815408415247px;background:#78909c'></div></td></tr><tr><td><span class='color-dot' style='background:#66bb6a'></span>COLD APPETIZERS</td><td class='r'>¥25,900</td><td class='r'>3.1%</td><td><div class='bar' style='width:7.776993072170496px;background:#66bb6a'></div></td></tr><tr><td><span class='color-dot' style='background:#ef5350'></span>JAPANESE COCKTAIL</td><td class='r'>¥24,700</td><td class='r'>3.0%</td><td><div class='bar' style='width:7.416669068826689px;background:#ef5350'></div></td></tr><tr><td><span class='color-dot' style='background:#26c6da'></span>ワイン（グラス）</td><td class='r'>¥18,400</td><td class='r'>2.2%</td><td><div class='bar' style='width:5.524968051271704px;background:#26c6da'></div></td></tr><tr><td><span class='color-dot' style='background:#66bb6a'></span>ジャパニーズカクテル</td><td class='r'>¥18,000</td><td class='r'>2.2%</td><td><div class='bar' style='width:5.404860050157102px;background:#66bb6a'></div></td></tr><tr><td><span class='color-dot' style='background:#bbb'></span>他 16カテゴリ</td><td class='r'>¥142,800</td><td class='r'>17.2%</td><td><div class='bar' style='width:42.878556397912995px;background:#bbb'></div></td></tr></tbody>
+        </table>
+      </div>
+      <div class="slide-footer">BAR FIVE Arrows ─ Weekly Sales Report</div>
+    </div>
+    
+  
+    <div class="slide">
+      <div class="slide-topbar">
+        <span>🏆 カテゴリ別 売り上げランキング</span>
+        <span>対象期間: 2026-04-27 〜 2026-05-03</span>
+      </div>
+      <div class="slide-body">
+        <div class="card-grid">
+          <div class='cat-card'><div class='cat-header' style='background:#ab47bc'><span class='cat-title'>ボトル購入</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥233,184（全体の28.0%）</span><span><b>商品数</b>: 2</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>SAKAYA用</td>
+      <td>3</td>
+      <td>¥191,184</td>
+      <td>81.99%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>CLP利用分</td>
+      <td>30</td>
+      <td>¥42,000</td>
+      <td>18.01%</td>
+    </tr>
+  </tbody>
+</table></div><div class='cat-card'><div class='cat-header' style='background:#ffa726'><span class='cat-title'>未設定</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥69,000（全体の8.3%）</span><span><b>商品数</b>: 3</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>7000円飲み放題付（3時間制）</td>
+      <td>7</td>
+      <td>¥49,000</td>
+      <td>71.01%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>7000円飲み放題付（2時間制）</td>
+      <td>4</td>
+      <td>¥20,000</td>
+      <td>28.99%</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>No charge</td>
+      <td>11</td>
+      <td>¥0</td>
+      <td>0.00%</td>
+    </tr>
+  </tbody>
+</table></div><div class='cat-card'><div class='cat-header' style='background:#ef5350'><span class='cat-title'>コース&セット</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥66,500（全体の8.0%）</span><span><b>商品数</b>: 3</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>招待日和コース(食事のみ)+チャージ別＋サ別</td>
+      <td>3</td>
+      <td>¥30,000</td>
+      <td>45.11%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>5000円飲み放題付（2時間制）</td>
+      <td>4</td>
+      <td>¥20,000</td>
+      <td>30.08%</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>CLPコース_その他</td>
+      <td>3</td>
+      <td>¥16,500</td>
+      <td>24.81%</td>
+    </tr>
+  </tbody>
+</table></div><div class='cat-card'><div class='cat-header' style='background:#ffca28'><span class='cat-title'>その他</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥62,900（全体の7.6%）</span><span><b>商品数</b>: 3</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>tablecharge</td>
+      <td>99</td>
+      <td>¥56,300</td>
+      <td>89.51%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>ドリンク</td>
+      <td>4</td>
+      <td>¥5,400</td>
+      <td>8.59%</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>丸氷</td>
+      <td>18</td>
+      <td>¥1,200</td>
+      <td>1.91%</td>
+    </tr>
+  </tbody>
+</table></div><div class='cat-card'><div class='cat-header' style='background:#ffa726'><span class='cat-title'>イベント</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥50,000（全体の6.0%）</span><span><b>商品数</b>: 1</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>イベント費用</td>
+      <td>1</td>
+      <td>¥50,000</td>
+      <td>100.00%</td>
+    </tr>
+  </tbody>
+</table></div><div class='cat-card'><div class='cat-header' style='background:#42a5f5'><span class='cat-title'>NEW CLASSIC COCKTAIL</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥48,200（全体の5.8%）</span><span><b>商品数</b>: 7</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>森のジントニック</td>
+      <td>10</td>
+      <td>¥15,000</td>
+      <td>31.12%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>ベルガモットモスコミュール</td>
+      <td>9</td>
+      <td>¥13,500</td>
+      <td>28.01%</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>カルヴァドスモヒート</td>
+      <td>4</td>
+      <td>¥6,000</td>
+      <td>12.45%</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>サンセットソルティドッグ</td>
+      <td>4</td>
+      <td>¥6,000</td>
+      <td>12.45%</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>オリエンタルアフタヌーン</td>
+      <td>2</td>
+      <td>¥3,000</td>
+      <td>6.22%</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>オーチャードマティーニ</td>
+      <td>2</td>
+      <td>¥3,000</td>
+      <td>6.22%</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>デイドリームレモネード</td>
+      <td>1</td>
+      <td>¥1,700</td>
+      <td>3.53%</td>
+    </tr>
+  </tbody>
+</table></div>
+        </div>
+      </div>
+      <div class="slide-footer">BAR FIVE Arrows ─ Weekly Sales Report　　2 / 6</div>
+    </div>
+    
+    <div class="slide">
+      <div class="slide-topbar">
+        <span>🏆 カテゴリ別 売り上げランキング</span>
+        <span>対象期間: 2026-04-27 〜 2026-05-03</span>
+      </div>
+      <div class="slide-body">
+        <div class="card-grid">
+          <div class='cat-card'><div class='cat-header' style='background:#26c6da'><span class='cat-title'>ウイスキー</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥42,800（全体の5.1%）</span><span><b>商品数</b>: 13</span></div><table class="dataframe tbl"><caption>Top 5（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>ロイヤルブラックラ 25年（ハーフ）</td>
+      <td>3</td>
+      <td>¥13,200</td>
+      <td>30.84%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>グレンファークラス 12年</td>
+      <td>5</td>
+      <td>¥9,000</td>
+      <td>21.03%</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>バランタイン 17年</td>
+      <td>6</td>
+      <td>¥3,400</td>
+      <td>7.94%</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>カリラ12年</td>
+      <td>2</td>
+      <td>¥3,200</td>
+      <td>7.48%</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>ハーパー</td>
+      <td>2</td>
+      <td>¥2,000</td>
+      <td>4.67%</td>
+    </tr>
+  </tbody>
+</table><table class="dataframe tbl"><caption>Bottom 5（売上昇順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>ブッシュミルズ12年</td>
+      <td>3</td>
+      <td>¥1,200</td>
+      <td>2.80%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>グレンリベット12年</td>
+      <td>1</td>
+      <td>¥1,400</td>
+      <td>3.27%</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>メーカーズマーク</td>
+      <td>1</td>
+      <td>¥1,400</td>
+      <td>3.27%</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>デュワーズ 15年</td>
+      <td>1</td>
+      <td>¥1,500</td>
+      <td>3.50%</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>ボウモア12年</td>
+      <td>1</td>
+      <td>¥1,600</td>
+      <td>3.74%</td>
+    </tr>
+  </tbody>
+</table></div><div class='cat-card'><div class='cat-header' style='background:#78909c'><span class='cat-title'>ウイスキー（ハイボール・ボトル・オリジナル）</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥30,200（全体の3.6%）</span><span><b>商品数</b>: 2</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>ハウスハイボール</td>
+      <td>24</td>
+      <td>¥28,800</td>
+      <td>95.36%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>ウイスキー</td>
+      <td>1</td>
+      <td>¥1,400</td>
+      <td>4.64%</td>
+    </tr>
+  </tbody>
+</table></div><div class='cat-card'><div class='cat-header' style='background:#66bb6a'><span class='cat-title'>COLD APPETIZERS</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥25,900（全体の3.1%）</span><span><b>商品数</b>: 5</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>ワカモレチップス</td>
+      <td>10</td>
+      <td>¥12,000</td>
+      <td>46.33%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>BFAカプレーゼ</td>
+      <td>4</td>
+      <td>¥4,400</td>
+      <td>16.99%</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>マッシュルームサラダとコールドカット</td>
+      <td>3</td>
+      <td>¥3,900</td>
+      <td>15.06%</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>牛肉と季節のフルーツのカルパッチョ</td>
+      <td>2</td>
+      <td>¥3,000</td>
+      <td>11.58%</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>ケールとベリーのサラダ</td>
+      <td>2</td>
+      <td>¥2,600</td>
+      <td>10.04%</td>
+    </tr>
+  </tbody>
+</table></div><div class='cat-card'><div class='cat-header' style='background:#ef5350'><span class='cat-title'>JAPANESE COCKTAIL</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥24,700（全体の3.0%）</span><span><b>商品数</b>: 5</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>焙煎ファッションド</td>
+      <td>5</td>
+      <td>¥9,500</td>
+      <td>38.46%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>桜ブロッサム</td>
+      <td>3</td>
+      <td>¥5,700</td>
+      <td>23.08%</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>ゆずマティーニ</td>
+      <td>2</td>
+      <td>¥3,800</td>
+      <td>15.38%</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>撫子ネグローニ</td>
+      <td>2</td>
+      <td>¥3,800</td>
+      <td>15.38%</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>シルキー麹サワー</td>
+      <td>1</td>
+      <td>¥1,900</td>
+      <td>7.69%</td>
+    </tr>
+  </tbody>
+</table></div>
+        </div>
+      </div>
+      <div class="slide-footer">BAR FIVE Arrows ─ Weekly Sales Report　　3 / 6</div>
+    </div>
+    
+    <div class="slide">
+      <div class="slide-topbar">
+        <span>🏆 カテゴリ別 売り上げランキング</span>
+        <span>対象期間: 2026-04-27 〜 2026-05-03</span>
+      </div>
+      <div class="slide-body">
+        <div class="card-grid">
+          <div class='cat-card'><div class='cat-header' style='background:#26c6da'><span class='cat-title'>ワイン（グラス）</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥18,400（全体の2.2%）</span><span><b>商品数</b>: 4</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>デバルド・ビアンコ</td>
+      <td>7</td>
+      <td>¥8,400</td>
+      <td>45.65%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>デバルド・ロッソ</td>
+      <td>3</td>
+      <td>¥3,600</td>
+      <td>19.57%</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>パナメラ・カルベネ・ソーヴィニョン</td>
+      <td>2</td>
+      <td>¥3,200</td>
+      <td>17.39%</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>パナメラ・シャルドネ</td>
+      <td>2</td>
+      <td>¥3,200</td>
+      <td>17.39%</td>
+    </tr>
+  </tbody>
+</table></div><div class='cat-card'><div class='cat-header' style='background:#66bb6a'><span class='cat-title'>ジャパニーズカクテル</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥18,000（全体の2.2%）</span><span><b>商品数</b>: 1</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>本わさびジンソニック</td>
+      <td>10</td>
+      <td>¥18,000</td>
+      <td>100.00%</td>
+    </tr>
+  </tbody>
+</table></div><div class='cat-card'><div class='cat-header' style='background:#ef5350'><span class='cat-title'>ソフトドリンク</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥17,000（全体の2.0%）</span><span><b>商品数</b>: 5</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>フィーバーツリーソーダ</td>
+      <td>8</td>
+      <td>¥6,400</td>
+      <td>37.65%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>コーラ</td>
+      <td>7</td>
+      <td>¥5,600</td>
+      <td>32.94%</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>ジンジャーエール</td>
+      <td>4</td>
+      <td>¥3,200</td>
+      <td>18.82%</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>コーヒー</td>
+      <td>1</td>
+      <td>¥1,000</td>
+      <td>5.88%</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>ウーロン茶</td>
+      <td>1</td>
+      <td>¥800</td>
+      <td>4.71%</td>
+    </tr>
+  </tbody>
+</table></div><div class='cat-card'><div class='cat-header' style='background:#26c6da'><span class='cat-title'>ジャパニーズウイスキー</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥16,100（全体の1.9%）</span><span><b>商品数</b>: 6</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>余市</td>
+      <td>2</td>
+      <td>¥3,600</td>
+      <td>22.36%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>鶴</td>
+      <td>1</td>
+      <td>¥3,500</td>
+      <td>21.74%</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>ニッカウヰスキーフロムザバレル</td>
+      <td>2</td>
+      <td>¥3,200</td>
+      <td>19.88%</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>山崎</td>
+      <td>1</td>
+      <td>¥2,500</td>
+      <td>15.53%</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>白州</td>
+      <td>1</td>
+      <td>¥1,800</td>
+      <td>11.18%</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>日の丸</td>
+      <td>1</td>
+      <td>¥1,500</td>
+      <td>9.32%</td>
+    </tr>
+  </tbody>
+</table></div><div class='cat-card'><div class='cat-header' style='background:#26c6da'><span class='cat-title'>MAIN DISHES</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥15,600（全体の1.9%）</span><span><b>商品数</b>: 3</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>ボロネーゼラザニア</td>
+      <td>4</td>
+      <td>¥8,400</td>
+      <td>53.85%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>ミントのジェノベーゼ</td>
+      <td>3</td>
+      <td>¥5,700</td>
+      <td>36.54%</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>モルタデッラサンド</td>
+      <td>1</td>
+      <td>¥1,500</td>
+      <td>9.62%</td>
+    </tr>
+  </tbody>
+</table></div><div class='cat-card'><div class='cat-header' style='background:#26c6da'><span class='cat-title'>ビール</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥15,100（全体の1.8%）</span><span><b>商品数</b>: 2</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>ガージェリー</td>
+      <td>7</td>
+      <td>¥9,100</td>
+      <td>60.26%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>ハートランド</td>
+      <td>6</td>
+      <td>¥6,000</td>
+      <td>39.74%</td>
+    </tr>
+  </tbody>
+</table></div>
+        </div>
+      </div>
+      <div class="slide-footer">BAR FIVE Arrows ─ Weekly Sales Report　　4 / 6</div>
+    </div>
+    
+    <div class="slide">
+      <div class="slide-topbar">
+        <span>🏆 カテゴリ別 売り上げランキング</span>
+        <span>対象期間: 2026-04-27 〜 2026-05-03</span>
+      </div>
+      <div class="slide-body">
+        <div class="card-grid">
+          <div class='cat-card'><div class='cat-header' style='background:#66bb6a'><span class='cat-title'>ワイン</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥15,000（全体の1.8%）</span><span><b>商品数</b>: 1</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>バロナーク・シャルドネ</td>
+      <td>1</td>
+      <td>¥15,000</td>
+      <td>100.00%</td>
+    </tr>
+  </tbody>
+</table></div><div class='cat-card'><div class='cat-header' style='background:#78909c'><span class='cat-title'>HOT APPETIZERS</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥12,000（全体の1.4%）</span><span><b>商品数</b>: 3</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>マティポテ</td>
+      <td>5</td>
+      <td>¥6,500</td>
+      <td>54.17%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>カマンベールフォンデュ</td>
+      <td>3</td>
+      <td>¥4,200</td>
+      <td>35.00%</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>にんじんのソテー</td>
+      <td>1</td>
+      <td>¥1,300</td>
+      <td>10.83%</td>
+    </tr>
+  </tbody>
+</table></div><div class='cat-card'><div class='cat-header' style='background:#ab47bc'><span class='cat-title'>DESSERT COCKTAIL</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥10,500（全体の1.3%）</span><span><b>商品数</b>: 3</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>キャラメルナッツキャデラック</td>
+      <td>3</td>
+      <td>¥4,500</td>
+      <td>42.86%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>ティラミスロブロイ</td>
+      <td>3</td>
+      <td>¥4,500</td>
+      <td>42.86%</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>ソイ抹茶アレキサンダー</td>
+      <td>1</td>
+      <td>¥1,500</td>
+      <td>14.29%</td>
+    </tr>
+  </tbody>
+</table></div><div class='cat-card'><div class='cat-header' style='background:#ffa726'><span class='cat-title'>ジン</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥9,800（全体の1.2%）</span><span><b>商品数</b>: 3</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>バレルエイジドジン</td>
+      <td>4</td>
+      <td>¥7,200</td>
+      <td>73.47%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>季の美</td>
+      <td>1</td>
+      <td>¥1,400</td>
+      <td>14.29%</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>タンカレー</td>
+      <td>3</td>
+      <td>¥1,200</td>
+      <td>12.24%</td>
+    </tr>
+  </tbody>
+</table></div><div class='cat-card'><div class='cat-header' style='background:#ab47bc'><span class='cat-title'>FRUITS COCKTAIL</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥9,000（全体の1.1%）</span><span><b>商品数</b>: 2</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>トロピカルヴェール</td>
+      <td>3</td>
+      <td>¥4,500</td>
+      <td>50.00%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>ローズガーデン</td>
+      <td>3</td>
+      <td>¥4,500</td>
+      <td>50.00%</td>
+    </tr>
+  </tbody>
+</table></div><div class='cat-card'><div class='cat-header' style='background:#ffca28'><span class='cat-title'>スナック</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥5,000（全体の0.6%）</span><span><b>商品数</b>: 2</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>MIXローストナッツ</td>
+      <td>7</td>
+      <td>¥4,000</td>
+      <td>80.00%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>ドライフルーツ</td>
+      <td>3</td>
+      <td>¥1,000</td>
+      <td>20.00%</td>
+    </tr>
+  </tbody>
+</table></div>
+        </div>
+      </div>
+      <div class="slide-footer">BAR FIVE Arrows ─ Weekly Sales Report　　5 / 6</div>
+    </div>
+    
+    <div class="slide">
+      <div class="slide-topbar">
+        <span>🏆 カテゴリ別 売り上げランキング</span>
+        <span>対象期間: 2026-04-27 〜 2026-05-03</span>
+      </div>
+      <div class="slide-body">
+        <div class="card-grid">
+          <div class='cat-card'><div class='cat-header' style='background:#78909c'><span class='cat-title'>ドリンク</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥4,800（全体の0.6%）</span><span><b>商品数</b>: 1</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>梅酒</td>
+      <td>4</td>
+      <td>¥4,800</td>
+      <td>100.00%</td>
+    </tr>
+  </tbody>
+</table></div><div class='cat-card'><div class='cat-header' style='background:#ffca28'><span class='cat-title'>BAR SNACKS </span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥4,600（全体の0.6%）</span><span><b>商品数</b>: 3</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>キャンディピーカン</td>
+      <td>5</td>
+      <td>¥2,100</td>
+      <td>45.65%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>ビーツのフムス</td>
+      <td>2</td>
+      <td>¥1,800</td>
+      <td>39.13%</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>オリーブ</td>
+      <td>1</td>
+      <td>¥700</td>
+      <td>15.22%</td>
+    </tr>
+  </tbody>
+</table></div><div class='cat-card'><div class='cat-header' style='background:#66bb6a'><span class='cat-title'>ブランデー</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥3,000（全体の0.4%）</span><span><b>商品数</b>: 1</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>ブランデー</td>
+      <td>6</td>
+      <td>¥3,000</td>
+      <td>100.00%</td>
+    </tr>
+  </tbody>
+</table></div><div class='cat-card'><div class='cat-header' style='background:#ffca28'><span class='cat-title'>DESSERT</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥2,400（全体の0.3%）</span><span><b>商品数</b>: 1</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>キャラメルバナナ</td>
+      <td>2</td>
+      <td>¥2,400</td>
+      <td>100.00%</td>
+    </tr>
+  </tbody>
+</table></div><div class='cat-card'><div class='cat-header' style='background:#ab47bc'><span class='cat-title'>日本酒</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥1,700（全体の0.2%）</span><span><b>商品数</b>: 1</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>作</td>
+      <td>1</td>
+      <td>¥1,700</td>
+      <td>100.00%</td>
+    </tr>
+  </tbody>
+</table></div><div class='cat-card'><div class='cat-header' style='background:#78909c'><span class='cat-title'>BAR SNACKS</span></div><div class='cat-meta'><span><b>カテゴリ売上</b>: ¥1,200（全体の0.1%）</span><span><b>商品数</b>: 1</span></div><table class="dataframe tbl"><caption>ランキング（売上降順）</caption>
+  <thead>
+    <tr style="text-align: right;">
+      <th>順位</th>
+      <th>商品名</th>
+      <th>販売数</th>
+      <th>売上</th>
+      <th>カテゴリ内構成比</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>BAR 専用チョコレート</td>
+      <td>2</td>
+      <td>¥1,200</td>
+      <td>100.00%</td>
+    </tr>
+  </tbody>
+</table></div>
+        </div>
+      </div>
+      <div class="slide-footer">BAR FIVE Arrows ─ Weekly Sales Report　　6 / 6</div>
+    </div>
+    
+
+</body>
+</html>

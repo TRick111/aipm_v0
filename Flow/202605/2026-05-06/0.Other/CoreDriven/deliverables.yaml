@@ -9,7 +9,7 @@ deliverables:
     created_at: '2026-05-06T00:00:00.000Z'
     created_by: cockpit-task-ab2f1e5a
     created_by_agent: claude
-    review_state: needs_revision
+    review_state: done
     review_log:
       - at: '2026-05-06T00:00:00.000Z'
         action: created
@@ -24,7 +24,11 @@ deliverables:
         from: unreviewed
         to: needs_revision
         comment: TOPページを編集賞としても、特に既存のブロックなどがありません。それでも今のトップページに表示されている内容はどこからきている？
-    last_modified: '2026-05-05T16:20:57.615Z'
+      - at: '2026-05-13T13:11:28.860Z'
+        action: state_change
+        from: needs_revision
+        to: done
+    last_modified: '2026-05-13T13:11:28.860Z'
     cockpit_task_id: ab2f1e5a
   - id: d-bl0079-20260506-wp-top-paste-v2
     file: coredriven_top_paste_ready_v2.html
@@ -50,18 +54,17 @@ deliverables:
     created_at: '2026-05-06T02:09:00.000Z'
     created_by: cockpit-task-ab2f1e5a
     created_by_agent: claude
-    cockpit_task_id: ab2f1e5a
     review_state: unreviewed
     review_log:
       - at: '2026-05-06T02:09:00.000Z'
         action: created
         to: unreviewed
         comment: >-
-          田中さん提供 coredriven.html (871 行 / シークレットウィンドウで取得した実物) から、#content 直下〜 <main> 開始の間に出力されている
-          w-frontTop ウィジェット内容 (custom-message + biz__container = Hero メッセージ「すべての人や企業」+ Restaurant AI
-          Lab./Career Lab./事業開発支援 セクション) を 116KB 抽出して保存。田中さんが「外観→ウィジェット→フロントトップ用」のカスタム HTML
-          ウィジェットを削除する前に、このバックアップで復元可能な状態を保証。
+          田中さん提供 coredriven.html (871 行 / シークレットウィンドウで取得した実物) から、#content 直下〜 <main> 開始の間に出力されている w-frontTop ウィジェット内容
+          (custom-message + biz__container = Hero メッセージ「すべての人や企業」+ Restaurant AI Lab./Career Lab./事業開発支援 セクション) を 116KB
+          抽出して保存。田中さんが「外観→ウィジェット→フロントトップ用」のカスタム HTML ウィジェットを削除する前に、このバックアップで復元可能な状態を保証。
     last_modified: '2026-05-06T02:09:00.000Z'
+    cockpit_task_id: ab2f1e5a
   - id: d-bl0079-20260506-requirements
     file: 01_requirements.md
     bl_id: BL-0079
@@ -69,15 +72,16 @@ deliverables:
     created_at: '2026-05-06T03:30:00.000Z'
     created_by: cockpit-task-ab2f1e5a
     created_by_agent: claude
-    cockpit_task_id: ab2f1e5a
     review_state: unreviewed
     review_log:
       - at: '2026-05-06T03:30:00.000Z'
         action: created
         to: unreviewed
         comment: >-
-          田中さん要望「ヘッダーは WP 仕組み維持で AI HTML を表示」を技術要件 F-1〜F-11 に分解。非機能要件 NF-1〜NF-8 (可用性・復旧性・編集容易性・パフォーマンス・SEO・テーマ更新耐性等)、制約条件、成功基準 (Phase 0/1/全体)、リスク R-1〜R-7、用語集を整備。
+          田中さん要望「ヘッダーは WP 仕組み維持で AI HTML を表示」を技術要件 F-1〜F-11 に分解。非機能要件 NF-1〜NF-8
+          (可用性・復旧性・編集容易性・パフォーマンス・SEO・テーマ更新耐性等)、制約条件、成功基準 (Phase 0/1/全体)、リスク R-1〜R-7、用語集を整備。
     last_modified: '2026-05-06T03:30:00.000Z'
+    cockpit_task_id: ab2f1e5a
   - id: d-bl0079-20260506-current-arch
     file: 02_current_architecture.md
     bl_id: BL-0079
@@ -85,15 +89,16 @@ deliverables:
     created_at: '2026-05-06T03:35:00.000Z'
     created_by: cockpit-task-ab2f1e5a
     created_by_agent: claude
-    cockpit_task_id: ab2f1e5a
     review_state: unreviewed
     review_log:
       - at: '2026-05-06T03:35:00.000Z'
         action: created
         to: unreviewed
         comment: >-
-          SSH (my0126@my0126.xsrv.jp) + WP-CLI (PHP 8.3.30) 経由で実機調査。インフラ構成・ファイル配置 (swell_child 全ファイル)・テンプレート階層・固定ページ全件 (9 件) リスト・page.php の挙動 (is_front_page() で tmp/front.php 呼び出し)・データフロー図・ナビメニュー・既知の技術的負債 K-1〜K-7 を整理。
+          SSH (my0126@my0126.xsrv.jp) + WP-CLI (PHP 8.3.30) 経由で実機調査。インフラ構成・ファイル配置 (swell_child 全ファイル)・テンプレート階層・固定ページ全件
+          (9 件) リスト・page.php の挙動 (is_front_page() で tmp/front.php 呼び出し)・データフロー図・ナビメニュー・既知の技術的負債 K-1〜K-7 を整理。
     last_modified: '2026-05-06T03:35:00.000Z'
+    cockpit_task_id: ab2f1e5a
   - id: d-bl0079-20260506-future-arch
     file: 03_future_architecture.md
     bl_id: BL-0079
@@ -101,7 +106,6 @@ deliverables:
     created_at: '2026-05-06T03:40:00.000Z'
     created_by: cockpit-task-ab2f1e5a
     created_by_agent: claude
-    cockpit_task_id: ab2f1e5a
     review_state: unreviewed
     review_log:
       - at: '2026-05-06T03:40:00.000Z'
@@ -111,6 +115,7 @@ deliverables:
           設計方針 5 原則・採用しない選択肢 5 件・全体図・コア変更点 (tmp/front.php 8行最小化 + AI HTML を post_content 投入)・データフロー
           (TOP/残ページ)・ファイル変更一覧・各ページ仕様・ナビメニュー方針・SEO/パフォーマンス影響・運用イメージ (5 分で更新可能)・クリーンアップ対象 (Phase 2 候補)。
     last_modified: '2026-05-06T03:40:00.000Z'
+    cockpit_task_id: ab2f1e5a
   - id: d-bl0079-20260506-migration-plan
     file: 04_migration_plan.md
     bl_id: BL-0079
@@ -118,15 +123,17 @@ deliverables:
     created_at: '2026-05-06T03:45:00.000Z'
     created_by: cockpit-task-ab2f1e5a
     created_by_agent: claude
-    cockpit_task_id: ab2f1e5a
     review_state: unreviewed
     review_log:
       - at: '2026-05-06T03:45:00.000Z'
         action: created
         to: unreviewed
         comment: >-
-          Phase 0 (TOP 置換 / Step 0.0〜0.6 / 30〜45分) → Phase 1 (残4ページ / 各30分) → Phase 2 (クリーンアップ) の作業手順。バックアップ戦略 (tmp/front.php 物理 + swell_child snapshot + DB dump + post_content) と二重保管 (リモート + ローカル)。ロールバック手順 (ケース A 500エラー / B レイアウト崩れ / C 大規模破損)。検証チェックリスト 25項目。監視・コミュニケーション・Q&A・承認フロー。
+          Phase 0 (TOP 置換 / Step 0.0〜0.6 / 30〜45分) → Phase 1 (残4ページ / 各30分) → Phase 2 (クリーンアップ) の作業手順。バックアップ戦略
+          (tmp/front.php 物理 + swell_child snapshot + DB dump + post_content) と二重保管 (リモート + ローカル)。ロールバック手順 (ケース A 500エラー
+          / B レイアウト崩れ / C 大規模破損)。検証チェックリスト 25項目。監視・コミュニケーション・Q&A・承認フロー。
     last_modified: '2026-05-06T03:45:00.000Z'
+    cockpit_task_id: ab2f1e5a
   - id: d-bl0079-20260506-wp-top-impl-steps-v2
     file: wordpress_top_implementation_steps_v2.md
     bl_id: BL-0079
@@ -134,7 +141,6 @@ deliverables:
     created_at: '2026-05-06T00:50:00.000Z'
     created_by: cockpit-task-ab2f1e5a
     created_by_agent: claude
-    cockpit_task_id: ab2f1e5a
     review_state: unreviewed
     review_log:
       - at: '2026-05-06T00:50:00.000Z'
@@ -142,7 +148,9 @@ deliverables:
         to: unreviewed
         comment: >-
           田中さん指摘 (TOP 編集画面にブロック無し) を受けて core-driven.com の HTML を再解析。判明した事実: TOP 固定ページは本文空、SWELL カスタマイザーの
-          「メインビジュアル」フルスクリーン画像 (03-scaled.jpg / 04-scaled.jpg) のみが表示、w-frontTop ウィジェットエリアと post_content
-          はどちらも空。AI HTML 化の前にメインビジュアルを「表示しない」設定に変える必要があると判明。実装手順書を v2 として書き直し: §0 現状構造図 / §1 戦略選択 X/Y/Z (推奨 Y=MV 消す) / §3 メインビジュアル非表示手順
-          / §4-7 既存 v1 と同じ画像アップ・新規ページ・固定ページ編集 / §8 暫定 Google Form 直リンク化 / §9 メニュー再編 (Phase 1 推奨) / §10 戦略別差分 / §11 新規確認事項 Q-M/N/O 追加。
+          「メインビジュアル」フルスクリーン画像 (03-scaled.jpg / 04-scaled.jpg) のみが表示、w-frontTop ウィジェットエリアと post_content はどちらも空。AI HTML
+          化の前にメインビジュアルを「表示しない」設定に変える必要があると判明。実装手順書を v2 として書き直し: §0 現状構造図 / §1 戦略選択 X/Y/Z (推奨 Y=MV 消す) / §3 メインビジュアル非表示手順
+          / §4-7 既存 v1 と同じ画像アップ・新規ページ・固定ページ編集 / §8 暫定 Google Form 直リンク化 / §9 メニュー再編 (Phase 1 推奨) / §10 戦略別差分 / §11
+          新規確認事項 Q-M/N/O 追加。
     last_modified: '2026-05-06T00:50:00.000Z'
+    cockpit_task_id: ab2f1e5a

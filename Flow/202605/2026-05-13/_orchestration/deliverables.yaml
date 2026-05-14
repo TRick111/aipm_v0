@@ -1,0 +1,41 @@
+schema_version: 1
+project: _orchestration
+date: '2026-05-13'
+deliverables:
+  - id: d-orchestration-20260513-morning
+    file: 今日のタスク案.md
+    bl_id: null
+    title: 今日のタスク案 — 2026-05-13
+    created_at: '2026-05-13T05:06:44.677Z'
+    created_by: mini-tachyon-startDailyLoop
+    created_by_agent: claude
+    review_state: done
+    review_log:
+      - at: '2026-05-13T05:06:44.677Z'
+        action: spawned
+        to: generating
+        comment: cockpit-task-77901cd9 を起動
+      - at: '2026-05-13T10:09:12.385Z'
+        action: state_change
+        from: generating
+        to: unreviewed
+      - at: '2026-05-13T13:00:14.309Z'
+        action: state_change
+        from: unreviewed
+        to: needs_revision
+        comment: |-
+          今日やるのは、
+          ・CoreDrivenHP
+          ・ダッシュボード改
+          に限定したい
+      - at: '2026-05-13T13:09:57.985Z'
+        action: state_change
+        from: needs_revision
+        to: done
+        comment: |-
+          18時まで本業あり。
+          BL-0079はHTML化してすでにWordPress上に構築済み。ただしCSSなどの調整が必要という状況です
+          竹矢さんMTGは実施済み。要件を口頭で聞いているので、これを要件一覧位落とすのが次の作業です。
+          Q.4. BL-0083 (BAR FIVE Arrows メモ欄 → 週報・月報反映) — 仕様詰め　これは　BL0083のタスクの中でやります。
+    last_modified: '2026-05-13T13:09:57.985Z'
+    cockpit_task_id: 77901cd9

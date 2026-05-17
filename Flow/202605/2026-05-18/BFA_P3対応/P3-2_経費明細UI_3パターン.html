@@ -1,0 +1,819 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>P3-2 経費明細UI 3パターン比較モック</title>
+<meta name="created" content="2026-05-18">
+<meta name="ticket" content="P3-2 経費ごとの詳細を見られるようにする">
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #111111;
+    --muted: #6b7280;
+    --line: #d1d5db;
+    --line-strong: #9ca3af;
+    --accent: #1d4ed8;
+    --accent-bg: #eff6ff;
+    --row-alt: #f9fafb;
+    --hl: #fff3cd;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: system-ui, -apple-system, "Segoe UI", "Hiragino Kaku Gothic ProN", sans-serif;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  .page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+  }
+  header.doc {
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 16px;
+    margin-bottom: 32px;
+  }
+  header.doc h1 {
+    margin: 0 0 4px;
+    font-size: 22px;
+  }
+  header.doc .meta {
+    color: var(--muted);
+    font-size: 12px;
+  }
+  section.pattern {
+    margin-bottom: 56px;
+  }
+  section.pattern > h2 {
+    font-size: 18px;
+    margin: 0 0 4px;
+  }
+  .pattern .pros-cons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 8px 0 20px;
+    font-size: 13px;
+  }
+  .pattern .pros-cons div {
+    border: 1px solid var(--line);
+    padding: 8px 12px;
+  }
+  .pattern .pros-cons .strong { border-left: 3px solid var(--accent); }
+  .pattern .pros-cons .weak   { border-left: 3px solid var(--line-strong); }
+  .pattern .label {
+    font-weight: 600;
+    margin-right: 4px;
+  }
+
+  /* ===== Mock frame ===== */
+  .mock {
+    border: 1px solid var(--line);
+    background: var(--bg);
+    padding: 16px;
+  }
+  .mock h3 {
+    margin: 0 0 12px;
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+  .mock-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* =================================================
+     Pattern A: Accordion drilldown
+     ================================================= */
+  .acc details {
+    border-bottom: 1px solid var(--line);
+  }
+  .acc details:first-of-type {
+    border-top: 1px solid var(--line);
+  }
+  .acc summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 10px 12px;
+    display: grid;
+    grid-template-columns: 16px 1fr 110px 90px;
+    align-items: center;
+    gap: 8px;
+  }
+  .acc summary::-webkit-details-marker { display: none; }
+  .acc summary:hover { background: var(--row-alt); }
+  .acc .caret::before { content: "▶"; font-size: 10px; color: var(--muted); }
+  .acc details[open] > summary .caret::before { content: "▼"; color: var(--accent); }
+  .acc .cat-name { font-weight: 600; }
+  .acc .cat-amt { text-align: right; font-variant-numeric: tabular-nums; }
+  .acc .cat-budget { text-align: right; font-size: 12px; color: var(--muted); }
+  .acc .cat-budget.up { color: var(--accent); }
+  .acc .cat-budget.down { color: #b91c1c; }
+
+  .acc .vendor-block { padding-left: 28px; background: var(--row-alt); border-top: 1px dashed var(--line); }
+  .acc .vendor-block details { border-bottom: 1px dashed var(--line); }
+  .acc .vendor-block details:last-child { border-bottom: none; }
+  .acc .vendor-block summary {
+    grid-template-columns: 16px 1fr 110px 90px;
+    padding: 8px 12px;
+  }
+  .acc .vendor-block .v-name { font-weight: 500; }
+  .acc .vendor-block .v-share { text-align: right; font-size: 12px; color: var(--muted); }
+
+  .acc .daily {
+    background: #fff;
+    padding: 8px 12px 12px 44px;
+    border-top: 1px dashed var(--line);
+  }
+  .acc .daily table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .acc .daily th, .acc .daily td {
+    text-align: left;
+    padding: 4px 8px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .acc .daily th {
+    font-weight: 500;
+    color: var(--muted);
+    font-size: 11px;
+  }
+  .acc .daily td.amt { text-align: right; font-variant-numeric: tabular-nums; }
+  .acc .daily td.kind {
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  /* =================================================
+     Pattern B: Master-detail 2 panes
+     ================================================= */
+  .md {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    border: 1px solid var(--line);
+    min-height: 480px;
+  }
+  .md .left {
+    border-right: 1px solid var(--line);
+    background: var(--row-alt);
+  }
+  .md .left ul {
+    list-style: none;
+    margin: 0; padding: 0;
+  }
+  .md .left li {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--line);
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2px 8px;
+    align-items: baseline;
+  }
+  .md .left li.active {
+    background: var(--accent-bg);
+    border-left: 3px solid var(--accent);
+    padding-left: 9px;
+  }
+  .md .left .name { font-weight: 600; font-size: 13px; }
+  .md .left .amt { font-variant-numeric: tabular-nums; font-size: 13px; }
+  .md .left .share {
+    grid-column: 1 / -1;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .md .left .bar {
+    grid-column: 1 / -1;
+    height: 3px;
+    background: var(--line);
+    margin-top: 2px;
+  }
+  .md .left .bar > span {
+    display: block;
+    height: 100%;
+    background: var(--accent);
+  }
+
+  .md .right { padding: 16px 20px; }
+  .md .right .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 16px;
+  }
+  .md .right .head h4 {
+    margin: 0;
+    font-size: 18px;
+  }
+  .md .right .head .total {
+    font-size: 22px;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+  .md .right .head .sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-left: 8px;
+  }
+  .md .right h5 {
+    margin: 16px 0 8px;
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .md .right table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .md .right th, .md .right td {
+    padding: 6px 8px;
+    border-bottom: 1px solid #f0f0f0;
+    text-align: left;
+  }
+  .md .right th { color: var(--muted); font-weight: 500; font-size: 11px; }
+  .md .right td.amt { text-align: right; font-variant-numeric: tabular-nums; }
+  .md .right td.share { text-align: right; color: var(--muted); font-size: 12px; }
+  .md .right .chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 80px;
+    border-bottom: 1px solid var(--line);
+    padding: 8px 0;
+  }
+  .md .right .chart .bar {
+    flex: 1;
+    background: var(--accent);
+    opacity: 0.85;
+    min-height: 1px;
+  }
+  .md .right .chart .bar.empty { background: var(--line); opacity: 1; height: 1px !important; }
+  .md .right .chart-axis {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: var(--muted);
+    padding-top: 2px;
+  }
+
+  /* =================================================
+     Pattern C: Pivot matrix
+     ================================================= */
+  .pivot-wrap { overflow-x: auto; }
+  .pivot {
+    border-collapse: collapse;
+    font-size: 12px;
+    min-width: 900px;
+  }
+  .pivot th, .pivot td {
+    border: 1px solid var(--line);
+    padding: 4px 6px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .pivot th.cat, .pivot td.cat {
+    text-align: left;
+    font-weight: 500;
+  }
+  .pivot tr.group-head td {
+    background: #f3f4f6;
+    font-weight: 600;
+    text-align: left;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+  }
+  .pivot td.empty { color: #d1d5db; }
+  .pivot td.has { cursor: pointer; }
+  .pivot td.has:hover { background: var(--accent-bg); }
+  .pivot td.hot { font-weight: 600; background: #fde68a40; }
+  .pivot td.hotter { font-weight: 700; background: #fbbf2470; }
+  .pivot tr.total td,
+  .pivot th.total, .pivot td.total {
+    background: #f3f4f6;
+    font-weight: 600;
+  }
+  .pivot thead th {
+    background: #f9fafb;
+    font-weight: 500;
+    text-align: center;
+    font-size: 11px;
+    color: var(--muted);
+    position: sticky; top: 0;
+  }
+  .pivot .weekend { color: #b91c1c; }
+
+  .pivot-tip {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  /* =================================================
+     Summary table
+     ================================================= */
+  .summary {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-top: 16px;
+  }
+  .summary th, .summary td {
+    border: 1px solid var(--line);
+    padding: 8px 10px;
+    text-align: center;
+  }
+  .summary th { background: #f9fafb; }
+  .summary td.axis { text-align: left; font-weight: 500; }
+  .summary td.good { color: var(--accent); font-weight: 600; }
+  .summary td.bad { color: #6b7280; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="doc">
+  <h1>P3-2 経費明細UI 3パターン モック</h1>
+  <div class="meta">作成日: 2026-05-18 / 関連チケット: P3-2「経費ごとの詳細を見られるようにする」 / 配色は最小限・構造で差別化</div>
+</header>
+
+<!-- =============== PATTERN A =============== -->
+<section class="pattern">
+  <h2>パターンA: 階層アコーディオン型（ドリルダウン）</h2>
+  <div class="pros-cons">
+    <div class="strong">
+      <span class="label">強み:</span>1画面で「俯瞰 → 取引先 → 日次」を順次展開。スマホ単一カラムで自然。実装最小。DoDを最短で満たす。
+    </div>
+    <div class="weak">
+      <span class="label">弱み:</span>複数費目を同時比較したい場合に縦に伸びる。日付軸での横断分析は苦手。
+    </div>
+  </div>
+
+  <div class="mock acc">
+    <div class="mock-toolbar">
+      <div>2026年4月 ▾ &nbsp;|&nbsp; BFA（バー）</div>
+      <div>経費合計 2,242,000円</div>
+    </div>
+
+    <!-- Row: ドリンク仕入 -->
+    <details open>
+      <summary>
+        <span class="caret"></span>
+        <span class="cat-name">ドリンク仕入</span>
+        <span class="cat-amt num">550,000</span>
+        <span class="cat-budget up">予算比 +5%</span>
+      </summary>
+      <div class="vendor-block">
+        <details open>
+          <summary>
+            <span class="caret"></span>
+            <span class="v-name">○○酒販</span>
+            <span class="cat-amt num">320,000</span>
+            <span class="v-share">58%</span>
+          </summary>
+          <div class="daily">
+            <table>
+              <thead>
+                <tr><th>日付</th><th>種別</th><th>メモ</th><th style="text-align:right">金額</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>4/03 (金)</td><td class="kind">定常</td><td>週末ストック補充</td><td class="amt num">42,000</td></tr>
+                <tr><td>4/10 (金)</td><td class="kind">定常</td><td>—</td><td class="amt num">68,500</td></tr>
+                <tr><td>4/15 (水)</td><td class="kind">例外</td><td>イベント用シャンパン追加</td><td class="amt num">55,200</td></tr>
+                <tr><td>4/22 (水)</td><td class="kind">定常</td><td>—</td><td class="amt num">48,300</td></tr>
+                <tr><td>4/29 (水)</td><td class="kind">定常</td><td>GW前まとめ買い</td><td class="amt num">106,000</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+        <details>
+          <summary>
+            <span class="caret"></span>
+            <span class="v-name">△△ビバレッジ</span>
+            <span class="cat-amt num">180,000</span>
+            <span class="v-share">33%</span>
+          </summary>
+          <div class="daily">
+            <table>
+              <thead><tr><th>日付</th><th>種別</th><th>メモ</th><th style="text-align:right">金額</th></tr></thead>
+              <tbody>
+                <tr><td>4/08 (水)</td><td class="kind">定常</td><td>ソフトドリンク補充</td><td class="amt num">38,500</td></tr>
+                <tr><td>4/20 (月)</td><td class="kind">定常</td><td>—</td><td class="amt num">62,000</td></tr>
+                <tr><td>4/27 (月)</td><td class="kind">定常</td><td>—</td><td class="amt num">79,500</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+        <details>
+          <summary>
+            <span class="caret"></span>
+            <span class="v-name">ボトル直送便</span>
+            <span class="cat-amt num">50,000</span>
+            <span class="v-share">9%</span>
+          </summary>
+          <div class="daily">
+            <table>
+              <thead><tr><th>日付</th><th>種別</th><th>メモ</th><th style="text-align:right">金額</th></tr></thead>
+              <tbody>
+                <tr><td>4/28 (火)</td><td class="kind">例外</td><td>常連用キープボトル</td><td class="amt num">50,000</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+    </details>
+
+    <!-- Row: フード仕入 -->
+    <details>
+      <summary>
+        <span class="caret"></span>
+        <span class="cat-name">フード仕入</span>
+        <span class="cat-amt num">320,000</span>
+        <span class="cat-budget down">予算比 -3%</span>
+      </summary>
+    </details>
+
+    <!-- Row: 人件費 -->
+    <details>
+      <summary>
+        <span class="caret"></span>
+        <span class="cat-name">人件費</span>
+        <span class="cat-amt num">980,000</span>
+        <span class="cat-budget">予算比 +0%</span>
+      </summary>
+    </details>
+
+    <!-- Row: 家賃 -->
+    <details>
+      <summary>
+        <span class="caret"></span>
+        <span class="cat-name">家賃</span>
+        <span class="cat-amt num">250,000</span>
+        <span class="cat-budget">固定</span>
+      </summary>
+    </details>
+
+    <!-- Row: 光熱費 -->
+    <details>
+      <summary>
+        <span class="caret"></span>
+        <span class="cat-name">光熱費</span>
+        <span class="cat-amt num">142,000</span>
+        <span class="cat-budget up">予算比 +8%</span>
+      </summary>
+    </details>
+
+    <!-- Row: 広告費 -->
+    <details>
+      <summary>
+        <span class="caret"></span>
+        <span class="cat-name">広告費</span>
+        <span class="cat-amt num">0</span>
+        <span class="cat-budget">予算比 -100%</span>
+      </summary>
+    </details>
+  </div>
+</section>
+
+<!-- =============== PATTERN B =============== -->
+<section class="pattern">
+  <h2>パターンB: マスター・ディテール（2ペイン）型</h2>
+  <div class="pros-cons">
+    <div class="strong">
+      <span class="label">強み:</span>1費目選択→取引先・日次・グラフ・明細を同時表示。深掘りに最適。PC月次レビュー向き。
+    </div>
+    <div class="weak">
+      <span class="label">弱み:</span>複数費目の横並び比較は不可。スマホ前提だとレイアウトが破綻（モバイル分岐が必要）。
+    </div>
+  </div>
+
+  <div class="mock">
+    <div class="mock-toolbar">
+      <div>2026年4月 ▾ &nbsp;|&nbsp; BFA（バー）</div>
+      <div>選択中: ドリンク仕入</div>
+    </div>
+
+    <div class="md">
+      <!-- Left pane -->
+      <nav class="left">
+        <ul>
+          <li class="active">
+            <span class="name">ドリンク仕入</span>
+            <span class="amt num">550,000</span>
+            <span class="share">構成比 25%</span>
+            <span class="bar"><span style="width:25%"></span></span>
+          </li>
+          <li>
+            <span class="name">フード仕入</span>
+            <span class="amt num">320,000</span>
+            <span class="share">構成比 14%</span>
+            <span class="bar"><span style="width:14%"></span></span>
+          </li>
+          <li>
+            <span class="name">人件費</span>
+            <span class="amt num">980,000</span>
+            <span class="share">構成比 44%</span>
+            <span class="bar"><span style="width:44%"></span></span>
+          </li>
+          <li>
+            <span class="name">家賃</span>
+            <span class="amt num">250,000</span>
+            <span class="share">構成比 11%</span>
+            <span class="bar"><span style="width:11%"></span></span>
+          </li>
+          <li>
+            <span class="name">光熱費</span>
+            <span class="amt num">142,000</span>
+            <span class="share">構成比 6%</span>
+            <span class="bar"><span style="width:6%"></span></span>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Right pane -->
+      <div class="right">
+        <div class="head">
+          <div>
+            <h4>ドリンク仕入</h4>
+            <span class="sub">FL原価 / 定常費目</span>
+          </div>
+          <div>
+            <span class="total num">¥550,000</span>
+            <span class="sub">予算 ¥525,000 / +4.8% / 前月比 +12%</span>
+          </div>
+        </div>
+
+        <h5>取引先別</h5>
+        <table>
+          <thead><tr><th>取引先</th><th style="text-align:right">月小計</th><th style="text-align:right">構成比</th></tr></thead>
+          <tbody>
+            <tr><td>○○酒販</td><td class="amt">320,000</td><td class="share">58%</td></tr>
+            <tr><td>△△ビバレッジ</td><td class="amt">180,000</td><td class="share">33%</td></tr>
+            <tr><td>ボトル直送便</td><td class="amt">50,000</td><td class="share">9%</td></tr>
+          </tbody>
+        </table>
+
+        <h5>日次推移（4月）</h5>
+        <div class="chart">
+          <div class="bar empty" title="4/01"></div>
+          <div class="bar empty" title="4/02"></div>
+          <div class="bar" style="height:35%" title="4/03 42,000"></div>
+          <div class="bar empty" title="4/04"></div>
+          <div class="bar empty" title="4/05"></div>
+          <div class="bar empty" title="4/06"></div>
+          <div class="bar empty" title="4/07"></div>
+          <div class="bar" style="height:32%" title="4/08 38,500"></div>
+          <div class="bar empty" title="4/09"></div>
+          <div class="bar" style="height:55%" title="4/10 68,500"></div>
+          <div class="bar empty" title="4/11"></div>
+          <div class="bar empty" title="4/12"></div>
+          <div class="bar empty" title="4/13"></div>
+          <div class="bar empty" title="4/14"></div>
+          <div class="bar" style="height:45%" title="4/15 55,200"></div>
+          <div class="bar empty" title="4/16"></div>
+          <div class="bar empty" title="4/17"></div>
+          <div class="bar empty" title="4/18"></div>
+          <div class="bar empty" title="4/19"></div>
+          <div class="bar" style="height:50%" title="4/20 62,000"></div>
+          <div class="bar empty" title="4/21"></div>
+          <div class="bar" style="height:40%" title="4/22 48,300"></div>
+          <div class="bar empty" title="4/23"></div>
+          <div class="bar empty" title="4/24"></div>
+          <div class="bar empty" title="4/25"></div>
+          <div class="bar empty" title="4/26"></div>
+          <div class="bar" style="height:65%" title="4/27 79,500"></div>
+          <div class="bar" style="height:42%" title="4/28 50,000"></div>
+          <div class="bar" style="height:88%" title="4/29 106,000"></div>
+          <div class="bar empty" title="4/30"></div>
+        </div>
+        <div class="chart-axis"><span>4/1</span><span>4/10</span><span>4/20</span><span>4/30</span></div>
+
+        <h5>日次明細</h5>
+        <table>
+          <thead><tr><th>日付</th><th>取引先</th><th>メモ</th><th style="text-align:right">金額</th></tr></thead>
+          <tbody>
+            <tr><td>4/03</td><td>○○酒販</td><td>週末ストック補充</td><td class="amt">42,000</td></tr>
+            <tr><td>4/08</td><td>△△ビバレッジ</td><td>ソフトドリンク補充</td><td class="amt">38,500</td></tr>
+            <tr><td>4/10</td><td>○○酒販</td><td>—</td><td class="amt">68,500</td></tr>
+            <tr><td>4/15</td><td>○○酒販</td><td>イベント用シャンパン追加</td><td class="amt">55,200</td></tr>
+            <tr><td>4/20</td><td>△△ビバレッジ</td><td>—</td><td class="amt">62,000</td></tr>
+            <tr><td>4/22</td><td>○○酒販</td><td>—</td><td class="amt">48,300</td></tr>
+            <tr><td>4/27</td><td>△△ビバレッジ</td><td>—</td><td class="amt">79,500</td></tr>
+            <tr><td>4/28</td><td>ボトル直送便</td><td>常連用キープボトル</td><td class="amt">50,000</td></tr>
+            <tr><td>4/29</td><td>○○酒販</td><td>GW前まとめ買い</td><td class="amt">106,000</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============== PATTERN C =============== -->
+<section class="pattern">
+  <h2>パターンC: ピボット（マトリクス）テーブル型</h2>
+  <div class="pros-cons">
+    <div class="strong">
+      <span class="label">強み:</span>月全体の費目×日付を1画面俯瞰。仕入れ集中日・支払いの山谷が即見える。Excel感覚で扱える。
+    </div>
+    <div class="weak">
+      <span class="label">弱み:</span>取引先軸は列切替が必要。スマホでは横スクロール必須。実装コスト最大。
+    </div>
+  </div>
+
+  <div class="mock">
+    <div class="mock-toolbar">
+      <div>2026年4月 ▾ &nbsp;|&nbsp; 列軸: <b>日付</b> / 取引先 &nbsp;|&nbsp; セルクリックで詳細</div>
+      <div>セル太字 = その費目の上位支出日</div>
+    </div>
+    <div class="pivot-wrap">
+      <table class="pivot">
+        <thead>
+          <tr>
+            <th class="cat">費目</th>
+            <th>4/03</th>
+            <th>4/08</th>
+            <th>4/10</th>
+            <th>4/15</th>
+            <th>4/20</th>
+            <th>4/22</th>
+            <th>4/25</th>
+            <th>4/27</th>
+            <th>4/28</th>
+            <th>4/29</th>
+            <th class="total">月合計</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="group-head"><td colspan="12">原価（FL）</td></tr>
+          <tr>
+            <td class="cat">ドリンク仕入</td>
+            <td class="has">42,000</td>
+            <td class="has">38,500</td>
+            <td class="has hot">68,500</td>
+            <td class="has">55,200</td>
+            <td class="has">62,000</td>
+            <td class="has">48,300</td>
+            <td class="empty">—</td>
+            <td class="has hot">79,500</td>
+            <td class="has">50,000</td>
+            <td class="has hotter">106,000</td>
+            <td class="total">550,000</td>
+          </tr>
+          <tr>
+            <td class="cat">フード仕入</td>
+            <td class="empty">—</td>
+            <td class="has hot">62,000</td>
+            <td class="empty">—</td>
+            <td class="has">28,500</td>
+            <td class="empty">—</td>
+            <td class="has">34,800</td>
+            <td class="has">42,500</td>
+            <td class="empty">—</td>
+            <td class="has">28,900</td>
+            <td class="has hot">82,000</td>
+            <td class="total">320,000</td>
+          </tr>
+
+          <tr class="group-head"><td colspan="12">人件費</td></tr>
+          <tr>
+            <td class="cat">給与</td>
+            <td class="empty">—</td>
+            <td class="empty">—</td>
+            <td class="empty">—</td>
+            <td class="empty">—</td>
+            <td class="empty">—</td>
+            <td class="empty">—</td>
+            <td class="has hotter">980,000</td>
+            <td class="empty">—</td>
+            <td class="empty">—</td>
+            <td class="empty">—</td>
+            <td class="total">980,000</td>
+          </tr>
+
+          <tr class="group-head"><td colspan="12">固定費</td></tr>
+          <tr>
+            <td class="cat">家賃</td>
+            <td class="empty">—</td>
+            <td class="empty">—</td>
+            <td class="empty">—</td>
+            <td class="empty">—</td>
+            <td class="empty">—</td>
+            <td class="empty">—</td>
+            <td class="has hotter">250,000</td>
+            <td class="empty">—</td>
+            <td class="empty">—</td>
+            <td class="empty">—</td>
+            <td class="total">250,000</td>
+          </tr>
+          <tr>
+            <td class="cat">光熱費</td>
+            <td class="empty">—</td>
+            <td class="empty">—</td>
+            <td class="empty">—</td>
+            <td class="empty">—</td>
+            <td class="empty">—</td>
+            <td class="empty">—</td>
+            <td class="empty">—</td>
+            <td class="empty">—</td>
+            <td class="has hot">142,000</td>
+            <td class="empty">—</td>
+            <td class="total">142,000</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr class="total">
+            <td class="cat total">日次合計</td>
+            <td>42,000</td>
+            <td>100,500</td>
+            <td>68,500</td>
+            <td>83,700</td>
+            <td>62,000</td>
+            <td>83,100</td>
+            <td>1,272,500</td>
+            <td>79,500</td>
+            <td>220,900</td>
+            <td>188,000</td>
+            <td class="total">2,242,000</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <div class="pivot-tip">
+      ※ セルクリック時にドロワーで「ドリンク仕入 / 4/29 / ○○酒販 / 106,000円 / メモ: GW前まとめ買い」を表示。
+      列軸は日付↔取引先で切替可能（例: 列＝取引先にすると、行＝費目 × 列＝○○酒販／△△ビバレッジ／…のビューになる）。
+    </div>
+  </div>
+</section>
+
+<!-- =============== SUMMARY =============== -->
+<section class="pattern">
+  <h2>比較サマリ</h2>
+  <table class="summary">
+    <thead>
+      <tr>
+        <th>評価軸</th>
+        <th>A アコーディオン</th>
+        <th>B 2ペイン</th>
+        <th>C ピボット</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="axis">俯瞰性（月構造の把握）</td>
+        <td class="bad">△ 順次展開</td>
+        <td class="bad">△ 1費目のみ</td>
+        <td class="good">◎ 全費目×全日</td>
+      </tr>
+      <tr>
+        <td class="axis">詳細到達速度</td>
+        <td>○ 2クリック</td>
+        <td class="good">◎ 1クリック</td>
+        <td class="good">◎ 1クリック（日×費目）</td>
+      </tr>
+      <tr>
+        <td class="axis">モバイル適性</td>
+        <td class="good">◎ 単一カラム</td>
+        <td class="bad">× PC前提</td>
+        <td class="bad">× 横スクロール</td>
+      </tr>
+      <tr>
+        <td class="axis">実装コスト</td>
+        <td class="good">◎ 低</td>
+        <td>○ 中</td>
+        <td class="bad">△ 高</td>
+      </tr>
+      <tr>
+        <td class="axis">予算比較適性</td>
+        <td>○ 行に並記</td>
+        <td class="good">◎ 右ペイン上部に大きく</td>
+        <td class="bad">△ 行末のみ</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p style="margin-top:16px; font-size:13px; color:var(--muted);">
+    推奨: <b>A をフェーズ1</b>（DoD最短達成・スマホ対応） → <b>B をフェーズ2</b>（PC月次レビュー画面） → <b>C はオプション</b>（経営会議用サマリ／PDF出力とセット）。
+  </p>
+</section>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>P3-3 CSV出力機能仕様</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Yu Gothic", Meiryo, sans-serif;
+    max-width: 960px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+    line-height: 1.7;
+    color: #1f2937;
+    background: #fff;
+  }
+  h1 { font-size: 1.8rem; border-bottom: 2px solid #1f2937; padding-bottom: 0.4rem; margin-top: 2rem; }
+  h2 { font-size: 1.35rem; border-bottom: 1px solid #d1d5db; padding-bottom: 0.3rem; margin-top: 2rem; }
+  h3 { font-size: 1.1rem; margin-top: 1.5rem; color: #374151; }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0;
+    font-size: 0.92rem;
+  }
+  th, td {
+    border: 1px solid #d1d5db;
+    padding: 0.5rem 0.7rem;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: #f3f4f6; font-weight: 600; }
+  tr:nth-child(even) td { background: #fafafa; }
+  code {
+    background: #f3f4f6;
+    padding: 0.1rem 0.35rem;
+    border-radius: 3px;
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 0.9em;
+  }
+  pre {
+    background: #f3f4f6;
+    padding: 0.8rem 1rem;
+    border-radius: 4px;
+    overflow-x: auto;
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+  pre code { background: none; padding: 0; }
+  blockquote {
+    border-left: 4px solid #9ca3af;
+    margin: 1rem 0;
+    padding: 0.4rem 1rem;
+    color: #374151;
+    background: #f9fafb;
+  }
+  ul, ol { padding-left: 1.5rem; }
+  hr { border: none; border-top: 1px solid #d1d5db; margin: 2rem 0; }
+  .meta-table th { width: 30%; }
+</style>
+</head>
+<body>
+
+<h1>P3-3 CSV出力機能仕様</h1>
+
+<table class="meta-table">
+  <tr><th>作成日</th><td>2026-05-18</td></tr>
+  <tr><th>対象プロジェクト</th><td>BFA（バー）月報ダッシュボード</td></tr>
+  <tr><th>関連チケット</th><td>P3-3 「CSVダウンロード可否の確認」</td></tr>
+  <tr><th>元論点</th><td><code>/Users/rikutanaka/aipm_v0/Flow/202605/2026-05-18/BFA/対応状況_5Arrowsフィードバック_v1.md</code></td></tr>
+  <tr><th>状態</th><td>仕様ドラフト（5/16 MTG 回答準備用）</td></tr>
+  <tr><th>想定実装ブランチ</th><td><code>feat/csv-export</code>（未作成・要確認）</td></tr>
+</table>
+
+<h2>0. サマリ</h2>
+<p>石川氏（5Arrows）より「売上明細・経費明細・月次集計を CSV で落としたい」との要望。現状の Dashboard には <strong>CSV 入力（パース）処理は存在するが、CSV 出力（エクスポート）機能はゼロ</strong>。新規実装が必要。</p>
+<p>本仕様書では、外部仕様（ユーザー観点）と内部仕様（実装観点）の双方を定義し、フェーズ分割の実装計画を提示する。</p>
+
+<hr>
+
+<h1>Part 1: ユーザーから見た仕様（外部仕様）</h1>
+
+<h2>1.1 提供する CSV の種別</h2>
+<p>3 種類を提供する。</p>
+<table>
+<thead><tr><th>#</th><th>種別</th><th>用途</th><th>粒度</th><th>データソース</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>売上明細 CSV</td><td>会計レベルの売上を一次データとして外部分析へ</td><td>1 会計 = 1 行</td><td><code>SalesData</code> + <code>SalesItem</code></td></tr>
+<tr><td>2</td><td>経費明細 CSV</td><td>経費の費目・取引先別の確認・税理士提出</td><td>1 経費レコード = 1 行</td><td><code>PlDailyExpense</code> + <code>PlExpenseCategory</code> + <code>PlVendor</code></td></tr>
+<tr><td>3</td><td>月次集計 CSV</td><td>PL サマリ（売上 / FL / その他経費 / 利益）の月別共有</td><td>1 月 = 1 行</td><td><code>PlDailySales</code> / <code>PlDailyExpense</code> / <code>PlMonthlyTarget</code></td></tr>
+</tbody>
+</table>
+
+<h2>1.2 操作 UI（ボタン配置）</h2>
+<p>ダッシュボード共通ヘッダ右上に <strong>「CSV ダウンロード」ボタン</strong> を新設する。クリック → モーダル表示 → 以下を選択 → 「ダウンロード」押下でブラウザにファイル保存。</p>
+
+<h3>モーダルの入力項目</h3>
+<table>
+<thead><tr><th>入力項目</th><th>UI</th><th>必須</th><th>備考</th></tr></thead>
+<tbody>
+<tr><td>CSV 種別</td><td>ラジオボタン（売上明細 / 経費明細 / 月次集計）</td><td>必須</td><td>1 種別ずつダウンロード</td></tr>
+<tr><td>期間タイプ</td><td>ラジオボタン（単月 / 任意の日付範囲）</td><td>必須</td><td>月次集計は単月のみ選択可</td></tr>
+<tr><td>対象月</td><td>月選択（YYYY-MM）</td><td>単月時のみ</td><td>既定値：当月</td></tr>
+<tr><td>開始日 / 終了日</td><td>日付ピッカー</td><td>任意範囲時のみ</td><td>最長 1 年とする</td></tr>
+<tr><td>推計値の扱い</td><td>チェックボックス「推計値を含める」</td><td>任意</td><td>既定 ON（経費明細・月次集計のみ）</td></tr>
+</tbody>
+</table>
+<p>店舗は <strong>ログイン中の店舗 ID で固定</strong>。複数店舗を横断するエクスポートは v1 では提供しない（要確認：BFA は単店舗想定だが将来複数店舗化の可能性あり）。</p>
+
+<h2>1.3 期間指定の仕様</h2>
+<table>
+<thead><tr><th>CSV 種別</th><th>単月</th><th>任意の日付範囲</th><th>備考</th></tr></thead>
+<tbody>
+<tr><td>売上明細</td><td>〇</td><td>〇</td><td>営業日付ベース（cutoffHour 考慮）</td></tr>
+<tr><td>経費明細</td><td>〇</td><td>〇</td><td>計上日（<code>PlDailyExpense.date</code>）ベース</td></tr>
+<tr><td>月次集計</td><td>〇</td><td>×</td><td>1 行 = 1 月のため範囲指定は「単月のみ」または「年単位」</td></tr>
+</tbody>
+</table>
+
+<h2>1.4 ファイル名命名規則</h2>
+<pre><code>BFA_{種別}_{店舗コード}_{期間}.csv</code></pre>
+<table>
+<thead><tr><th>種別</th><th>ファイル名例</th></tr></thead>
+<tbody>
+<tr><td>売上明細・単月</td><td><code>BFA_売上明細_bfa01_2026-04.csv</code></td></tr>
+<tr><td>売上明細・範囲</td><td><code>BFA_売上明細_bfa01_2026-04-01_2026-04-30.csv</code></td></tr>
+<tr><td>経費明細・単月</td><td><code>BFA_経費明細_bfa01_2026-04.csv</code></td></tr>
+<tr><td>月次集計</td><td><code>BFA_月次集計_bfa01_2026-04.csv</code></td></tr>
+</tbody>
+</table>
+<ul>
+<li><code>店舗コード</code> は <code>Store.storeCode</code>（例：<code>bfa01</code>）</li>
+<li>日本語ファイル名は <code>Content-Disposition: attachment; filename*=UTF-8''…</code> で RFC 5987 エンコード</li>
+</ul>
+
+<h2>1.5 文字コード・区切り・改行</h2>
+<table>
+<thead><tr><th>項目</th><th>値</th><th>理由</th></tr></thead>
+<tbody>
+<tr><td>文字コード</td><td>UTF-8（<strong>BOM 付き</strong>）</td><td>Excel for Windows での文字化け防止</td></tr>
+<tr><td>区切り文字</td><td>カンマ（<code>,</code>）</td><td>標準 CSV</td></tr>
+<tr><td>改行コード</td><td>CRLF（<code>\r\n</code>）</td><td>Excel 互換</td></tr>
+<tr><td>引用符</td><td>ダブルクォート（<code>"</code>）</td><td>値内にカンマ・改行・引用符を含む場合に必須</td></tr>
+<tr><td>エスケープ</td><td>ダブルクォートを <code>""</code> に置換</td><td>RFC 4180 準拠</td></tr>
+</tbody>
+</table>
+
+<h2>1.6 ヘッダー行</h2>
+<p><strong>1 行目は日本語ヘッダ</strong>（石川氏含む非エンジニア利用想定のため）。英語ヘッダ版は v1 では提供しない（要確認）。</p>
+
+<h2>1.7 権限・セキュリティ</h2>
+<table>
+<thead><tr><th>項目</th><th>仕様</th></tr></thead>
+<tbody>
+<tr><td>認証</td><td>既存の <code>StoreSession</code>（cookie 認証）必須</td></tr>
+<tr><td>店舗フィルタ</td><td>セッションの <code>storeId</code> を <strong>強制適用</strong>（クエリの <code>storeId</code> は session と一致しなければ 403）</td></tr>
+<tr><td>グループ管理者</td><td><code>StoreGroupSession</code> 経由なら所属店舗のみ選択可（要確認）</td></tr>
+<tr><td>監査ログ</td><td><code>CsvExportLog</code>（新設、要検討）に記録するか後述</td></tr>
+</tbody>
+</table>
+
+<h2>1.8 数値・日付の書式</h2>
+<table>
+<thead><tr><th>項目</th><th>書式</th><th>例</th></tr></thead>
+<tbody>
+<tr><td>金額</td><td><strong>税込・整数（円）</strong></td><td><code>12500</code>（<strong>カンマ区切りなし</strong>）</td></tr>
+<tr><td>日付</td><td><code>YYYY-MM-DD</code></td><td><code>2026-04-15</code></td></tr>
+<tr><td>日時</td><td><code>YYYY-MM-DD HH:mm:ss</code></td><td><code>2026-04-15 18:30:00</code></td></tr>
+<tr><td>営業日付</td><td><code>YYYY-MM-DD</code>（cutoffHour 適用済み）</td><td>売上明細のみ</td></tr>
+<tr><td>真偽値</td><td><code>1</code> / <code>0</code></td><td><code>hasReservation</code> 等</td></tr>
+<tr><td>NULL</td><td>空文字</td><td><code>""</code></td></tr>
+</tbody>
+</table>
+
+<h2>1.9 推計値／確定値の扱い</h2>
+<p>経費明細では <code>expenseType</code> カラムにて種別を明示する。</p>
+<table>
+<thead><tr><th><code>expenseType</code></th><th>表示</th><th>意味</th></tr></thead>
+<tbody>
+<tr><td><code>RECURRING</code></td><td>月次固定</td><td>月次計上の固定費（家賃等）</td></tr>
+<tr><td><code>VARIABLE</code></td><td>変動費</td><td>日次計上の変動費</td></tr>
+<tr><td><code>ESTIMATED</code></td><td>推計値</td><td>推計値（要確認：現スキーマで本値が定義されているか）</td></tr>
+</tbody>
+</table>
+<p>月次集計 CSV では「確定済み」「推計含む」を別列で出さず、<strong>モーダルのチェックボックスで切り替え</strong>、ファイル名末尾に <code>_推計込</code> を付与する。</p>
+
+<h2>1.10 各 CSV のカラム定義</h2>
+
+<h3>1.10.1 売上明細 CSV</h3>
+<p><code>SalesData</code> 1 行 = CSV 1 行（明細レベル＝<code>SalesItem</code> は別 CSV／v1 では会計サマリのみ）。</p>
+<table>
+<thead><tr><th>#</th><th>列名（日本語）</th><th>型</th><th>サンプル値</th><th>備考</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>営業日付</td><td>string</td><td><code>2026-04-15</code></td><td>cutoffHour 適用後の businessDate</td></tr>
+<tr><td>2</td><td>入店日時</td><td>datetime</td><td><code>2026-04-15 18:30:00</code></td><td><code>entryAt</code>（JST）</td></tr>
+<tr><td>3</td><td>退店日時</td><td>datetime</td><td><code>2026-04-15 21:45:00</code></td><td><code>exitAt</code>（JST）</td></tr>
+<tr><td>4</td><td>曜日</td><td>string</td><td><code>水</code></td><td><code>dayOfWeek</code></td></tr>
+<tr><td>5</td><td>会計ID</td><td>string</td><td><code>A20260415001</code></td><td><code>accountId</code></td></tr>
+<tr><td>6</td><td>売上金額（税込）</td><td>integer</td><td><code>12500</code></td><td><code>totalAmount</code></td></tr>
+<tr><td>7</td><td>客数</td><td>integer</td><td><code>4</code></td><td><code>customerCount</code></td></tr>
+<tr><td>8</td><td>品数</td><td>integer</td><td><code>12</code></td><td><code>itemCount</code></td></tr>
+<tr><td>9</td><td>客単価</td><td>integer</td><td><code>3125</code></td><td>計算値（売上 / 客数）、客数 0 のとき空文字</td></tr>
+<tr><td>10</td><td>予約有無</td><td>integer</td><td><code>1</code></td><td><code>hasReservation</code>（1/0）</td></tr>
+<tr><td>11</td><td>コース利用</td><td>integer</td><td><code>0</code></td><td><code>isCourse</code>（1/0）</td></tr>
+<tr><td>12</td><td>CSV取込形式</td><td>string</td><td><code>airregi</code></td><td><code>csvFormat</code></td></tr>
+<tr><td>13</td><td>登録日時</td><td>datetime</td><td><code>2026-04-16 02:10:00</code></td><td><code>createdAt</code></td></tr>
+</tbody>
+</table>
+<p><strong>メモ欄について</strong>：要望には「メモ欄付き」とあるが、<code>SalesData</code> モデルにメモ列は存在しない。<strong>要確認</strong>（<code>SalesItem</code> の備考か、PL 日次の備考と取り違えの可能性）。v1 ではメモ列なしで実装し、必要なら v1.1 で追加カラム検討。</p>
+
+<h3>1.10.2 経費明細 CSV</h3>
+<p><code>PlDailyExpense</code> 1 行 = CSV 1 行。</p>
+<table>
+<thead><tr><th>#</th><th>列名（日本語）</th><th>型</th><th>サンプル値</th><th>備考</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>計上日</td><td>string</td><td><code>2026-04-15</code></td><td><code>date</code></td></tr>
+<tr><td>2</td><td>費目カテゴリ</td><td>string</td><td><code>食材</code></td><td><code>PlExpenseCategory.name</code>（JOIN）</td></tr>
+<tr><td>3</td><td>費目グループ</td><td>string</td><td><code>原材料費</code></td><td><code>PlExpenseCategoryGroup.name</code>（JOIN, NULL 可）</td></tr>
+<tr><td>4</td><td>FL対象</td><td>integer</td><td><code>1</code></td><td><code>PlExpenseCategory.isFLCost</code>（1/0）</td></tr>
+<tr><td>5</td><td>取引先</td><td>string</td><td><code>〇〇酒販</code></td><td><code>PlVendor.name</code>（JOIN, NULL 可）</td></tr>
+<tr><td>6</td><td>金額（税込）</td><td>integer</td><td><code>45200</code></td><td><code>amount</code></td></tr>
+<tr><td>7</td><td>種別</td><td>string</td><td><code>VARIABLE</code></td><td><code>expenseType</code></td></tr>
+<tr><td>8</td><td>メモ</td><td>string</td><td><code>週次仕入れ</code></td><td><code>memo</code>（最大 500 文字）</td></tr>
+<tr><td>9</td><td>登録日時</td><td>datetime</td><td><code>2026-04-15 20:00:00</code></td><td><code>createdAt</code></td></tr>
+<tr><td>10</td><td>更新日時</td><td>datetime</td><td><code>2026-04-15 20:00:00</code></td><td><code>updatedAt</code></td></tr>
+</tbody>
+</table>
+
+<h3>1.10.3 月次集計 CSV</h3>
+<p>PL サマリの構造化エクスポート。</p>
+<table>
+<thead><tr><th>#</th><th>列名（日本語）</th><th>型</th><th>サンプル値</th><th>備考</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>対象月</td><td>string</td><td><code>2026-04</code></td><td><code>yearMonth</code></td></tr>
+<tr><td>2</td><td>店舗コード</td><td>string</td><td><code>bfa01</code></td><td><code>Store.storeCode</code></td></tr>
+<tr><td>3</td><td>店舗名</td><td>string</td><td><code>BFA</code></td><td><code>Store.storeName</code></td></tr>
+<tr><td>4</td><td>売上目標</td><td>integer</td><td><code>5000000</code></td><td><code>PlMonthlyTarget.salesTarget</code></td></tr>
+<tr><td>5</td><td>売上実績（税込）</td><td>integer</td><td><code>4820000</code></td><td><code>PlDailySales.amount</code> SUM</td></tr>
+<tr><td>6</td><td>売上達成率</td><td>string</td><td><code>96.4%</code></td><td>実績 / 目標、目標 0 のとき空文字</td></tr>
+<tr><td>7</td><td>食材費</td><td>integer</td><td><code>1280000</code></td><td>F 区分合計（要確認：F/L 判別ロジック）</td></tr>
+<tr><td>8</td><td>人件費</td><td>integer</td><td><code>1100000</code></td><td>L 区分の合計</td></tr>
+<tr><td>9</td><td>FL合計</td><td>integer</td><td><code>2380000</code></td><td>食材費 + 人件費</td></tr>
+<tr><td>10</td><td>FL率</td><td>string</td><td><code>49.4%</code></td><td>FL合計 / 売上実績</td></tr>
+<tr><td>11</td><td>その他経費</td><td>integer</td><td><code>850000</code></td><td>FL 対象外経費の合計</td></tr>
+<tr><td>12</td><td>経費合計</td><td>integer</td><td><code>3230000</code></td><td>FL合計 + その他経費</td></tr>
+<tr><td>13</td><td>営業利益</td><td>integer</td><td><code>1590000</code></td><td>売上実績 - 経費合計</td></tr>
+<tr><td>14</td><td>利益率</td><td>string</td><td><code>33.0%</code></td><td>営業利益 / 売上実績</td></tr>
+<tr><td>15</td><td>推計値含む</td><td>integer</td><td><code>1</code></td><td>1 = 推計含む / 0 = 確定値のみ</td></tr>
+</tbody>
+</table>
+
+<hr>
+
+<h1>Part 2: 内部仕様（実装仕様）</h1>
+
+<h2>2.1 アーキテクチャ概要</h2>
+<pre><code>[ブラウザ]
+  └ CSVダウンロードボタン → モーダル
+        ↓ GET (Cookie auth)
+[/api/export/sales]      ← 売上明細
+[/api/export/expenses]   ← 経費明細
+[/api/export/monthly]    ← 月次集計
+        ↓
+[/lib/csv/exporters/*.ts] ← サーバー側組み立て
+        ↓
+[Repository 層（既存）]
+  ├ plDailyRepository
+  ├ salesRepository（新規 or 既存リファクタ）
+  └ plMonthlySummaryService（新規 or dashboard API ロジック流用）
+        ↓
+[Neon PostgreSQL]
+</code></pre>
+
+<h2>2.2 API ルート設計</h2>
+
+<h3>2.2.1 売上明細</h3>
+<pre><code>GET /api/export/sales
+  ?storeId=&lt;uuid&gt;
+  &amp;mode=month | range
+  &amp;month=YYYY-MM             （mode=month 時）
+  &amp;startDate=YYYY-MM-DD      （mode=range 時）
+  &amp;endDate=YYYY-MM-DD        （mode=range 時）
+</code></pre>
+
+<h3>2.2.2 経費明細</h3>
+<pre><code>GET /api/export/expenses
+  ?storeId=&lt;uuid&gt;
+  &amp;mode=month | range
+  &amp;month=YYYY-MM
+  &amp;startDate=YYYY-MM-DD
+  &amp;endDate=YYYY-MM-DD
+  &amp;includeEstimated=true | false   （既定 true）
+</code></pre>
+
+<h3>2.2.3 月次集計</h3>
+<pre><code>GET /api/export/monthly
+  ?storeId=&lt;uuid&gt;
+  &amp;year=YYYY                 （年単位）
+  &amp;month=YYYY-MM             （単月）
+  &amp;includeEstimated=true | false
+</code></pre>
+
+<h3>2.2.4 共通レスポンス</h3>
+<table>
+<thead><tr><th>状況</th><th>ステータス</th><th>ヘッダ / ボディ</th></tr></thead>
+<tbody>
+<tr><td>正常</td><td>200</td><td><code>Content-Type: text/csv; charset=utf-8</code>, <code>Content-Disposition: attachment; filename*=UTF-8''&lt;encoded&gt;</code></td></tr>
+<tr><td>期間不正</td><td>400</td><td><code>{ success: false, error: { code: 'ERR-EXPORT-001', message: '期間指定が不正です' } }</code></td></tr>
+<tr><td>認証なし</td><td>401</td><td>既存ミドルウェアに合わせる</td></tr>
+<tr><td>店舗権限なし</td><td>403</td><td><code>{ success: false, error: { code: 'ERR-EXPORT-003', message: '対象店舗へのアクセス権限がありません' } }</code></td></tr>
+<tr><td>データなし</td><td>200 + 空 CSV</td><td>ヘッダのみ。<strong>404 にしない</strong>（Excel で開けた方が UX 良）</td></tr>
+<tr><td>サーバーエラー</td><td>500</td><td><code>{ success: false, error: { code: 'ERR-EXPORT-999', message: 'エクスポートに失敗しました' } }</code></td></tr>
+</tbody>
+</table>
+
+<h2>2.3 エラーコード（新設）</h2>
+<p><code>config/constants.ts</code> に追加：</p>
+<table>
+<thead><tr><th>コード</th><th>意味</th></tr></thead>
+<tbody>
+<tr><td><code>ERR-EXPORT-001</code></td><td>期間指定が不正（開始 &gt; 終了、範囲が 1 年超、未指定など）</td></tr>
+<tr><td><code>ERR-EXPORT-002</code></td><td>対象 CSV 種別が不正</td></tr>
+<tr><td><code>ERR-EXPORT-003</code></td><td>店舗 ID 未指定 / 権限なし</td></tr>
+<tr><td><code>ERR-EXPORT-004</code></td><td>月次集計データの再計算失敗</td></tr>
+<tr><td><code>ERR-EXPORT-999</code></td><td>想定外のサーバーエラー</td></tr>
+</tbody>
+</table>
+
+<h2>2.4 ストリーミング vs バッファ</h2>
+<table>
+<thead><tr><th>観点</th><th>バッファ（一括）</th><th>ストリーミング</th></tr></thead>
+<tbody>
+<tr><td>実装難度</td><td>低</td><td>中（Web Streams API or Node Readable）</td></tr>
+<tr><td>メモリ</td><td>行数 × 〜200byte（BFA は月 300〜500 行 → 〜100KB）</td><td>一定</td></tr>
+<tr><td>Vercel タイムアウト</td><td>300s</td><td>300s（同じ）</td></tr>
+<tr><td>推奨</td><td><strong>バッファで十分</strong></td><td>将来 1 万行超なら検討</td></tr>
+</tbody>
+</table>
+<p><strong>v1 はバッファ実装</strong>を採用。Next.js App Router の Route Handler で <code>Response</code> を直接返す：</p>
+<pre><code>return new Response('﻿' + csvString, {
+  headers: {
+    'Content-Type': 'text/csv; charset=utf-8',
+    'Content-Disposition': `attachment; filename*=UTF-8''${encodeURIComponent(fileName)}`,
+  },
+});
+</code></pre>
+
+<h2>2.5 CSV 組み立てライブラリ</h2>
+<table>
+<thead><tr><th>候補</th><th>採用判断</th></tr></thead>
+<tbody>
+<tr><td><code>csv-stringify</code>（<code>csv</code> パッケージ）</td><td><strong>採用候補 1</strong>：型安全、エスケープ堅牢、依存軽量</td></tr>
+<tr><td>自前実装（テンプレ文字列）</td><td><strong>採用候補 2</strong>：3 種類だけなら自前で十分。<code>lib/csv/exporters/buildCsv.ts</code> に共通ヘルパー</td></tr>
+<tr><td><code>papaparse</code></td><td>入力（パース）用途であり出力には冗長</td></tr>
+</tbody>
+</table>
+<p><strong>推奨</strong>：自前の <code>buildCsv(rows, headers)</code> を <code>lib/csv/exporters/buildCsv.ts</code> として新設。BOM 付与・CRLF・エスケープを集約。</p>
+
+<h2>2.6 BOM 付与</h2>
+<p>文字列の先頭に <code>﻿</code> を 1 文字付ける。Response 生成時に 1 か所だけで付与（exporter 関数の責務にしない）。</p>
+
+<h2>2.7 データ取得（リポジトリ再利用）</h2>
+<table>
+<thead><tr><th>CSV 種別</th><th>再利用元</th><th>新規追加</th></tr></thead>
+<tbody>
+<tr><td>売上明細</td><td>（要確認）<code>SalesData</code> クエリは既存 dashboard API のロジックを参照</td><td><code>lib/db/repositories/salesRepository.ts</code> に <code>getSalesByDateRange(storeId, start, end)</code> を切り出し</td></tr>
+<tr><td>経費明細</td><td><code>lib/db/repositories/plDailyRepository.ts</code> の <code>getDailyExpenses</code> 系</td><td>必要に応じて vendor / category JOIN を追加</td></tr>
+<tr><td>月次集計</td><td><code>/app/api/pl/dashboard/route.ts</code> の集計ロジック</td><td><code>lib/services/plMonthlySummaryService.ts</code> として関数化</td></tr>
+</tbody>
+</table>
+<p><strong>重要</strong>：月次集計は <code>/api/pl/dashboard</code> の表示用ロジックと<strong>同じ計算式</strong>を使うこと。乖離が出ると石川氏に「ダッシュボードと CSV で数字が違う」と指摘される。サービス層に切り出して両方から呼ぶ構造にする。</p>
+
+<h2>2.8 期間バリデーション</h2>
+<pre><code>// lib/csv/exporters/validateRange.ts
+- mode が month の場合: month = /^\d{4}-\d{2}$/ かつ実在月
+- mode が range の場合: startDate &lt;= endDate かつ (endDate - startDate) &lt;= 366日
+- いずれも未来 1 か月超を指定したら 400（要件次第、要確認）
+</code></pre>
+
+<h2>2.9 営業日付の扱い（売上明細）</h2>
+<p><code>StoreSettings.businessDayCutoffHour</code> を <code>lib/utils/businessDate.ts</code> の既存関数で適用し、「営業日付」列に出す。<code>SalesData.entryAt</code> の JST 変換は既存実装と揃える。<strong>直近 5/15 のコミット群（営業日カットオフ対応）と整合させること</strong>（要確認：<code>businessDate.ts</code> の API シグネチャ）。</p>
+
+<h2>2.10 大量データ対策</h2>
+<table>
+<thead><tr><th>項目</th><th>対策</th></tr></thead>
+<tbody>
+<tr><td>行数上限</td><td>1 ファイル 10 万行（=年間に余裕、超えたら 400）</td></tr>
+<tr><td>クエリ最適化</td><td>期間で WHERE、必要列のみ SELECT、<code>take</code> で上限ガード</td></tr>
+<tr><td>Vercel Functions タイムアウト</td><td>300s。BFA 規模では 1 秒未満想定</td></tr>
+<tr><td>ネットワーク</td><td>gzip は Vercel が自動付与</td></tr>
+</tbody>
+</table>
+
+<h2>2.11 セキュリティ</h2>
+<table>
+<thead><tr><th>観点</th><th>対策</th></tr></thead>
+<tbody>
+<tr><td>認証</td><td>既存 <code>StoreSession</code> cookie を必須化（middleware で弾く）</td></tr>
+<tr><td>店舗 ID 改ざん</td><td>URL の <code>storeId</code> とセッションの <code>storeId</code> を必ず突合、不一致は 403</td></tr>
+<tr><td>ログ</td><td><code>CsvExportLog</code>（新設）に <code>storeId / fileType / yearMonth / startDate / endDate / rowCount / requestedAt / requestedBy</code> を保存（<strong>要確認</strong>：監査要件があるか）</td></tr>
+<tr><td>PII</td><td>BFA の経費メモに個人名が混入する可能性あり。<strong>要確認</strong>：個人情報配慮が必要か</td></tr>
+</tbody>
+</table>
+
+<h2>2.12 既存「CSV 入力」処理との関係</h2>
+<p>既存：</p>
+<pre><code>lib/csv/
+  ├ airregiParser.ts
+  ├ mapper.ts
+  ├ parser.ts
+  ├ transformer.ts
+  └ validator.ts
+</code></pre>
+<p>新設：</p>
+<pre><code>lib/csv/
+  ├ exporters/
+  │   ├ buildCsv.ts          ← 共通ヘルパー（BOM/CRLF/エスケープ）
+  │   ├ exportSales.ts       ← 売上明細
+  │   ├ exportExpenses.ts    ← 経費明細
+  │   ├ exportMonthly.ts     ← 月次集計
+  │   ├ validateRange.ts     ← 期間バリデーション
+  │   └ formatters.ts        ← 数値・日付・真偽値の整形
+  └ （既存 parser 系はそのまま）
+</code></pre>
+
+<h2>2.13 UI 実装</h2>
+<table>
+<thead><tr><th>ファイル（想定）</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td><code>components/export/CsvExportButton.tsx</code></td><td>ヘッダ右上のボタン</td></tr>
+<tr><td><code>components/export/CsvExportModal.tsx</code></td><td>モーダル本体（種別 / 期間 / 推計）</td></tr>
+<tr><td><code>lib/hooks/useCsvExport.ts</code></td><td><code>fetch</code> → Blob → <code>URL.createObjectURL</code> → <code>&lt;a download&gt;</code> クリック</td></tr>
+<tr><td>ダッシュボード共通レイアウト</td><td>ボタンを配置（要確認：BFA 用のレイアウトファイル位置）</td></tr>
+</tbody>
+</table>
+<p>ダウンロードは <code>&lt;a download&gt;</code> クリックではなく <strong><code>fetch</code> で Blob 取得 → <code>URL.createObjectURL</code></strong> で行う（エラー時にトーストを出すため）。</p>
+
+<h2>2.14 テスト観点</h2>
+<table>
+<thead><tr><th>カテゴリ</th><th>テスト項目</th></tr></thead>
+<tbody>
+<tr><td>ユニット</td><td><code>buildCsv</code> のエスケープ（カンマ・改行・引用符を含む文字列）</td></tr>
+<tr><td>ユニット</td><td><code>validateRange</code> の境界値（同日 / 1 年丁度 / 1 年 + 1 日）</td></tr>
+<tr><td>ユニット</td><td>営業日付計算（cutoffHour=5 で深夜 4:59 が前日扱い）</td></tr>
+<tr><td>統合</td><td>経費明細 API：vendor が NULL の行が空文字で出る</td></tr>
+<tr><td>統合</td><td>月次集計：ダッシュボード表示値と CSV 値が完全一致</td></tr>
+<tr><td>E2E</td><td>ボタン → モーダル → ダウンロード → Excel 文字化けなし（macOS Numbers / Windows Excel 両方）</td></tr>
+<tr><td>手動</td><td>BOM の有無を <code>hexdump</code> で確認</td></tr>
+</tbody>
+</table>
+
+<h2>2.15 工数見積もり</h2>
+<table>
+<thead><tr><th>項目</th><th>工数</th></tr></thead>
+<tbody>
+<tr><td>API ルート × 3</td><td>0.5 人日</td></tr>
+<tr><td>共通 exporter / formatter</td><td>0.3 人日</td></tr>
+<tr><td>UI（ボタン + モーダル + hook）</td><td>0.4 人日</td></tr>
+<tr><td>月次集計の計算ロジック切り出し</td><td>0.5 人日</td></tr>
+<tr><td>エラーコード追加・バリデーション</td><td>0.1 人日</td></tr>
+<tr><td>テスト（ユニット + 手動 Excel 確認）</td><td>0.3 人日</td></tr>
+<tr><td>ドキュメント更新</td><td>0.1 人日</td></tr>
+<tr><td><strong>合計</strong></td><td><strong>約 2.2 人日（バッファ込み 3 人日）</strong></td></tr>
+</tbody>
+</table>
+
+<hr>
+
+<h1>Part 3: 5/16 MTG での回答案</h1>
+
+<h2>3.1 1 段落サマリ（石川氏向け）</h2>
+<blockquote>
+売上明細・経費明細・月次集計の 3 種類とも、CSV ダウンロード機能としてご提供可能です。現状の Dashboard では CSV 出力機能は未実装のため新規開発になりますが、データはすべて DB に揃っているため、3 種類同時実装でも <strong>約 3 人日（バッファ込み）</strong> で完了見込みです。文字コードは UTF-8 BOM 付き、Excel でそのまま開ける形式で出力します。経費の取引先名や費目グループも JOIN して列に含めます。月次集計はダッシュボード画面と完全に同じ数字が出るよう、計算ロジックを共通化します。
+</blockquote>
+
+<h2>3.2 実装フェーズ提案</h2>
+<table>
+<thead><tr><th>Phase</th><th>内容</th><th>期間</th><th>価値</th></tr></thead>
+<tbody>
+<tr><td><strong>Phase 1</strong></td><td>経費明細 CSV（先行）</td><td>0.8 人日</td><td>石川氏が一番求めていそうな費目別の確認・税理士提出にすぐ使える</td></tr>
+<tr><td><strong>Phase 2</strong></td><td>売上明細 CSV</td><td>0.7 人日</td><td>会計レベル分析・他ツールとの突合</td></tr>
+<tr><td><strong>Phase 3</strong></td><td>月次集計 CSV</td><td>1.0 人日</td><td>PL サマリの月次共有、計算ロジック切り出しが必要なため最後</td></tr>
+<tr><td><strong>横断</strong></td><td>UI モーダル・共通 exporter・エラーコード</td><td>0.5 人日</td><td>Phase 1 と同時着手</td></tr>
+</tbody>
+</table>
+<p><strong>推奨</strong>：Phase 1 + 横断 を 5/22 までに先行リリース、Phase 2-3 を 5/30 までに追加リリース。</p>
+
+<h2>3.3 5/16 MTG で確認したい論点</h2>
+<table>
+<thead><tr><th>#</th><th>論点</th><th>理由</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>売上明細の「メモ欄」とは具体的に何のデータか</td><td><code>SalesData</code> 自体にメモ列なし。<code>SalesItem</code> の備考か、別データ（予約システム）かを確認</td></tr>
+<tr><td>2</td><td>月次集計の F/L 内訳の粒度</td><td>「食材費・人件費」の 2 区分で十分か、もっと細かい費目別が欲しいか</td></tr>
+<tr><td>3</td><td>監査ログの要否</td><td>誰がいつ落としたかの履歴を残すか</td></tr>
+<tr><td>4</td><td>経費メモの個人情報</td><td>スタッフ名など個人情報が混入していないか確認</td></tr>
+<tr><td>5</td><td>ヘッダー言語（日本語 / 英語）</td><td>システム連携先で英語ヘッダ希望があるか</td></tr>
+<tr><td>6</td><td>推計値の出力定義</td><td><code>expenseType=ESTIMATED</code> というスキーマ値の運用が確定済みか</td></tr>
+<tr><td>7</td><td>任意日付範囲の利用シーン</td><td>「単月だけで十分」なら範囲モードは不要、工数 -0.3 人日</td></tr>
+</tbody>
+</table>
+
+<hr>
+
+<h2>付録 A: 参照ファイル</h2>
+<table>
+<thead><tr><th>ファイル</th><th>用途</th></tr></thead>
+<tbody>
+<tr><td><code>/Users/rikutanaka/RestaurantAILab/Dashboard/prisma/schema.prisma</code></td><td>データモデル</td></tr>
+<tr><td><code>/Users/rikutanaka/RestaurantAILab/Dashboard/app/api/pl/daily-expenses/route.ts</code></td><td>経費 API 既存実装</td></tr>
+<tr><td><code>/Users/rikutanaka/RestaurantAILab/Dashboard/app/api/pl/dashboard/route.ts</code></td><td>月次集計の計算ロジック</td></tr>
+<tr><td><code>/Users/rikutanaka/RestaurantAILab/Dashboard/app/store/[storeId]/pl/daily/page.tsx</code></td><td>経費 UI</td></tr>
+<tr><td><code>/Users/rikutanaka/RestaurantAILab/Dashboard/lib/db/repositories/plDailyRepository.ts</code></td><td>経費リポジトリ</td></tr>
+<tr><td><code>/Users/rikutanaka/RestaurantAILab/Dashboard/lib/csv/</code></td><td>既存 CSV 入力処理（参考）</td></tr>
+<tr><td><code>/Users/rikutanaka/RestaurantAILab/Dashboard/config/constants.ts</code></td><td>エラーコード追加先</td></tr>
+<tr><td><code>/Users/rikutanaka/RestaurantAILab/Dashboard/lib/utils/businessDate.ts</code></td><td>営業日付計算</td></tr>
+</tbody>
+</table>
+
+<h2>付録 B: 用語</h2>
+<table>
+<thead><tr><th>用語</th><th>定義</th></tr></thead>
+<tbody>
+<tr><td>営業日付</td><td><code>entryAt</code> を <code>cutoffHour</code> で前日にシフトした日付。<code>businessDate.ts</code> 参照</td></tr>
+<tr><td>FL</td><td>食材費 (Food) + 人件費 (Labor)。<code>PlExpenseCategory.isFLCost</code> で判別</td></tr>
+<tr><td>推計値</td><td><code>expenseType=ESTIMATED</code> の経費（要確認：定義の確定状況）</td></tr>
+<tr><td>BOM</td><td>UTF-8 の Byte Order Mark。Excel for Windows 文字化け回避</td></tr>
+</tbody>
+</table>
+
+</body>
+</html>

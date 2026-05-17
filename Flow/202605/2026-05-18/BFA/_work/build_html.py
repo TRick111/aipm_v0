@@ -87,10 +87,14 @@ slides.append({
             ("前月比", diff_pct(m04["customers"], m03["customers"]) if m03 else "—"),
             ("前年同月比", diff_pct(m04["customers"], m04_py["customers"]) if m04_py else "—"),
         ]},
-        {"label": "客単価", "value": yen(m04["kyakutanka"]), "comp": [
+        {"label": "客単価（ボトル除く）", "value": yen(m04["kyakutanka"]), "comp": [
             ("前月比", diff_pct(m04["kyakutanka"], m03["kyakutanka"]) if m03 else "—"),
             ("前年同月比", diff_pct(m04["kyakutanka"], m04_py["kyakutanka"]) if m04_py else "—"),
-        ], "note": "（売上−ボトル）÷客数"},
+        ], "note": "経営判断用 ／ （売上−ボトル）÷客数"},
+        {"label": "客単価（全部込み）", "value": yen(m04["kyakutanka_with_bottle"]), "comp": [
+            ("前月比", diff_pct(m04["kyakutanka_with_bottle"], m03["kyakutanka_with_bottle"]) if m03 else "—"),
+            ("前年同月比", diff_pct(m04["kyakutanka_with_bottle"], m04_py["kyakutanka_with_bottle"]) if m04_py else "—"),
+        ], "note": "エアメイト/エアレジ比較用 ／ 売上÷客数"},
         {"label": "営業日数", "value": f"{m04['business_days']}日", "comp": [
             ("前月", f"{m03['business_days']}日" if m03 else "—"),
             ("前年同月", f"{m04_py['business_days']}日" if m04_py else "—"),
@@ -125,8 +129,9 @@ slides.append({
     "title": "客数推移（直近6ヶ月）",
     "x_label": "月",
     "y_label": "客数（人）",
+    "unit": "人",
     "series": [
-        {"name": "客数", "color": "#3B82F6", "data": [(m, k["customers"]) for m, k in trend_data]},
+        {"name": "月次客数（人）", "color": "#3B82F6", "data": [(m, k["customers"]) for m, k in trend_data]},
     ],
     "highlight_last": True,
     "annotation": f"当月 {m04['customers']}人",
@@ -137,13 +142,16 @@ slides.append({
     "type": "line_chart",
     "title": "客単価推移（直近6ヶ月）",
     "x_label": "月",
-    "y_label": "客単価（円・ボトル除く）",
+    "y_label": "客単価（円）",
     "series": [
-        {"name": "客単価（ボトル除く）", "color": "#3B82F6", "data": [(m, k["kyakutanka"]) for m, k in trend_data]},
+        {"name": "客単価（ボトル除く・経営判断用）", "color": "#3B82F6", "dash": False,
+         "data": [(m, k["kyakutanka"]) for m, k in trend_data]},
+        {"name": "客単価（全部込み・エアメイト比較用）", "color": "#F97316", "dash": True,
+         "data": [(m, k["kyakutanka_with_bottle"]) for m, k in trend_data]},
     ],
     "highlight_last": True,
-    "annotation": f"当月 {yen(m04['kyakutanka'])}",
-    "caption": "客単価は3月のピーク（¥5,599）から4月は¥4,941へ低下。コース・イベント比率が下がった可能性。",
+    "annotation": f"当月 ボトル除く{yen(m04['kyakutanka'])} / 全部込み{yen(m04['kyakutanka_with_bottle'])}",
+    "caption": "客単価は3月のピーク（¥5,599）から4月は¥4,941へ低下。コース・イベント比率が下がった可能性。全部込みは¥5,373（ボトル販売により+¥432）。",
 })
 
 # ───────────────────────────────────────────────
@@ -161,8 +169,11 @@ slides.append({
          diff_pct(m04["sales_excl_bottle"], m04_py["sales_excl_bottle"]) if m04_py else "—"],
         ["客数", f"{m04['customers']:,}人", f"{m04_py['customers']:,}人" if m04_py else "—",
          diff_pct(m04["customers"], m04_py["customers"]) if m04_py else "—"],
-        ["客単価（ボトル除く）", yen(m04["kyakutanka"]), yen(m04_py["kyakutanka"]) if m04_py else "—",
+        ["客単価（ボトル除く・経営判断用）", yen(m04["kyakutanka"]), yen(m04_py["kyakutanka"]) if m04_py else "—",
          diff_pct(m04["kyakutanka"], m04_py["kyakutanka"]) if m04_py else "—"],
+        ["客単価（全部込み・エアメイト比較用）", yen(m04["kyakutanka_with_bottle"]),
+         yen(m04_py["kyakutanka_with_bottle"]) if m04_py else "—",
+         diff_pct(m04["kyakutanka_with_bottle"], m04_py["kyakutanka_with_bottle"]) if m04_py else "—"],
         ["営業日数", f"{m04['business_days']}日", f"{m04_py['business_days']}日" if m04_py else "—", "—"],
         ["日平均売上（ボトル除く）", yen(m04["daily_avg_sales"]),
          yen(m04_py["daily_avg_sales"]) if m04_py else "—",
@@ -278,54 +289,98 @@ slides.append({
 })
 
 # ───────────────────────────────────────────────
-# Slide 11: 【P1-5/6】コース構成比
+# Slide 11: 【P1-5】コース構成比
 # ───────────────────────────────────────────────
 p15 = D["p1_5_course"]
 p16 = D["p1_6_clp_course"]
 slides.append({
     "type": "callout_table",
-    "title": "商品構造②：コース構成比",
-    "subtitle": "カテゴリ「コース&セット」全体 ／ うち「その他CLPコース」の内訳併記",
+    "title": "商品構造②：コース構成比（P1-5）",
+    "subtitle": "カテゴリ「コース&セット」全体 ／ うち「その他CLPコース」(P1-6) の内訳併記",
     "big": {
         "label": "コース全体 4月売上",
         "value": yen(p15["sales"]),
-        "sub": f"会計件数 {p15['accounts']}件 / 客数 {p15['customers']}人 / 構成比 {p15['share_sales']:.1f}%",
+        "sub": f"会計件数 {p15['accounts']}件 / 入客数 {p15['customers']}人 / 売上構成比 {p15['share_sales']:.1f}% / 客数構成比 {p15['share_customers']:.1f}%",
     },
-    "headers": ["区分", "会計件数", "客数", "売上", "構成比"],
+    "headers": ["区分", "会計件数", "入客数", "売上", "売上構成比"],
     "rows": [
         ["コース全体", f"{p15['accounts']}件", f"{p15['customers']}人", yen(p15["sales"]), pctv(p15["share_sales"])],
-        ["うち その他CLPコース", f"{p16['accounts']}件", f"{p16['customers']}人", yen(p16["sales"]), pctv(p16["share_sales"])],
+        ["うち その他CLPコース（P1-6）", f"{p16['accounts']}件", f"{p16['customers']}人", yen(p16["sales"]), pctv(p16["share_sales"])],
         ["うち その他のコース", f"{p15['accounts']-p16['accounts']}件",
          f"{p15['customers']-p16['customers']}人",
          yen(p15["sales"]-p16["sales"]),
          pctv(p15["share_sales"]-p16["share_sales"])],
     ],
-    "caption": f"コース全体の構成比は {p15['share_sales']:.1f}%。うち約半分（{p16['sales']/p15['sales']*100:.0f}%）が「その他CLPコース」。",
+    "caption": f"コース全体の構成比は {p15['share_sales']:.1f}%。うち約半分（売上ベースで{p16['sales']/p15['sales']*100:.0f}%）が「その他CLPコース」。詳細は次スライド参照。",
 })
 
 # ───────────────────────────────────────────────
-# Slide 12-13: フード／ドリンク 出数ランキング
+# Slide 11.5: 【P1-6】その他CLPコース（独立スライド・修正2）
+# ───────────────────────────────────────────────
+non_clp_course_sales = m04["sales_total"] - p16["sales"]
+non_clp_course_customers = m04["customers"] - p16["customers"]
+slides.append({
+    "type": "three_set",
+    "title": "商品構造③：その他CLPコース（P1-6）",
+    "subtitle": "メニュー名「その他CLPコース」完全一致 ／ P1-5「コース&セット」の内訳",
+    "left_label": "その他CLPコース",
+    "right_label": "その他全会計",
+    "left": {
+        "accounts": p16["accounts"],
+        "customers": p16["customers"],
+        "sales": p16["sales"],
+        "share_sales": p16["share_sales"],
+        "share_customers": p16["share_customers"],
+    },
+    "right": {
+        "accounts": 159 - p16["accounts"],
+        "customers": non_clp_course_customers,
+        "sales": non_clp_course_sales,
+        "share_sales": 100 - p16["share_sales"],
+        "share_customers": 100 - p16["share_customers"],
+    },
+    "caption": f"その他CLPコースは{p16['accounts']}件・{p16['customers']}人で売上¥{p16['sales']:,.0f}（{p16['share_sales']:.1f}%）。客単価 ¥{p16['sales']/p16['customers']:,.0f}/人と高単価利用。",
+})
+
+# ───────────────────────────────────────────────
+# Slide 12-13: フード／ドリンク 出数ランキング（修正1: 入客数 + 修正4: 平均販売価格）
 # ───────────────────────────────────────────────
 food_qty = D["p1_7_food_qty"][:15]
 drink_qty = D["p1_7_drink_qty"][:15]
+
+def fmt_price_cell(r):
+    """平均販売価格セル: 登録価格と乖離 ±5%以上なら★マーク"""
+    star = "★" if r["price_star"] else ""
+    return f'{star}{yen(r["avg_price"])}'
+
+def rank_rows(items):
+    return [[str(i+1), r["menu_name"], f"{r['qty']:.0f}", f"{r['customers']}人",
+             yen(r["sales"]), fmt_price_cell(r), pctv(r["share"])]
+            for i, r in enumerate(items)]
+
+def rank_rows_sales(items):
+    return [[str(i+1), r["menu_name"], yen(r["sales"]), f"{r['qty']:.0f}", f"{r['customers']}人",
+             fmt_price_cell(r), pctv(r["share"])]
+            for i, r in enumerate(items)]
+
+RANK_CAPTION_NOTE = "★ = 平均販売価格と登録価格の乖離が±5%以上（ダブル販売・特別価格等の存在を示唆）"
+
 slides.append({
     "type": "rank_table",
     "title": "フード 出数ランキング（上位15）",
-    "subtitle": "カテゴリ分類: food / 数量ベース",
-    "headers": ["順位", "メニュー名", "出数", "出現会計", "売上", "構成比（数量）"],
-    "rows": [[str(i+1), r["menu_name"], f"{r['qty']:.0f}", f"{r['tx']:.0f}件", yen(r["sales"]), pctv(r["share"])]
-             for i, r in enumerate(food_qty)],
-    "caption": "ワカモレチップス・ミントのジェノベーゼ・ボロネーゼラザニアがフードの出数TOP3。",
+    "subtitle": "カテゴリ分類: food / 数量ベース ／ 入客数=そのメニューを含む会計の人数合算",
+    "headers": ["順位", "メニュー名", "出数", "入客数", "売上", "平均販売価格", "構成比（数量）"],
+    "rows": rank_rows(food_qty),
+    "caption": f"ワカモレチップス（32食/83人）・ミントのジェノベーゼ・ボロネーゼラザニアがフードの出数TOP3。{RANK_CAPTION_NOTE}",
 })
 
 slides.append({
     "type": "rank_table",
     "title": "ドリンク 出数ランキング（上位15）",
-    "subtitle": "カテゴリ分類: drink / 数量ベース",
-    "headers": ["順位", "メニュー名", "出数", "出現会計", "売上", "構成比（数量）"],
-    "rows": [[str(i+1), r["menu_name"], f"{r['qty']:.0f}", f"{r['tx']:.0f}件", yen(r["sales"]), pctv(r["share"])]
-             for i, r in enumerate(drink_qty)],
-    "caption": "ハウスハイボール（168杯）が圧倒的1位。森のジントニックがNEW CLASSIC COCKTAILのトップ。",
+    "subtitle": "カテゴリ分類: drink / 数量ベース ／ 入客数=そのメニューを含む会計の人数合算",
+    "headers": ["順位", "メニュー名", "出数", "入客数", "売上", "平均販売価格", "構成比（数量）"],
+    "rows": rank_rows(drink_qty),
+    "caption": f"ハウスハイボール（168杯/111人）が圧倒的1位。森のジントニックがNEW CLASSIC COCKTAILのトップ（87杯/116人）。{RANK_CAPTION_NOTE}",
 })
 
 # ───────────────────────────────────────────────
@@ -336,21 +391,19 @@ drink_sales = D["p1_8_drink_sales"][:15]
 slides.append({
     "type": "rank_table",
     "title": "フード 売上ランキング（上位15）",
-    "subtitle": "カテゴリ分類: food / 売上ベース",
-    "headers": ["順位", "メニュー名", "売上", "出数", "構成比（売上）"],
-    "rows": [[str(i+1), r["menu_name"], yen(r["sales"]), f"{r['qty']:.0f}", pctv(r["share"])]
-             for i, r in enumerate(food_sales)],
-    "caption": "フード売上TOP3 は ワカモレチップス／ミントのジェノベーゼ／ボロネーゼラザニア（出数TOP3と一致）。",
+    "subtitle": "カテゴリ分類: food / 売上ベース ／ 入客数=そのメニューを含む会計の人数合算",
+    "headers": ["順位", "メニュー名", "売上", "出数", "入客数", "平均販売価格", "構成比（売上）"],
+    "rows": rank_rows_sales(food_sales),
+    "caption": f"フード売上TOP3 は ワカモレチップス／ミントのジェノベーゼ／ボロネーゼラザニア（出数TOP3と一致）。{RANK_CAPTION_NOTE}",
 })
 
 slides.append({
     "type": "rank_table",
     "title": "ドリンク 売上ランキング（上位15）",
-    "subtitle": "カテゴリ分類: drink / 売上ベース",
-    "headers": ["順位", "メニュー名", "売上", "出数", "構成比（売上）"],
-    "rows": [[str(i+1), r["menu_name"], yen(r["sales"]), f"{r['qty']:.0f}", pctv(r["share"])]
-             for i, r in enumerate(drink_sales)],
-    "caption": "ドリンク売上1位はハウスハイボール（¥201,600 / 16.7%）。森のジントニックが2位。",
+    "subtitle": "カテゴリ分類: drink / 売上ベース ／ 入客数=そのメニューを含む会計の人数合算",
+    "headers": ["順位", "メニュー名", "売上", "出数", "入客数", "平均販売価格", "構成比（売上）"],
+    "rows": rank_rows_sales(drink_sales),
+    "caption": f"ドリンク売上1位はハウスハイボール（¥201,600 / 16.7%）。森のジントニックが2位。{RANK_CAPTION_NOTE}",
 })
 
 # ───────────────────────────────────────────────
@@ -674,10 +727,10 @@ document.querySelectorAll('[data-bar]').forEach(el=>{
 // Draw line charts
 document.querySelectorAll('[data-line]').forEach(el=>{
   const cfg = JSON.parse(el.getAttribute('data-line'));
-  const m = {top:30,right:30,bottom:50,left:80};
+  const m = {top:60,right:30,bottom:50,left:80};
   const w = el.clientWidth - m.left - m.right;
-  const h = 280 - m.top - m.bottom;
-  const svg = d3.select(el).append('svg').attr('width', el.clientWidth).attr('height', 280);
+  const h = 300 - m.top - m.bottom;
+  const svg = d3.select(el).append('svg').attr('width', el.clientWidth).attr('height', 300);
   const g = svg.append('g').attr('transform','translate('+m.left+','+m.top+')');
   const months = cfg.series[0].data.map(d=>d[0]);
   const allVals = cfg.series.flatMap(s=>s.data.map(d=>d[1]));
@@ -687,27 +740,42 @@ document.querySelectorAll('[data-line]').forEach(el=>{
   g.append('g').selectAll('line').data(y.ticks(5)).join('line')
     .attr('x1',0).attr('x2',w).attr('y1',d=>y(d)).attr('y2',d=>y(d))
     .attr('stroke','#E2E8F0').attr('stroke-dasharray','3,3');
-  cfg.series.forEach(s=>{
+  cfg.series.forEach((s, idx)=>{
     const line = d3.line().x(d=>x(d[0])).y(d=>y(d[1]));
-    g.append('path').attr('d',line(s.data)).attr('fill','none').attr('stroke',s.color).attr('stroke-width',3);
-    g.selectAll('circle.'+s.name.replace(/\\W/g,'_')).data(s.data).join('circle')
+    const path = g.append('path').attr('d',line(s.data)).attr('fill','none')
+      .attr('stroke',s.color).attr('stroke-width',3);
+    if (s.dash) path.attr('stroke-dasharray','8,4');
+    g.selectAll('circle.s'+idx).data(s.data).join('circle').attr('class','s'+idx)
       .attr('cx',d=>x(d[0])).attr('cy',d=>y(d[1]))
       .attr('r',(d,i)=>(cfg.highlight_last && i===s.data.length-1) ? 8 : 4)
       .attr('fill',s.color);
   });
   g.append('g').attr('transform','translate(0,'+h+')').call(d3.axisBottom(x)).selectAll('text').attr('font-size','12px');
-  g.append('g').call(d3.axisLeft(y).ticks(5).tickFormat(d=>'¥'+d3.format(',.0f')(d))).selectAll('text').attr('font-size','10px');
-  // legend
-  addLegend(svg, cfg.series.map(s=>({label:s.name,color:s.color})), m.left, 6);
+  const unit = cfg.unit || '円';
+  const tickFmt = d=> (unit==='円' ? '¥' : '') + d3.format(',.0f')(d) + (unit!=='円' ? unit : '');
+  g.append('g').call(d3.axisLeft(y).ticks(5).tickFormat(tickFmt)).selectAll('text').attr('font-size','10px');
+  // legend (top-left, with dash hint for dashed series)
+  const lg = svg.append('g').attr('class','legend').attr('transform','translate('+m.left+',8)');
+  cfg.series.forEach((s, i)=>{
+    const row = lg.append('g').attr('transform','translate('+(i*340)+',0)');
+    row.append('line').attr('x1',0).attr('x2',24).attr('y1',8).attr('y2',8)
+      .attr('stroke',s.color).attr('stroke-width',3)
+      .attr('stroke-dasharray', s.dash ? '6,3' : null);
+    row.append('text').attr('x',30).attr('y',12).attr('font-size','12px').attr('font-weight','700').attr('fill','#1E293B').text(s.name);
+  });
+  // unit hint legend at top-right
+  svg.append('text').attr('x', el.clientWidth - 12).attr('y', 14)
+    .attr('text-anchor','end').attr('font-size','11px').attr('fill','#64748B')
+    .text('単位: ' + (cfg.unit || '円') + ' / 出典: AirRegi会計明細');
   // annotation
   if(cfg.annotation){
     const lastSerie = cfg.series[0];
     const last = lastSerie.data[lastSerie.data.length-1];
-    const xPos = x(last[0]) + m.left - 200;
+    const xPos = x(last[0]) + m.left - 320;
     const yPos = y(last[1]) + m.top - 6;
     const an = svg.append('g');
     const t = an.append('text').attr('x',xPos).attr('y',yPos)
-      .attr('font-size','16px').attr('font-weight','800').attr('fill','#C2410C').text(cfg.annotation);
+      .attr('font-size','13px').attr('font-weight','800').attr('fill','#C2410C').text(cfg.annotation);
     const bb = t.node().getBBox();
     an.insert('rect','text').attr('x',bb.x-8).attr('y',bb.y-4).attr('width',bb.width+16).attr('height',bb.height+8)
       .attr('rx',4).attr('fill','#FFF7ED').attr('stroke','#F97316').attr('stroke-width',1.5);
@@ -770,8 +838,15 @@ def render_slide(idx, s):
 
     elif s["type"] == "line_chart":
         import json as _json
-        cfg = _json.dumps({"series": s["series"], "highlight_last": s.get("highlight_last", False), "annotation": s.get("annotation","")}, ensure_ascii=False)
-        body = f'<div data-line=\'{esc(cfg)}\' style="height:300px"></div>' + caption
+        # ensure each series has 'dash' field (default False)
+        series = [{**ser, "dash": ser.get("dash", False)} for ser in s["series"]]
+        cfg = _json.dumps({
+            "series": series,
+            "highlight_last": s.get("highlight_last", False),
+            "annotation": s.get("annotation",""),
+            "unit": s.get("unit", "円"),
+        }, ensure_ascii=False)
+        body = f'<div data-line=\'{esc(cfg)}\' style="height:320px"></div>' + caption
 
     elif s["type"] == "comparison_table":
         ths = "".join(f'<th>{esc(h)}</th>' for h in s["headers"])

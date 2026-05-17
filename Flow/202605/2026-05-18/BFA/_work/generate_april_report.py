@@ -401,13 +401,50 @@ apr_rows = apr_rows.copy()
 apr_rows["class"] = apr_rows["category1"].apply(classify)
 
 def rank_by(cls, by):
-    sub = apr_rows[apr_rows["class"] == cls]
+    """
+    Returns ranking list with:
+      - qty: 出数（注文数量合算）
+      - customers: 入客数（そのメニューを含む会計の人数合算）
+      - sales: 売上
+      - share: 構成比（qty or sales）
+      - avg_price: 平均販売価格（売上 ÷ 出数）
+      - reg_price: 登録価格（同メニューの最頻 price）
+      - price_dev: 平均販売価格と登録価格の乖離率（%）
+      - price_star: True if |dev| >= 5%
+    """
+    sub = apr_rows[apr_rows["class"] == cls].copy()
+    # acct人数を menu に紐付ける（メニュー含む会計の customer_count を合算）
+    # 同じ会計に同メニューが複数明細あっても会計人数は1回しか数えない
+    menu_to_accts = sub.groupby("menu_name")["account_id"].apply(lambda s: list(set(s))).reset_index()
+    menu_customers = {}
+    acct_cust_map = dict(zip(apr_acct["account_id"], apr_acct["customer_count"]))
+    for _, row in menu_to_accts.iterrows():
+        menu_customers[row["menu_name"]] = sum(int(acct_cust_map.get(aid, 0)) for aid in row["account_id"])
+    # 登録価格 = 同メニューの最頻 price
+    reg_price_map = sub.groupby("menu_name")["price"].apply(lambda s: s.mode().iloc[0] if not s.mode().empty else s.iloc[0]).to_dict()
+
+    agg = sub.groupby("menu_name").agg(
+        qty=("quantity","sum"),
+        sales=("subtotal","sum"),
+        tx=("account_id","nunique"),
+    ).reset_index()
+    agg["customers"] = agg["menu_name"].map(menu_customers).fillna(0).astype(int)
+    agg["avg_price"] = (agg["sales"] / agg["qty"]).round(0)
+    agg["reg_price"] = agg["menu_name"].map(reg_price_map).fillna(0).astype(int)
+    def dev(r):
+        if r["reg_price"] == 0: return 0.0
+        return (r["avg_price"] - r["reg_price"]) / r["reg_price"] * 100
+    agg["price_dev"] = agg.apply(dev, axis=1)
+    agg["price_star"] = agg["price_dev"].abs() >= 5
+
     if by == "qty":
-        agg = sub.groupby("menu_name").agg(qty=("quantity","sum"), sales=("subtotal","sum"), tx=("account_id","nunique")).reset_index().sort_values("qty", ascending=False)
+        agg = agg.sort_values("qty", ascending=False)
+        total = sub["quantity"].sum()
+        agg["share"] = agg["qty"] / total * 100
     else:
-        agg = sub.groupby("menu_name").agg(qty=("quantity","sum"), sales=("subtotal","sum"), tx=("account_id","nunique")).reset_index().sort_values("sales", ascending=False)
-    total = sub["quantity"].sum() if by == "qty" else sub["subtotal"].sum()
-    agg["share"] = (agg["qty"] / total * 100) if by == "qty" else (agg["sales"] / total * 100)
+        agg = agg.sort_values("sales", ascending=False)
+        total = sub["subtotal"].sum()
+        agg["share"] = agg["sales"] / total * 100
     return agg.head(15).to_dict("records")  # TOP15 to fit slides
 
 p1_7_food = rank_by("food", "qty")

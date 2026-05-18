@@ -180,44 +180,26 @@ def load_provided_csv(path, target_month):
 # Monthly KPI
 # ============================================
 def calc_monthly_kpi(hdr, det):
-    """月次KPI（業務日基準 ／ 朝6時境界）
-
-    [2026-05-18 修正 / 組数+1問題 対応]
-    - 組数(accounts) / 客数(customers) は ¥0会計（No charge全額無料）と
-      赤伝（合計<¥0）を除外して「合計>¥0 の会計」だけをカウントする。
-      → エアメイト集計と一致させるため。
-    - 売上総額(sales_total) は従来通り全件合算（赤伝は売上から正しく引かれる）。
-    - ボトル系・客単価分母も「合計>0」フィルタを通す。
-    """
+    """月次KPI（業務日基準 ／ 朝6時境界）"""
     bottle_det = det[det["カテゴリー名"] == "ボトル購入"]
     bottle_accts = set(bottle_det["取引No"].unique())
     bottle_hdr = hdr[hdr["取引No"].isin(bottle_accts)]
     bottle_sales = float(bottle_hdr["合計"].sum())
-    bottle_hdr_paid = bottle_hdr[bottle_hdr["合計"] > 0]
-    bottle_customers = int(bottle_hdr_paid["人数"].sum())
+    bottle_customers = int(bottle_hdr["人数"].sum())
 
-    # 売上総額: 全件合算（赤伝のマイナス計上を尊重）
     total = float(hdr["合計"].sum())
-
-    # 組数 / 客数: 合計>0 の会計だけ
-    hdr_paid = hdr[hdr["合計"] > 0]
-    excluded_zero = int((hdr["合計"] == 0).sum())
-    excluded_neg = int((hdr["合計"] < 0).sum())
-    customers = int(hdr_paid["人数"].sum())
-    accounts = len(hdr_paid)
+    customers = int(hdr["人数"].sum())
+    accounts = len(hdr)
     biz_days = hdr["business_date"].nunique()
     excl_bottle = total - bottle_sales
     return {
         "sales_total": total,
         "bottle_sales": bottle_sales,
-        "bottle_accounts": len(bottle_hdr_paid),
+        "bottle_accounts": len(bottle_hdr),
         "bottle_customers": bottle_customers,
         "sales_excl_bottle": excl_bottle,
         "customers": customers,
         "accounts": accounts,
-        "accounts_raw": len(hdr),
-        "accounts_excluded_zero_total": excluded_zero,
-        "accounts_excluded_negative_total": excluded_neg,
         "business_days": biz_days,
         "kyakutanka": excl_bottle / customers if customers else 0,           # 経営判断用
         "kyakutanka_with_bottle": total / customers if customers else 0,      # エアメイト比較用
@@ -243,9 +225,7 @@ def kpi_from_rawdata(rawdata_path, month_str):
     bottle_rows = sub[sub["category1"]=="ボトル購入"]
     bottle_sales = float(bottle_rows["subtotal"].sum())
     total = float(acct["total"].sum())
-    # 組数 / 客数 は合計>0 の会計だけ（組数+1問題対応 / 2026-05-18）
-    acct_paid = acct[acct["total"] > 0]
-    customers = int(acct_paid["customers"].sum())
+    customers = int(acct["customers"].sum())
     bd_unique = acct["bd"].nunique()
     excl_bottle = total - bottle_sales
     return {
@@ -253,8 +233,7 @@ def kpi_from_rawdata(rawdata_path, month_str):
         "bottle_sales": bottle_sales,
         "sales_excl_bottle": excl_bottle,
         "customers": customers,
-        "accounts": len(acct_paid),
-        "accounts_raw": len(acct),
+        "accounts": len(acct),
         "business_days": bd_unique,
         "kyakutanka": excl_bottle / customers if customers else 0,
         "kyakutanka_with_bottle": total / customers if customers else 0,
@@ -686,9 +665,9 @@ def main():
     print(f"  Bottle: ¥{kpi['bottle_sales']:,.0f} ({kpi['bottle_accounts']} accounts)")
     print(f"  Customers: {kpi['customers']}, Business days: {kpi['business_days']}")
 
-    # 3) Bottle 除外 ＋ 合計>0 フィルタ（組数+1問題対応 / 2026-05-18）
+    # 3) Bottle 除外
     bottle_ids = set(kpi["bottle_account_ids"])
-    hdr_no_bottle = hdr[(~hdr["取引No"].isin(bottle_ids)) & (hdr["合計"] > 0)].copy()
+    hdr_no_bottle = hdr[~hdr["取引No"].isin(bottle_ids)].copy()
 
     # 4) 各集計
     weekly = calc_weekly(hdr_no_bottle)

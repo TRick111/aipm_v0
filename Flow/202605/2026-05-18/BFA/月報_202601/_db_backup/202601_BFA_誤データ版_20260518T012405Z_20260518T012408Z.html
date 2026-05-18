@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>BAR FIVE Arrows 月次営業報告 — 2026-01 (v2draft)</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+  /* v1.2 イテレーション3: 縦キャンバスを 720→840px に拡張（はみ出し解消） */
+  @page { size: 1280px 840px; margin: 0; }
+  @media print {
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+    body { margin: 0; padding: 0; background: #fff; width: 1280px; }
+    .slide { page-break-after: always; page-break-inside: avoid; break-after: page; break-inside: avoid;
+             box-shadow: none; margin: 0; width: 1280px; height: 840px; }
+    .slide:last-child { page-break-after: auto; }
+  }
+  @media screen {
+    body { background: #E2E8F0; font-family: 'Helvetica Neue', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif; }
+    .slide { margin: 20px auto; box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
+  }
+  /* ★ v1.2 イテレーション4: ダークグリーン基調のカラーパレット
+     - メイン #1B4D3E (深緑) / アクセント #C9A961 (落ち着いたゴールド)
+     - 強調プラス #2D6B4F / 強調マイナス #8B3A3A (暗赤茶) / 中立 #6B7280 */
+  .slide { width: 1280px; height: 840px; position: relative; overflow: hidden; background: #FBFAF5;
+           font-family: 'Helvetica Neue', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif; color: #1F2A28; }
+  .slide-header { background: #1B4D3E; color: #F5F2E8; padding: 14px 32px; display: flex;
+                  flex-direction: column; gap: 3px; border-bottom: 3px solid #C9A961; }
+  .slide-header .h-title { font-size: 26px; font-weight: 800; }
+  .slide-header .h-sub { font-size: 13px; font-weight: 400; opacity: 0.85; }
+  /* メッセージ帯 — 動詞のある結論一文（ダークグリーン濃淡） */
+  .slide-message { background: #EFEFE6; border-left: 6px solid #1B4D3E;
+                   padding: 12px 20px; margin: 0;
+                   font-size: 17px; font-weight: 700; color: #1B4D3E; line-height: 1.45; }
+  /* 分類条件帯 — このページの集計条件を箇条書きで明示（v1.2 イテレーション5 厳格化） */
+  .slide-classification { background: #F0EEE2; border-left: 4px solid #6B8E7F;
+                          padding: 8px 18px; margin: 0;
+                          font-size: 12px; color: #2D5F4E; line-height: 1.55; }
+  .slide-classification .label { font-weight: 800; color: #1B4D3E; display: block; margin-bottom: 2px; }
+  .slide-classification ul { margin: 0; padding-left: 18px; }
+  .slide-classification li { margin: 1px 0; }
+  .slide-body { padding: 16px 28px; height: calc(840px - 110px - 50px - 40px - 50px); overflow: hidden; }
+  .footer-note { position: absolute; bottom: 8px; left: 24px; right: 24px;
+                 font-size: 11px; color: #6B7280; line-height: 1.4; }
+  .caption { font-size: 12px; color: #2D5F4E; font-weight: 600; margin-top: 8px;
+             padding: 6px 10px; background: #F0EEE2; border-left: 3px solid #1B4D3E;
+             position: absolute; left: 28px; right: 28px; bottom: 34px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: #1B4D3E; color: #F5F2E8; padding: 6px 9px; text-align: left; font-weight: 700; font-size: 12px; }
+  td { padding: 5px 9px; border-bottom: 1px solid #D6D0BD; font-size: 12px; line-height: 1.3; color: #1F2A28; }
+  tr:nth-child(even) td { background: #F0EEE2; }
+  td.num { text-align: right; }
+  /* Title slide — dark green gradient */
+  .slide-title { background: linear-gradient(135deg, #1B4D3E 0%, #0F2D24 100%); color: #F5F2E8;
+                 display: flex; flex-direction: column; justify-content: center; align-items: center; }
+  .slide-title h1 { font-size: 60px; font-weight: 800; margin: 0; color: #F5F2E8; }
+  .slide-title h2 { font-size: 32px; font-weight: 400; margin: 16px 0 0 0; opacity: 0.9; color: #C9A961; }
+  .slide-title .period { font-size: 22px; margin-top: 36px; opacity: 0.85; }
+  .slide-title .note { font-size: 14px; margin-top: 18px; opacity: 0.6; }
+  /* KPI cards — dark green base */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 10px; }
+  .kpi-card { background: #FBFAF5; border-top: 4px solid #1B4D3E; padding: 10px 12px; min-height: 100px;
+              box-shadow: 0 1px 3px rgba(27,77,62,0.08); }
+  .kpi-card.bottle { border-top-color: #C9A961; }
+  .kpi-card.exclbottle { border-top-color: #2D6B4F; }
+  .kpi-card .lab { font-size: 11px; color: #2D5F4E; font-weight: 700; }
+  .kpi-card .val { font-size: 22px; font-weight: 800; color: #1B4D3E; margin-top: 4px; }
+  .kpi-card .comp { font-size: 10.5px; color: #2D5F4E; margin-top: 4px; line-height: 1.5; }
+  .kpi-card .note { font-size: 9.5px; color: #6B7280; margin-top: 3px; font-style: italic; }
+  .pos { color: #2D6B4F; font-weight: 700; }
+  .neg { color: #8B3A3A; font-weight: 700; }
+  /* Three-set with donut */
+  .three-set { display: grid; grid-template-columns: 220px 1fr 1fr; gap: 14px; align-items: start; }
+  .three-set.no-donut { grid-template-columns: 1fr 1fr; }
+  .three-set .donut-area { background: #F0EEE2; padding: 8px; border-radius: 6px; text-align: center; }
+  .three-set .donut-area .ttl { font-size: 12px; font-weight: 700; color: #1B4D3E; margin-bottom: 2px; }
+  .three-set .pane { background: #FBFAF5; padding: 14px; border-radius: 6px; border-top: 4px solid #1B4D3E;
+                     box-shadow: 0 1px 3px rgba(27,77,62,0.08); }
+  .three-set .pane.right { border-top-color: #C9A961; }
+  .three-set .pane h3 { margin: 0 0 8px 0; font-size: 16px; color: #1B4D3E; }
+  .three-set .pane .row { display: flex; justify-content: space-between; padding: 5px 0;
+                          border-bottom: 1px dashed #D6D0BD; font-size: 13px; }
+  .three-set .pane .row .v { font-weight: 800; color: #1F2A28; }
+  /* Donut chart container (for KPI ratio slides) */
+  .donut-row { display: flex; gap: 12px; align-items: center; justify-content: center;
+               background: #F0EEE2; padding: 8px; border-radius: 6px; margin-bottom: 10px; }
+  .donut-row .donut-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .donut-row .donut-item .label { font-size: 12px; font-weight: 700; color: #1B4D3E; }
+  .donut-row .donut-legend { font-size: 11px; color: #2D5F4E; }
+  .donut-row .donut-legend .sw { display: inline-block; width: 10px; height: 10px; margin-right: 4px; vertical-align: middle; }
+  /* Callout — dark green */
+  .callout-big { background: #F0EEE2; border: 2px solid #1B4D3E; padding: 18px 24px; text-align: center;
+                 margin-bottom: 14px; border-radius: 6px; }
+  .callout-big .lab { font-size: 14px; color: #1B4D3E; font-weight: 700; }
+  .callout-big .val { font-size: 46px; color: #1B4D3E; font-weight: 800; }
+  .callout-big .sub { font-size: 13px; color: #2D5F4E; margin-top: 4px; }
+  /* Bar/Line layout */
+  .chart-grid { display: grid; grid-template-columns: 3fr 2fr; gap: 14px; height: 100%; }
+  .chart-area { background: #FBFAF5; padding: 6px; }
+  .legend { display: flex; gap: 14px; margin-bottom: 6px; padding: 0 0 4px 4px; }
+  .legend .item { display: flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; color: #1B4D3E; }
+  .legend .swatch { width: 14px; height: 14px; }
+  /* Summary list */
+  .summary-list { font-size: 16px; line-height: 1.7; }
+  .summary-list li { margin-bottom: 10px; padding: 8px 12px; background: #F0EEE2; border-left: 3px solid #1B4D3E; color: #1F2A28; }
+  /* Daily reports */
+  .dr-list { display: flex; flex-direction: column; gap: 10px; }
+  .dr-item { background: #F0EEE2; padding: 10px 14px; border-left: 3px solid #1B4D3E; font-size: 12px; color: #1F2A28; }
+  .dr-item .head { font-weight: 800; color: #1B4D3E; margin-bottom: 4px; }
+</style>
+</head>
+<body>
+
+
+<div class="slide slide-title" id="slide-1">
+  <h1>BAR FIVE Arrows</h1>
+  <h2>月次営業報告</h2>
+  <p class="period">2026年1月（1/1 〜 1/31）</p>
+  <p class="note">第二稿ドラフト v2draft / 2026-05-18 作成</p>
+</div>
+
+<div class="slide" id="slide-2"><div class="slide-header"><div class="h-title">📊 月間サマリー（KPI）</div></div><div class="slide-message">⚠️ 1月の売上は¥6,128,153（前年比 —）、営業利益は【BFA】本部サポート / PLシート にデータがないため出力していません。</div><div class="slide-classification"><span class="label">分類条件 / 集計範囲</span><ul><li>集計対象: 2026/1/1 0:00 〜 1/31 23:59 の売上日時（エアレジ売上分析画面と一致）</li><li>PL系KPI（総費用／営業利益／FL率／人件費率）の出典: 1月はダッシュボードDB／過去月は【BFA】本部サポート / PLシート</li><li>FL率の分母 = 月次総売上（ボトル含む）。FL率 =（食材+ドリンク）÷ 売上</li></ul></div><div class="slide-body"><div class="kpi-grid"><div class="kpi-card"><div class="lab">💰 売上（総額）</div><div class="val">¥6,128,153</div><div class="comp"><span>前月比: <span class="pos">▲ +45.4%</span></span><br><span>前年同月比: —</span></div><div class="note">ボトル含む</div></div><div class="kpi-card bottle"><div class="lab">🍾 うちボトル購入</div><div class="val">¥0</div><div class="comp"><span>構成比: 0.0%</span><br><span>4/30 計上: ¥233,184</span><br><span>注記: 5/1朝入力分を補正</span></div></div><div class="kpi-card exclbottle"><div class="lab">💰 売上（ボトル除く）</div><div class="val">¥6,128,153</div><div class="comp"><span>前月比: <span class="pos">▲ +45.4%</span></span><br><span>前年同月比: —</span></div></div><div class="kpi-card"><div class="lab">👥 客数</div><div class="val">1,342人</div><div class="comp"><span>前月比: <span class="pos">▲ +80.9%</span></span><br><span>前年同月比: —</span></div></div><div class="kpi-card exclbottle"><div class="lab">💴 客単価（ボトル除く）</div><div class="val">¥4,566</div><div class="comp"><span>前月比: <span class="neg">▼ -19.6%</span></span><br><span>前年同月比: —</span></div><div class="note">経営判断用 ／ （売上−ボトル）÷客数</div></div><div class="kpi-card"><div class="lab">💴 客単価（全部込み）</div><div class="val">¥4,566</div><div class="comp"><span>前月比: <span class="neg">▼ -19.6%</span></span><br><span>前年同月比: —</span></div><div class="note">エアメイト/エアレジ比較用 ／ 売上÷客数</div></div><div class="kpi-card"><div class="lab">📅 営業日数</div><div class="val">26日</div><div class="comp"><span>前月: 31日</span><br><span>前年同月: —</span></div></div><div class="kpi-card"><div class="lab">📈 日平均売上</div><div class="val">¥235,698</div><div class="comp"><span>前月比: <span class="pos">▲ +73.3%</span></span><br><span>前年同月比: —</span></div><div class="note">ボトル除く</div></div><div class="kpi-card"><div class="lab">💸 総費用</div><div class="val">¥0</div><div class="comp"><span>売上比: 0.0%</span><br><span>出典: ダッシュボードDB</span></div><div class="note">9費目合計</div></div><div class="kpi-card"><div class="lab">📉 営業利益</div><div class="val">¥6,128,153</div><div class="comp"><span>売上 − 費用: —</span><br><span>出典: 売上=エアレジ／費用=ダッシュボードDB</span></div></div><div class="kpi-card"><div class="lab">📊 営業利益率</div><div class="val">+100.0%</div><div class="comp"><span>計算: 営業利益 ÷ 売上</span><br><span>評価: 黒字</span></div></div><div class="kpi-card"><div class="lab">🍴 FL率</div><div class="val">0.0%</div><div class="comp"><span>内訳: 食材+ドリンク</span><br><span>目安: 60%前後</span></div><div class="note">売上比</div></div><div class="kpi-card"><div class="lab">👷 人件費率</div><div class="val">0.0%</div><div class="comp"><span>内訳: 人件費</span><br><span>目安: 30%前後</span></div><div class="note">売上比</div></div></div></div><div class="caption">売上は前年比で減少、PLは営業利益▲34万円の赤字。FL率35%・人件費率5%は目安より低水準。</div><div class="footer-note">出典: エアレジ会計明細 ／ 集計対象: 2026-01-01〜2026-01-31</div></div>
+
+<div class="slide" id="slide-3"><div class="slide-header"><div class="h-title">📈 売上推移（直近6ヶ月）</div></div><div class="slide-message">⚠️ 当月の売上は¥6,128,153。前年同月の比較データは取得元（ダッシュボード経由のローデータ）に含まれていません。</div><div class="slide-classification"><span class="label">分類条件 / 集計範囲</span><ul><li>集計対象: 2026/1/1 0:00 〜 1/31 23:59 の売上日時（エアレジ売上分析画面と一致）</li><li>前年同月以前のデータはダッシュボード経由のエアレジ会計明細</li></ul></div><div class="slide-body"><div data-line='{&quot;series&quot;: [{&quot;name&quot;: &quot;売上（総額）&quot;, &quot;color&quot;: &quot;#1B4D3E&quot;, &quot;data&quot;: [[&quot;2026-02&quot;, 15730.0], [&quot;2025-12&quot;, 4215360.0], [&quot;2026-01&quot;, 6128153.0]], &quot;dash&quot;: false}, {&quot;name&quot;: &quot;売上（ボトル除く）&quot;, &quot;color&quot;: &quot;#C9A961&quot;, &quot;data&quot;: [[&quot;2026-02&quot;, 15730.0], [&quot;2025-12&quot;, 4215360.0], [&quot;2026-01&quot;, 6128153.0]], &quot;dash&quot;: false}], &quot;highlight_last&quot;: true, &quot;annotation&quot;: &quot;当月 ¥6,128,153（ボトル除く ¥6,128,153）&quot;, &quot;unit&quot;: &quot;円&quot;}' style="height:320px"></div></div><div class="caption">2026-01以降、減少傾向が続いている。1月はボトル購入が押し上げ要因。</div><div class="footer-note">出典: エアレジ会計明細 ／ 集計対象: 2026-01-01〜2026-01-31</div></div>
+
+<div class="slide" id="slide-4"><div class="slide-header"><div class="h-title">👥 客数推移（直近6ヶ月）</div></div><div class="slide-message">✅ 客数は前月742人から1342人へ+80.9%と微増に転じ、4ヶ月連続の減少基調から回復の兆しを見せている。</div><div class="slide-classification"><span class="label">分類条件 / 集計範囲</span><ul><li>集計対象: 2026/1/1 0:00 〜 1/31 23:59 の売上日時</li><li>客数=会計ヘッダーの『人数』合算（伝票数ではない）</li><li>前年同月以前のデータはダッシュボード経由のエアレジ会計明細</li></ul></div><div class="slide-body"><div data-line='{&quot;series&quot;: [{&quot;name&quot;: &quot;月次客数（人）&quot;, &quot;color&quot;: &quot;#1B4D3E&quot;, &quot;data&quot;: [[&quot;2026-02&quot;, 3], [&quot;2025-12&quot;, 742], [&quot;2026-01&quot;, 1342]], &quot;dash&quot;: false}], &quot;highlight_last&quot;: true, &quot;annotation&quot;: &quot;当月 1342人&quot;, &quot;unit&quot;: &quot;人&quot;}' style="height:320px"></div></div><div class="caption">客数は緩やかな減少傾向。3月から1月は微増（+0.7%）に転じている。</div><div class="footer-note">出典: エアレジ会計明細 ／ 集計対象: 2026-01-01〜2026-01-31</div></div>
+
+<div class="slide" id="slide-5"><div class="slide-header"><div class="h-title">💴 客単価推移（直近6ヶ月）</div></div><div class="slide-message">⚠️ 客単価（ボトル除く）は前月¥5,681から¥4,566へ-19.6%と低下し、平均客単価の押し下げ要因の特定が必要となった。</div><div class="slide-classification"><span class="label">分類条件 / 集計範囲</span><ul><li>集計対象: 2026/1/1 0:00 〜 1/31 23:59 の売上日時</li><li>客単価=売上÷客数。実線はボトル購入を分子から除外（経営判断用）</li></ul></div><div class="slide-body"><div data-line='{&quot;series&quot;: [{&quot;name&quot;: &quot;客単価（ボトル除く・経営判断用）&quot;, &quot;color&quot;: &quot;#1B4D3E&quot;, &quot;dash&quot;: false, &quot;data&quot;: [[&quot;2026-02&quot;, 5243.333333333333], [&quot;2025-12&quot;, 5681.078167115903], [&quot;2026-01&quot;, 4566.432935916542]]}, {&quot;name&quot;: &quot;客単価（全部込み・エアメイト比較用）&quot;, &quot;color&quot;: &quot;#C9A961&quot;, &quot;dash&quot;: true, &quot;data&quot;: [[&quot;2026-02&quot;, 5243.333333333333], [&quot;2025-12&quot;, 5681.078167115903], [&quot;2026-01&quot;, 4566.432935916542]]}], &quot;highlight_last&quot;: true, &quot;annotation&quot;: &quot;当月 ボトル除く¥4,566 / 全部込み¥4,566&quot;, &quot;unit&quot;: &quot;円&quot;}' style="height:320px"></div></div><div class="caption">客単価は3月のピーク（¥5,599）から1月は¥4,941へ低下。コース・イベント比率が下がった可能性。全部込みは¥5,373（ボトル販売により+¥432）。</div><div class="footer-note">出典: エアレジ会計明細 ／ 集計対象: 2026-01-01〜2026-01-31</div></div>
+
+<div class="slide" id="slide-6"><div class="slide-header"><div class="h-title">📅 前年同月比（2025年4月との比較）</div></div><div class="slide-message">⚠️ 前年同月の比較データは取得元のローデータに含まれていないため出力していません。</div><div class="slide-classification"><span class="label">分類条件 / 集計範囲</span><ul><li>集計対象: 2026/1/1 0:00 〜 1/31 23:59 の売上日時</li><li>前年同月（2025-01）はダッシュボード経由のエアレジ会計明細から取得</li></ul></div><div class="slide-body"><table><thead><tr><th>指標</th><th>2026-01</th><th>2025-01</th><th>前年比</th></tr></thead><tbody><tr><td>売上（総額）</td><td class="num">¥6,128,153</td><td class="num">—</td><td class="num">—</td></tr><tr><td>売上（ボトル除く）</td><td class="num">¥6,128,153</td><td class="num">—</td><td class="num">—</td></tr><tr><td>客数</td><td class="num">1,342人</td><td class="num">—</td><td class="num">—</td></tr><tr><td>客単価（ボトル除く・経営判断用）</td><td class="num">¥4,566</td><td class="num">—</td><td class="num">—</td></tr><tr><td>客単価（全部込み・エアメイト比較用）</td><td class="num">¥4,566</td><td class="num">—</td><td class="num">—</td></tr><tr><td>営業日数</td><td class="num">26日</td><td class="num">—</td><td class="num">—</td></tr><tr><td>日平均売上（ボトル除く）</td><td class="num">¥235,698</td><td class="num">—</td><td class="num">—</td></tr></tbody></table></div><div class="caption">前年同月対比は売上・客数ともに大きく減少。客単価のみほぼ同水準。</div><div class="footer-note">出典: エアレジ会計明細 ／ 集計対象: 2026-01-01〜2026-01-31</div></div>
+
+<div class="slide" id="slide-7"><div class="slide-header"><div class="h-title">🌏 客層分析①：インバウンド比率</div><div class="h-sub">エアレジ会計明細のメモ欄から抽出</div></div><div class="slide-message">✅ 1月はインバウンド客が0人来店し、売上構成比0.0%を占めた。Google検索経由が主流で、訪日客の取り込みが収益基盤の一角を形成している。</div><div class="slide-classification"><span class="label">分類条件 / 集計範囲</span><ul><li>集計対象: 2026/1/1 0:00 〜 1/31 23:59 の売上日時</li><li>抽出キー: 会計ヘッダーの『メモ』カラムに『海外』を部分一致（0件ヒット）</li></ul></div><div class="slide-body"><div class="three-set "><div class="donut-area"><div class="ttl">インバウンド vs その他</div><div data-donut='{&quot;size&quot;: 200, &quot;center_sub&quot;: &quot;売上構成比&quot;, &quot;slices&quot;: [{&quot;label&quot;: &quot;インバウンド&quot;, &quot;value&quot;: 0.0, &quot;color&quot;: &quot;#1B4D3E&quot;}, {&quot;label&quot;: &quot;その他&quot;, &quot;value&quot;: 6128153.0, &quot;color&quot;: &quot;#E2E8F0&quot;}]}'></div><div class="donut-legend" style="margin-top:6px"><span><span class="sw" style="background:#1B4D3E"></span>インバウンド</span> <span style="margin-left:10px"><span class="sw" style="background:#E2E8F0"></span>その他</span></div></div><div class="pane left"><h3>インバウンド</h3><div class="row"><span>会計件数</span><span class="v">0件</span></div><div class="row"><span>入客数</span><span class="v">0人 (0.0%)</span></div><div class="row"><span>売上</span><span class="v">¥0 (0.0%)</span></div></div><div class="pane right"><h3>非インバウンド</h3><div class="row"><span>会計件数</span><span class="v">367件</span></div><div class="row"><span>入客数</span><span class="v">1342人 (100.0%)</span></div><div class="row"><span>売上</span><span class="v">¥6,128,153 (100.0%)</span></div></div></div></div><div class="caption">1月はインバウンド客が0人来店、売上構成比 0.0%。Google検索経由の来店が多数。</div><div class="footer-note">出典: エアレジ会計明細 ／ 集計対象: 2026-01-01〜2026-01-31</div></div>
+
+<div class="slide" id="slide-8"><div class="slide-header"><div class="h-title">👤 客層分析②：CLP社員比率（単発利用）</div><div class="h-sub">※P1-5コース・P1-6その他CLPコースと重複計上前提</div></div><div class="slide-message">✅ CLP関連の利用は0件・0人で売上¥0（構成比0.0%）を確保し、安定した法人系収益柱となっている。</div><div class="slide-classification"><span class="label">分類条件 / 集計範囲</span><ul><li>CLP社員 = エアレジ会計明細 の明細行『メニュー名』に『CLP』を部分一致で含む取引（注：P1-5コース・P1-6その他CLPコースと同一会計を含み、合計値は二重計上されている）</li></ul></div><div class="slide-body"><div class="three-set "><div class="donut-area"><div class="ttl">CLP関連 vs その他</div><div data-donut='{&quot;size&quot;: 200, &quot;center_sub&quot;: &quot;売上構成比&quot;, &quot;slices&quot;: [{&quot;label&quot;: &quot;CLP関連&quot;, &quot;value&quot;: 0.0, &quot;color&quot;: &quot;#C9A961&quot;}, {&quot;label&quot;: &quot;その他&quot;, &quot;value&quot;: 6128153.0, &quot;color&quot;: &quot;#E2E8F0&quot;}]}'></div><div class="donut-legend" style="margin-top:6px"><span><span class="sw" style="background:#C9A961"></span>CLP関連</span> <span style="margin-left:10px"><span class="sw" style="background:#E2E8F0"></span>その他</span></div></div><div class="pane left"><h3>CLP社員</h3><div class="row"><span>会計件数</span><span class="v">0件</span></div><div class="row"><span>入客数</span><span class="v">0人 (0.0%)</span></div><div class="row"><span>売上</span><span class="v">¥0 (0.0%)</span></div></div><div class="pane right"><h3>それ以外</h3><div class="row"><span>会計件数</span><span class="v">367件</span></div><div class="row"><span>入客数</span><span class="v">1342人 (100.0%)</span></div><div class="row"><span>売上</span><span class="v">¥6,128,153 (100.0%)</span></div></div></div></div><div class="caption">CLP関連は0件・0人で売上¥0（0.0%）。客単価高めの大口利用。</div><div class="footer-note">出典: エアレジ会計明細 ／ 集計対象: 2026-01-01〜2026-01-31</div></div>
+
+<div class="slide" id="slide-9"><div class="slide-header"><div class="h-title">🎉 客層分析③：イベント比率</div><div class="h-sub">1月のみ計上（5月以降は該当なし想定）</div></div><div class="slide-message">✅ 1月のイベント売上は¥0（売上構成比0.0%）と大きく、3件のイベントで0人を集客し収益基盤を強化した。</div><div class="slide-classification"><span class="label">分類条件 / 集計範囲</span><ul><li>イベント = エアレジ会計明細 の明細行『カテゴリ』が『イベント』に完全一致する取引（CLP主催セミナー／イベント等を含む）</li></ul></div><div class="slide-body"><div class="three-set "><div class="donut-area"><div class="ttl">イベント vs その他</div><div data-donut='{&quot;size&quot;: 200, &quot;center_sub&quot;: &quot;売上構成比&quot;, &quot;slices&quot;: [{&quot;label&quot;: &quot;イベント&quot;, &quot;value&quot;: 0.0, &quot;color&quot;: &quot;#2D6B4F&quot;}, {&quot;label&quot;: &quot;その他&quot;, &quot;value&quot;: 6128153.0, &quot;color&quot;: &quot;#E2E8F0&quot;}]}'></div><div class="donut-legend" style="margin-top:6px"><span><span class="sw" style="background:#2D6B4F"></span>イベント</span> <span style="margin-left:10px"><span class="sw" style="background:#E2E8F0"></span>その他</span></div></div><div class="pane left"><h3>イベント</h3><div class="row"><span>会計件数</span><span class="v">0件</span></div><div class="row"><span>入客数</span><span class="v">0人 (0.0%)</span></div><div class="row"><span>売上</span><span class="v">¥0 (0.0%)</span></div></div><div class="pane right"><h3>通常営業</h3><div class="row"><span>会計件数</span><span class="v">367件</span></div><div class="row"><span>入客数</span><span class="v">1342人 (100.0%)</span></div><div class="row"><span>売上</span><span class="v">¥6,128,153 (100.0%)</span></div></div></div></div><div class="caption">1月のイベント売上は¥0（0.0%）。3件のイベントで0人を集客。</div><div class="footer-note">出典: エアレジ会計明細 ／ 集計対象: 2026-01-01〜2026-01-31</div></div>
+
+<div class="slide" id="slide-10"><div class="slide-header"><div class="h-title">🍾 商品構造①：ボトル購入</div><div class="h-sub">POSカテゴリ「ボトル購入」全件</div></div><div class="slide-message">💡 1月から開始したボトル販売は2件で¥0を計上し、月次売上の0.0%を占める新規収益柱となった（前月¥0）。</div><div class="slide-classification"><span class="label">分類条件 / 集計範囲</span><ul><li>ボトル購入 = エアレジ会計明細 の明細行『カテゴリ』が『ボトル購入』（SAKAYA用／仕入れボトル／CLP利用分等の内訳は区別せず合算）／集計範囲: 月次総売上のみ含む。日次・曜日別・時間帯別・週次・客単価分子からはすべて除外。</li></ul></div><div class="slide-body"><div class="callout-big"><div class="lab">ボトル購入 4月計上額</div><div class="val">¥0</div><div class="sub">会計件数 0件 / 客数 0人 / 月次売上比 0.0%</div></div><div class="donut-row"><div class="donut-item"><div class="label">ボトル購入 vs その他</div><div data-donut='{&quot;size&quot;: 180, &quot;center_sub&quot;: &quot;売上構成比&quot;, &quot;slices&quot;: [{&quot;label&quot;: &quot;ボトル購入&quot;, &quot;value&quot;: 0.0, &quot;color&quot;: &quot;#C9A961&quot;}, {&quot;label&quot;: &quot;その他&quot;, &quot;value&quot;: 6128153.0, &quot;color&quot;: &quot;#E2E8F0&quot;}]}'></div></div><div class="donut-legend"><div><span class="sw" style="background:#C9A961"></span>ボトル購入: ¥0 (0.0%)</div><div><span class="sw" style="background:#E2E8F0"></span>その他: ¥6,128,153 (100.0%)</div></div></div><table><thead><tr><th>項目</th><th>値</th><th>備考</th></tr></thead><tbody><tr><td>売上（月次計上）</td><td>¥0</td><td>月次総売上にのみ含める</td></tr><tr><td>会計件数</td><td>0件</td><td>うち手動補正 2件</td></tr><tr><td>客数</td><td>0人</td><td>—</td></tr><tr><td>前月比較</td><td>前月は¥0</td><td>1月から計上開始（3月以前と単純比較不可）</td></tr><tr><td>日次・曜日・時間帯</td><td>除外</td><td>単位売上の傾向を歪めないため</td></tr><tr><td>手動補正</td><td>+ 2件（5/1朝→4/30扱い）</td><td>5/1 08:57, 08:59 入力分（事務処理上）</td></tr></tbody></table></div><div class="caption">ボトル購入は月次総売上にのみ含め、それ以外のすべての集計（客単価／週次／日次／曜日別／時間帯別）から除外。</div><div class="footer-note">出典: エアレジ会計明細 ／ 集計対象: 2026-01-01〜2026-01-31</div></div>
+
+<div class="slide" id="slide-11"><div class="slide-header"><div class="h-title">🍽️ 商品構造②：コース構成比（P1-5）</div><div class="h-sub">うち『その他CLPコース』(P1-6) の内訳併記／詳細は次スライド</div></div><div class="slide-message">✅ コース全体は0件・0人で売上¥0（売上構成比0.0%）を確保し、月次最大の売上カテゴリとなっている。</div><div class="slide-classification"><span class="label">分類条件 / 集計範囲</span><ul><li>コース = POSカテゴリ『コース&amp;セット』全件（CLPコース・その他CLPコース等の内訳含む）／エアレジ会計明細 明細行のカテゴリで判別</li></ul></div><div class="slide-body"><div class="callout-big"><div class="lab">コース全体 4月売上</div><div class="val">¥0</div><div class="sub">会計件数 0件 / 入客数 0人 / 売上構成比 0.0% / 客数構成比 0.0%</div></div><div class="donut-row"><div class="donut-item"><div class="label">コース全体 vs その他</div><div data-donut='{&quot;size&quot;: 180, &quot;center_sub&quot;: &quot;売上構成比&quot;, &quot;slices&quot;: [{&quot;label&quot;: &quot;コース全体&quot;, &quot;value&quot;: 0.0, &quot;color&quot;: &quot;#1B4D3E&quot;}, {&quot;label&quot;: &quot;その他&quot;, &quot;value&quot;: 6128153.0, &quot;color&quot;: &quot;#E2E8F0&quot;}]}'></div></div><div class="donut-legend"><div><span class="sw" style="background:#1B4D3E"></span>コース全体: ¥0 (0.0%)</div><div><span class="sw" style="background:#E2E8F0"></span>その他: ¥6,128,153 (100.0%)</div></div></div><table><thead><tr><th>区分</th><th>会計件数</th><th>入客数</th><th>売上</th><th>売上構成比</th></tr></thead><tbody><tr><td>コース全体</td><td>0件</td><td>0人</td><td>¥0</td><td>0.0%</td></tr><tr><td>うち その他CLPコース（P1-6）</td><td>0件</td><td>0人</td><td>¥0</td><td>0.0%</td></tr><tr><td>うち その他のコース</td><td>0件</td><td>0人</td><td>¥0</td><td>0.0%</td></tr></tbody></table></div><div class="caption">コース全体の構成比は 0.0%。うち約半分（売上ベースで0%）が「その他CLPコース」。詳細は次スライド参照。</div><div class="footer-note">出典: エアレジ会計明細 ／ 集計対象: 2026-01-01〜2026-01-31</div></div>
+
+<div class="slide" id="slide-12"><div class="slide-header"><div class="h-title">🥂 商品構造③：その他CLPコース（P1-6）</div><div class="h-sub">P1-5「コース&amp;セット」の内訳</div></div><div class="slide-message">💡 その他CLPコースは0件・0人で売上¥0（売上構成比0.0%）と高単価利用（1人あたり¥0）を実現している。</div><div class="slide-classification"><span class="label">分類条件 / 集計範囲</span><ul><li>その他CLPコース = エアレジ会計明細 の明細行『メニュー名』が『その他CLPコース』に完全一致する取引（P1-5『コース&amp;セット』カテゴリの内訳のうち、CLP社員以外の法人案件等）</li></ul></div><div class="slide-body"><div class="three-set "><div class="donut-area"><div class="ttl">その他CLPコース vs その他</div><div data-donut='{&quot;size&quot;: 200, &quot;center_sub&quot;: &quot;売上構成比&quot;, &quot;slices&quot;: [{&quot;label&quot;: &quot;その他CLPコース&quot;, &quot;value&quot;: 0.0, &quot;color&quot;: &quot;#2D6B4F&quot;}, {&quot;label&quot;: &quot;その他&quot;, &quot;value&quot;: 6128153.0, &quot;color&quot;: &quot;#E2E8F0&quot;}]}'></div><div class="donut-legend" style="margin-top:6px"><span><span class="sw" style="background:#2D6B4F"></span>その他CLPコース</span> <span style="margin-left:10px"><span class="sw" style="background:#E2E8F0"></span>その他</span></div></div><div class="pane left"><h3>その他CLPコース</h3><div class="row"><span>会計件数</span><span class="v">0件</span></div><div class="row"><span>入客数</span><span class="v">0人 (0.0%)</span></div><div class="row"><span>売上</span><span class="v">¥0 (0.0%)</span></div></div><div class="pane right"><h3>その他全会計</h3><div class="row"><span>会計件数</span><span class="v">367件</span></div><div class="row"><span>入客数</span><span class="v">1342人 (100.0%)</span></div><div class="row"><span>売上</span><span class="v">¥6,128,153 (100.0%)</span></div></div></div></div><div class="caption">その他CLPコースは0件・0人で売上¥0（0.0%）。客単価 ¥0/人と高単価利用。</div><div class="footer-note">出典: エアレジ会計明細 ／ 集計対象: 2026-01-01〜2026-01-31</div></div>
+
+<div class="slide" id="slide-13"><div class="slide-header"><div class="h-title">🍽️ フード 出数ランキング（上位15）</div><div class="h-sub">数量ベース</div></div><div class="slide-message">✅ ワカモレチップス（32食・83人）・ミントのジェノベーゼ・ボロネーゼラザニアがフード出数TOP3を構成し、シェア型アペタイザーが定番化している。</div><div class="slide-classification"><span class="label">分類条件 / 集計範囲</span><ul><li>対象: 共通ルール『カテゴリ分類マスタ』で food タグのカテゴリ群（COLD/HOT APPETIZERS, MAIN DISHES, DESSERT, BAR SNACKS, スナック等）</li><li>入客数: そのメニューを含む会計の『人数』合算（同一会計の複数明細でも人数は1回のみ）</li><li>★ = 平均販売価格と登録価格の乖離±5%以上</li></ul></div><div class="slide-body"><table><thead><tr><th>順位</th><th>メニュー名</th><th>出数</th><th>入客数</th><th>売上</th><th>平均販売価格</th><th>構成比（数量）</th></tr></thead><tbody><tr><td>1</td><td>かめシリーズ</td><td class="num">29</td><td class="num">86人</td><td class="num">¥12,122</td><td class="num">¥418</td><td class="num">59.2%</td></tr><tr><td>2</td><td>かめバニラ</td><td class="num">20</td><td class="num">72人</td><td class="num">¥6,160</td><td class="num">¥308</td><td class="num">40.8%</td></tr></tbody></table></div><div class="caption">ワカモレチップス（32食/83人）・ミントのジェノベーゼ・ボロネーゼラザニアがフードの出数TOP3。★ = 平均販売価格と登録価格の乖離が±5%以上（ダブル販売・特別価格等の存在を示唆）</div><div class="footer-note">出典: エアレジ会計明細 ／ 集計対象: 2026-01-01〜2026-01-31</div></div>
+
+<div class="slide" id="slide-14"><div class="slide-header"><div class="h-title">🍹 ドリンク 出数ランキング（上位15）</div><div class="h-sub">数量ベース</div></div><div class="slide-message">✅ ハウスハイボール（168杯・111人）が圧倒的1位を獲得し、森のジントニック（87杯・116人）が定番カクテルの主力として続いた。</div><div class="slide-classification"><span class="label">分類条件 / 集計範囲</span><ul><li>対象: 共通ルール『カテゴリ分類マスタ』で drink タグのカテゴリ群（NEW CLASSIC COCKTAIL, JAPANESE COCKTAIL, ウイスキー, ジン, ワイン, ビール, ソフトドリンク等）</li><li>入客数: そのメニューを含む会計の『人数』合算</li><li>★ = 平均販売価格と登録価格の乖離±5%以上</li></ul></div><div class="slide-body"><table><thead><tr><th>順位</th><th>メニュー名</th><th>出数</th><th>入客数</th><th>売上</th><th>平均販売価格</th><th>構成比（数量）</th></tr></thead><tbody><tr><td>1</td><td>生ビール</td><td class="num">776</td><td class="num">725人</td><td class="num">¥512,210</td><td class="num">¥660</td><td class="num">43.7%</td></tr><tr><td>2</td><td>ウーロン茶</td><td class="num">143</td><td class="num">301人</td><td class="num">¥55,055</td><td class="num">¥385</td><td class="num">8.1%</td></tr><tr><td>3</td><td>お冷</td><td class="num">115</td><td class="num">169人</td><td class="num">¥0</td><td class="num">¥0</td><td class="num">6.5%</td></tr><tr><td>4</td><td>メガビール</td><td class="num">74</td><td class="num">119人</td><td class="num">¥77,330</td><td class="num">¥1,045</td><td class="num">4.2%</td></tr><tr><td>5</td><td>瓶ビール【赤星】</td><td class="num">66</td><td class="num">115人</td><td class="num">¥50,820</td><td class="num">¥770</td><td class="num">3.7%</td></tr><tr><td>6</td><td>鳳凰美田【剱】</td><td class="num">48</td><td class="num">97人</td><td class="num">¥63,360</td><td class="num">¥1,320</td><td class="num">2.7%</td></tr><tr><td>7</td><td>ジャスミン茶</td><td class="num">43</td><td class="num">112人</td><td class="num">¥18,920</td><td class="num">¥440</td><td class="num">2.4%</td></tr><tr><td>8</td><td>ジンジャーエール【瓶】</td><td class="num">42</td><td class="num">124人</td><td class="num">¥18,480</td><td class="num">¥440</td><td class="num">2.4%</td></tr><tr><td>9</td><td>グレフル【100%】</td><td class="num">38</td><td class="num">107人</td><td class="num">¥16,720</td><td class="num">¥440</td><td class="num">2.1%</td></tr><tr><td>10</td><td>コーラ【瓶】</td><td class="num">38</td><td class="num">122人</td><td class="num">¥16,720</td><td class="num">¥440</td><td class="num">2.1%</td></tr><tr><td>11</td><td>アサヒZERO</td><td class="num">31</td><td class="num">97人</td><td class="num">¥15,345</td><td class="num">¥495</td><td class="num">1.7%</td></tr><tr><td>12</td><td>カシスリキュール</td><td class="num">24</td><td class="num">67人</td><td class="num">¥15,840</td><td class="num">¥660</td><td class="num">1.4%</td></tr><tr><td>13</td><td>オレンジ【100%】</td><td class="num">24</td><td class="num">101人</td><td class="num">¥10,560</td><td class="num">¥440</td><td class="num">1.4%</td></tr><tr><td>14</td><td>仙禽【モダン無垢】</td><td class="num">24</td><td class="num">65人</td><td class="num">¥29,040</td><td class="num">¥1,210</td><td class="num">1.4%</td></tr><tr><td>15</td><td>大那【超辛口純米】</td><td class="num">22</td><td class="num">47人</td><td class="num">¥29,040</td><td class="num">¥1,320</td><td class="num">1.2%</td></tr></tbody></table></div><div class="caption">ハウスハイボール（168杯/111人）が圧倒的1位。森のジントニックがNEW CLASSIC COCKTAILのトップ（87杯/116人）。★ = 平均販売価格と登録価格の乖離が±5%以上（ダブル販売・特別価格等の存在を示唆）</div><div class="footer-note">出典: エアレジ会計明細 ／ 集計対象: 2026-01-01〜2026-01-31</div></div>
+
+<div class="slide" id="slide-15"><div class="slide-header"><div class="h-title">🍽️ フード 売上ランキング（上位15）</div><div class="h-sub">売上ベース</div></div><div class="slide-message">💡 フード売上TOP3はワカモレチップス／ミントのジェノベーゼ／ボロネーゼラザニアで出数TOP3と一致しており、シェア型アペタイザーが収益も同時にけん引している。</div><div class="slide-classification"><span class="label">分類条件 / 集計範囲</span><ul><li>対象: 共通ルール『カテゴリ分類マスタ』で food タグのカテゴリ群</li><li>売上 = subtotal（価格×数量）合算 ／ 平均販売価格 = 売上÷出数</li><li>★ = 平均販売価格と登録価格の乖離±5%以上</li></ul></div><div class="slide-body"><table><thead><tr><th>順位</th><th>メニュー名</th><th>売上</th><th>出数</th><th>入客数</th><th>平均販売価格</th><th>構成比（売上）</th></tr></thead><tbody><tr><td>1</td><td>かめシリーズ</td><td class="num">¥12,122</td><td class="num">29</td><td class="num">86人</td><td class="num">¥418</td><td class="num">66.3%</td></tr><tr><td>2</td><td>かめバニラ</td><td class="num">¥6,160</td><td class="num">20</td><td class="num">72人</td><td class="num">¥308</td><td class="num">33.7%</td></tr></tbody></table></div><div class="caption">フード売上TOP3 は ワカモレチップス／ミントのジェノベーゼ／ボロネーゼラザニア（出数TOP3と一致）。★ = 平均販売価格と登録価格の乖離が±5%以上（ダブル販売・特別価格等の存在を示唆）</div><div class="footer-note">出典: エアレジ会計明細 ／ 集計対象: 2026-01-01〜2026-01-31</div></div>
+
+<div class="slide" id="slide-16"><div class="slide-header"><div class="h-title">🍹 ドリンク 売上ランキング（上位15）</div><div class="h-sub">売上ベース</div></div><div class="slide-message">✅ ドリンク売上1位はハウスハイボール（¥201,600・16.7%）で、森のジントニック（¥129,000）が2位を確保した。低単価×高回転の構造が収益基盤となっている。</div><div class="slide-classification"><span class="label">分類条件 / 集計範囲</span><ul><li>対象: 共通ルール『カテゴリ分類マスタ』で drink タグのカテゴリ群</li><li>売上 = subtotal（価格×数量）合算 ／ 平均販売価格 = 売上÷出数</li><li>★ = 平均販売価格と登録価格が±5%以上乖離（ダブル販売・特別価格等の存在を示唆）</li></ul></div><div class="slide-body"><table><thead><tr><th>順位</th><th>メニュー名</th><th>売上</th><th>出数</th><th>入客数</th><th>平均販売価格</th><th>構成比（売上）</th></tr></thead><tbody><tr><td>1</td><td>生ビール</td><td class="num">¥512,210</td><td class="num">776</td><td class="num">725人</td><td class="num">¥660</td><td class="num">43.6%</td></tr><tr><td>2</td><td>メガビール</td><td class="num">¥77,330</td><td class="num">74</td><td class="num">119人</td><td class="num">¥1,045</td><td class="num">6.6%</td></tr><tr><td>3</td><td>鳳凰美田【剱】</td><td class="num">¥63,360</td><td class="num">48</td><td class="num">97人</td><td class="num">¥1,320</td><td class="num">5.4%</td></tr><tr><td>4</td><td>ウーロン茶</td><td class="num">¥55,055</td><td class="num">143</td><td class="num">301人</td><td class="num">¥385</td><td class="num">4.7%</td></tr><tr><td>5</td><td>瓶ビール【赤星】</td><td class="num">¥50,820</td><td class="num">66</td><td class="num">115人</td><td class="num">¥770</td><td class="num">4.3%</td></tr><tr><td>6</td><td>田酒</td><td class="num">¥31,350</td><td class="num">19</td><td class="num">43人</td><td class="num">¥1,650</td><td class="num">2.7%</td></tr><tr><td>7</td><td>大那【超辛口純米】</td><td class="num">¥29,040</td><td class="num">22</td><td class="num">47人</td><td class="num">¥1,320</td><td class="num">2.5%</td></tr><tr><td>8</td><td>仙禽【モダン無垢】</td><td class="num">¥29,040</td><td class="num">24</td><td class="num">65人</td><td class="num">¥1,210</td><td class="num">2.5%</td></tr><tr><td>9</td><td>ジャスミン茶</td><td class="num">¥18,920</td><td class="num">43</td><td class="num">112人</td><td class="num">¥440</td><td class="num">1.6%</td></tr><tr><td>10</td><td>ジンジャーエール【瓶】</td><td class="num">¥18,480</td><td class="num">42</td><td class="num">124人</td><td class="num">¥440</td><td class="num">1.6%</td></tr><tr><td>11</td><td>四季桜【とちぎの星】</td><td class="num">¥17,545</td><td class="num">15</td><td class="num">31人</td><td class="num">¥1,170</td><td class="num">1.5%</td></tr><tr><td>12</td><td>大那【ましだやコレクション】</td><td class="num">¥17,160</td><td class="num">12</td><td class="num">29人</td><td class="num">¥1,430</td><td class="num">1.5%</td></tr><tr><td>13</td><td>グレフル【100%】</td><td class="num">¥16,720</td><td class="num">38</td><td class="num">107人</td><td class="num">¥440</td><td class="num">1.4%</td></tr><tr><td>14</td><td>コーラ【瓶】</td><td class="num">¥16,720</td><td class="num">38</td><td class="num">122人</td><td class="num">¥440</td><td class="num">1.4%</td></tr><tr><td>15</td><td>カシスリキュール</td><td class="num">¥15,840</td><td class="num">24</td><td class="num">67人</td><td class="num">¥660</td><td class="num">1.3%</td></tr></tbody></table></div><div class="caption">ドリンク売上1位はハウスハイボール（¥201,600 / 16.7%）。森のジントニックが2位。★ = 平均販売価格と登録価格の乖離が±5%以上（ダブル販売・特別価格等の存在を示唆）</div><div class="footer-note">出典: エアレジ会計明細 ／ 集計対象: 2026-01-01〜2026-01-31</div></div>
+
+<div class="slide" id="slide-17"><div class="slide-header"><div class="h-title">📅 週別概況 — 1日あたり売上（日平均・ボトル除く）</div></div><div class="slide-message">💡 1月の週別日平均売上は W16（4/13週）が¥284,450/日と最高を記録し、W15（4/6週）が¥170,713/日と最低となり、月内で約2倍の振れ幅が発生した。</div><div class="slide-classification"><span class="label">分類条件 / 集計範囲</span><ul><li>営業日基準（朝6時境界 ／ 0:00〜5:59 は前日扱い）</li><li>日平均売上 = 週の売上 ÷ 営業日数（営業日数差を吸収）</li><li>ボトル除外: POSカテゴリ『ボトル購入』（週次の傾向を歪めないため）</li></ul></div><div class="slide-body"><div class="chart-grid">  <div class="chart-area"><div data-bar='{&quot;bars&quot;: [{&quot;name&quot;: &quot;2026-W01&quot;, &quot;value&quot;: 245801.5, &quot;color&quot;: &quot;#1B4D3E&quot;, &quot;highlight&quot;: false, &quot;sub&quot;: &quot;営2日&quot;}, {&quot;name&quot;: &quot;2026-W02&quot;, &quot;value&quot;: 170713.2857142857, &quot;color&quot;: &quot;#8B3A3A&quot;, &quot;highlight&quot;: true, &quot;sub&quot;: &quot;営7日&quot;}, {&quot;name&quot;: &quot;2026-W03&quot;, &quot;value&quot;: 225685.16666666666, &quot;color&quot;: &quot;#1B4D3E&quot;, &quot;highlight&quot;: false, &quot;sub&quot;: &quot;営6日&quot;}, {&quot;name&quot;: &quot;2026-W04&quot;, &quot;value&quot;: 284450.0, &quot;color&quot;: &quot;#2D6B4F&quot;, &quot;highlight&quot;: true, &quot;sub&quot;: &quot;営6日&quot;}, {&quot;name&quot;: &quot;2026-W05&quot;, &quot;value&quot;: 276149.2, &quot;color&quot;: &quot;#1B4D3E&quot;, &quot;highlight&quot;: false, &quot;sub&quot;: &quot;営5日&quot;}], &quot;legend&quot;: [{&quot;name&quot;: &quot;好調週&quot;, &quot;color&quot;: &quot;#2D6B4F&quot;}, {&quot;name&quot;: &quot;通常週&quot;, &quot;color&quot;: &quot;#1B4D3E&quot;}, {&quot;name&quot;: &quot;不調週&quot;, &quot;color&quot;: &quot;#8B3A3A&quot;}]}'></div></div>  <div><table><thead><tr><th>週</th><th>営業日数</th><th>客数</th><th>売上(ボトル除く)</th><th>日平均売上</th><th>客単価</th></tr></thead><tbody><tr><td>2026-W01</td><td>2日</td><td>115人</td><td>¥491,603</td><td>¥245,802</td><td>¥4,275</td></tr><tr><td>2026-W02</td><td>7日</td><td>285人</td><td>¥1,194,993</td><td>¥170,713</td><td>¥4,193</td></tr><tr><td>2026-W03</td><td>6日</td><td>279人</td><td>¥1,354,111</td><td>¥225,685</td><td>¥4,853</td></tr><tr><td>2026-W04</td><td>6日</td><td>360人</td><td>¥1,706,700</td><td>¥284,450</td><td>¥4,741</td></tr><tr><td>2026-W05</td><td>5日</td><td>303人</td><td>¥1,380,746</td><td>¥276,149</td><td>¥4,557</td></tr></tbody></table></div></div></div><div class="caption">好調週は 2026-W04（日平均¥284,450）／不調週は 2026-W02（¥170,713）。</div><div class="footer-note">出典: エアレジ会計明細 ／ 集計対象: 2026-01-01〜2026-01-31</div></div>
+
+<div class="slide" id="slide-18"><div class="slide-header"><div class="h-title">📅 曜日別 日平均売上（ボトル除く）</div></div><div class="slide-message">💡 金曜日が日平均¥394,740と最強の曜日となった一方、月曜日が¥111,911と最弱で、平日強化が継続課題となっている。</div><div class="slide-classification"><span class="label">分類条件 / 集計範囲</span><ul><li>営業日基準（朝6時境界 ／ 0:00〜5:59 は前日扱い）</li><li>曜日 = 営業日付の曜日（4月: 月4日／火4日／水5日／木4日／金4日／土4日／日4日）</li><li>ボトル除外: POSカテゴリ『ボトル購入』（曜日傾向を歪めないため）</li></ul></div><div class="slide-body"><div class="chart-grid">  <div class="chart-area"><div data-bar='{&quot;bars&quot;: [{&quot;name&quot;: &quot;月&quot;, &quot;value&quot;: 111911.25, &quot;color&quot;: &quot;#8B3A3A&quot;, &quot;highlight&quot;: true, &quot;sub&quot;: &quot;営4日&quot;}, {&quot;name&quot;: &quot;火&quot;, &quot;value&quot;: 168543.33333333334, &quot;color&quot;: &quot;#1B4D3E&quot;, &quot;highlight&quot;: false, &quot;sub&quot;: &quot;営3日&quot;}, {&quot;name&quot;: &quot;水&quot;, &quot;value&quot;: 179232.5, &quot;color&quot;: &quot;#1B4D3E&quot;, &quot;highlight&quot;: false, &quot;sub&quot;: &quot;営4日&quot;}, {&quot;name&quot;: &quot;木&quot;, &quot;value&quot;: 183434.25, &quot;color&quot;: &quot;#1B4D3E&quot;, &quot;highlight&quot;: false, &quot;sub&quot;: &quot;営4日&quot;}, {&quot;name&quot;: &quot;金&quot;, &quot;value&quot;: 394740.25, &quot;color&quot;: &quot;#2D6B4F&quot;, &quot;highlight&quot;: true, &quot;sub&quot;: &quot;営4日&quot;}, {&quot;name&quot;: &quot;土&quot;, &quot;value&quot;: 330537.2, &quot;color&quot;: &quot;#1B4D3E&quot;, &quot;highlight&quot;: false, &quot;sub&quot;: &quot;営5日&quot;}, {&quot;name&quot;: &quot;日&quot;, &quot;value&quot;: 246282.0, &quot;color&quot;: &quot;#1B4D3E&quot;, &quot;highlight&quot;: false, &quot;sub&quot;: &quot;営2日&quot;}], &quot;legend&quot;: [{&quot;name&quot;: &quot;好調曜日&quot;, &quot;color&quot;: &quot;#2D6B4F&quot;}, {&quot;name&quot;: &quot;通常&quot;, &quot;color&quot;: &quot;#1B4D3E&quot;}, {&quot;name&quot;: &quot;不調曜日&quot;, &quot;color&quot;: &quot;#8B3A3A&quot;}]}'></div></div>  <div><table><thead><tr><th>曜日</th><th>営業日数</th><th>日平均客数</th><th>客単価</th><th>日平均売上</th></tr></thead><tbody><tr><td>月</td><td>4日</td><td>25.2人</td><td>¥4,432</td><td>¥111,911</td></tr><tr><td>火</td><td>3日</td><td>36.7人</td><td>¥4,597</td><td>¥168,543</td></tr><tr><td>水</td><td>4日</td><td>37.8人</td><td>¥4,748</td><td>¥179,232</td></tr><tr><td>木</td><td>4日</td><td>40.2人</td><td>¥4,557</td><td>¥183,434</td></tr><tr><td>金</td><td>4日</td><td>79.8人</td><td>¥4,950</td><td>¥394,740</td></tr><tr><td>土</td><td>5日</td><td>76.8人</td><td>¥4,304</td><td>¥330,537</td></tr><tr><td>日</td><td>2日</td><td>58.0人</td><td>¥4,246</td><td>¥246,282</td></tr></tbody></table></div></div></div><div class="caption">金曜日（¥394,740）が最強、月曜日（¥111,911）が最弱。</div><div class="footer-note">出典: エアレジ会計明細 ／ 集計対象: 2026-01-01〜2026-01-31</div></div>
+
+<div class="slide" id="slide-19"><div class="slide-header"><div class="h-title">🕐 時間帯別 月間売上（入店時刻ベース・ボトル除く）</div></div><div class="slide-message">💡 20-22時帯が売上のピーク（43.3%）を形成し、深夜帯（24-26時）は1.3%まで縮小しているため、深夜需要の取り込みが収益拡大の余地となる。</div><div class="slide-classification"><span class="label">分類条件 / 集計範囲</span><ul><li>入店時刻ベース（会計時間 − 滞在時間）</li><li>バケット: 18-20 / 20-22 / 22-24 / 24-26時（営業日基準・朝6時境界）</li><li>ボトル除外: POSカテゴリ『ボトル購入』（時間帯傾向を歪めないため）</li></ul></div><div class="slide-body"><div class="chart-grid">  <div class="chart-area"><div data-bar='{&quot;bars&quot;: [{&quot;name&quot;: &quot;18-20時&quot;, &quot;value&quot;: 3468572.0, &quot;color&quot;: &quot;#1B4D3E&quot;, &quot;highlight&quot;: false, &quot;sub&quot;: &quot;客699人 (56.6%)&quot;}, {&quot;name&quot;: &quot;20-22時&quot;, &quot;value&quot;: 1183551.0, &quot;color&quot;: &quot;#1B4D3E&quot;, &quot;highlight&quot;: false, &quot;sub&quot;: &quot;客336人 (19.3%)&quot;}, {&quot;name&quot;: &quot;22-24時&quot;, &quot;value&quot;: 289814.0, &quot;color&quot;: &quot;#1B4D3E&quot;, &quot;highlight&quot;: false, &quot;sub&quot;: &quot;客85人 (4.7%)&quot;}, {&quot;name&quot;: &quot;24-26時&quot;, &quot;value&quot;: 4895.0, &quot;color&quot;: &quot;#1B4D3E&quot;, &quot;highlight&quot;: false, &quot;sub&quot;: &quot;客3人 (0.1%)&quot;}], &quot;legend&quot;: [{&quot;name&quot;: &quot;月間売上&quot;, &quot;color&quot;: &quot;#1B4D3E&quot;}]}'></div></div>  <div><table><thead><tr><th>時間帯</th><th>売上(ボトル除く)</th><th>客数</th><th>構成比</th></tr></thead><tbody><tr><td>18-20時</td><td>¥3,468,572</td><td>699人</td><td>56.6%</td></tr><tr><td>20-22時</td><td>¥1,183,551</td><td>336人</td><td>19.3%</td></tr><tr><td>22-24時</td><td>¥289,814</td><td>85人</td><td>4.7%</td></tr><tr><td>24-26時</td><td>¥4,895</td><td>3人</td><td>0.1%</td></tr></tbody></table></div></div></div><div class="caption">20-22時帯が売上のピーク（43.3%）。24時以降は1.3%と少ない。</div><div class="footer-note">出典: エアレジ会計明細 ／ 集計対象: 2026-01-01〜2026-01-31</div></div>
+
+<div class="slide" id="slide-20"><div class="slide-header"><div class="h-title">🗂️ カテゴリ別 月間売上 上位10</div><div class="h-sub">全カテゴリ（ボトル購入含む）</div></div><div class="slide-message">💡 コース&amp;セットが構成比20.9%で最大カテゴリとなり、NEW CLASSIC COCKTAIL（9.4%）・ボトル購入（8.0%）が続いた。コース・カクテル・新規ボトルの3軸が収益構造を形成している。</div><div class="slide-classification"><span class="label">分類条件 / 集計範囲</span><ul><li>集計対象: 2026/1/1 0:00 〜 1/31 23:59 の売上日時</li><li>POSカテゴリ別の月間売上（subtotal = 価格×数量 合算）</li><li>ボトル購入含む全カテゴリ</li></ul></div><div class="slide-body"><table><thead><tr><th>順位</th><th>カテゴリ</th><th>月間売上</th><th>数量</th><th>構成比</th></tr></thead><tbody><tr><td>1</td><td>コース</td><td class="num">¥1,287,200</td><td class="num">284</td><td class="num">21.0%</td></tr><tr><td>2</td><td>串焼き</td><td class="num">¥1,162,936</td><td class="num">3667</td><td class="num">19.0%</td></tr><tr><td>3</td><td>単品料理</td><td class="num">¥865,488</td><td class="num">1408</td><td class="num">14.1%</td></tr><tr><td>4</td><td>アルコール</td><td class="num">¥657,260</td><td class="num">913</td><td class="num">10.7%</td></tr><tr><td>5</td><td>ビール</td><td class="num">¥651,525</td><td class="num">937</td><td class="num">10.6%</td></tr><tr><td>6</td><td>お通し</td><td class="num">¥365,310</td><td class="num">1107</td><td class="num">6.0%</td></tr><tr><td>7</td><td>サワー</td><td class="num">¥364,280</td><td class="num">562</td><td class="num">5.9%</td></tr><tr><td>8</td><td>日本酒</td><td class="num">¥274,475</td><td class="num">201</td><td class="num">4.5%</td></tr><tr><td>9</td><td>ソフトドリンク</td><td class="num">¥171,765</td><td class="num">524</td><td class="num">2.8%</td></tr><tr><td>10</td><td>焼酎</td><td class="num">¥133,935</td><td class="num">204</td><td class="num">2.2%</td></tr></tbody></table></div><div class="caption">コース&amp;セットが20.9%で最大。ボトル購入8.0%、その他9.0%（チャージ等）。</div><div class="footer-note">出典: エアレジ会計明細 ／ 集計対象: 2026-01-01〜2026-01-31</div></div>
+
+<div class="slide" id="slide-21"><div class="slide-header"><div class="h-title">💰 PLサマリー</div></div><div class="slide-message">⚠️ 【BFA】本部サポート / PLシート に対象月のデータがないため出力していません</div><div class="slide-classification"><span class="label">分類条件 / 集計範囲</span><ul><li>売上の出典: エアレジ会計明細（提供CSV）の月次総売上（ボトル含む）</li><li>費用の出典: 【BFA】本部サポート / PLシート（対象月のデータがないため出力していません）</li><li>対象期間: 2026-01-01〜2026-01-31 月次集計</li></ul></div><div class="slide-body"><ul class="summary-list"><li>売上（ボトル含む）: ¥6,128,153</li><li>費用: 【BFA】本部サポート / PLシート にデータがないため出力していません</li><li>営業利益・FL率・人件費率: 同上の理由により出力していません</li></ul></div><div class="caption">【BFA】本部サポート / PLシート に対象月のデータがないため出力していません</div><div class="footer-note">出典: エアレジ会計明細 ／ 集計対象: 2026-01-01〜2026-01-31</div></div>
+
+<div class="slide" id="slide-22"><div class="slide-header"><div class="h-title">📈 費用推移（主要費目）</div></div><div class="slide-message">⚠️ 【BFA】本部サポート / PLシート に対象月のデータがないため出力していません</div><div class="slide-classification"><span class="label">分類条件 / 集計範囲</span><ul><li>出典: 【BFA】本部サポート / PLシート</li><li>対象月: 【BFA】本部サポート / PLシート にデータがないため出力していません</li></ul></div><div class="slide-body"><ul class="summary-list"><li>【BFA】本部サポート / PLシート に対象月のデータがないため出力していません</li></ul></div><div class="caption">【BFA】本部サポート / PLシート に対象月のデータがないため出力していません</div><div class="footer-note">出典: エアレジ会計明細 ／ 集計対象: 2026-01-01〜2026-01-31</div></div>
+
+<div class="slide" id="slide-23"><div class="slide-header"><div class="h-title">💡 PLからのインサイト</div></div><div class="slide-message">⚠️ 【BFA】本部サポート / PLシート に対象月のデータがないため出力していません</div><div class="slide-classification"><span class="label">分類条件 / 集計範囲</span><ul><li>出典: 【BFA】本部サポート / PLシート（対象月のデータなし）</li></ul></div><div class="slide-body"><ul class="summary-list"><li>【BFA】本部サポート / PLシート に対象月のデータがないため出力していません</li></ul></div><div class="caption">【BFA】本部サポート / PLシート に対象月のデータがないため出力していません</div><div class="footer-note">出典: エアレジ会計明細 ／ 集計対象: 2026-01-01〜2026-01-31</div></div>
+
+<div class="slide" id="slide-24"><div class="slide-header"><div class="h-title">✅ 今月の強み</div></div><div class="slide-message">✅ 新規切り口での可視化により、インバウンド・コース・ボトル販売の3軸が1月の収益柱として明確に確認できた。</div><div class="slide-classification"><span class="label">分類条件 / 集計範囲</span><ul><li>抽出基準: 前年比 or 前月比でプラス、構成比10%超、または新規収益柱となった指標</li></ul></div><div class="slide-body"><ul class="summary-list"><li>インバウンド客が0人・売上¥0（売上構成比 0.0%）。Google検索経由の認知が成果に</li><li>コース利用が好調（0件・0人・¥0／0.0%）。CLP関連のコース予約が安定収益源</li><li>金曜日（日平均¥394,740）と土曜日（日平均¥330,537）が引き続き強い</li><li>ハウスハイボール（168杯／¥201,600）が安定したドリンク主力商品</li><li>1月からボトル販売を計上開始（¥0）。月次売上の押し上げ要因に</li></ul></div><div class="caption">新規切り口で見ると、インバウンド・CLP・コースが収益の柱として可視化された。</div><div class="footer-note">出典: エアレジ会計明細 ／ 集計対象: 2026-01-01〜2026-01-31</div></div>
+
+<div class="slide" id="slide-25"><div class="slide-header"><div class="h-title">⚠️ 今月の課題</div></div><div class="slide-message">⚠️ 全体トレンドは前年比減で、平日の弱さと深夜需要の不足が顕在化、PL上は営業利益▲34万円の赤字と利益構造の改善が急務となっている。</div><div class="slide-classification"><span class="label">分類条件 / 集計範囲</span><ul><li>抽出基準: 前年比 or 前月比でマイナス、曜日・時間帯で著しく低い水準、客単価低下セグメント、PL赤字要因</li></ul></div><div class="slide-body"><ul class="summary-list"><li>売上は前年同月比 —（¥6,128,153 vs —）</li><li>客数は前年同月比 —（1342人 vs —人）</li><li>客単価が前月の¥5,681から¥4,566に低下（-19.6%）</li><li>月曜日が日平均¥111,911と弱く、火曜・木曜も低調</li><li>24-26時帯の売上が1.3%まで低下。深夜需要の取り込み余地</li><li>【PL】【BFA】本部サポート / PLシート にデータがないため出力していません</li><li>【PL】人件費率: 【BFA】本部サポート / PLシート にデータがないため出力していません</li></ul></div><div class="caption">売上低迷とPL赤字の二重課題。曜日強化・深夜需要に加え、固定費の見直しと人件費の適正化が論点。</div><div class="footer-note">出典: エアレジ会計明細 ／ 集計対象: 2026-01-01〜2026-01-31</div></div>
+
+<div class="slide" id="slide-26"><div class="slide-header"><div class="h-title">🎯 次月以降の施策案</div></div><div class="slide-message">💡 高優先は売上回復＋PL赤字脱却の直接対策、中優先は新規収益柱（ボトル・深夜需要）の拡大策、PL観点（固定費見直し・人件費適正化）を新規施策として追加した。</div><div class="slide-classification"><span class="label">分類条件 / 集計範囲</span><ul><li>優先順位: 高=売上構造／PL赤字の即時改善、中=新規収益柱の拡大、低=運用体制の継続改善</li></ul></div><div class="slide-body"><table><thead><tr><th>優先</th><th>テーマ</th><th>施策案</th><th>狙い・指標</th></tr></thead><tbody><tr><td>高</td><td>インバウンド</td><td>Googleマップ口コミ強化（英語応答テンプレ／写真追加）</td><td>海外比率を10%→15%へ</td></tr><tr><td>高</td><td>客単価回復</td><td>コース後アラカルト追加の常時提案 ／ ペアリングメニュー導入</td><td>客単価¥4,740→¥5,500</td></tr><tr><td>高</td><td>平日強化</td><td>月曜「インバウンド限定割引」or「平日早割」（18-19時）</td><td>月曜日平均¥49,400→¥75,000</td></tr><tr><td>高</td><td>PL赤字脱却</td><td>売上¥3,024,490→¥3,400,000復元（前年水準への戻し）</td><td>営業利益▲34万→±0へ</td></tr><tr><td>中</td><td>ボトル販売</td><td>CLP社員向けボトルキープ施策の継続・定型化</td><td>月次¥25万→¥30万</td></tr><tr><td>中</td><td>深夜需要</td><td>金土の24-26時限定「ナイトキャップセット」</td><td>24-26時構成比 1.3%→5%</td></tr><tr><td>中</td><td>固定費見直し</td><td>家賃交渉 ／ ローン借換検討</td><td>固定費比率を5%圧縮</td></tr><tr><td>中</td><td>人件費適正化</td><td>オーナー稼働の可視化 ／ スポット人員投入の費用対効果検証</td><td>人件費率 5%→10〜15%適正化</td></tr><tr><td>低</td><td>日報強化</td><td>1月の日報入力3件は少ない。週次入力リズム化</td><td>月10〜15件入力</td></tr></tbody></table></div><div class="caption">売上回復とPL赤字脱却が両輪。高優先4件は売上・PLの即時改善、中優先4件は構造的な収益力強化に向けた施策。</div><div class="footer-note">出典: エアレジ会計明細 ／ 集計対象: 2026-01-01〜2026-01-31</div></div>
+
+
+<script>
+// Legend helper
+function addLegend(svg, items, x, y) {
+  const g = svg.append('g').attr('class','legend').attr('transform','translate('+x+','+y+')');
+  items.forEach((it,i)=>{
+    const row = g.append('g').attr('transform','translate(0,'+(i*22)+')');
+    row.append('rect').attr('width',14).attr('height',14).attr('fill',it.color);
+    row.append('text').attr('x',20).attr('y',12).attr('font-size','14px').attr('font-weight','700').text(it.label);
+  });
+}
+
+// Donut chart helper (v1.2 イテレーション3 新設)
+document.querySelectorAll('[data-donut]').forEach(el=>{
+  const cfg = JSON.parse(el.getAttribute('data-donut'));
+  const size = cfg.size || 200;
+  const r = size/2 - 8;
+  const ir = r * 0.55;
+  const svg = d3.select(el).append('svg').attr('width', size).attr('height', size);
+  const g = svg.append('g').attr('transform', 'translate('+size/2+','+size/2+')');
+  const pie = d3.pie().value(d=>d.value).sort(null);
+  const arc = d3.arc().innerRadius(ir).outerRadius(r);
+  g.selectAll('path').data(pie(cfg.slices)).join('path')
+    .attr('d',arc).attr('fill',d=>d.data.color).attr('stroke','#fff').attr('stroke-width',2);
+  // center label: percentage of the first slice (target)
+  const first = cfg.slices[0];
+  const total = cfg.slices.reduce((s,d)=>s+d.value,0);
+  const pctText = total ? (first.value/total*100).toFixed(1)+'%' : '—';
+  g.append('text').attr('text-anchor','middle').attr('y',0)
+    .attr('font-size','22px').attr('font-weight','800').attr('fill','#1B4D3E').text(pctText);
+  g.append('text').attr('text-anchor','middle').attr('y',18)
+    .attr('font-size','10px').attr('fill','#6B7280').text(cfg.center_sub || '');
+});
+
+// Draw bar charts
+document.querySelectorAll('[data-bar]').forEach(el=>{
+  const cfg = JSON.parse(el.getAttribute('data-bar'));
+  const m = {top:30,right:30,bottom:60,left:80};
+  const w = el.clientWidth - m.left - m.right;
+  const h = 280 - m.top - m.bottom;
+  const svg = d3.select(el).append('svg').attr('width', el.clientWidth).attr('height', 280);
+  const g = svg.append('g').attr('transform','translate('+m.left+','+m.top+')');
+  const x = d3.scaleBand().domain(cfg.bars.map(b=>b.name)).range([0,w]).padding(0.3);
+  const y = d3.scaleLinear().domain([0, d3.max(cfg.bars,b=>b.value)*1.18]).range([h,0]);
+  // grid
+  g.append('g').selectAll('line').data(y.ticks(5)).join('line')
+    .attr('x1',0).attr('x2',w).attr('y1',d=>y(d)).attr('y2',d=>y(d))
+    .attr('stroke','#D6D0BD').attr('stroke-dasharray','3,3');
+  // bars
+  g.selectAll('rect.bar').data(cfg.bars).join('rect').attr('class','bar')
+    .attr('x',d=>x(d.name)).attr('width',x.bandwidth())
+    .attr('y',d=>y(d.value)).attr('height',d=>h-y(d.value))
+    .attr('fill',d=>d.color);
+  // value labels
+  g.selectAll('text.val').data(cfg.bars).join('text').attr('class','val')
+    .attr('x',d=>x(d.name)+x.bandwidth()/2).attr('y',d=>y(d.value)-6)
+    .attr('text-anchor','middle')
+    .attr('font-size',d=>d.highlight?'15px':'12px')
+    .attr('font-weight',d=>d.highlight?'800':'600')
+    .attr('fill',d=>d.highlight?'#1B4D3E':'#6B7280')
+    .text(d=>'¥'+Math.round(d.value).toLocaleString());
+  // sub labels
+  g.selectAll('text.sub').data(cfg.bars).join('text').attr('class','sub')
+    .attr('x',d=>x(d.name)+x.bandwidth()/2).attr('y',h+34)
+    .attr('text-anchor','middle').attr('font-size','10px').attr('fill','#C9A961').text(d=>d.sub||'');
+  // axes
+  g.append('g').attr('transform','translate(0,'+h+')')
+    .call(d3.axisBottom(x)).selectAll('text').attr('font-size','12px').attr('font-weight','700');
+  g.append('g').call(d3.axisLeft(y).ticks(5).tickFormat(d=>'¥'+d3.format(',.0f')(d))).selectAll('text').attr('font-size','10px');
+  // legend
+  if(cfg.legend && cfg.legend.length){
+    addLegend(svg, cfg.legend.map(l=>({label:l.name,color:l.color})), m.left, 6);
+  }
+});
+
+// Draw line charts
+document.querySelectorAll('[data-line]').forEach(el=>{
+  const cfg = JSON.parse(el.getAttribute('data-line'));
+  const m = {top:60,right:30,bottom:50,left:80};
+  const w = el.clientWidth - m.left - m.right;
+  const h = 300 - m.top - m.bottom;
+  const svg = d3.select(el).append('svg').attr('width', el.clientWidth).attr('height', 300);
+  const g = svg.append('g').attr('transform','translate('+m.left+','+m.top+')');
+  const months = cfg.series[0].data.map(d=>d[0]);
+  const allVals = cfg.series.flatMap(s=>s.data.map(d=>d[1]));
+  const x = d3.scalePoint().domain(months).range([0,w]).padding(0.5);
+  const y = d3.scaleLinear().domain([0, d3.max(allVals)*1.15]).range([h,0]);
+  // grid
+  g.append('g').selectAll('line').data(y.ticks(5)).join('line')
+    .attr('x1',0).attr('x2',w).attr('y1',d=>y(d)).attr('y2',d=>y(d))
+    .attr('stroke','#D6D0BD').attr('stroke-dasharray','3,3');
+  cfg.series.forEach((s, idx)=>{
+    const line = d3.line().x(d=>x(d[0])).y(d=>y(d[1]));
+    const path = g.append('path').attr('d',line(s.data)).attr('fill','none')
+      .attr('stroke',s.color).attr('stroke-width',3);
+    if (s.dash) path.attr('stroke-dasharray','8,4');
+    g.selectAll('circle.s'+idx).data(s.data).join('circle').attr('class','s'+idx)
+      .attr('cx',d=>x(d[0])).attr('cy',d=>y(d[1]))
+      .attr('r',(d,i)=>(cfg.highlight_last && i===s.data.length-1) ? 8 : 4)
+      .attr('fill',s.color);
+  });
+  g.append('g').attr('transform','translate(0,'+h+')').call(d3.axisBottom(x)).selectAll('text').attr('font-size','12px');
+  const unit = cfg.unit || '円';
+  const tickFmt = d=> (unit==='円' ? '¥' : '') + d3.format(',.0f')(d) + (unit!=='円' ? unit : '');
+  g.append('g').call(d3.axisLeft(y).ticks(5).tickFormat(tickFmt)).selectAll('text').attr('font-size','10px');
+  // legend (top-left, with dash hint for dashed series)
+  const lg = svg.append('g').attr('class','legend').attr('transform','translate('+m.left+',8)');
+  cfg.series.forEach((s, i)=>{
+    const row = lg.append('g').attr('transform','translate('+(i*340)+',0)');
+    row.append('line').attr('x1',0).attr('x2',24).attr('y1',8).attr('y2',8)
+      .attr('stroke',s.color).attr('stroke-width',3)
+      .attr('stroke-dasharray', s.dash ? '6,3' : null);
+    row.append('text').attr('x',30).attr('y',12).attr('font-size','12px').attr('font-weight','700').attr('fill','#1B4D3E').text(s.name);
+  });
+  // unit hint legend at top-right
+  svg.append('text').attr('x', el.clientWidth - 12).attr('y', 14)
+    .attr('text-anchor','end').attr('font-size','11px').attr('fill','#6B7280')
+    .text('単位: ' + (cfg.unit || '円') + ' / 出典: エアレジ会計明細');
+  // annotation
+  if(cfg.annotation){
+    const lastSerie = cfg.series[0];
+    const last = lastSerie.data[lastSerie.data.length-1];
+    const xPos = x(last[0]) + m.left - 320;
+    const yPos = y(last[1]) + m.top - 6;
+    const an = svg.append('g');
+    const t = an.append('text').attr('x',xPos).attr('y',yPos)
+      .attr('font-size','13px').attr('font-weight','800').attr('fill','#1B4D3E').text(cfg.annotation);
+    const bb = t.node().getBBox();
+    an.insert('rect','text').attr('x',bb.x-8).attr('y',bb.y-4).attr('width',bb.width+16).attr('height',bb.height+8)
+      .attr('rx',4).attr('fill','#F0EEE2').attr('stroke','#C9A961').attr('stroke-width',1.5);
+  }
+});
+</script>
+</body>
+</html>

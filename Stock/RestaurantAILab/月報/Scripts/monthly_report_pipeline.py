@@ -81,16 +81,79 @@ def parse_stay(s):
     except Exception:
         return pd.Timedelta(0)
 
+def _load_rawdata_csv(path, target_month):
+    """rawdata.csv（DB正規化版・UTF-8）を AirRegi提供CSV互換の hdr / det DataFrame に変換する。
+
+    rawdata.csv のスキーマ (一例):
+        store_code, store_name, account_id, entry_at, exit_at, day_of_week,
+        account_total, customer_count, item_count, has_reservation, is_course,
+        menu_name, price, quantity, subtotal, category1, ordered_at, cost_rate
+    """
+    raw = pd.read_csv(path)
+    # JST 化
+    raw["entry_jst"] = pd.to_datetime(raw["entry_at"], utc=True).dt.tz_convert("Asia/Tokyo")
+    raw["exit_jst"]  = pd.to_datetime(raw["exit_at"],  utc=True).dt.tz_convert("Asia/Tokyo")
+    raw["dt"] = raw["exit_jst"]  # 会計日時 = exit
+    raw["business_date"] = raw["dt"].apply(to_business_date)
+    raw["business_month"] = pd.to_datetime(raw["business_date"]).dt.strftime("%Y-%m")
+    raw = raw[raw["business_month"] == target_month].copy()
+
+    # ヘッダー行（取引ごとに1行）
+    hdr_src = raw.groupby("account_id", as_index=False).agg(
+        total=("account_total", "first"),
+        customers=("customer_count", "first"),
+        bd=("business_date", "first"),
+        bm=("business_month", "first"),
+        entry=("entry_jst", "first"),
+        exit_=("exit_jst", "first"),
+    )
+    def stay_str(r):
+        try:
+            td = (r["exit_"] - r["entry"])
+            total = int(td.total_seconds())
+            if total < 0: total = 0
+            h, rem = divmod(total, 3600); m, s = divmod(rem, 60)
+            return f"{h:02d}:{m:02d}:{s:02d}"
+        except Exception:
+            return "00:00:00"
+    hdr = pd.DataFrame({
+        "取引No": hdr_src["account_id"],
+        "合計":   hdr_src["total"],
+        "人数":   hdr_src["customers"],
+        "business_date": hdr_src["bd"],
+        "business_month": hdr_src["bm"],
+        "dt": hdr_src["exit_"],
+        "滞在時間": hdr_src.apply(stay_str, axis=1),
+    })
+
+    # 明細行
+    det = pd.DataFrame({
+        "取引No": raw["account_id"],
+        "メニュー名": raw["menu_name"],
+        "カテゴリー名": raw["category1"],
+        "価格": raw["price"],
+        "注文数量": raw["quantity"],
+        "business_date": raw["business_date"],
+        "business_month": raw["business_month"],
+    })
+    return hdr, det
+
 # ============================================
 # 提供CSV読み込み（Shift-JIS）→ ヘッダー/明細分離
 # ============================================
 def load_provided_csv(path, target_month):
-    """提供CSVを読み込み、target_month に business_month が一致する会計を抽出する。
+    """提供CSV(Shift-JIS／AirRegi)もしくは rawdata.csv(UTF-8／DB正規化) を読み込み、
+    target_month に business_month が一致する会計を抽出する。
 
     Returns:
         hdr_df: ヘッダー行（合計あり）
         det_df: 明細行（カテゴリ＋メニュー名あり）
     """
+    # 先頭バイトを覗いて rawdata.csv (UTF-8, "store_code"始まり) か AirRegi提供CSV(Shift-JIS) か判定
+    with open(path, "rb") as fh:
+        head = fh.read(64)
+    if head.lstrip().startswith(b'"store_code"') or head.lstrip().startswith(b"store_code"):
+        return _load_rawdata_csv(path, target_month)
     df = pd.read_csv(path, encoding="shift_jis")
     df["is_header"] = df["合計"].notna()
     df["is_detail"] = df["カテゴリー名"].notna() & df["メニュー名"].notna()
@@ -309,7 +372,10 @@ def calc_p1(hdr, det, kpi_total_sales, kpi_customers):
         return d
 
     # P1-1 インバウンド（メモ「海外」）
-    inb_hdr = hdr[hdr["メモ"].fillna("").str.contains("海外", na=False)]
+    if "メモ" in hdr.columns:
+        inb_hdr = hdr[hdr["メモ"].fillna("").str.contains("海外", na=False)]
+    else:
+        inb_hdr = hdr.iloc[0:0]  # メモ列が無いCSVに備える
     out["p1_1_inbound"] = {
         "label": "インバウンド（メモ「海外」）",
         "accounts": len(inb_hdr),
@@ -485,6 +551,11 @@ def build_pl_data(target_month, pl_source_current, pl_source_past, total_sales_t
     # 当月データ
     apr_exp = pl_source_current["expenses_by_month"].get(target_month, {})
     apr_exp_total = pl_source_current["expense_totals"].get(target_month, 0)
+    # 過去月用ソースに当月分が入っているケースにも対応
+    if (not apr_exp or apr_exp_total == 0) and pl_source_past:
+        if target_month in pl_source_past.get("expenses_by_month", {}):
+            apr_exp = pl_source_past["expenses_by_month"].get(target_month, {})
+            apr_exp_total = pl_source_past["expense_totals"].get(target_month, 0)
     fl_cost = apr_exp.get("食材", 0) + apr_exp.get("ドリンク", 0)
     labor_cost = apr_exp.get("人件費", 0)
     op_profit = calc_op_profit(total_sales_target, apr_exp_total)
@@ -536,8 +607,14 @@ def build_pl_data(target_month, pl_source_current, pl_source_past, total_sales_t
         })
 
     months_available = sorted(all_expenses.keys())
+    # 当月の費用データが取れていなければ「available=False」として
+    # 上流のHTMLビルダーに「データなし」スライド表示を任せる
+    target_has_data = (apr_exp_total > 0) or (len(apr_exp) > 0)
     return {
-        "available": True,
+        "available": bool(target_has_data),
+        "unavailable_reason": None if target_has_data else (
+            "【BFA】本部サポート / PLシート に対象月のデータがないため出力していません"
+        ),
         "month_target": target_month,
         "expense_total": apr_exp_total,
         "op_profit": op_profit,

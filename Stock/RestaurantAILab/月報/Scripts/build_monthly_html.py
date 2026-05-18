@@ -93,7 +93,13 @@ slides.append({
     "title": "月間サマリー（KPI）",
     "subtitle": None,
     "message_icon": "⚠️",
-    "message": f"4月の売上は{yen(m04['sales_total'])}（前年比 {diff_pct(m04['sales_total'], m04_py['sales_total'])}）と縮小し、営業利益は{yen(D['pl']['op_profit'])}（{D['pl']['op_profit_rate']:+.1f}%）の赤字に転落した。",
+    "message": (lambda: (
+        f"4月の売上は{yen(m04['sales_total'])}（前年比 "
+        + (diff_pct(m04['sales_total'], m04_py['sales_total']) if m04_py else '—')
+        + "）、営業利益は"
+        + ((yen(D['pl']['op_profit']) + f"（{D['pl']['op_profit_rate']:+.1f}%）") if D['pl'].get('available') else "【BFA】本部サポート / PLシート にデータがないため出力していません")
+        + "。"
+    ))(),
     "classification": [
         f"集計対象: {_y}/{_m}/1 0:00 〜 {_m}/{_last_day} 23:59 の売上日時（エアレジ売上分析画面と一致）",
         "PL系KPI（総費用／営業利益／FL率／人件費率）の出典: 4月はダッシュボードDB／過去月は【BFA】本部サポート / PLシート",
@@ -168,7 +174,7 @@ slides.append({
     "x_label": "月",
     "y_label": "売上（円）",
     "message_icon": "⚠️",
-    "message": f"売上は2026-01以降4ヶ月連続の減少傾向となり、当月{yen(m04['sales_total'])}は2025年4月{yen(m04_py['sales_total'])}から{diff_pct(m04['sales_total'], m04_py['sales_total'])}と大きく縮小している。",
+    "message": (f"売上は2026-01以降4ヶ月連続の減少傾向となり、当月{yen(m04['sales_total'])}は2025年4月{yen(m04_py['sales_total'])}から{diff_pct(m04['sales_total'], m04_py['sales_total'])}と大きく縮小している。" if m04_py else f"当月の売上は{yen(m04['sales_total'])}。前年同月の比較データは取得元（ダッシュボード経由のローデータ）に含まれていません。"),
     "classification": [
         f"集計対象: {_y}/{_m}/1 0:00 〜 {_m}/{_last_day} 23:59 の売上日時（エアレジ売上分析画面と一致）",
         "前年同月以前のデータはダッシュボード経由のエアレジ会計明細",
@@ -235,7 +241,7 @@ slides.append({
     "icon": "📅",
     "title": "前年同月比（2025年4月との比較）",
     "message_icon": "⚠️",
-    "message": f"売上は前年同月から{diff_pct(m04['sales_total'], m04_py['sales_total'])}（差額{yen(m04_py['sales_total']-m04['sales_total'])}）、客数は{diff_pct(m04['customers'], m04_py['customers'])}（差{m04_py['customers']-m04['customers']}人）と縮小しており、市場環境の回復が継続課題となっている。",
+    "message": (f"売上は前年同月から{diff_pct(m04['sales_total'], m04_py['sales_total'])}（差額{yen(m04_py['sales_total']-m04['sales_total'])}）、客数は{diff_pct(m04['customers'], m04_py['customers'])}（差{m04_py['customers']-m04['customers']}人）と縮小しており、市場環境の回復が継続課題となっている。" if m04_py else "前年同月の比較データは取得元のローデータに含まれていないため出力していません。"),
     "classification": [
         f"集計対象: {_y}/{_m}/1 0:00 〜 {_m}/{_last_day} 23:59 の売上日時",
         "前年同月（2025-04）はダッシュボード経由のエアレジ会計明細から取得",
@@ -429,7 +435,7 @@ slides.append({
          yen(p15["sales"]-p16["sales"]),
          pctv(p15["share_sales"]-p16["share_sales"])],
     ],
-    "caption": f"コース全体の構成比は {p15['share_sales']:.1f}%。うち約半分（売上ベースで{p16['sales']/p15['sales']*100:.0f}%）が「その他CLPコース」。詳細は次スライド参照。",
+    "caption": f"コース全体の構成比は {p15['share_sales']:.1f}%。うち約半分（売上ベースで{(p16['sales']/p15['sales']*100) if p15['sales'] else 0:.0f}%）が「その他CLPコース」。詳細は次スライド参照。",
 })
 
 # ───────────────────────────────────────────────
@@ -443,7 +449,7 @@ slides.append({
     "title": "商品構造③：その他CLPコース（P1-6）",
     "subtitle": "P1-5「コース&セット」の内訳",
     "message_icon": "💡",
-    "message": f"その他CLPコースは{p16['accounts']}件・{p16['customers']}人で売上¥{p16['sales']:,.0f}（売上構成比{p16['share_sales']:.1f}%）と高単価利用（1人あたり¥{p16['sales']/p16['customers']:,.0f}）を実現している。",
+    "message": f"その他CLPコースは{p16['accounts']}件・{p16['customers']}人で売上¥{p16['sales']:,.0f}（売上構成比{p16['share_sales']:.1f}%）と高単価利用（1人あたり¥{(p16['sales']/p16['customers']) if p16['customers'] else 0:,.0f}）を実現している。",
     "classification": "その他CLPコース = エアレジ会計明細 の明細行『メニュー名』が『その他CLPコース』に完全一致する取引（P1-5『コース&セット』カテゴリの内訳のうち、CLP社員以外の法人案件等）",
     "donut": {"target": "その他CLPコース", "value": p16["sales"], "rest": m04["sales_total"] - p16["sales"],
               "target_color": "#2D6B4F", "rest_color": "#E2E8F0",
@@ -464,7 +470,7 @@ slides.append({
         "share_sales": 100 - p16["share_sales"],
         "share_customers": 100 - p16["share_customers"],
     },
-    "caption": f"その他CLPコースは{p16['accounts']}件・{p16['customers']}人で売上¥{p16['sales']:,.0f}（{p16['share_sales']:.1f}%）。客単価 ¥{p16['sales']/p16['customers']:,.0f}/人と高単価利用。",
+    "caption": f"その他CLPコースは{p16['accounts']}件・{p16['customers']}人で売上¥{p16['sales']:,.0f}（{p16['share_sales']:.1f}%）。客単価 ¥{(p16['sales']/p16['customers']) if p16['customers'] else 0:,.0f}/人と高単価利用。",
 })
 
 # ───────────────────────────────────────────────
@@ -697,7 +703,41 @@ PL = D["pl"]
 # ───────────────────────────────────────────────
 # PL-1: PLサマリー（4月実績）
 # ───────────────────────────────────────────────
-slides.append({
+_PL_AVAILABLE = bool(PL.get("available", False)) and len(PL.get("expense_breakdown", [])) > 0
+_pl_reason = PL.get("unavailable_reason") or "【BFA】本部サポート / PLシート に対象月のデータがないため出力していません"
+if not _PL_AVAILABLE:
+    slides.append({
+        "type": "summary", "icon": "💰", "title": "PLサマリー",
+        "message_icon": "⚠️", "message": _pl_reason,
+        "classification": [
+            "売上の出典: エアレジ会計明細（提供CSV）の月次総売上（ボトル含む）",
+            "費用の出典: 【BFA】本部サポート / PLシート（対象月のデータがないため出力していません）",
+            f"対象期間: {_PERIOD_DASH} 月次集計",
+        ],
+        "items": [
+            f"売上（ボトル含む）: {yen(m04['sales_total'])}",
+            "費用: 【BFA】本部サポート / PLシート にデータがないため出力していません",
+            "営業利益・FL率・人件費率: 同上の理由により出力していません",
+        ],
+        "caption": _pl_reason,
+    })
+    slides.append({
+        "type": "summary", "icon": "📈", "title": "費用推移（主要費目）",
+        "message_icon": "⚠️", "message": _pl_reason,
+        "classification": [
+            "出典: 【BFA】本部サポート / PLシート",
+            "対象月: 【BFA】本部サポート / PLシート にデータがないため出力していません",
+        ],
+        "items": [_pl_reason], "caption": _pl_reason,
+    })
+    slides.append({
+        "type": "summary", "icon": "💡", "title": "PLからのインサイト",
+        "message_icon": "⚠️", "message": _pl_reason,
+        "classification": ["出典: 【BFA】本部サポート / PLシート（対象月のデータなし）"],
+        "items": [_pl_reason], "caption": _pl_reason,
+    })
+
+if _PL_AVAILABLE: slides.append({
     "type": "callout_table",
     "icon": "💰",
     "title": "PLサマリー（4月実績）",
@@ -734,7 +774,7 @@ pl2_series = [
     {"name": "食材", "color": "#2D6B4F", "data": get_series("食材")},
     {"name": "人件費", "color": "#8B3A3A", "data": get_series("人件費"), "dash": True},
 ]
-slides.append({
+if _PL_AVAILABLE: slides.append({
     "type": "line_chart",
     "icon": "📈",
     "title": "費用推移（主要費目・直近4ヶ月）",
@@ -757,7 +797,7 @@ slides.append({
 # PL-4 → PL-3 へ繰り上げ: PLからのインサイト
 # （PL-3「FL率・人件費率の推移」は削除・修正6-2）
 # ───────────────────────────────────────────────
-slides.append({
+if _PL_AVAILABLE: slides.append({
     "type": "summary",
     "icon": "💡",
     "title": "PLからのインサイト",
@@ -842,8 +882,8 @@ slides.append({
         f"客単価が前月の¥{m03['kyakutanka']:,.0f}から¥{m04['kyakutanka']:,.0f}に低下（{diff_pct(m04['kyakutanka'], m03['kyakutanka']) if m03 else '—'}）",
         f"月曜日が日平均¥{min_wd['daily_avg_sales']:,.0f}と弱く、火曜・木曜も低調",
         f"24-26時帯の売上が1.3%まで低下。深夜需要の取り込み余地",
-        f"【PL】営業利益 ¥{PL['op_profit']:,.0f}（{PL['op_profit_rate']:+.1f}%）の赤字。家賃¥{PL['expense_breakdown'][0]['amount']:,.0f}＋ローン返済が固定費として圧迫",
-        f"【PL】人件費率 {PL['labor_rate']:.1f}% と目安30%を大幅下回り、オーナー過剰負担が継続している可能性",
+        (f"【PL】営業利益 ¥{PL['op_profit']:,.0f}（{PL['op_profit_rate']:+.1f}%）の赤字。家賃¥{PL['expense_breakdown'][0]['amount']:,.0f}＋ローン返済が固定費として圧迫" if _PL_AVAILABLE else "【PL】【BFA】本部サポート / PLシート にデータがないため出力していません"),
+        (f"【PL】人件費率 {PL['labor_rate']:.1f}% と目安30%を大幅下回り、オーナー過剰負担が継続している可能性" if _PL_AVAILABLE else "【PL】人件費率: 【BFA】本部サポート / PLシート にデータがないため出力していません"),
     ],
     "caption": "売上低迷とPL赤字の二重課題。曜日強化・深夜需要に加え、固定費の見直しと人件費の適正化が論点。",
 })

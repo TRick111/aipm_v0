@@ -32,11 +32,9 @@ with open(_args.analysis_json, "r", encoding="utf-8") as f:
 _tm = D.get("target_month", "2026-04")
 _y, _m = map(int, _tm.split("-"))
 _last_day = calendar.monthrange(_y, _m)[1]
-_next_m = 1 if _m == 12 else _m + 1
-_next_y = _y + 1 if _m == 12 else _y
-_PERIOD_DASH = f"{_y}年{_m}月の業務日（朝6時境界、深夜営業を当日扱い）"
-_PERIOD_JP = f"{_y}年{_m}月の業務日（{_m}/1 6:00 〜 {_next_m}/1 5:59 JST、朝6時境界）"
-_PERIOD_JP_HEADER = f"{_y}年{_m}月（業務日: {_m}/1 〜 {_m}/{_last_day}）"
+_PERIOD_DASH = f"{_y}-{_m:02d}-01〜{_y}-{_m:02d}-{_last_day:02d}"
+_PERIOD_JP = f"{_y}年{_m}月1日 0:00 〜 {_m}月{_last_day}日 23:59"
+_PERIOD_JP_HEADER = f"{_y}年{_m}月（{_m}/1 〜 {_m}/{_last_day}）"
 
 # ============================================
 # 数値フォーマッタ
@@ -70,7 +68,7 @@ trend_data = [(m, M[m]) for m in trend_months if m in M]
 TITLE = f"{STORE_NAME} 月次営業報告"
 PERIOD = _PERIOD_JP_HEADER
 FOOTER_NOTE = f"出典: エアレジ会計明細 ／ 集計対象: {_PERIOD_DASH}"
-MONTHLY_SALES_NOTE = f"※月売上の集計対象: {_PERIOD_JP}（エアレジ売上分析画面と一致）。月次／週次／日次／曜日別／時間帯別すべて業務日基準で統一。"
+MONTHLY_SALES_NOTE = f"※月売上の集計対象: {_PERIOD_JP} の売上日時（エアレジ売上分析画面の表示と一致）。週次・日次・曜日別・時間帯別は営業日基準（朝6時境界）で別途集計。"
 
 # Slides will be built as a list of dicts then rendered
 slides = []
@@ -103,7 +101,7 @@ slides.append({
         + "。"
     ))(),
     "classification": [
-        f"集計対象: {_y}年{_m}月の業務日（{_m}/1 6:00 〜 {_next_m}/1 5:59 JST、朝6時境界 ／ エアレジ売上分析画面と一致）",
+        f"集計対象: {_y}/{_m}/1 0:00 〜 {_m}/{_last_day} 23:59 の売上日時（エアレジ売上分析画面と一致）",
         "PL系KPI（総費用／営業利益／FL率／人件費率）の出典: 4月はダッシュボードDB／過去月は【BFA】本部サポート / PLシート",
         "FL率の分母 = 月次総売上（ボトル含む）。FL率 =（食材+ドリンク）÷ 売上",
     ],
@@ -178,7 +176,7 @@ slides.append({
     "message_icon": "⚠️",
     "message": (f"売上は2026-01以降4ヶ月連続の減少傾向となり、当月{yen(m04['sales_total'])}は2025年4月{yen(m04_py['sales_total'])}から{diff_pct(m04['sales_total'], m04_py['sales_total'])}と大きく縮小している。" if m04_py else f"当月の売上は{yen(m04['sales_total'])}。前年同月の比較データは取得元（ダッシュボード経由のローデータ）に含まれていません。"),
     "classification": [
-        f"集計対象: {_y}年{_m}月の業務日（{_m}/1 6:00 〜 {_next_m}/1 5:59 JST、朝6時境界 ／ エアレジ売上分析画面と一致）",
+        f"集計対象: {_y}/{_m}/1 0:00 〜 {_m}/{_last_day} 23:59 の売上日時（エアレジ売上分析画面と一致）",
         "前年同月以前のデータはダッシュボード経由のエアレジ会計明細",
     ],
     "series": [
@@ -200,7 +198,7 @@ slides.append({
     "message_icon": "✅",
     "message": f"客数は前月{m03['customers']}人から{m04['customers']}人へ{diff_pct(m04['customers'], m03['customers'])}と微増に転じ、4ヶ月連続の減少基調から回復の兆しを見せている。",
     "classification": [
-        f"集計対象: {_y}年{_m}月の業務日（{_m}/1 6:00 〜 {_next_m}/1 5:59 JST、朝6時境界）",
+        f"集計対象: {_y}/{_m}/1 0:00 〜 {_m}/{_last_day} 23:59 の売上日時",
         "客数=会計ヘッダーの『人数』合算（伝票数ではない）",
         "前年同月以前のデータはダッシュボード経由のエアレジ会計明細",
     ],
@@ -221,7 +219,7 @@ slides.append({
     "message_icon": "⚠️",
     "message": f"客単価（ボトル除く）は前月{yen(m03['kyakutanka'])}から{yen(m04['kyakutanka'])}へ{diff_pct(m04['kyakutanka'], m03['kyakutanka'])}と低下し、平均客単価の押し下げ要因の特定が必要となった。",
     "classification": [
-        f"集計対象: {_y}年{_m}月の業務日（{_m}/1 6:00 〜 {_next_m}/1 5:59 JST、朝6時境界）",
+        f"集計対象: {_y}/{_m}/1 0:00 〜 {_m}/{_last_day} 23:59 の売上日時",
         "客単価=売上÷客数。実線はボトル購入を分子から除外（経営判断用）",
     ],
     "series": [
@@ -245,7 +243,7 @@ slides.append({
     "message_icon": "⚠️",
     "message": (f"売上は前年同月から{diff_pct(m04['sales_total'], m04_py['sales_total'])}（差額{yen(m04_py['sales_total']-m04['sales_total'])}）、客数は{diff_pct(m04['customers'], m04_py['customers'])}（差{m04_py['customers']-m04['customers']}人）と縮小しており、市場環境の回復が継続課題となっている。" if m04_py else "前年同月の比較データは取得元のローデータに含まれていないため出力していません。"),
     "classification": [
-        f"集計対象: {_y}年{_m}月の業務日（{_m}/1 6:00 〜 {_next_m}/1 5:59 JST、朝6時境界）",
+        f"集計対象: {_y}/{_m}/1 0:00 〜 {_m}/{_last_day} 23:59 の売上日時",
         "前年同月（2025-04）はダッシュボード経由のエアレジ会計明細から取得",
     ],
     "headers": ["指標", "2026-04", "2025-04", "前年比"],
@@ -282,7 +280,7 @@ slides.append({
     "message_icon": "✅",
     "message": f"4月はインバウンド客が{p11['customers']}人来店し、売上構成比{p11['share_sales']:.1f}%を占めた。Google検索経由が主流で、訪日客の取り込みが収益基盤の一角を形成している。",
     "classification": [
-        f"集計対象: {_y}年{_m}月の業務日（{_m}/1 6:00 〜 {_next_m}/1 5:59 JST、朝6時境界）",
+        f"集計対象: {_y}/{_m}/1 0:00 〜 {_m}/{_last_day} 23:59 の売上日時",
         f"抽出キー: 会計ヘッダーの『メモ』カラムに『海外』を部分一致（{p11['accounts']}件ヒット）",
     ],
     "donut": {"target": "インバウンド", "value": p11["sales"], "rest": m04["sales_total"] - p11["sales"],
@@ -686,7 +684,7 @@ slides.append({
     "message_icon": "💡",
     "message": "コース&セットが構成比20.9%で最大カテゴリとなり、NEW CLASSIC COCKTAIL（9.4%）・ボトル購入（8.0%）が続いた。コース・カクテル・新規ボトルの3軸が収益構造を形成している。",
     "classification": [
-        f"集計対象: {_y}年{_m}月の業務日（{_m}/1 6:00 〜 {_next_m}/1 5:59 JST、朝6時境界）",
+        f"集計対象: {_y}/{_m}/1 0:00 〜 {_m}/{_last_day} 23:59 の売上日時",
         "POSカテゴリ別の月間売上（subtotal = 価格×数量 合算）",
         "ボトル購入含む全カテゴリ",
     ],

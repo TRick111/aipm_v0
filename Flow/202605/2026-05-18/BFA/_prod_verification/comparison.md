@@ -7,6 +7,24 @@ prod truth: `prod_monthly_truth.json` (entry_at JST 月内全件)
 
 ---
 
+## 🏁 2026-05-18 最終: prod DB 直接アップロード結果
+
+業務日基準HTML 4ヶ月分を `scripts/upload-monthly-report-prod-direct.mjs` で prod DB (ep-rough-bird) に直接アップロード完了。verify SELECT で4件存在を確認。
+
+| 月 | report ID | BlobURL | size |
+|---|---|---|---|
+| 2026-01 | `9ef8c06d-1467-4448-8a10-834b0de2ba6c` | `https://k6okzegwrvfvslxw.public.blob.vercel-storage.com/bfa-001/monthly-reports/2026-01-7QEdVTNylCHCcm557V2DLsMOTj7TgO.html` | 77,980 B |
+| 2026-02 | `04098dfc-b883-4c6d-8d42-f82703aaf97d` | `https://k6okzegwrvfvslxw.public.blob.vercel-storage.com/bfa-001/monthly-reports/2026-02-UozxRFz4PUhvNZUs78lU70WQnTce9g.html` | 75,916 B |
+| 2026-03 | `2a686925-07ae-413b-b74c-1293935d1e14` | `https://k6okzegwrvfvslxw.public.blob.vercel-storage.com/bfa-001/monthly-reports/2026-03-62cImsAGdhr4r2xkUartwMbh3rwBop.html` | 75,888 B |
+| 2026-04 | `9fb15b51-29a9-4297-abee-72b3473333f4` | `https://k6okzegwrvfvslxw.public.blob.vercel-storage.com/bfa-001/monthly-reports/2026-04-RfLfNx7wXTmNA3kVg3nKwW6rTNLSRz.html` | 86,438 B |
+
+タイトル: 全て「BAR FIVE Arrows 月次営業報告 — 2026-MM」（v2.1 サフィックスなし）
+存在確認: `prod_db_final_state.json`
+
+April のみ既存 prod レコード `a7d41b68-3656-4f62-a7c2-317254b4932b`（古いBlob `2026-M04.html`）を削除して上書き。Blob 側も削除済み。
+
+---
+
 ## 🔄 2026-05-18 追記: 境界条件再分析後の最終判定
 
 **Phase 1 の集計クエリは「暦日基準」で誤り**だったことが判明（マスター指摘＋検証で確定）。

@@ -530,6 +530,9 @@ try:
             "exp_breakdown": ex,
         })
 
+    # 出典ラベルの統一（v1.2 イテレーション8）
+    #   - 4月: ダッシュボードDB（提供CSVと併用）
+    #   - 過去月（1〜3月・2025年）: 【BFA】本部サポート / PLシート
     pl_data = {
         "available": True,
         "month_target": TARGET_MONTH,
@@ -537,15 +540,17 @@ try:
         "op_profit": apr_op_profit,
         "op_profit_rate": apr_op_profit_rate,
         "fl_cost": fl_cost,
-        "fl_rate": fl_rate,
+        "fl_rate": fl_rate,  # 分母は sales_for_pl = ボトル含む月次総売上 ¥3,024,490
         "labor_cost": labor_cost,
         "labor_rate": labor_rate,
         "expense_breakdown": exp_breakdown,
         "trend": pl_trend,
         "months_available": months_for_trend,
         "months_missing": ["2026-03"] if "2026-03" not in months_for_trend else [],
-        "source": "ダッシュボード本番DB",
+        "source_current": "ダッシュボードDB",
+        "source_past": "【BFA】本部サポート / PLシート",
         "sales_for_pl_calc": sales_for_pl,
+        "fl_denominator_note": "FL率の分母は月次総売上（ボトル含む）",
     }
     print(f"\n  PL ─ 総費用: ¥{apr_exp_total:,.0f}  営業利益: ¥{apr_op_profit:,.0f} ({apr_op_profit_rate:+.1f}%)")
     print(f"      FL率: {fl_rate:.1f}%  人件費率: {labor_rate:.1f}%")

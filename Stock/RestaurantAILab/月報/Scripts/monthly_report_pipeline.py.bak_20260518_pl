@@ -387,190 +387,16 @@ def load_daily_reports(daily_csv, target_month):
     return sub.to_dict("records")
 
 # ============================================
-# PL分析（v2.1 新設・2026-05-18 イテレーション9恒久反映）
-# ============================================
-#   - 当月PL: --pl-source dashboard-db で --pl-dashboard-dump（JSON）から取得
-#   - 過去月PL: --pl-source sheet で --pl-sheet-parsed（JSON）から取得
-#   - 出典は分類条件帯で明示（HTMLビルダー側）
-# ============================================
-
-def calc_fl_rate(food_cost, drink_cost, total_sales):
-    """FL率 = (食材+ドリンク) ÷ 月次総売上（ボトル含む）"""
-    if not total_sales:
-        return None
-    return (food_cost + drink_cost) / total_sales * 100
-
-def calc_labor_rate(labor_cost, total_sales):
-    """人件費率 = 人件費 ÷ 月次総売上（ボトル含む）"""
-    if not total_sales:
-        return None
-    return labor_cost / total_sales * 100
-
-def calc_op_profit(total_sales, total_expense):
-    """営業利益 = 売上 − 総費用"""
-    return total_sales - total_expense
-
-def calc_op_profit_rate(total_sales, total_expense):
-    """営業利益率 = 営業利益 ÷ 売上"""
-    if not total_sales:
-        return None
-    return (total_sales - total_expense) / total_sales * 100
-
-def load_pl_dashboard_dump(json_path):
-    """ダッシュボードDBダンプJSONを読み込む（当月用）
-
-    期待スキーマ:
-        {
-          "expenseCategories": [{"id":..., "name":...}, ...],
-          "monthlyExpenses": [{"year_month":"YYYY-MM", "category_id":..., "total":"...."}, ...],
-          "monthlySales":    [{"year_month":"YYYY-MM", "total":"..."}, ...]   (optional)
-        }
-    """
-    with open(json_path) as f:
-        raw = json.load(f)
-    exp_cat_map = {c["id"]: c["name"] for c in raw["expenseCategories"]}
-    monthly_exp = {}      # {ym: {cat_name: total}}
-    monthly_exp_total = {}
-    for e in raw["monthlyExpenses"]:
-        ym = e["year_month"]
-        cat = exp_cat_map.get(e["category_id"], "その他")
-        v = float(e["total"])
-        monthly_exp.setdefault(ym, {})[cat] = v
-        monthly_exp_total[ym] = monthly_exp_total.get(ym, 0) + v
-    monthly_sales_pl = {}
-    for s in raw.get("monthlySales", []):
-        ym = s["year_month"]
-        monthly_sales_pl[ym] = monthly_sales_pl.get(ym, 0) + float(s["total"])
-    return {
-        "expenses_by_month": monthly_exp,
-        "expense_totals": monthly_exp_total,
-        "sales_by_month": monthly_sales_pl,
-    }
-
-def load_pl_sheet_parsed(json_path):
-    """【BFA】本部サポート / PLシート のパース結果JSONを読み込む（過去月用）
-
-    期待スキーマ（推奨）:
-        {
-          "expenses_by_month": {"YYYY-MM": {"家賃": 1234567, "ドリンク": ...}, ...},
-          "expense_totals":    {"YYYY-MM": 1234567, ...},
-          "sales_by_month":    {"YYYY-MM": 1234567, ...}
-        }
-
-    互換のため、 dashboard-db ダンプ形式も受け付ける（categoriesがあれば変換）
-    """
-    with open(json_path) as f:
-        raw = json.load(f)
-    if "expenseCategories" in raw and "monthlyExpenses" in raw:
-        # dashboard 形式
-        return load_pl_dashboard_dump(json_path)
-    return {
-        "expenses_by_month": raw.get("expenses_by_month", {}),
-        "expense_totals": raw.get("expense_totals", {}),
-        "sales_by_month": raw.get("sales_by_month", {}),
-    }
-
-def build_pl_data(target_month, pl_source_current, pl_source_past, total_sales_target):
-    """月報用PLデータをまとめる
-
-    Args:
-        target_month: 対象月 YYYY-MM
-        pl_source_current: dict (当月分のPLデータ) {expenses_by_month, expense_totals, sales_by_month}
-        pl_source_past: dict (過去月分) 同形式 or None
-        total_sales_target: 対象月の月次総売上（ボトル含む）
-
-    Returns:
-        analysis.json に入れる "pl" セクション
-    """
-    # 当月データ
-    apr_exp = pl_source_current["expenses_by_month"].get(target_month, {})
-    apr_exp_total = pl_source_current["expense_totals"].get(target_month, 0)
-    fl_cost = apr_exp.get("食材", 0) + apr_exp.get("ドリンク", 0)
-    labor_cost = apr_exp.get("人件費", 0)
-    op_profit = calc_op_profit(total_sales_target, apr_exp_total)
-    op_profit_rate = calc_op_profit_rate(total_sales_target, apr_exp_total)
-    fl_rate = calc_fl_rate(apr_exp.get("食材", 0), apr_exp.get("ドリンク", 0), total_sales_target)
-    labor_rate = calc_labor_rate(labor_cost, total_sales_target)
-
-    # 費目別ランキング
-    exp_breakdown = sorted(
-        [{"category": cat, "amount": amt,
-          "share": (amt / total_sales_target * 100) if total_sales_target else 0}
-         for cat, amt in apr_exp.items()],
-        key=lambda x: -x["amount"]
-    )
-
-    # 推移用（当月＋過去月をマージ）
-    all_expenses = dict(pl_source_current["expenses_by_month"])
-    all_totals = dict(pl_source_current["expense_totals"])
-    all_sales = dict(pl_source_current.get("sales_by_month", {}))
-    source_per_month = {m: "ダッシュボードDB" for m in all_expenses.keys()}
-    if pl_source_past:
-        for ym, ex in pl_source_past["expenses_by_month"].items():
-            if ym not in all_expenses:
-                all_expenses[ym] = ex
-                source_per_month[ym] = "【BFA】本部サポート / PLシート"
-        for ym, tot in pl_source_past["expense_totals"].items():
-            all_totals.setdefault(ym, tot)
-        for ym, sl in pl_source_past.get("sales_by_month", {}).items():
-            all_sales.setdefault(ym, sl)
-
-    # 当月売上はエアレジを優先
-    all_sales[target_month] = total_sales_target
-
-    pl_trend = []
-    for ym in sorted(all_expenses.keys()):
-        ex = all_expenses.get(ym, {})
-        total = all_totals.get(ym, 0)
-        sales = all_sales.get(ym, 0)
-        pl_trend.append({
-            "month": ym,
-            "sales": sales,
-            "total_expense": total,
-            "op_profit": calc_op_profit(sales, total) if sales else -total,
-            "op_profit_rate": calc_op_profit_rate(sales, total) if sales else None,
-            "fl_rate": calc_fl_rate(ex.get("食材", 0), ex.get("ドリンク", 0), sales) if sales else None,
-            "labor_rate": calc_labor_rate(ex.get("人件費", 0), sales) if sales else None,
-            "exp_breakdown": ex,
-            "source": source_per_month.get(ym, "—"),
-        })
-
-    months_available = sorted(all_expenses.keys())
-    return {
-        "available": True,
-        "month_target": target_month,
-        "expense_total": apr_exp_total,
-        "op_profit": op_profit,
-        "op_profit_rate": op_profit_rate,
-        "fl_cost": fl_cost,
-        "fl_rate": fl_rate,
-        "labor_cost": labor_cost,
-        "labor_rate": labor_rate,
-        "expense_breakdown": exp_breakdown,
-        "trend": pl_trend,
-        "months_available": months_available,
-        "source_current": "ダッシュボードDB",
-        "source_past": "【BFA】本部サポート / PLシート",
-        "sales_for_pl_calc": total_sales_target,
-        "fl_denominator_note": "FL率の分母 = 月次総売上（ボトル含む）",
-    }
-
-# ============================================
 # Main
 # ============================================
 def main():
-    p = argparse.ArgumentParser(description="月報パイプライン（汎用化版 v2.1 ／ PL対応）")
+    p = argparse.ArgumentParser(description="月報パイプライン（汎用化版 v2.0）")
     p.add_argument("--target-month", required=True, help="対象月 YYYY-MM (例: 2026-04)")
     p.add_argument("--store-code", required=True, help="店舗コード (例: BFA)")
     p.add_argument("--sales-csv", required=True, help="提供CSV (会計明細_YYYYMMDD-YYYYMMDD.csv, Shift-JIS)")
     p.add_argument("--output-dir", required=True, help="出力ディレクトリ (analysis.json)")
     p.add_argument("--compare-rawdata", help="比較データ用 rawdata.csv（前月／前年同月）")
     p.add_argument("--daily-report-csv", help="日報CSV")
-    # PL関連（v2.1 新設）
-    p.add_argument("--pl-source", choices=["dashboard-db", "sheet", "both"], default=None,
-                   help="PLデータ取得元。dashboard-db=当月用ダンプJSON、sheet=過去月用PLシートJSON、both=両方併用")
-    p.add_argument("--pl-dashboard-dump", help="ダッシュボードDBダンプJSON（当月PL用）")
-    p.add_argument("--pl-sheet-parsed", help="【BFA】本部サポート/PLシートのパース結果JSON（過去月PL用）")
     args = p.parse_args()
 
     os.makedirs(args.output_dir, exist_ok=True)
@@ -630,31 +456,6 @@ def main():
     # 6) 日報
     daily_reports = load_daily_reports(args.daily_report_csv, args.target_month)
 
-    # 6-α) PL データ（v2.1 新設）
-    pl_data = {"available": False, "reason": "PLソース未指定"}
-    if args.pl_source:
-        try:
-            current = None
-            past = None
-            if args.pl_source in ("dashboard-db", "both") and args.pl_dashboard_dump:
-                current = load_pl_dashboard_dump(args.pl_dashboard_dump)
-                print(f"  PL current loaded: {len(current['expenses_by_month'])} months from dashboard-db dump")
-            if args.pl_source in ("sheet", "both") and args.pl_sheet_parsed:
-                past = load_pl_sheet_parsed(args.pl_sheet_parsed)
-                print(f"  PL past loaded: {len(past['expenses_by_month'])} months from PL sheet")
-            # sheet 単独指定なら sheet を current 扱いに
-            if not current and past:
-                current = past
-                past = None
-            if current:
-                pl_data = build_pl_data(args.target_month, current, past, kpi["sales_total"])
-                if pl_data["available"]:
-                    print(f"  PL ─ 総費用: ¥{pl_data['expense_total']:,.0f}  営業利益: ¥{pl_data['op_profit']:,.0f} ({pl_data['op_profit_rate']:+.1f}%)")
-                    print(f"      FL率: {pl_data['fl_rate']:.1f}%  人件費率: {pl_data['labor_rate']:.1f}%")
-        except Exception as e:
-            pl_data = {"available": False, "error": str(e)}
-            print(f"  PL load failed: {e}")
-
     # 7) Output
     out = {
         "target_month": args.target_month,
@@ -664,8 +465,6 @@ def main():
             "main_sales": args.sales_csv,
             "comparison_rawdata": args.compare_rawdata,
             "daily_reports": args.daily_report_csv,
-            "pl_dashboard_dump": args.pl_dashboard_dump,
-            "pl_sheet_parsed": args.pl_sheet_parsed,
         },
         "month_kpis": month_kpis,
         "weekly": weekly,
@@ -679,7 +478,6 @@ def main():
         "p1_8_food_sales": p1_8_food,
         "p1_8_drink_sales": p1_8_drink,
         "daily_reports": daily_reports,
-        "pl": pl_data,
     }
 
     def default(o):

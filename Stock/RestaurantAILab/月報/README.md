@@ -67,6 +67,18 @@ Stock/RestaurantAILab/月報/
 └── 2_output/{運営会社コード}/       ← 分析結果・HTML
 ```
 
+## v2.1 リリースノート（2026-05-18）
+
+PL分析対応：
+
+- `monthly_report_pipeline.py` に PL CLI 引数（`--pl-source` / `--pl-dashboard-dump` / `--pl-sheet-parsed`）を追加
+- 当月PL は ダッシュボードDB、過去月PLは 【BFA】本部サポート / PLシートを使い分け
+- 計算関数（`calc_fl_rate` / `calc_labor_rate` / `calc_op_profit` / `calc_op_profit_rate`）を関数化
+- KPI スライドに2段目（総費用／営業利益／営業利益率／FL率／人件費率）を追加
+- PL-1〜PL-3 スライド（PLサマリー／費用推移／PLからのインサイト）を日報の前に挿入
+- 共通ルール §18 に PL分析セクション新設
+- 旧版バックアップは `.bak_20260518_pl`
+
 ## v2.0 リリースノート（2026-05-18）
 
 5Arrowsフィードバック反映の恒久版：

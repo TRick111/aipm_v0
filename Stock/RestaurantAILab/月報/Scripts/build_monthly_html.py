@@ -1,18 +1,41 @@
 #!/usr/bin/env python3
 """
-BFA 4月月報 HTML生成（v2draft）
+月報 HTML生成（汎用化版）— v2.0 / 2026-05-18
 
-入力: analysis.json
-出力: ../202604_BFA_月次報告資料_v2draft.html
+5Arrowsフィードバック（v1.2 イテレーション1〜5）を恒久反映した正規スクリプト。
+ダークグリーン基調・25枚スライド・840pxキャンバス・凡例必須・円グラフ・メッセージ帯・分類条件帯（箇条書き）。
+
+使い方:
+    python build_monthly_html.py \\
+      --analysis-json "path/to/analysis.json" \\
+      --output "path/to/YYYYMM_STORE_月次報告資料_v2draft.html" \\
+      [--store-name "BAR FIVE Arrows"]
 """
 import json
 import os
+import argparse
+import sys
+import calendar
 
-WORK = os.path.dirname(__file__)
-OUT = os.path.join(WORK, "..", "202604_BFA_月次報告資料_v2draft.html")
+_parser = argparse.ArgumentParser(description="月報HTMLビルダー（汎用化版 v2.0）")
+_parser.add_argument("--analysis-json", required=True, help="入力 analysis.json")
+_parser.add_argument("--output", required=True, help="出力HTMLパス")
+_parser.add_argument("--store-name", default="BAR FIVE Arrows", help="店舗名")
+_args = _parser.parse_args()
 
-with open(os.path.join(WORK, "analysis.json"), "r", encoding="utf-8") as f:
+OUT = _args.output
+STORE_NAME = _args.store_name
+with open(_args.analysis_json, "r", encoding="utf-8") as f:
     D = json.load(f)
+
+# 対象月から期間文字列を動的に生成
+_tm = D.get("target_month", "2026-04")
+_y, _m = map(int, _tm.split("-"))
+_last_day = calendar.monthrange(_y, _m)[1]
+_PERIOD_DASH = f"{_y}-{_m:02d}-01〜{_y}-{_m:02d}-{_last_day:02d}"
+_PERIOD_JP = f"{_y}年{_m}月1日 0:00 〜 {_m}月{_last_day}日 23:59"
+_PERIOD_JP_HEADER = f"{_y}年{_m}月（{_m}/1 〜 {_m}/{_last_day}）"
+_MONTH_SHORT = f"{_y}/{_m}"
 
 # ============================================
 # 数値フォーマッタ
@@ -43,12 +66,10 @@ trend_data = [(m, M[m]) for m in trend_months if m in M]
 # ============================================
 # HTMLビルド
 # ============================================
-TITLE = "BAR FIVE Arrows 月次営業報告"
-PERIOD = "2026年4月（2026-04-01 〜 2026-04-30）"
-# v1.2 イテレーション4: フッターを最小限化、出典は「エアレジ会計明細」に統一
-FOOTER_NOTE = "出典: エアレジ会計明細 ／ 集計対象: 2026-04-01〜2026-04-30"
-# v1.2 イテレーション4: 月売上の集計範囲注釈（修正7）
-MONTHLY_SALES_NOTE = "※月売上の集計対象: 2026年4月1日 0:00 〜 4月30日 23:59 の売上日時（エアレジ売上分析画面の表示と一致）。週次・日次・曜日別・時間帯別は営業日基準（朝6時境界）で別途集計。"
+TITLE = f"{STORE_NAME} 月次営業報告"
+PERIOD = _PERIOD_JP_HEADER
+FOOTER_NOTE = f"出典: エアレジ会計明細 ／ 集計対象: {_PERIOD_DASH}"
+MONTHLY_SALES_NOTE = f"※月売上の集計対象: {_PERIOD_JP} の売上日時（エアレジ売上分析画面の表示と一致）。週次・日次・曜日別・時間帯別は営業日基準（朝6時境界）で別途集計。"
 
 # Slides will be built as a list of dicts then rendered
 slides = []
@@ -58,9 +79,9 @@ slides = []
 # ───────────────────────────────────────────────
 slides.append({
     "type": "title",
-    "title": "BAR FIVE Arrows",
+    "title": STORE_NAME,
     "subtitle": "月次営業報告",
-    "period": "2026年4月（4/1 〜 4/30）",
+    "period": _PERIOD_JP_HEADER,
     "note": "第二稿ドラフト v2draft / 2026-05-18 作成",
 })
 
@@ -75,7 +96,7 @@ slides.append({
     "message_icon": "⚠️",
     "message": f"4月の売上は{yen(m04['sales_total'])}で前月比 {diff_pct(m04['sales_total'], m03['sales_total'])}・前年同月比 {diff_pct(m04['sales_total'], m04_py['sales_total'])} と前年から大きく減少した一方、ボトル販売{yen(m04['bottle_sales'])}を新たに計上し収益基盤の多角化を進めた。",
     "classification": [
-        "集計対象: 2026/4/1 0:00 〜 4/30 23:59 の売上日時（エアレジ売上分析画面と一致）",
+        f"集計対象: {_y}/{_m}/1 0:00 〜 {_m}/{_last_day} 23:59 の売上日時（エアレジ売上分析画面と一致）",
     ],
     "kpis": [
         {"label": "💰 売上（総額）", "value": yen(m04["sales_total"]), "comp": [
@@ -127,7 +148,7 @@ slides.append({
     "message_icon": "⚠️",
     "message": f"売上は2026-01以降4ヶ月連続の減少傾向となり、当月{yen(m04['sales_total'])}は2025年4月{yen(m04_py['sales_total'])}から{diff_pct(m04['sales_total'], m04_py['sales_total'])}と大きく縮小している。",
     "classification": [
-        "集計対象: 2026/4/1 0:00 〜 4/30 23:59 の売上日時（エアレジ売上分析画面と一致）",
+        f"集計対象: {_y}/{_m}/1 0:00 〜 {_m}/{_last_day} 23:59 の売上日時（エアレジ売上分析画面と一致）",
         "前年同月以前のデータはダッシュボード経由のエアレジ会計明細",
     ],
     "series": [
@@ -149,7 +170,7 @@ slides.append({
     "message_icon": "✅",
     "message": f"客数は前月{m03['customers']}人から{m04['customers']}人へ{diff_pct(m04['customers'], m03['customers'])}と微増に転じ、4ヶ月連続の減少基調から回復の兆しを見せている。",
     "classification": [
-        "集計対象: 2026/4/1 0:00 〜 4/30 23:59 の売上日時",
+        f"集計対象: {_y}/{_m}/1 0:00 〜 {_m}/{_last_day} 23:59 の売上日時",
         "客数=会計ヘッダーの『人数』合算（伝票数ではない）",
         "前年同月以前のデータはダッシュボード経由のエアレジ会計明細",
     ],
@@ -170,7 +191,7 @@ slides.append({
     "message_icon": "⚠️",
     "message": f"客単価（ボトル除く）は前月{yen(m03['kyakutanka'])}から{yen(m04['kyakutanka'])}へ{diff_pct(m04['kyakutanka'], m03['kyakutanka'])}と低下し、平均客単価の押し下げ要因の特定が必要となった。",
     "classification": [
-        "集計対象: 2026/4/1 0:00 〜 4/30 23:59 の売上日時",
+        f"集計対象: {_y}/{_m}/1 0:00 〜 {_m}/{_last_day} 23:59 の売上日時",
         "客単価=売上÷客数。実線はボトル購入を分子から除外（経営判断用）",
     ],
     "series": [
@@ -194,7 +215,7 @@ slides.append({
     "message_icon": "⚠️",
     "message": f"売上は前年同月から{diff_pct(m04['sales_total'], m04_py['sales_total'])}（差額{yen(m04_py['sales_total']-m04['sales_total'])}）、客数は{diff_pct(m04['customers'], m04_py['customers'])}（差{m04_py['customers']-m04['customers']}人）と縮小しており、市場環境の回復が継続課題となっている。",
     "classification": [
-        "集計対象: 2026/4/1 0:00 〜 4/30 23:59 の売上日時",
+        f"集計対象: {_y}/{_m}/1 0:00 〜 {_m}/{_last_day} 23:59 の売上日時",
         "前年同月（2025-04）はダッシュボード経由のエアレジ会計明細から取得",
     ],
     "headers": ["指標", "2026-04", "2025-04", "前年比"],
@@ -231,7 +252,7 @@ slides.append({
     "message_icon": "✅",
     "message": f"4月はインバウンド客が{p11['customers']}人来店し、売上構成比{p11['share_sales']:.1f}%を占めた。Google検索経由が主流で、訪日客の取り込みが収益基盤の一角を形成している。",
     "classification": [
-        "集計対象: 2026/4/1 0:00 〜 4/30 23:59 の売上日時",
+        f"集計対象: {_y}/{_m}/1 0:00 〜 {_m}/{_last_day} 23:59 の売上日時",
         f"抽出キー: 会計ヘッダーの『メモ』カラムに『海外』を部分一致（{p11['accounts']}件ヒット）",
     ],
     "donut": {"target": "インバウンド", "value": p11["sales"], "rest": m04["sales_total"] - p11["sales"],
@@ -635,7 +656,7 @@ slides.append({
     "message_icon": "💡",
     "message": "コース&セットが構成比20.9%で最大カテゴリとなり、NEW CLASSIC COCKTAIL（9.4%）・ボトル購入（8.0%）が続いた。コース・カクテル・新規ボトルの3軸が収益構造を形成している。",
     "classification": [
-        "集計対象: 2026/4/1 0:00 〜 4/30 23:59 の売上日時",
+        f"集計対象: {_y}/{_m}/1 0:00 〜 {_m}/{_last_day} 23:59 の売上日時",
         "POSカテゴリ別の月間売上（subtotal = 価格×数量 合算）",
         "ボトル購入含む全カテゴリ",
     ],
@@ -768,7 +789,7 @@ HTML_HEAD = """<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>BAR FIVE Arrows 月次営業報告 — 2026-04 (v2draft)</title>
+<title>__STORE__ 月次営業報告 — __TM__ (v2draft)</title>
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <style>
   /* v1.2 イテレーション3: 縦キャンバスを 720→840px に拡張（はみ出し解消） */
@@ -1212,7 +1233,7 @@ def render_slide(idx, s):
 # ============================================
 # 出力
 # ============================================
-parts = [HTML_HEAD]
+parts = [HTML_HEAD.replace("__STORE__", STORE_NAME).replace("__TM__", _tm)]
 for i, s in enumerate(slides):
     parts.append(render_slide(i, s))
 parts.append(HTML_FOOT)

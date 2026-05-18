@@ -460,6 +460,104 @@ dr_apr = dr[dr["営業日"].astype(str).str.startswith("2026-04")].copy()
 daily_reports = dr_apr.to_dict("records")
 
 # ============================================
+# 16-α) PL データ（ダッシュボード本番DBダンプから集計）★v1.2 イテレーション7 新設
+# ============================================
+PL_JSON = "/Users/rikutanaka/aipm_v0/Flow/202605/2026-05-18/BFA/db_pl_dump.json"
+pl_data = {}
+try:
+    with open(PL_JSON) as f:
+        pl_raw = json.load(f)
+    exp_cat_map = {c["id"]: c["name"] for c in pl_raw["expenseCategories"]}
+    sales_cat_map = {c["id"]: c["name"] for c in pl_raw.get("salesCategories", [])}
+
+    # 月別費用合計（費目別＋月合計）
+    monthly_exp = {}  # {ym: {cat_name: total}}
+    monthly_exp_total = {}  # {ym: total}
+    for e in pl_raw["monthlyExpenses"]:
+        ym = e["year_month"]
+        cat = exp_cat_map.get(e["category_id"], "その他")
+        v = float(e["total"])
+        monthly_exp.setdefault(ym, {})[cat] = v
+        monthly_exp_total[ym] = monthly_exp_total.get(ym, 0) + v
+
+    # 月別売上（PL側からも取得、エアレジと比較）
+    monthly_sales_pl = {}
+    for s in pl_raw["monthlySales"]:
+        ym = s["year_month"]
+        monthly_sales_pl[ym] = monthly_sales_pl.get(ym, 0) + float(s["total"])
+
+    # 4月PL指標
+    apr_exp = monthly_exp.get(TARGET_MONTH, {})
+    apr_exp_total = monthly_exp_total.get(TARGET_MONTH, 0)
+    sales_for_pl = total_sales_apr  # エアレジ4月売上 ¥3,024,490
+    apr_op_profit = sales_for_pl - apr_exp_total
+    apr_op_profit_rate = (apr_op_profit / sales_for_pl * 100) if sales_for_pl else 0
+    # FL率 = (食材 + ドリンク) / 売上
+    fl_cost = apr_exp.get("食材", 0) + apr_exp.get("ドリンク", 0)
+    fl_rate = (fl_cost / sales_for_pl * 100) if sales_for_pl else 0
+    labor_cost = apr_exp.get("人件費", 0)
+    labor_rate = (labor_cost / sales_for_pl * 100) if sales_for_pl else 0
+
+    # 費目別ランキング（4月）— 降順
+    exp_breakdown = sorted(
+        [{"category": cat, "amount": amt, "share": (amt / sales_for_pl * 100) if sales_for_pl else 0}
+         for cat, amt in apr_exp.items()],
+        key=lambda x: -x["amount"]
+    )
+
+    # 6ヶ月推移用（過去月）
+    months_for_trend = sorted(monthly_exp.keys())
+    pl_trend = []
+    for ym in months_for_trend:
+        ex = monthly_exp.get(ym, {})
+        total = monthly_exp_total.get(ym, 0)
+        sales_pl_m = monthly_sales_pl.get(ym, 0)
+        # エアレジ売上があれば優先
+        if ym == TARGET_MONTH:
+            sales_for = sales_for_pl
+        else:
+            sales_for = sales_pl_m
+        fl_m = ex.get("食材", 0) + ex.get("ドリンク", 0)
+        labor_m = ex.get("人件費", 0)
+        pl_trend.append({
+            "month": ym,
+            "sales": sales_for,
+            "total_expense": total,
+            "op_profit": (sales_for - total) if sales_for else -total,
+            "op_profit_rate": ((sales_for - total) / sales_for * 100) if sales_for else None,
+            "fl_rate": (fl_m / sales_for * 100) if sales_for else None,
+            "labor_rate": (labor_m / sales_for * 100) if sales_for else None,
+            "exp_breakdown": ex,
+        })
+
+    pl_data = {
+        "available": True,
+        "month_target": TARGET_MONTH,
+        "expense_total": apr_exp_total,
+        "op_profit": apr_op_profit,
+        "op_profit_rate": apr_op_profit_rate,
+        "fl_cost": fl_cost,
+        "fl_rate": fl_rate,
+        "labor_cost": labor_cost,
+        "labor_rate": labor_rate,
+        "expense_breakdown": exp_breakdown,
+        "trend": pl_trend,
+        "months_available": months_for_trend,
+        "months_missing": ["2026-03"] if "2026-03" not in months_for_trend else [],
+        "source": "ダッシュボード本番DB",
+        "sales_for_pl_calc": sales_for_pl,
+    }
+    print(f"\n  PL ─ 総費用: ¥{apr_exp_total:,.0f}  営業利益: ¥{apr_op_profit:,.0f} ({apr_op_profit_rate:+.1f}%)")
+    print(f"      FL率: {fl_rate:.1f}%  人件費率: {labor_rate:.1f}%")
+    print(f"      費目内訳:")
+    for e in exp_breakdown:
+        print(f"        {e['category']}: ¥{e['amount']:,.0f} ({e['share']:.1f}% of sales)")
+    print(f"      PL推移月: {months_for_trend}  欠損: {pl_data['months_missing']}")
+except Exception as e:
+    pl_data = {"available": False, "error": str(e)}
+    print(f"PL data load failed: {e}")
+
+# ============================================
 # 17) Write JSON
 # ============================================
 out = {
@@ -488,6 +586,7 @@ out = {
     "p1_8_food_sales": p1_8_food,
     "p1_8_drink_sales": p1_8_drink,
     "daily_reports": daily_reports,
+    "pl": pl_data,
 }
 
 def default(o):

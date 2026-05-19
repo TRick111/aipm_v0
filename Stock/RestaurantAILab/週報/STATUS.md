@@ -4,7 +4,7 @@ project: 週報
 category: RestaurantAILab
 status: in_progress
 owner_turn: ai
-updated_at: 2026-04-26T01:00:00+09:00
+updated_at: 2026-05-19T10:00:00+09:00
 updated_by: master-agent
 current_bl: BL-0038
 next_action: "口コミデータの取得基盤を構築。BL-0038 (食べログ) と BL-0039 (Google Places API) を並行で実装し、完了後 BL-0040 で週報の手法に組み込む"
@@ -45,9 +45,12 @@ related_bls: [BL-0038, BL-0039, BL-0040]
 
 ## 📜 履歴
 - 2026-04-26 master が STATUS.md を bootstrap (README + Backlog.md より生成)
+- 2026-05-19 月報共通ルール v2.3 を週報側に展開（共通ルール.md v1.1 新設、BFA固有部分は `共通/BFA固有ルール.md` v1.1 に分離）。プロンプト 00〜05 にバックアップ取得済み（`.bak_20260518_apply_monthly_rules`）。マスター判断 K-1〜K-8 反映完了。スクリプト修正（合計>0 / BFAボトル除外 / TOP15＋★）は別タスクで実施予定 — `Flow/202605/2026-05-18/週報ルール展開/_weekly_rules/script_implementation_plan.md` 参照
 
 ## 🔗 関連リンク
 - README: `Stock/RestaurantAILab/週報/README.md`
 - 曜日深堀分析: `Stock/RestaurantAILab/週報/README_曜日深堀分析.md`
 - log: `Stock/RestaurantAILab/週報/log.md`
 - ProjectIndex: `Stock/RestaurantAILab/週報/ProjectIndex.yaml`
+- **共通ルール**: `Stock/RestaurantAILab/週報/共通ルール.md`（v1.1 / 2026-05-19）
+- **BFA固有ルール**: `Stock/RestaurantAILab/共通/BFA固有ルール.md`（v1.1 / 2026-05-19、BFA週報作成時必読）

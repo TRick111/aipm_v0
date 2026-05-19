@@ -20,3 +20,8 @@
 | 2026-02-11 | create | `Scripts/deep_dive_weekly_analysis.py` | 週別深掘り分析スクリプト | 週報deep_dive_weekday_analysis.pyを月次版に変換 |
 | 2026-02-11 | create | `2_output/BFA/2_output_202601/` | BFA 2026年1月分のアウトプット一式（基礎資料・スライド構成案・HTMLスライド・CSV・JSON等） | 初回実行の成果物例 |
 | 2026-02-11 | edit | `README.md`, `ProjectIndex.yaml`, `log.md` | 確定反映に伴う更新 | |
+## 2026-05-19 （BFA固有部分を切り出し・週報側にもルール展開）
+- edit: `共通ルール.md` v2.4 — §3 / §4 / §5 / §17 / §19 / §20 の本体を `Stock/RestaurantAILab/共通/BFA固有ルール.md` へ移管し、参照ポインタのみに置換（DRY化）
+- backup: `共通ルール.md.bak_20260518_apply_monthly_rules`
+- create: `Stock/RestaurantAILab/共通/BFA固有ルール.md` v1.1 — 月報・週報の双方から参照されるBFA固有ルール
+- ref: 週報側のルール展開タスクの結果は `Flow/202605/2026-05-18/週報ルール展開/_weekly_rules/` 参照

@@ -1,0 +1,52 @@
+schema_version: 1
+project: _orchestration
+date: '2026-05-23'
+deliverables:
+  - id: d-orchestration-20260523-morning
+    file: 今日のタスク案.md
+    bl_id: null
+    title: 今日のタスク案 — 2026-05-23
+    created_at: '2026-05-22T20:35:53.348Z'
+    created_by: mini-tachyon-startDailyLoop
+    created_by_agent: claude
+    review_state: unreviewed
+    review_log:
+      - at: '2026-05-22T20:35:53.348Z'
+        action: spawned
+        to: generating
+        comment: cockpit-task-a44d01ce を起動
+      - at: '2026-05-23T01:39:22.710Z'
+        action: state_change
+        from: generating
+        to: unreviewed
+      - at: '2026-05-23T01:52:46.532Z'
+        action: state_change
+        from: unreviewed
+        to: needs_revision
+        comment: |-
+          バックログを更新したので、もう一回生成し直して。
+          今日やりたいのは、Ponさんの案件、飯竹さんの案件、そしてダッシュボード、あとレストランAIラボのホームページです。
+      - at: '2026-05-23T01:57:34.940Z'
+        action: state_change
+        from: needs_revision
+        to: unreviewed
+        comment: 田中さんの focus 指示 (PON / 飯武 / ダッシュボード / RestaurantAILab HP) に基づき再生成
+      - at: '2026-05-23T02:12:30.826Z'
+        action: state_change
+        from: unreviewed
+        to: needs_revision
+        comment: |-
+          ダッシュボード改に追加。
+          ・CSVダウンロード機能のバグ修正
+          ・ダッシュボードアップロードマニュアル作成
+          ・月報週報DL機能作成
+
+          また、リライフメディカルのプロジェクトのタスクとして、新橋店予約システム作成
+          これらを追加して
+      - at: '2026-05-23T02:16:06.210Z'
+        action: state_change
+        from: needs_revision
+        to: unreviewed
+        comment: BL 新規 4 件追加 (BL-0090/0091/0092 ダッシュ、BL-0086 リライフ) を反映して再生成
+    last_modified: '2026-05-23T02:16:06.210Z'
+    cockpit_task_id: a44d01ce

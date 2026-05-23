@@ -1,0 +1,32 @@
+schema_version: 2
+id: BL-0001
+title: 'BFA担当者向け: Airレジ→ダッシュボードアップロード手順マニュアル作成'
+project: BFA
+category: RestaurantAILab
+state: in_progress
+priority: normal
+created_at: '2026-05-23T02:02:37.196Z'
+updated_at: '2026-05-23T02:02:37.196Z'
+created_by: mt-cli
+description: >-
+  BFA（BAR FIVE Arrows）の現場担当者が、Airレジから売上CSVをダウンロードし、ダッシュボードアプリにアップロードして売上を反映できるよう、スクリーンショット付きの操作マニュアルを Markdown
+  で作成する。Airレジ側は週報プロジェクトの内部手順を流用、ダッシュボード側は実際のUI（/store/bfa-001/upload）の画面キャプチャで説明する。
+deliverable_refs:
+  - d-bfa-20260523-001
+cockpit_task_ids: []
+pending_questions: []
+decisions:
+  - at: '2026-05-23T02:15:00.000Z'
+    type: commitment
+    by: ai
+    content: >-
+      マニュアル v1 を作成・登録。canonical 配置: Flow/202605/2026-05-23/RestaurantAILab/BFA/BFA担当者向け_Airレジ売上ダッシュボードアップロードマニュアル.md。
+      スクリーンショット6枚（ログイン/アプリ一覧/アップロード3ステップ）を screenshots/ サブディレクトリに同梱。
+      Airレジ側手順は週報 skill (airregi-sales-download) ベース。ダッシュボード側は /store/test-003/upload UI を実機キャプチャ。
+  - at: '2026-05-23T02:15:30.000Z'
+    type: scope_change
+    by: ai
+    content: >-
+      mt CLI の deliverable register が複数プロジェクト間で重複する BL-ID (BL-0001) を取り違えるバグに遭遇したため、
+      deliverables.yaml と BL.deliverable_refs を手動で正規プロジェクト (BFA) に再配置した。
+      別途ミニタキオンプロジェクト側で質問化する。

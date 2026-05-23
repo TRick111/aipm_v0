@@ -1,11 +1,11 @@
 id: BL-0068
-title: PONさんへの請求方法の検討（PayPal→WISE切替）
+title: PONさんへの請求方法の検討（Wise→Square切替）
 project: バンコクPonさん案件
 category: RestaurantAILab
 state: awaiting_user
 priority: high
 created_at: '2026-04-26T00:00:00+09:00'
-updated_at: '2026-05-05T08:09:55.178Z'
+updated_at: '2026-05-23T01:48:16.104Z'
 created_by: central-backlog
 description: >-
   BL-0068 v2 確定版 (2026-04-27 田中さん回答反映)。送金経路= Pon さん個人 Wise → 田中さん個人 Wise → みずほメインバンク。請求= LINE 送付・JPY 250,000
@@ -40,6 +40,10 @@ pending_questions:
     content: >-
       Q. Phase A (田中さん個人 Wise アカウント開設・KYC マイナンバー) を今日 (5/4) 着手しますか? KYC 当日〜3 日。Phase A 完了直後に 2/3/4 月分 750,000 JPY
       のまとめ請求を発行する設計のため、Phase A が動かないと PONさん向け請求が遅延し続けます。(a) 本日 KYC 入力着手 / (b) 別日
+  - id: q-BL-0068-3-20260520030343
+    at: '2026-05-20T03:03:43.001Z'
+    cockpit_task_id: 2e4cdb70
+    content: '[planning 2026-05-20 Q2] 今日 Phase A (個人 Wise の KYC) に着手しますか? (A) 今日着手 (B) 別日'
 decisions:
   - at: '2026-04-27T01:01:06.991Z'
     type: answer
@@ -120,3 +124,16 @@ decisions:
       2026-05-05 田中さん指示: BL-0068 の成果物を v2 確定版2件に集約。アーカイブ4件 (pon_wise_confirmation / v1 procedure / v1 invoice /
       payment_switch_comparison) は review_state=done に変更し deliverable_refs から除外。情報は v2 手順書および decisions
       ログに集約済のため参照に支障なし。残りの ref: wise_billing_full_procedure_v2.md / wise_invoice_template_v2.md。
+  - at: '2026-05-23T01:48:15.603Z'
+    type: scope_change
+    by: user
+    content: >-
+      2026-05-23 田中さん指示: 請求/送金方法を Wise から Square へ切替決定。Wise ルート (Pon さん個人 Wise → 田中さん個人 Wise → みずほ) は不採用。Square
+      で田中さん側に事業者アカウントを開設し、決済リンクを Pon さんへ送付して回収する方式に変更する。v2 手順書 (wise_billing_full_procedure_v2.md /
+      wise_invoice_template_v2.md) はアーカイブ扱い。次の動き = Square 事業者開設手順をまとめる。ゴール = Square で決済できる状態にし、Pon さんに決済リンクを送付する。
+  - at: '2026-05-23T01:48:15.959Z'
+    type: commitment
+    by: ai
+    content: >-
+      次アクション (2026-05-23 以降): Square で日本国内事業者として決済を開設する手順書をまとめる。手順書はカード受付・国際決済可否・KYC
+      書類・本人確認・銀行口座連携・手数料・タイからの決済対応可否を含めた上で、Square ダッシュボードで決済リンクを発行 → Pon さんへ LINE 送付できる状態をゴールとする。

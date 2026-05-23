@@ -1,0 +1,32 @@
+schema_version: 2
+id: BL-0002
+title: '[bug] mt deliverable register が BL-ID 重複時に別プロジェクトの BL を選んでしまう'
+project: ミニタキオン
+category: 作業効率化
+state: pending
+priority: normal
+created_at: '2026-05-23T02:15:07.983Z'
+updated_at: '2026-05-23T02:15:07.983Z'
+created_by: mt-cli
+description: |-
+  ## 症状
+
+  `mt deliverable register --bl BL-0001 --file ... ` を実行すると、複数プロジェクトに存在する BL-0001 のうち、別プロジェクトのもの（最初に見つかったもの？）に登録されてしまう。
+
+  ## 再現
+
+  - BFA project に BL-0001 を新規作成（mt bl create --project BFA --category RestaurantAILab）
+  - 直後に mt deliverable register --bl BL-0001 ... を実行
+  - → 結果: deliverable は 生活管理/シェアハウス・ビリヤードランキング/BL-0001 に紐付き、Flow ディレクトリも誤ったプロジェクト配下に作られる
+
+  ## 期待
+
+  deliverable register API が project/category を受け取れる、または最近作成された BL を優先する、もしくは BL ID をグローバルユニーク化する。
+
+  ## 暫定対応
+
+  正規ディレクトリへ手動で deliverables.yaml を再配置し、BL.deliverable_refs を手動編集して修正した（BFA BL-0001 の commitment ログに記録）。
+deliverable_refs: []
+cockpit_task_ids: []
+pending_questions: []
+decisions: []

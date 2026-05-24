@@ -70,7 +70,7 @@ deliverables:
         comment: 田中さん 4/27 PM 追加指示で作成。本日の予定外タスクとして deliverable 登録 (mini-tachyon 運用乗せ)。本番までに v2 への反映が必要。
   - id: d-bl0068-20260427-wise-billing-full-procedure-v1
     file: wise_billing_full_procedure_v1.md
-    bl_id: null  # archived 2026-05-05: BL-0068 統合により紐付け解除 (orig: BL-0068)
+    bl_id: null
     title: PONさん月次請求 — Wise 完全運用手順 v1（25万円/月）
     created_at: '2026-04-27T09:00:00+09:00'
     created_by: bl-0068-agent
@@ -89,7 +89,7 @@ deliverables:
     last_modified: '2026-05-05T08:09:42.932Z'
   - id: d-bl0068-20260427-wise-invoice-template
     file: wise_invoice_template.md
-    bl_id: null  # archived 2026-05-05: BL-0068 統合により紐付け解除 (orig: BL-0068)
+    bl_id: null
     title: PONさん向け 月次請求書テンプレ — Wise Invoice Generator 入力用
     created_at: '2026-04-27T09:05:00+09:00'
     created_by: bl-0068-agent
@@ -117,12 +117,20 @@ deliverables:
     created_at: '2026-04-27T10:50:00+09:00'
     created_by: bl-0068-agent
     created_by_agent: claude
-    review_state: unreviewed
+    review_state: done
     review_log:
       - at: '2026-04-27T10:50:00+09:00'
         action: created
         to: unreviewed
         comment: BL-0068 v2 確定版作成。田中さん 7 問回答消費済 + scope_change 1 件。次は田中さん本人 Phase A 着手。
+      - at: '2026-05-24T10:29:52.818Z'
+        action: state_change
+        from: unreviewed
+        to: done
+        comment: >-
+          2026-05-23 田中さん指示で Wise → Square へ切替決定。本手順書はアーカイブ扱い。新運用は square_business_setup_procedure_v1.md
+          (d-20260524-001) を参照。
+    last_modified: '2026-05-24T10:29:52.818Z'
   - id: d-bl0068-20260427-wise-invoice-template-v2
     file: wise_invoice_template_v2.md
     bl_id: BL-0068
@@ -130,15 +138,23 @@ deliverables:
     created_at: '2026-04-27T10:55:00+09:00'
     created_by: bl-0068-agent
     created_by_agent: claude
-    review_state: unreviewed
+    review_state: done
     review_log:
       - at: '2026-04-27T10:55:00+09:00'
         action: created
         to: unreviewed
         comment: BL-0068 v2 完全手順 §5 の付属テンプレ。LINE 1:1 送付運用に確定。
+      - at: '2026-05-24T10:29:54.957Z'
+        action: state_change
+        from: unreviewed
+        to: done
+        comment: >-
+          2026-05-23 田中さん指示で Wise → Square へ切替決定。Wise Invoice テンプレはアーカイブ。新運用は Square Invoices の支払いリンクを LINE 送付
+          (square_business_setup_procedure_v1.md §6)。
+    last_modified: '2026-05-24T10:29:54.957Z'
   - id: d-bl0068-20260427-pon-wise-confirmation
     file: pon_wise_confirmation.md
-    bl_id: null  # archived 2026-05-05: BL-0068 統合により紐付け解除 (orig: BL-0068)
+    bl_id: null
     title: Pon さんへの Wise 切替 事前確認資料 (前提条件・影響・LINE 送付テンプレ)
     created_at: '2026-04-27T11:20:00+09:00'
     created_by: bl-0068-agent

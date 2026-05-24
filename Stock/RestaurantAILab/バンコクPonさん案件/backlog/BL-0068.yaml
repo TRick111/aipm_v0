@@ -5,7 +5,7 @@ category: RestaurantAILab
 state: awaiting_user
 priority: high
 created_at: '2026-04-26T00:00:00+09:00'
-updated_at: '2026-05-23T01:48:16.104Z'
+updated_at: '2026-05-24T10:30:15.675Z'
 created_by: central-backlog
 description: >-
   BL-0068 v2 確定版 (2026-04-27 田中さん回答反映)。送金経路= Pon さん個人 Wise → 田中さん個人 Wise → みずほメインバンク。請求= LINE 送付・JPY 250,000
@@ -14,26 +14,12 @@ description: >-
 deliverable_refs:
   - d-bl0068-20260427-wise-billing-full-procedure-v2
   - d-bl0068-20260427-wise-invoice-template-v2
+  - d-20260524-001
 schema_version: 2
 cockpit_task_ids:
   - ab7788eb
+  - e8b9ebdd
 pending_questions:
-  - id: q-BL-0068-1-20260427031814
-    at: '2026-04-27T03:18:14.734Z'
-    cockpit_task_id: ab7788eb
-    content: |-
-      Q-H. Pon さんへの Wise 切替確認の結果はどうなりましたか？
-
-      田中さんから Pon さんへ pon_wise_confirmation.md §6.1 の LINE テンプレで確認後、以下のパターンで進路が分岐します:
-
-      - (A) Pon さん同意・個人 Wise で進める → v2 手順書通り Phase A〜D 進行
-      - (B) Pon さんが法人 Business を希望 → v1 §3.1 を再活用 + v2 を一部修正
-      - (C) Pon さんが Wise を渋り SWIFT を希望 → SWIFT 切替で別途設計
-      - (D) Pon さん同意するが書類準備に時間が必要 → Phase A 先行 / Phase B 後追い
-
-      📌 AI推奨: 本日 4/27 第 6 回セッションで Pon さんに口頭確認するのが最速。LINE 文面は pon_wise_confirmation.md §6.1 に日英で用意済。
-
-      参照: pon_wise_confirmation.md §4 確認チェックリスト 8 項目, §5 代替案, §6.1 LINE 送付テンプレ
   - id: q-BL-0068-2-20260504135751
     at: '2026-05-04T13:57:51.429Z'
     cockpit_task_id: 50e5f6ad
@@ -44,6 +30,20 @@ pending_questions:
     at: '2026-05-20T03:03:43.001Z'
     cockpit_task_id: 2e4cdb70
     content: '[planning 2026-05-20 Q2] 今日 Phase A (個人 Wise の KYC) に着手しますか? (A) 今日着手 (B) 別日'
+  - id: q-BL-0068-3-20260524103009
+    at: '2026-05-24T10:30:09.713Z'
+    cockpit_task_id: e8b9ebdd
+    content: >-
+      Square アカウントの屋号・開設名義をどうしますか? (A) 個人名「田中利空」で開設、屋号なし / (B) 屋号「RestaurantAILab」で個人事業主として開設 (要 開業届、未提出なら freee 開業で 5
+      分) / (C) 法人化を待ってから「合同会社 RestaurantAILab」で開設 (法人化時期は別途相談)。Square は後から屋号変更しづらいため最初に確定したい。Pon さん案件の本番 Invoice 発行を急ぐなら
+      (A) 個人名で先行開設 → 後日法人化で再申請、が最速。
+  - id: q-BL-0068-4-20260524103015
+    at: '2026-05-24T10:30:15.675Z'
+    cockpit_task_id: e8b9ebdd
+    content: >-
+      Square 手数料 3.6% (250,000 JPY あたり 9,000 JPY、月次) を誰が負担しますか? (A) 田中さんが吸収 (手取り 250,000 → 実 241,000 JPY/月) / (B) Pon
+      さんに上乗せ請求 (Invoice 額を 259,332 JPY に増額、手取り 250,000 維持) / (C) 別建てで「手数料分」として別 Invoice を発行。BL の既存 decision は『手取り 25
+      万円固定、為替変動は Pon さん側で吸収』なので、これを踏襲するなら (B) が整合的。ただし Pon さん側の心理的負担増 (毎月 +9,332 JPY) も考慮要。
 decisions:
   - at: '2026-04-27T01:01:06.991Z'
     type: answer
@@ -137,3 +137,16 @@ decisions:
     content: >-
       次アクション (2026-05-23 以降): Square で日本国内事業者として決済を開設する手順書をまとめる。手順書はカード受付・国際決済可否・KYC
       書類・本人確認・銀行口座連携・手数料・タイからの決済対応可否を含めた上で、Square ダッシュボードで決済リンクを発行 → Pon さんへ LINE 送付できる状態をゴールとする。
+  - at: '2026-05-24T10:26:30.882Z'
+    type: answer
+    by: user
+    content: ワイスではなくて、スクエア決済でやることにしたので、スクエア決済の事業者として開設するための手順をマークダウンで作成してください。ワイス関連のドキュメントについては完了済みでOKです。
+  - at: '2026-05-24T10:30:03.356Z'
+    type: commitment
+    by: ai
+    content: >-
+      2026-05-24: Square 事業者開設 完全手順 v1 を作成・register 完了 (d-20260524-001)。Wise v2 関連 deliverable 2件 (procedure / invoice
+      template) は done に遷移しアーカイブ化。Square 手順書は 5 phase 構成 (A 開設+KYC / B 銀行口座登録 / C 決済設定 / D テスト発行 / E 本番発行)、Pon さん側手続きなし
+      (手持ちクレカで決済リンクから支払うだけ)、入金=みずほ翌営業日、手数料=3.6% (250,000 JPY あたり 9,000 JPY)。次の田中さん本人作業 = §1 事前準備 (本人確認書類・みずほ口座情報・屋号決定) →
+      squareup.com/jp/ja/signup で開設 → KYC 提出 (審査 1〜2 営業日)。並行確認 = §10 の 4 項目 (屋号 / 手数料負担 / 発行スコープ / 法人化)、うち優先 2 項目 (屋号 +
+      手数料負担) を本ターンで pending_questions に登録。

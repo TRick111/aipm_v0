@@ -24,7 +24,8 @@ ssh xserver-coredriven 'cd ~/core-driven.com/public_html && /usr/bin/php8.3 -d e
 
 ## ディレクトリ
 
+- `OPERATIONS.md` — **改修ハンドブック（接続・修正手順・つまずきポイント集）。新規担当者はまずこれを読む**
+- `STATUS.md` — 進捗チェックリスト
 - `backup/` — 設定変更前のスナップショット (タイムスタンプ付き)
-- `proposals/` — Meta Title / Description の提案 (CSV / JSON)
+- `proposals/` — Meta Title / Description の提案
 - `investigations/` — レイアウト崩れ調査のスクショ・差分ログ
-- `STATUS.md` — 進捗

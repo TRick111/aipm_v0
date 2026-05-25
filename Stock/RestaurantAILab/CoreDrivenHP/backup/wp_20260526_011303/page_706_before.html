@@ -1,0 +1,1116 @@
+<!--
+  CoreDriven AI Core — WordPress 貼付用 HTML (Phase 1)
+  生成日: 2026-05-06
+  使い方: WP 固定ページの「カスタム HTML」ブロックに丸ごと貼付
+  生成元: ~/Downloads/Core Driven_20260426.zip の ai-core.html
+  改変点:
+    - <script src="assets/site.js"> + injectHeaderFooter() 削除
+    - assets/styles.css と <head> 内 <style> をインライン化
+    - 内部リンクを WP パーマリンク形式に変換
+    - 画像パスを /wp-content/uploads/coredriven-html/ に統一
+    - 田中利空モバイル画像 object-position:center 22%
+    - 全体を <!-- wp:html --> でラップ (wpautop 回避)
+-->
+<!-- wp:html -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+/* === Core Driven 共通 design system (assets/styles.css) === */
+/* Core Driven — Design System */
+:root{
+  --ink-900:#0B1530;
+  --ink-700:#1B2444;
+  --ink-500:#3A4566;
+  --ink-400:#5A6685;
+  --ink-300:#8A93AE;
+  --ink-200:#C4CADE;
+  --ink-100:#E3E7F2;
+  --ink-50:#F2F4FB;
+  --paper:#FAFBFE;
+  --white:#FFFFFF;
+  --blue-900:#0B1FB3;
+  --blue-700:#1230FF;
+  --blue-600:#2A6BFF;
+  --blue-500:#3D86FF;
+  --blue-400:#5BC8FF;
+  --blue-300:#9FE0FF;
+  --blue-100:#E3F1FF;
+  --blue-50:#F0F7FF;
+  --grad-deep: linear-gradient(135deg,#1230FF 0%,#2A6BFF 50%,#5BC8FF 100%);
+  --grad-light: linear-gradient(135deg,#E3F1FF 0%,#F0F7FF 50%,#F7FBFF 100%);
+  --grad-hero: linear-gradient(160deg,#F0F7FF 0%,#DCEBFF 35%,#C5E2FF 70%,#9FE0FF 100%);
+  --grad-text: linear-gradient(120deg,#1230FF 0%,#2A6BFF 45%,#5BC8FF 100%);
+  --shadow-sm: 0 1px 2px rgba(11,21,48,.04), 0 1px 3px rgba(11,21,48,.06);
+  --shadow-md: 0 4px 14px rgba(11,21,48,.06), 0 2px 6px rgba(11,21,48,.04);
+  --shadow-lg: 0 18px 48px rgba(18,48,255,.08), 0 4px 12px rgba(11,21,48,.05);
+  --shadow-xl: 0 30px 80px rgba(18,48,255,.10), 0 8px 24px rgba(11,21,48,.06);
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-xl: 32px;
+  --font-sans: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  --font-display: 'Inter', 'Noto Sans JP', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --max: 1240px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family: var(--font-sans);
+  background: var(--paper);
+  color: var(--ink-900);
+  font-feature-settings:"palt";
+  line-height:1.7;
+  -webkit-font-smoothing: antialiased;
+  font-size: 15px;
+}
+a{color:inherit;text-decoration:none}
+img,svg{display:block;max-width:100%}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+/* Layout */
+.container{max-width:var(--max);margin:0 auto;padding:0 32px}
+@media(max-width:720px){.container{padding:0 20px}}
+section{padding:120px 0;position:relative}
+@media(max-width:720px){section{padding:72px 0}}
+.eyebrow{
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing:.18em;
+  font-weight:600;
+  color: var(--blue-700);
+  text-transform: uppercase;
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+}
+.eyebrow::before{
+  content:"";
+  width:24px;height:1px;
+  background: var(--grad-deep);
+  display:inline-block;
+}
+h1,h2,h3,h4{font-family:var(--font-display);font-weight:800;letter-spacing:-.02em;color:var(--ink-900);line-height:1.25}
+h1{font-size: clamp(40px, 6vw, 72px); letter-spacing:-.035em; line-height:1.1}
+h2{font-size: clamp(26px, 3.6vw, 48px); letter-spacing:-.025em; line-height:1.18}
+h3{font-size: clamp(20px, 2vw, 26px)}
+h4{font-size: 17px}
+p{color: var(--ink-500); line-height:1.85}
+.lead{font-size: 17px; color: var(--ink-500); line-height:1.95}
+.grad-text{
+  background: var(--grad-text);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+/* Header */
+.site-header{
+  position:sticky; top:0; z-index:50;
+  background: rgba(250,251,254,.82);
+  backdrop-filter: blur(14px);
+  border-bottom:1px solid rgba(195,202,222,.4);
+}
+.site-header .inner{
+  max-width: var(--max); margin:0 auto;
+  padding: 18px 32px;
+  display:flex; align-items:center; gap:32px;
+}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.02em;font-size:17px}
+.brand-logo{height:32px;width:auto;display:block}
+.brand-mark{
+  width:30px;height:30px; border-radius:7px;
+  background: var(--grad-deep);
+  position:relative; flex-shrink:0;
+  box-shadow: 0 4px 12px rgba(18,48,255,.25);
+}
+.brand-mark::after{
+  content:""; position:absolute; inset:7px;
+  background: var(--white);
+  clip-path: polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);
+}
+.brand-mark::before{
+  content:""; position:absolute; inset:0; border-radius:7px;
+  background: var(--grad-deep);
+  clip-path: polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);
+}
+.nav{display:flex;gap:28px;margin-left:auto;align-items:center}
+.nav a{font-size:14px;color:var(--ink-700);font-weight:500;transition:color .2s}
+.nav a:hover{color:var(--blue-700)}
+.nav a.active{color:var(--blue-700)}
+.nav a.btn-primary{color:var(--white)}
+.nav a.btn-primary:hover{color:var(--white)}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  padding:12px 22px;
+  border-radius:999px;
+  font-weight:600;
+  font-size:14px;
+  transition:transform .2s, box-shadow .2s, background .2s;
+  white-space:nowrap;
+}
+.btn-primary{
+  background: var(--grad-deep);
+  color:var(--white);
+  box-shadow: 0 8px 22px rgba(18,48,255,.28);
+}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 12px 28px rgba(18,48,255,.36)}
+.btn-ghost{
+  background: var(--white);
+  color: var(--ink-900);
+  border:1px solid var(--ink-100);
+}
+.btn-ghost:hover{border-color:var(--blue-500); color:var(--blue-700)}
+.btn-arrow::after{content:"→"; font-weight:400}
+.menu-toggle{display:none}
+@media(max-width:880px){
+  .nav{display:none}
+  .nav.open{display:flex;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:var(--white);padding:24px;border-bottom:1px solid var(--ink-100);align-items:stretch}
+  .nav.open a{padding:8px 0}
+  .menu-toggle{display:flex;margin-left:auto;width:40px;height:40px;align-items:center;justify-content:center;border-radius:8px;border:1px solid var(--ink-100)}
+}
+/* Footer minimal */
+.site-footer-mini{
+  background: #0B1530;
+  color: rgba(255,255,255,.6);
+  padding: 36px 0 32px;
+  font-size: 13px;
+  position:relative;
+}
+.site-footer-mini .container{padding-left:32px; padding-right:32px}
+.site-footer-mini .footer-row{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:24px; flex-wrap:wrap;
+  padding-bottom:20px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.site-footer-mini .footer-brand img{height:26px; width:auto; display:block; filter: brightness(0) invert(1); opacity:.92}
+.site-footer-mini .footer-links{display:flex; gap:24px; flex-wrap:wrap}
+.site-footer-mini .footer-links a{color:rgba(255,255,255,.78); font-size:13px; transition:color .2s}
+.site-footer-mini .footer-links a:hover{color:#9FE0FF}
+.site-footer-mini .footer-bottom{
+  margin-top:18px;
+  display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+  font-family: var(--font-mono);
+  font-size:11.5px; letter-spacing:.04em;
+  color: rgba(255,255,255,.45);
+}
+.site-footer-mini .footer-bottom .sep{color:rgba(255,255,255,.25)}
+@media(max-width:640px){
+  .site-footer-mini{padding:28px 0 24px}
+  .site-footer-mini .footer-row{gap:16px; padding-bottom:16px}
+  .site-footer-mini .footer-links{gap:16px 18px}
+  .site-footer-mini .footer-links a{font-size:12.5px}
+  .site-footer-mini .footer-bottom{flex-direction:column; align-items:flex-start; gap:4px}
+  .site-footer-mini .footer-bottom .sep{display:none}
+}
+/* Footer */
+.site-footer{
+  background: linear-gradient(180deg,#0B1530 0%,#0E1A3D 100%);
+  color: var(--white);
+  padding: 96px 0 40px;
+  position:relative;
+  overflow:hidden;
+}
+.site-footer::before{
+  content:""; position:absolute; inset:0;
+  background: radial-gradient(ellipse at top right, rgba(91,200,255,.18) 0%, transparent 55%);
+  pointer-events:none;
+}
+.site-footer .inner{position:relative}
+.footer-headline{
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight:800;
+  letter-spacing:-.02em;
+  margin-bottom: 56px;
+  line-height: 1.25;
+  background: linear-gradient(120deg,#FFFFFF 0%,#9FE0FF 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  max-width: 720px;
+}
+.footer-grid{display:grid;grid-template-columns: 1.4fr repeat(3,1fr); gap:48px; padding-top:48px; border-top:1px solid rgba(255,255,255,.1)}
+@media(max-width:880px){.footer-grid{grid-template-columns:1fr 1fr; gap:32px}}
+.footer-grid .brand{color:var(--white);font-size:17px}
+.footer-grid h5{
+  font-family: var(--font-mono);
+  font-size:11px; letter-spacing:.2em;
+  color: var(--blue-300);
+  margin-bottom:18px;
+  font-weight:600;
+}
+.footer-grid ul{list-style:none;display:flex;flex-direction:column;gap:12px}
+.footer-grid a{color:rgba(255,255,255,.78);font-size:14px;transition:color .2s}
+.footer-grid a:hover{color:var(--blue-300)}
+.footer-meta{
+  margin-top: 56px;
+  padding-top:24px;
+  border-top:1px solid rgba(255,255,255,.08);
+  display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px;
+  font-size: 12px; color: rgba(255,255,255,.55);
+  font-family: var(--font-mono);
+}
+/* Generic blocks */
+.section-head{display:flex;flex-direction:column;align-items:flex-start;gap:24px;max-width:780px;margin-bottom:64px}
+.section-head .lead{margin-top:8px}
+.section-head h2{white-space:pre-wrap}
+.card{
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  border:1px solid var(--ink-100);
+  padding: 36px;
+  transition: transform .25s, box-shadow .25s, border-color .25s;
+}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:rgba(91,134,255,.3)}
+.tag{
+  display:inline-flex;align-items:center;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--blue-50);
+  color: var(--blue-700);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing:.02em;
+}
+.num-label{
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue-700);
+  letter-spacing:.05em;
+}
+/* Bullet list with gradient dot */
+.bullet-list{list-style:none;display:flex;flex-direction:column;gap:14px}
+.bullet-list li{position:relative; padding-left:28px; color:var(--ink-700); line-height:1.7; font-size:15px}
+.bullet-list li::before{
+  content:"";
+  position:absolute; left:0; top:.7em;
+  width:10px; height:10px; border-radius:3px;
+  background: var(--grad-deep);
+}
+/* Hero gradient panel */
+.hero-grad{
+  background: var(--grad-hero);
+  position:relative;
+  overflow:hidden;
+}
+.hero-grad::before{
+  content:""; position:absolute;
+  width:600px;height:600px;border-radius:50%;
+  background: radial-gradient(circle, rgba(255,255,255,.55) 0%, rgba(255,255,255,0) 70%);
+  top:-200px; right:-200px;
+  pointer-events:none;
+}
+.hero-grad::after{
+  content:""; position:absolute;
+  width:500px;height:500px;border-radius:50%;
+  background: radial-gradient(circle, rgba(18,48,255,.15) 0%, rgba(18,48,255,0) 70%);
+  bottom:-200px; left:-100px;
+  pointer-events:none;
+}
+/* Divider line */
+.hr-grad{
+  height:1px;
+  background: linear-gradient(90deg, transparent, var(--blue-400), transparent);
+  border:0;
+  margin: 0;
+}
+/* Animation */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .9s cubic-bezier(.2,.7,.2,1) both}
+/* Service split tag */
+.svc-pill{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:6px 14px; border-radius:999px;
+  font-size:11px; font-weight:600;
+  font-family: var(--font-mono);
+  letter-spacing:.1em; text-transform:uppercase;
+}
+.svc-biz{background:#EAF1FF; color:#1230FF; border:1px solid #C8D8FF}
+.svc-ai{background:#E5F6FF; color:#0E6FD1; border:1px solid #B6E2FF}
+/* Page hero */
+.page-hero{
+  padding: 140px 0 100px;
+  background: var(--grad-hero);
+  position:relative; overflow:hidden;
+}
+.page-hero::before{
+  content:""; position:absolute;
+  width:700px;height:700px;border-radius:50%;
+  background: radial-gradient(circle, rgba(255,255,255,.5) 0%, rgba(255,255,255,0) 70%);
+  top:-300px; right:-200px;
+  pointer-events:none;
+}
+.page-hero .container{position:relative}
+/* Forms */
+.field{display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
+.field label{font-size:13px;font-weight:600;color:var(--ink-700)}
+.field input,.field textarea,.field select{
+  padding:14px 16px;
+  border-radius:12px;
+  border:1px solid var(--ink-100);
+  background: var(--white);
+  font: inherit;
+  color: var(--ink-900);
+  transition: border-color .2s, box-shadow .2s;
+}
+.field input:focus,.field textarea:focus,.field select:focus{
+  outline:0;
+  border-color: var(--blue-500);
+  box-shadow: 0 0 0 4px rgba(61,134,255,.12);
+}
+.required{color: var(--blue-700)}
+/* ===== Mobile optimizations (SP) ===== */
+@media(max-width:640px){
+  h1{font-size:38px; line-height:1.12}
+  h2{font-size:24px; line-height:1.3}
+  h3{font-size:18px}
+  .lead{font-size:14.5px; line-height:1.85}
+  section{padding:56px 0}
+  /* Section heads: tighten + let auto-wrap handle line breaks */
+  .section-head{margin-bottom:32px; gap:14px; max-width:100%}
+  .section-head h2 br{display:none}
+  .section-head .lead{margin-top:0}
+  /* Page hero (Biz Core / AI Core) */
+  .page-hero{padding:80px 0 48px}
+  .page-hero h1{font-size:64px; margin:16px 0 12px}
+  .page-hero .catch{font-size:22px; line-height:1.35; margin-bottom:18px}
+  .page-hero .catch br{display:none}
+  .page-hero .lead{font-size:14.5px}
+  .page-hero .actions{margin-top:24px}
+  .page-hero .pills{gap:6px}
+  /* Index hero */
+  .hero h1 br{display:none}
+  .hero .lead{font-size:14.5px}
+  /* Member / deliver cards padding tighten */
+  .deliver-card .body,
+  .member-block .body{padding:28px 22px}
+  .deliver-card .ja,
+  .member-block .ja{font-size:22px}
+  /* Process step */
+  .process-step{padding:24px 22px}
+  .process-step .step-num{font-size:28px}
+  /* Value cards */
+  .val-card,
+  .value-card,
+  .ch-list,
+  .fit-card{padding:24px 22px}
+  /* Cards & generic */
+  .card{padding:24px 22px}
+}
+
+/* === ページ固有 <style> (ai-core.html <head>) === */
+
+.page-hero h1{font-size: clamp(56px, 8vw, 110px); margin: 24px 0 16px; background:var(--grad-text); -webkit-background-clip:text; background-clip:text; color:transparent}
+.page-hero .catch{font-size: clamp(24px,3vw,36px); font-weight:800; color:var(--ink-900); letter-spacing:-.02em; line-height:1.3; margin-bottom:32px; white-space:pre-line}
+.page-hero .lead{max-width:760px; white-space:pre-line; color:var(--ink-700); font-size:16px}
+.page-hero .actions{margin-top:40px; display:flex; gap:12px; flex-wrap:wrap}
+.page-hero .pills{display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap}
+/* Problem */
+.prob-grid{display:grid; grid-template-columns:1fr 1fr; gap:80px}
+@media(max-width:880px){.prob-grid{grid-template-columns:1fr; gap:48px}}
+.prob-list{background:var(--white); border-radius:var(--radius-lg); border:1px solid var(--ink-100); padding:36px; box-shadow:var(--shadow-md)}
+.prob-list ul{list-style:none}
+.prob-list li{display:flex; gap:14px; padding:14px 0; border-bottom:1px dashed var(--ink-100); font-size:14.5px; color:var(--ink-700)}
+.prob-list li:last-child{border-bottom:0}
+.prob-list li::before{content:"!"; flex-shrink:0; width:22px; height:22px; border-radius:50%; background:var(--grad-deep); color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center}
+/* Concept */
+.concept-section{background:var(--ink-50)}
+.concept-grid{display:grid; grid-template-columns: repeat(3,1fr); gap:24px}
+@media(max-width:880px){.concept-grid{grid-template-columns:1fr}}
+.concept-card{background:var(--white); border-radius:var(--radius-lg); border:1px solid var(--ink-100); padding:36px; position:relative; overflow:hidden}
+.concept-card::before{content:""; position:absolute; top:0; left:0; right:0; height:4px; background:var(--grad-deep)}
+.concept-card h3{font-size:24px; margin-bottom:16px}
+.concept-card p{font-size:14.5px}
+/* Layers (Deliverables) */
+.layer{
+  background:var(--white); border-radius:var(--radius-xl);
+  border:1px solid var(--ink-100); padding:40px;
+  margin-bottom:20px;
+  display:grid; grid-template-columns: 280px 1fr; gap:48px; align-items:start;
+}
+@media(max-width:880px){.layer{grid-template-columns:1fr; gap:24px}}
+.layer .head .num{font-family:var(--font-mono); font-size:13px; color:var(--blue-700); font-weight:700; letter-spacing:.06em; margin-bottom:12px; display:block}
+.layer .head h3{font-size:30px; margin-bottom:8px; background:var(--grad-text); -webkit-background-clip:text; background-clip:text; color:transparent}
+.layer .head .sub{font-size:14px; font-weight:600; color:var(--ink-700)}
+.layer ul{list-style:none; display:grid; grid-template-columns:1fr 1fr; gap:8px}
+@media(max-width:600px){.layer ul{grid-template-columns:1fr}}
+.layer li{padding:12px 14px; background:var(--blue-50); border-radius:10px; font-size:13.5px; color:var(--ink-900); font-weight:500; border:1px solid #DBE7FF}
+/* Quick win */
+.qw-grid{display:grid; grid-template-columns: repeat(3,1fr); gap:20px}
+@media(max-width:1000px){.qw-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.qw-grid{grid-template-columns:1fr}}
+.qw-card{background:var(--white); border-radius:var(--radius-lg); border:1px solid var(--ink-100); padding:30px}
+.qw-card .num{font-family:var(--font-mono); font-size:13px; color:var(--blue-700); font-weight:700; letter-spacing:.06em; margin-bottom:14px; display:block}
+.qw-card h3{font-size:19px; margin-bottom:14px}
+.qw-card p{font-size:14px; margin-bottom:18px}
+.qw-card .effect{
+  background: var(--blue-50);
+  border-left:3px solid var(--blue-700);
+  padding:12px 14px; border-radius:8px;
+  font-size:12.5px; color:var(--ink-700); line-height:1.6;
+}
+/* Cases section */
+.cases-section{background: var(--ink-50)}
+.cases-stat{
+  display:grid; grid-template-columns: repeat(3,1fr); gap:20px;
+  margin-bottom:48px;
+}
+@media(max-width:880px){.cases-stat{grid-template-columns:1fr; gap:14px}}
+.cases-stat .stat{
+  background:var(--white); border-radius:var(--radius-lg); border:1px solid var(--ink-100);
+  padding:32px 28px; position:relative; overflow:hidden;
+}
+.cases-stat .stat::before{content:""; position:absolute; top:0; left:0; right:0; height:4px; background:var(--grad-deep)}
+.cases-stat .stat .label{font-family:var(--font-mono); font-size:11px; letter-spacing:.18em; color:var(--blue-700); margin-bottom:14px; display:block}
+.cases-stat .stat .value{
+  font-family:var(--font-mono); font-weight:800; font-size:48px; letter-spacing:-.02em; line-height:1;
+  background:var(--grad-text); -webkit-background-clip:text; background-clip:text; color:transparent;
+  margin-bottom:10px;
+}
+.cases-stat .stat .value .unit{font-size:20px; margin-left:4px; -webkit-text-fill-color: var(--ink-700); color:var(--ink-700)}
+.cases-stat .stat p{font-size:13.5px; color:var(--ink-700); line-height:1.7}
+@media(max-width:600px){.cases-stat .stat{padding:24px 22px}.cases-stat .stat .value{font-size:38px}}
+.cat-grid{
+  display:grid; grid-template-columns: repeat(3,1fr); gap:14px;
+  margin-bottom:48px;
+}
+@media(max-width:1000px){.cat-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.cat-grid{grid-template-columns:1fr; gap:10px}}
+.cat-item{
+  background:var(--white); border:1px solid var(--ink-100); border-radius:var(--radius-md);
+  padding:20px 22px; display:flex; align-items:center; gap:16px;
+  transition: transform .2s, box-shadow .2s, border-color .2s;
+}
+.cat-item:hover{transform:translateY(-2px); box-shadow:var(--shadow-md); border-color:#DBE7FF}
+.cat-item .key{
+  font-family:var(--font-mono); font-weight:800; font-size:18px;
+  width:36px; height:36px; flex-shrink:0;
+  background:var(--grad-deep); color:#fff; border-radius:8px;
+  display:flex; align-items:center; justify-content:center; letter-spacing:0;
+}
+.cat-item .body{flex:1; min-width:0}
+.cat-item .body h4{font-size:14.5px; margin-bottom:4px; line-height:1.4}
+.cat-item .body .meta{font-family:var(--font-mono); font-size:11px; letter-spacing:.04em; color:var(--ink-500)}
+.case-pick-grid{display:grid; grid-template-columns: repeat(3,1fr); gap:18px; margin-bottom:48px}
+@media(max-width:1000px){.case-pick-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:720px){.case-pick-grid{grid-template-columns:1fr}}
+.case-pick{
+  background:var(--white); border:1px solid var(--ink-100); border-radius:var(--radius-lg);
+  padding:28px; display:flex; flex-direction:column; gap:14px;
+  transition:transform .25s, box-shadow .25s;
+}
+.case-pick:hover{transform:translateY(-3px); box-shadow:var(--shadow-lg)}
+.case-pick .top{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.case-pick .id{font-family:var(--font-mono); font-size:12px; font-weight:700; color:var(--blue-700); letter-spacing:.06em}
+.case-pick .tag{font-family:var(--font-mono); font-size:10px; padding:4px 8px; border-radius:999px; background:var(--blue-50); color:var(--blue-700); letter-spacing:.08em; font-weight:700}
+.case-pick h4{font-size:17px; line-height:1.45; margin:0}
+.case-pick p{font-size:13.5px; color:var(--ink-700); line-height:1.75; margin:0}
+.case-pick .tools{
+  margin-top:auto; padding-top:14px; border-top:1px dashed var(--ink-100);
+  font-family:var(--font-mono); font-size:11.5px; color:var(--ink-500); letter-spacing:.04em;
+}
+.cases-cta{
+  background:var(--white); border-radius:var(--radius-xl); border:1px solid var(--ink-100);
+  padding:40px 44px; display:grid; grid-template-columns: 1fr auto; gap:32px; align-items:center;
+  position:relative; overflow:hidden;
+}
+.cases-cta::before{content:""; position:absolute; top:0; left:0; right:0; height:5px; background:var(--grad-deep)}
+.cases-cta .label{font-family:var(--font-mono); font-size:11px; letter-spacing:.18em; color:var(--blue-700); margin-bottom:10px; display:block}
+.cases-cta h3{font-size:24px; line-height:1.45; margin-bottom:10px}
+.cases-cta p{font-size:14px; color:var(--ink-700); line-height:1.8}
+.cases-cta .free-pill{display:inline-flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:11px; font-weight:700; letter-spacing:.12em; color:#fff; background:var(--grad-deep); padding:6px 12px; border-radius:999px; margin-bottom:14px}
+@media(max-width:880px){
+  .cases-cta{grid-template-columns:1fr; padding:32px 28px; gap:20px}
+  .cases-cta h3{font-size:20px}
+}
+/* Program weeks */
+.prog-grid{display:grid; grid-template-columns: repeat(5, 1fr); gap:16px}
+@media(max-width:1100px){.prog-grid{grid-template-columns: 1fr 1fr}}
+@media(max-width:600px){.prog-grid{grid-template-columns: 1fr}}
+.week-card{
+  background:var(--white); border-radius: var(--radius-lg);
+  border:1px solid var(--ink-100); padding:26px;
+  display:flex; flex-direction:column; gap:14px;
+}
+.week-card .wk{font-family:var(--font-mono); font-size:11px; letter-spacing:.16em; color:#fff; font-weight:700; padding:6px 12px; border-radius:999px; background: var(--grad-deep); align-self:flex-start}
+.week-card h3{font-size:17px; line-height:1.45}
+.week-card p{font-size:13px; line-height:1.7}
+.week-card ul{list-style:none; padding-top:14px; border-top:1px solid var(--ink-100); display:flex; flex-direction:column; gap:8px}
+.week-card li{font-size:12.5px; color:var(--ink-700); padding-left:16px; position:relative}
+.week-card li::before{content:""; position:absolute; left:0; top:7px; width:6px; height:6px; border-radius:50%; background: var(--grad-deep)}
+/* Pricing */
+.pricing-section{background:var(--ink-50)}
+.initial-build{
+  background: var(--white);
+  border-radius: var(--radius-xl);
+  border:1px solid var(--ink-100);
+  padding:48px;
+  margin-bottom: 40px;
+  display:grid; grid-template-columns: 1.1fr 1fr; gap:48px;
+  position:relative; overflow:hidden;
+}
+@media(max-width:880px){.initial-build{grid-template-columns:1fr; gap:32px; padding:32px}}
+.initial-build::before{
+  content:""; position:absolute; top:0; left:0; right:0; height:5px; background:var(--grad-deep);
+}
+.initial-build .label{font-family:var(--font-mono); font-size:11px; letter-spacing:.18em; color:var(--blue-700); margin-bottom:14px}
+.initial-build h3{font-size:28px; margin-bottom:24px; line-height:1.4}
+.initial-build .price{
+  font-family:var(--font-mono); font-size:48px; font-weight:800;
+  background:var(--grad-text); -webkit-background-clip:text; background-clip:text; color:transparent;
+  letter-spacing:-.02em; line-height:1;
+}
+.initial-build .price-note{font-size:13px; color:var(--ink-500); margin-top:8px; margin-bottom:18px}
+.initial-build .note{
+  font-size:12.5px; color:var(--ink-500);
+  background:var(--blue-50); padding:12px 14px; border-radius:8px; line-height:1.6;
+}
+.initial-build .included h4{font-size:13px; font-family:var(--font-mono); letter-spacing:.14em; color:var(--blue-700); margin-bottom:14px}
+.initial-build .included ul{list-style:none; display:flex; flex-direction:column; gap:10px}
+.initial-build .included li{padding-left:22px; position:relative; font-size:13.5px; color:var(--ink-700); line-height:1.6}
+.initial-build .included li::before{content:"✓"; position:absolute; left:0; color:var(--blue-700); font-weight:700}
+.op-lead{font-size:18px; font-weight:700; margin-bottom:24px; color:var(--ink-900)}
+.op-grid{display:grid; grid-template-columns: repeat(3,1fr); gap:20px}
+@media(max-width:880px){.op-grid{grid-template-columns:1fr}}
+.plan{
+  background:var(--white); border-radius: var(--radius-lg);
+  border:1px solid var(--ink-100); padding:32px;
+  display:flex; flex-direction:column; position:relative;
+}
+.plan.recommended{border:2px solid var(--blue-700); box-shadow: var(--shadow-lg)}
+.plan .badge{
+  position:absolute; top:-12px; left:50%; transform: translateX(-50%);
+  background: var(--grad-deep); color:#fff; font-size:11px; font-weight:700;
+  letter-spacing:.12em; padding:6px 16px; border-radius:999px;
+  font-family: var(--font-mono);
+}
+.plan h3{font-size:24px; margin-bottom:6px}
+.plan .sub{font-size:13px; color:var(--ink-500); margin-bottom:24px}
+.plan .price{font-family:var(--font-mono); font-size:30px; font-weight:800; background:var(--grad-text); -webkit-background-clip:text; background-clip:text; color:transparent; letter-spacing:-.02em; margin-bottom:24px; line-height:1.2}
+.plan ul{list-style:none; display:flex; flex-direction:column; gap:10px}
+.plan li{padding-left:22px; position:relative; font-size:13.5px; color:var(--ink-700); line-height:1.5}
+.plan li::before{content:"✓"; position:absolute; left:0; color:var(--blue-700); font-weight:700}
+.pricing-note{margin-top:32px; padding:18px 22px; background:var(--white); border-radius:12px; border:1px dashed var(--ink-200); font-size:13px; color:var(--ink-500); line-height:1.7}
+/* FAQ */
+.faq-list{display:flex; flex-direction:column; gap:14px}
+details.faq-item{
+  background: var(--white);
+  border-radius: var(--radius-md);
+  border:1px solid var(--ink-100);
+  padding: 0;
+  overflow:hidden;
+}
+details.faq-item[open]{border-color: var(--blue-300); box-shadow: var(--shadow-sm)}
+details.faq-item summary{
+  padding: 22px 28px;
+  cursor:pointer; list-style:none;
+  display:flex; gap:18px; align-items:flex-start;
+  font-size: 16px; font-weight:700; color:var(--ink-900);
+  position:relative;
+}
+details.faq-item summary::-webkit-details-marker{display:none}
+details.faq-item summary::after{
+  content:"+"; margin-left:auto;
+  font-size: 22px; font-weight:400; color:var(--blue-700);
+  flex-shrink:0;
+}
+details.faq-item[open] summary::after{content:"−"}
+details.faq-item .q-num{font-family:var(--font-mono); color:var(--blue-700); font-size:13px; font-weight:700; letter-spacing:.06em; padding-top:3px}
+details.faq-item .answer{
+  padding: 0 28px 24px 64px;
+  font-size: 14.5px; color:var(--ink-500); line-height:1.85;
+}
+/* Final CTA */
+.final-cta{background: var(--grad-hero); position:relative; overflow:hidden}
+.final-cta::before{content:""; position:absolute; width:800px; height:800px; border-radius:50%; background:radial-gradient(circle, rgba(255,255,255,.5) 0%, rgba(255,255,255,0) 65%); top:-300px; left:-200px}
+.final-cta .container{position:relative; text-align:center}
+.final-cta h2{margin-bottom:24px; white-space:pre-line}
+.final-cta p{font-size:16px; color: var(--ink-700); max-width:680px; margin:0 auto 36px; white-space:pre-line}
+
+/* === SWELL header との衝突回避 === */
+.ai-fullhtml-wrap section{padding:120px 0;position:relative}
+.ai-fullhtml-wrap .container{max-width:1240px;margin:0 auto;padding:0 32px}
+@media(max-width:720px){.ai-fullhtml-wrap section{padding:72px 0}.ai-fullhtml-wrap .container{padding:0 20px}}
+
+.avatar img[alt="田中利空"]{object-position:center 22%}
+</style>
+<div class="ai-fullhtml-wrap">
+
+<!-- HERO -->
+<section class="page-hero">
+  <div class="container">
+    <div class="pills">
+      <span class="svc-pill svc-ai">SERVICE 02</span>
+      <span class="svc-pill svc-ai">AI CORE · AIによる経営伴走</span>
+    </div>
+    <h1>AI Core</h1>
+    <div class="catch">AIが支え、<br/>経営者の判断と実行を仕組み化する。</div>
+    <p class="lead">AI Coreは、経営者・事業責任者の判断と実行を支えるAI業務OSを構築するサービスです。
+
+会議、議事録、タスク、顧客情報、社内ナレッジを整理し、
+経営者が構想や意思決定に集中できる状態をつくります。
+
+AIを導入して終わりではなく、
+日常業務の中で使い続けられる仕組みとして定着させます。</p>
+    <div class="actions">
+      <a href="/contact-new/" class="btn btn-primary btn-arrow">30分の無料相談を予約する</a>
+      <a href="https://ai-core-pl.vercel.app/" target="_blank" rel="noopener" class="btn btn-ghost btn-arrow">AI導入50事例を無料DLする</a>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section>
+  <div class="container">
+    <div class="prob-grid">
+      <div>
+        <div class="section-head" style="margin-bottom:32px">
+          <span class="eyebrow">PROBLEM</span>
+          <h2>経営者の時間は、<br/>整理・確認・指示で削られている。</h2>
+        </div>
+        <p class="lead" style="white-space:pre-line">本来、経営者が使うべき時間は、構想、判断、顧客、組織づくりです。
+しかし現実には、日々の情報整理や確認作業に時間を奪われています。
+
+必要なのは、流行りのAIツールではありません。
+会社の文脈を理解し、判断と実行を前に進める仕組みです。</p>
+      </div>
+      <div class="prob-list">
+        <ul>
+          <li>ChatGPTを使っても、毎回ゼロから説明し直している</li>
+          <li>会議の内容が議事録で終わり、次のタスクや判断に落ちていない</li>
+          <li>メール、Slack、Notion、資料が散在している</li>
+          <li>部下からの報告を、自分の頭で要約・判断している</li>
+          <li>過去の意思決定や背景が残らず、同じ説明を何度も繰り返している</li>
+          <li>任せたい仕事ほど属人化していて、結局自分が抱えている</li>
+          <li>AIツールを試したが、自社の業務にどう落とすか分からない</li>
+          <li>優秀な推進人材を採用したいが、採用・育成に時間もコストもかかる</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOLUTION / Concepts -->
+<section class="concept-section">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">SOLUTION</span>
+      <h2>AI Coreは、会社の文脈を覚えた<br/>AI業務OSをつくる。</h2>
+      <p class="lead" style="white-space:pre-line">AI Coreは、経営者や事業責任者のために、社内外に散在する情報を整理し、
+AI秘書・第二の脳・業務OSとして実装するサービスです。
+
+AIを導入するのではなく、
+経営者の判断基準と会社の文脈を、仕組みに変えます。</p>
+    </div>
+    <div class="concept-grid">
+      <div class="concept-card">
+        <h3>AI秘書</h3>
+        <p>会議前の論点整理、会議後の議事録・タスク抽出、メール返信案、リマインド、資料準備を支援します。経営者の動き方に合わせて、必要な情報を先回りして整理します。</p>
+      </div>
+      <div class="concept-card">
+        <h3>第二の脳</h3>
+        <p>過去の議事録、意思決定の理由、顧客とのやり取り、社内資料、事業方針を蓄積し、必要な時に必要な情報を引き出せる状態にします。</p>
+      </div>
+      <div class="concept-card">
+        <h3>業務OS</h3>
+        <p>情報整理、判断、実行、振り返りまでを一連の業務フローに組み込み、AIが日常業務の中で自然に使われる状態まで設計します。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DELIVERABLES -->
+<section>
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">DELIVERABLES</span>
+      <h2>完成するのは、<br/>3層構造のAI業務OS。</h2>
+      <p class="lead">AI Coreの導入後、手元には、日々の作業を軽くし、情報を資産化し、経営判断を支える3層構造のAI Core環境が残ります。</p>
+    </div>
+
+    <div class="layer">
+      <div class="head">
+        <span class="num">LAYER 1</span>
+        <h3>自動実行</h3>
+        <div class="sub">毎日の作業を軽くする</div>
+      </div>
+      <ul>
+        <li>メール返信ドラフト</li>
+        <li>会議議事録の書き起こし・要約</li>
+        <li>ToDo・担当・期限の自動抽出</li>
+        <li>日次・週次タスク整理</li>
+        <li>商談前準備</li>
+        <li>Slack / LINE リマインド</li>
+      </ul>
+    </div>
+    <div class="layer">
+      <div class="head">
+        <span class="num">LAYER 2</span>
+        <h3>ナレッジ蓄積</h3>
+        <div class="sub">情報を会社の資産に変える</div>
+      </div>
+      <ul>
+        <li>意思決定の理由を記録</li>
+        <li>顧客・案件情報の横断検索</li>
+        <li>会議録・資料・メモの分類</li>
+        <li>繰り返し作業のテンプレ化</li>
+        <li>業界用語・判断基準の蓄積</li>
+        <li>過去経緯を踏まえた回答</li>
+      </ul>
+    </div>
+    <div class="layer">
+      <div class="head">
+        <span class="num">LAYER 3</span>
+        <h3>戦略支援</h3>
+        <div class="sub">経営判断の精度と速度を上げる</div>
+      </div>
+      <ul>
+        <li>売上・KPIの分析補助</li>
+        <li>事業計画・提案書ドラフト</li>
+        <li>インサイト抽出</li>
+        <li>戦略案への反論・修正案</li>
+        <li>重要論点の可視化</li>
+        <li>保留判断のリマインド</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- QUICK WIN -->
+<section style="background:var(--ink-50)">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">QUICK WIN</span>
+      <h2>最初の1〜2週間で、<br/>業務の手触りが変わる。</h2>
+      <p class="lead">AI Coreでは、まず経営者と事業推進メンバーの負荷を下げる、即効性の高い機能から構築します。</p>
+    </div>
+    <div class="qw-grid">
+      <div class="qw-card">
+        <span class="num">QUICK WIN 01</span>
+        <h3>朝ブリーフ</h3>
+        <p>毎朝、今日見るべき情報を1枚にまとめて通知します。営業、開発、タスク、要注意事項を横断して把握できます。</p>
+        <div class="effect">Effect — 週5〜7時間の確認作業を削減する余地</div>
+      </div>
+      <div class="qw-card">
+        <span class="num">QUICK WIN 02</span>
+        <h3>議事録アクション自動抽出</h3>
+        <p>会議終了後、ToDo、担当、期限、論点、次回確認事項を抽出します。議事録を実行に接続します。</p>
+        <div class="effect">Effect — 週3〜4時間の整理作業を削減する余地</div>
+      </div>
+      <div class="qw-card">
+        <span class="num">QUICK WIN 03</span>
+        <h3>戦略3段パイプライン</h3>
+        <p>提案AI、批評AI、編集AIの3段階で思考を深めます。反証耐性のあるアウトプットを作成します。</p>
+        <div class="effect">Effect — 提案書・事業方針・採用要件の作成時間を短縮</div>
+      </div>
+      <div class="qw-card">
+        <span class="num">QUICK WIN 04</span>
+        <h3>会議前アジェンダ自動準備</h3>
+        <p>前回の議事録、未完了タスク、関連資料を踏まえ、今日話すべき論点を整理します。</p>
+        <div class="effect">Effect — 会議の質を、準備の段階から引き上げる</div>
+      </div>
+      <div class="qw-card">
+        <span class="num">QUICK WIN 05</span>
+        <h3>案件・商談リマインド</h3>
+        <p>案件ステータス、次回アクション、担当者の動きをもとに、確認すべきタイミングでAIが通知します。</p>
+        <div class="effect">Effect — 全件を人力で追う必要を減らす</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 50 USE CASES -->
+<section class="cases-section">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">50 USE CASES</span>
+      <h2>業務に合わせて選べる、<br/>50の導入事例。</h2>
+      <p class="lead">朝の経営ダッシュボード、議事録運営、顧客分析、戦略意思決定、人事、財務、マーケまで。AI Coreは、すでに50の業務シーンで実装パターンを持っています。「貴社で導入したい事例」を選ぶだけで、AI秘書として組み込めます。</p>
+    </div>
+
+    <!-- 訴求スタッツ -->
+    <div class="cases-stat">
+      <div class="stat">
+        <span class="label">CASES</span>
+        <div class="value">50<span class="unit">事例</span></div>
+        <p>朝の情報整理から経営判断、人事、財務、マーケまで。役割・ツール・頻度・難易度で絞り込み可能。</p>
+      </div>
+      <div class="stat">
+        <span class="label">TIME RECOVERED</span>
+        <div class="value">120<span class="unit">〜160h／月</span></div>
+        <p>AI秘書として導入された場合の、経営者・マネジメント層が取り戻せる時間の目安。</p>
+      </div>
+      <div class="stat">
+        <span class="label">DOWNLOAD</span>
+        <div class="value">FREE<span class="unit">無料</span></div>
+        <p>気になる事例だけを選んで送信すれば、1〜2営業日以内に貴社向けの提案を折り返します。</p>
+      </div>
+    </div>
+
+    <!-- カテゴリ一覧 -->
+    <div class="cat-grid">
+      <div class="cat-item"><span class="key">A</span><div class="body"><h4>朝の経営ダッシュボード</h4><div class="meta">5 事例 / 月 30‒40h 削減</div></div></div>
+      <div class="cat-item"><span class="key">B</span><div class="body"><h4>週次マネジメント</h4><div class="meta">6 事例 / 月 15‒20h 削減</div></div></div>
+      <div class="cat-item"><span class="key">C</span><div class="body"><h4>MTG・議事録運営</h4><div class="meta">5 事例 / 月 15‒20h 削減</div></div></div>
+      <div class="cat-item"><span class="key">D</span><div class="body"><h4>顧客・営業分析</h4><div class="meta">5 事例 / 月 15‒20h 削減</div></div></div>
+      <div class="cat-item"><span class="key">E</span><div class="body"><h4>戦略・意思決定</h4><div class="meta">5 事例 / 月 10‒15h 削減</div></div></div>
+      <div class="cat-item"><span class="key">F</span><div class="body"><h4>チーム運営・人事</h4><div class="meta">4 事例 / 月 5‒10h 削減</div></div></div>
+      <div class="cat-item"><span class="key">G</span><div class="body"><h4>ナレッジ運用</h4><div class="meta">5 事例 / 月 5‒10h 削減</div></div></div>
+      <div class="cat-item"><span class="key">H</span><div class="body"><h4>財務・法務・CS</h4><div class="meta">4 事例 / 月 10‒15h 削減</div></div></div>
+      <div class="cat-item"><span class="key">I</span><div class="body"><h4>マーケ・PR・IR</h4><div class="meta">4 事例 / 月 10‒15h 削減</div></div></div>
+      <div class="cat-item"><span class="key">J</span><div class="body"><h4>個人・ライフ</h4><div class="meta">3 事例 / 月 3‒5h 削減</div></div></div>
+      <div class="cat-item"><span class="key">K</span><div class="body"><h4>自動化の自動化</h4><div class="meta">4 事例 / さらに削減</div></div></div>
+    </div>
+
+    <!-- ピックアップ事例 -->
+    <div class="case-pick-grid">
+      <div class="case-pick">
+        <div class="top">
+          <span class="id">#01</span>
+          <span class="tag">A · 朝</span>
+          <span class="tag">実装済み</span>
+        </div>
+        <h4>経営者向けモーニングブリーフ</h4>
+        <p>毎朝9時、Slackに昨日からの変化・今日の要注意事項がA4 1枚で届く。「今日どこに集中するか」が朝1分で決まる。</p>
+        <div class="tools">Salesforce × Jira × Slack</div>
+      </div>
+      <div class="case-pick">
+        <div class="top">
+          <span class="id">#04</span>
+          <span class="tag">F · 人事</span>
+          <span class="tag">実装済み</span>
+        </div>
+        <h4>チーム過負荷 朝一自動アラート</h4>
+        <p>担当者別の作業量を集計し、閾値を超えた人がいるときだけSlack DMで通知。離職・体調不良リスクを事前に回避。</p>
+        <div class="tools">Jira × Slack</div>
+      </div>
+      <div class="case-pick">
+        <div class="top">
+          <span class="id">#05</span>
+          <span class="tag">D · 営業</span>
+          <span class="tag">実装済み</span>
+        </div>
+        <h4>営業 vs 実態 乖離の週次チェック</h4>
+        <p>Salesforceとスプレッドシートを毎週突合し、差分のある顧客だけをSlackに通知。会議の手戻りを半減。</p>
+        <div class="tools">Salesforce × Google Sheets × Slack</div>
+      </div>
+    </div>
+
+    <!-- 事例集CTA -->
+    <div class="cases-cta">
+      <div>
+        <span class="free-pill">● FREE DOWNLOAD</span>
+        <h3>50事例から、貴社で導入したい業務を選んで送信。</h3>
+        <p>カテゴリ・ツール・頻度・難易度で絞り込み、気になる事例にチェックを入れて送信するだけ。1〜2営業日以内に、Core Drivenから貴社向けの導入提案を折り返します。</p>
+      </div>
+      <div>
+        <a href="https://ai-core-pl.vercel.app/" target="_blank" rel="noopener" class="btn btn-primary btn-arrow" style="font-size:15px; padding:16px 28px; white-space:nowrap">事例集を見る・無料DL</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROGRAM -->
+<section>
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">PROGRAM</span>
+      <h2>4週間で、<br/>AI Coreの初期環境を構築する。</h2>
+      <p class="lead" style="white-space:pre-line">AI Coreは、4週間の集中構築プログラムと、導入後の運用伴走で構成されます。
+オンラインで完結し、経営者または事業推進メンバーの実務に合わせて進めます。</p>
+    </div>
+    <div class="prog-grid">
+      <div class="week-card">
+        <span class="wk">WEEK 0</span>
+        <h3>事前準備 / 業務診断</h3>
+        <p>現状業務のヒアリング、利用ツールの確認、AI化すべき業務の優先順位整理、環境構築ガイドの共有。</p>
+        <ul>
+          <li>業務ヒアリング</li>
+          <li>ツール連携可否確認</li>
+          <li>AI化優先順位</li>
+          <li>環境準備</li>
+        </ul>
+      </div>
+      <div class="week-card">
+        <span class="wk">WEEK 1</span>
+        <h3>会社構造のAI化</h3>
+        <p>会社概要、事業構造、主要KPIを整理。経営者の判断基準を言語化し、ナレッジベースを構築。</p>
+        <ul>
+          <li>事業構造整理</li>
+          <li>判断基準の言語化</li>
+          <li>接続方針決定</li>
+          <li>ナレッジベース構築</li>
+        </ul>
+      </div>
+      <div class="week-card">
+        <span class="wk">WEEK 2</span>
+        <h3>議事録・タスク・ナレッジ運用</h3>
+        <p>議事録テンプレ、ToDo抽出、会議前アジェンダ生成、リマインド設計。会議と実行を接続するフローを構築。</p>
+        <ul>
+          <li>議事録テンプレ設計</li>
+          <li>ToDo抽出</li>
+          <li>会議前アジェンダ</li>
+          <li>リマインド設計</li>
+        </ul>
+      </div>
+      <div class="week-card">
+        <span class="wk">WEEK 3</span>
+        <h3>重点業務の自動化</h3>
+        <p>朝ブリーフ、週次レポート、商談管理、提案書・採用要件・事業計画ドラフト、経営判断の壁打ちフローを構築。</p>
+        <ul>
+          <li>朝ブリーフ</li>
+          <li>週次レポート</li>
+          <li>商談管理</li>
+          <li>経営壁打ち</li>
+        </ul>
+      </div>
+      <div class="week-card">
+        <span class="wk">AFTER</span>
+        <h3>運用伴走</h3>
+        <p>月次チェック、チャット相談、新機能追加、精度改善、チーム利用への拡張、他業務への横展開。</p>
+        <ul>
+          <li>月次チェック</li>
+          <li>チャット相談</li>
+          <li>精度改善</li>
+          <li>チーム展開</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing-section">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">PRICING</span>
+      <h2>料金</h2>
+      <p class="lead" style="white-space:pre-line">AI Coreは、初期構築フェーズと運用フェーズの2段構成です。
+まず4週間で貴社専用のAI Core環境を構築し、その後、月額運用で改善・拡張していきます。</p>
+    </div>
+
+    <div class="initial-build">
+      <div>
+        <div class="label">INITIAL BUILD</div>
+        <h3>AI Core 集中構築プログラム</h3>
+        <div class="price">¥500,000</div>
+        <div class="price-note">税抜 / 4週間・全7回</div>
+        <div class="note">人材開発支援助成金などを活用できる場合があります。無料相談時に個別確認します。</div>
+      </div>
+      <div class="included">
+        <h4>INCLUDED</h4>
+        <ul>
+          <li>4週間・全7回のオンラインセッション</li>
+          <li>事前準備・業務診断</li>
+          <li>AI Core専用ナレッジベース構築</li>
+          <li>議事録・タスク・リマインド設計</li>
+          <li>重点業務のAIワークフロー構築</li>
+          <li>業務別プロンプト・テンプレート作成</li>
+          <li>運用ルール設計</li>
+          <li>卒業後の改善ロードマップ</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="op-lead">運用プラン（月額）</div>
+    <div class="op-grid">
+      <div class="plan">
+        <h3>Light</h3>
+        <div class="sub">自走できる方</div>
+        <div class="price">¥50,000<span style="font-size:14px; font-weight:500; color:var(--ink-500); margin-left:6px;">/月（税抜）</span></div>
+        <ul>
+          <li>月1回30分チェック</li>
+          <li>チャット相談 月3件</li>
+          <li>改善チケット 2時間分</li>
+        </ul>
+      </div>
+      <div class="plan recommended">
+        <span class="badge">RECOMMENDED</span>
+        <h3>Standard</h3>
+        <div class="sub">大半の企業に推奨</div>
+        <div class="price">¥100,000<span style="font-size:14px; font-weight:500; color:var(--ink-500); margin-left:6px;">/月（税抜）</span></div>
+        <ul>
+          <li>月1回60分チェック</li>
+          <li>チャット相談 無制限</li>
+          <li>改善チケット 5時間分</li>
+          <li>新規ワークフロー追加相談</li>
+        </ul>
+      </div>
+      <div class="plan">
+        <h3>Premium</h3>
+        <div class="sub">複数部門・多店舗</div>
+        <div class="price">¥150,000<span style="font-size:14px; font-weight:500; color:var(--ink-500); margin-left:6px;">/月（税抜）</span></div>
+        <ul>
+          <li>月2回60分チェック</li>
+          <li>優先対応</li>
+          <li>改善チケット 8時間分</li>
+          <li>チーム展開支援</li>
+          <li>管理者向け運用改善</li>
+        </ul>
+      </div>
+    </div>
+    <div class="pricing-note">※ 運用フェーズは最低3ヶ月から。有料アセスメント（3〜5万円）は無料相談後、具体的な導入判断を行う場合に実施します。大規模連携・基幹システム連携は別途見積もり。</div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section>
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">FAQ</span>
+      <h2>よくあるご質問</h2>
+    </div>
+    <div class="faq-list">
+      <details class="faq-item">
+        <summary><span class="q-num">Q1</span><span>ITに詳しくなくても大丈夫ですか？</span></summary>
+        <div class="answer">大丈夫です。AI Coreは、ツールの使い方を覚えることではなく、経営者や事業責任者の実務に合わせて、情報整理・判断・実行を支える仕組みをつくるサービスです。利用ツールや業務状況を確認しながら、無理なく使い続けられる形に設計します。</div>
+      </details>
+      <details class="faq-item">
+        <summary><span class="q-num">Q2</span><span>経営者本人が参加する必要がありますか？</span></summary>
+        <div class="answer">初期設計では、経営者本人または意思決定に近い方の参加を推奨します。判断基準、事業方針、業務上の詰まりを正しく把握することで、会社の文脈に合ったAI環境を構築できます。</div>
+      </details>
+      <details class="faq-item">
+        <summary><span class="q-num">Q3</span><span>忙しくて4週間続けられるか不安です。</span></summary>
+        <div class="answer">必要な参加時間を抑えながら進められるよう、事前準備、ヒアリング、テンプレート設計、運用伴走を組み合わせて進行します。忙しい経営者ほど、最初に情報整理と実行管理の仕組みをつくる効果が出やすいです。</div>
+      </details>
+      <details class="faq-item">
+        <summary><span class="q-num">Q4</span><span>どのツールと連携できますか？</span></summary>
+        <div class="answer">利用中のメール、チャット、ドキュメント、議事録、タスク管理、顧客管理などのツールを確認し、連携可否と実装方法を個別に整理します。大規模連携や基幹システム連携が必要な場合は、別途見積もりとなります。</div>
+      </details>
+      <details class="faq-item">
+        <summary><span class="q-num">Q5</span><span>セキュリティは大丈夫ですか？</span></summary>
+        <div class="answer">取り扱う情報の範囲、利用ツール、権限設計、保存方法を確認したうえで、業務に合わせた運用ルールを設計します。機密情報や顧客情報を扱う場合は、導入前に必要な確認項目を整理します。</div>
+      </details>
+      <details class="faq-item">
+        <summary><span class="q-num">Q6</span><span>既存のChatGPTやClaudeと何が違いますか？</span></summary>
+        <div class="answer">一般的なAIツールを使うだけでは、毎回背景説明が必要になったり、議事録が実行に接続されなかったりします。AI Coreは、会社の文脈、判断基準、会議、タスク、資料を整理し、日常業務の中で使い続けられるAI業務OSとして設計する点が異なります。</div>
+      </details>
+      <details class="faq-item">
+        <summary><span class="q-num">Q7</span><span>助成金は使えますか？</span></summary>
+        <div class="answer">人材開発支援助成金などを活用できる場合があります。適用可否は企業ごとに異なるため、無料相談時に個別確認します。</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div class="container">
+    <span class="eyebrow">LET'S TALK</span>
+    <h2 style="margin-top:20px">まずは、あなたの業務を見せてください。</h2>
+    <p>30分の無料相談で、あなたの会社のどこにAI Coreを入れると効果が出るか、その場で整理します。
+
+AIをどう使うかではなく、
+どこに情報の詰まりがあるか、
+どこを仕組み化すれば判断と実行が前に進むのか。
+
+そこから一緒に考えます。</p>
+    <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap">
+      <a href="/contact-new/" class="btn btn-primary btn-arrow" style="font-size:15px; padding:16px 32px">30分の無料相談を予約する</a>
+      <a href="https://ai-core-pl.vercel.app/" target="_blank" rel="noopener" class="btn btn-ghost btn-arrow" style="font-size:15px; padding:16px 32px">AI導入50事例を無料DLする</a>
+    </div>
+  </div>
+</section>
+
+
+</div>
+<!-- /wp:html -->

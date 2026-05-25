@@ -1,0 +1,874 @@
+<!-- wp:html -->
+<!--
+  CoreDriven TOP — WordPress 貼付用 HTML v2 (2026-05-06 更新)
+  使い方: WP 固定ページ「TOP」(スラッグ /top/) の「カスタム HTML」ブロックに丸ごとペースト
+  前提: 画像5枚を /wp-content/uploads/coredriven-html/ にアップロード済
+  内部リンク (v2 反映済):
+    /contact/  →  /contact-new/    (既存 /contact/ ページは残すため新スラッグ)
+    /company/  →  /company-new/    (既存 /company/ ページは残すため新スラッグ)
+    /biz-core/ →  /biz-core/       (既存スラッグ無し、新規作成 OK)
+    /ai-core/  →  /ai-core/        (既存スラッグ無し、新規作成 OK)
+  改変点 (v1 からの差分):
+    - 内部リンク 4 種を上記に合わせ書換
+  生成元: ~/Downloads/Core Driven_20260426.zip の index.html
+-->
+<style>
+/* === Core Driven 共通 design system (assets/styles.css の中身) === */
+/* Core Driven — Design System */
+:root{
+  --ink-900:#0B1530;
+  --ink-700:#1B2444;
+  --ink-500:#3A4566;
+  --ink-400:#5A6685;
+  --ink-300:#8A93AE;
+  --ink-200:#C4CADE;
+  --ink-100:#E3E7F2;
+  --ink-50:#F2F4FB;
+  --paper:#FAFBFE;
+  --white:#FFFFFF;
+  --blue-900:#0B1FB3;
+  --blue-700:#1230FF;
+  --blue-600:#2A6BFF;
+  --blue-500:#3D86FF;
+  --blue-400:#5BC8FF;
+  --blue-300:#9FE0FF;
+  --blue-100:#E3F1FF;
+  --blue-50:#F0F7FF;
+  --grad-deep: linear-gradient(135deg,#1230FF 0%,#2A6BFF 50%,#5BC8FF 100%);
+  --grad-light: linear-gradient(135deg,#E3F1FF 0%,#F0F7FF 50%,#F7FBFF 100%);
+  --grad-hero: linear-gradient(160deg,#F0F7FF 0%,#DCEBFF 35%,#C5E2FF 70%,#9FE0FF 100%);
+  --grad-text: linear-gradient(120deg,#1230FF 0%,#2A6BFF 45%,#5BC8FF 100%);
+  --shadow-sm: 0 1px 2px rgba(11,21,48,.04), 0 1px 3px rgba(11,21,48,.06);
+  --shadow-md: 0 4px 14px rgba(11,21,48,.06), 0 2px 6px rgba(11,21,48,.04);
+  --shadow-lg: 0 18px 48px rgba(18,48,255,.08), 0 4px 12px rgba(11,21,48,.05);
+  --shadow-xl: 0 30px 80px rgba(18,48,255,.10), 0 8px 24px rgba(11,21,48,.06);
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-xl: 32px;
+  --font-sans: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  --font-display: 'Inter', 'Noto Sans JP', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --max: 1240px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family: var(--font-sans);
+  background: var(--paper);
+  color: var(--ink-900);
+  font-feature-settings:"palt";
+  line-height:1.7;
+  -webkit-font-smoothing: antialiased;
+  font-size: 15px;
+}
+a{color:inherit;text-decoration:none}
+img,svg{display:block;max-width:100%}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+/* Layout */
+.container{max-width:var(--max);margin:0 auto;padding:0 32px}
+@media(max-width:720px){.container{padding:0 20px}}
+section{padding:120px 0;position:relative}
+@media(max-width:720px){section{padding:72px 0}}
+.eyebrow{
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing:.18em;
+  font-weight:600;
+  color: var(--blue-700);
+  text-transform: uppercase;
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+}
+.eyebrow::before{
+  content:"";
+  width:24px;height:1px;
+  background: var(--grad-deep);
+  display:inline-block;
+}
+h1,h2,h3,h4{font-family:var(--font-display);font-weight:800;letter-spacing:-.02em;color:var(--ink-900);line-height:1.25}
+h1{font-size: clamp(40px, 6vw, 72px); letter-spacing:-.035em; line-height:1.1}
+h2{font-size: clamp(26px, 3.6vw, 48px); letter-spacing:-.025em; line-height:1.18}
+h3{font-size: clamp(20px, 2vw, 26px)}
+h4{font-size: 17px}
+p{color: var(--ink-500); line-height:1.85}
+.lead{font-size: 17px; color: var(--ink-500); line-height:1.95}
+.grad-text{
+  background: var(--grad-text);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+/* Header */
+.site-header{
+  position:sticky; top:0; z-index:50;
+  background: rgba(250,251,254,.82);
+  backdrop-filter: blur(14px);
+  border-bottom:1px solid rgba(195,202,222,.4);
+}
+.site-header .inner{
+  max-width: var(--max); margin:0 auto;
+  padding: 18px 32px;
+  display:flex; align-items:center; gap:32px;
+}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.02em;font-size:17px}
+.brand-logo{height:32px;width:auto;display:block}
+.brand-mark{
+  width:30px;height:30px; border-radius:7px;
+  background: var(--grad-deep);
+  position:relative; flex-shrink:0;
+  box-shadow: 0 4px 12px rgba(18,48,255,.25);
+}
+.brand-mark::after{
+  content:""; position:absolute; inset:7px;
+  background: var(--white);
+  clip-path: polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);
+}
+.brand-mark::before{
+  content:""; position:absolute; inset:0; border-radius:7px;
+  background: var(--grad-deep);
+  clip-path: polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);
+}
+.nav{display:flex;gap:28px;margin-left:auto;align-items:center}
+.nav a{font-size:14px;color:var(--ink-700);font-weight:500;transition:color .2s}
+.nav a:hover{color:var(--blue-700)}
+.nav a.active{color:var(--blue-700)}
+.nav a.btn-primary{color:var(--white)}
+.nav a.btn-primary:hover{color:var(--white)}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  padding:12px 22px;
+  border-radius:999px;
+  font-weight:600;
+  font-size:14px;
+  transition:transform .2s, box-shadow .2s, background .2s;
+  white-space:nowrap;
+}
+.btn-primary{
+  background: var(--grad-deep);
+  color:var(--white);
+  box-shadow: 0 8px 22px rgba(18,48,255,.28);
+}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 12px 28px rgba(18,48,255,.36)}
+.btn-ghost{
+  background: var(--white);
+  color: var(--ink-900);
+  border:1px solid var(--ink-100);
+}
+.btn-ghost:hover{border-color:var(--blue-500); color:var(--blue-700)}
+.btn-arrow::after{content:"→"; font-weight:400}
+.menu-toggle{display:none}
+@media(max-width:880px){
+  .nav{display:none}
+  .nav.open{display:flex;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:var(--white);padding:24px;border-bottom:1px solid var(--ink-100);align-items:stretch}
+  .nav.open a{padding:8px 0}
+  .menu-toggle{display:flex;margin-left:auto;width:40px;height:40px;align-items:center;justify-content:center;border-radius:8px;border:1px solid var(--ink-100)}
+}
+/* Footer minimal */
+.site-footer-mini{
+  background: #0B1530;
+  color: rgba(255,255,255,.6);
+  padding: 36px 0 32px;
+  font-size: 13px;
+  position:relative;
+}
+.site-footer-mini .container{padding-left:32px; padding-right:32px}
+.site-footer-mini .footer-row{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:24px; flex-wrap:wrap;
+  padding-bottom:20px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.site-footer-mini .footer-brand img{height:26px; width:auto; display:block; filter: brightness(0) invert(1); opacity:.92}
+.site-footer-mini .footer-links{display:flex; gap:24px; flex-wrap:wrap}
+.site-footer-mini .footer-links a{color:rgba(255,255,255,.78); font-size:13px; transition:color .2s}
+.site-footer-mini .footer-links a:hover{color:#9FE0FF}
+.site-footer-mini .footer-bottom{
+  margin-top:18px;
+  display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+  font-family: var(--font-mono);
+  font-size:11.5px; letter-spacing:.04em;
+  color: rgba(255,255,255,.45);
+}
+.site-footer-mini .footer-bottom .sep{color:rgba(255,255,255,.25)}
+@media(max-width:640px){
+  .site-footer-mini{padding:28px 0 24px}
+  .site-footer-mini .footer-row{gap:16px; padding-bottom:16px}
+  .site-footer-mini .footer-links{gap:16px 18px}
+  .site-footer-mini .footer-links a{font-size:12.5px}
+  .site-footer-mini .footer-bottom{flex-direction:column; align-items:flex-start; gap:4px}
+  .site-footer-mini .footer-bottom .sep{display:none}
+}
+/* Footer */
+.site-footer{
+  background: linear-gradient(180deg,#0B1530 0%,#0E1A3D 100%);
+  color: var(--white);
+  padding: 96px 0 40px;
+  position:relative;
+  overflow:hidden;
+}
+.site-footer::before{
+  content:""; position:absolute; inset:0;
+  background: radial-gradient(ellipse at top right, rgba(91,200,255,.18) 0%, transparent 55%);
+  pointer-events:none;
+}
+.site-footer .inner{position:relative}
+.footer-headline{
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight:800;
+  letter-spacing:-.02em;
+  margin-bottom: 56px;
+  line-height: 1.25;
+  background: linear-gradient(120deg,#FFFFFF 0%,#9FE0FF 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  max-width: 720px;
+}
+.footer-grid{display:grid;grid-template-columns: 1.4fr repeat(3,1fr); gap:48px; padding-top:48px; border-top:1px solid rgba(255,255,255,.1)}
+@media(max-width:880px){.footer-grid{grid-template-columns:1fr 1fr; gap:32px}}
+.footer-grid .brand{color:var(--white);font-size:17px}
+.footer-grid h5{
+  font-family: var(--font-mono);
+  font-size:11px; letter-spacing:.2em;
+  color: var(--blue-300);
+  margin-bottom:18px;
+  font-weight:600;
+}
+.footer-grid ul{list-style:none;display:flex;flex-direction:column;gap:12px}
+.footer-grid a{color:rgba(255,255,255,.78);font-size:14px;transition:color .2s}
+.footer-grid a:hover{color:var(--blue-300)}
+.footer-meta{
+  margin-top: 56px;
+  padding-top:24px;
+  border-top:1px solid rgba(255,255,255,.08);
+  display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px;
+  font-size: 12px; color: rgba(255,255,255,.55);
+  font-family: var(--font-mono);
+}
+/* Generic blocks */
+.section-head{display:flex;flex-direction:column;align-items:flex-start;gap:24px;max-width:780px;margin-bottom:64px}
+.section-head .lead{margin-top:8px}
+.section-head h2{white-space:pre-wrap}
+.card{
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  border:1px solid var(--ink-100);
+  padding: 36px;
+  transition: transform .25s, box-shadow .25s, border-color .25s;
+}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:rgba(91,134,255,.3)}
+.tag{
+  display:inline-flex;align-items:center;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--blue-50);
+  color: var(--blue-700);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing:.02em;
+}
+.num-label{
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue-700);
+  letter-spacing:.05em;
+}
+/* Bullet list with gradient dot */
+.bullet-list{list-style:none;display:flex;flex-direction:column;gap:14px}
+.bullet-list li{position:relative; padding-left:28px; color:var(--ink-700); line-height:1.7; font-size:15px}
+.bullet-list li::before{
+  content:"";
+  position:absolute; left:0; top:.7em;
+  width:10px; height:10px; border-radius:3px;
+  background: var(--grad-deep);
+}
+/* Hero gradient panel */
+.hero-grad{
+  background: var(--grad-hero);
+  position:relative;
+  overflow:hidden;
+}
+.hero-grad::before{
+  content:""; position:absolute;
+  width:600px;height:600px;border-radius:50%;
+  background: radial-gradient(circle, rgba(255,255,255,.55) 0%, rgba(255,255,255,0) 70%);
+  top:-200px; right:-200px;
+  pointer-events:none;
+}
+.hero-grad::after{
+  content:""; position:absolute;
+  width:500px;height:500px;border-radius:50%;
+  background: radial-gradient(circle, rgba(18,48,255,.15) 0%, rgba(18,48,255,0) 70%);
+  bottom:-200px; left:-100px;
+  pointer-events:none;
+}
+/* Divider line */
+.hr-grad{
+  height:1px;
+  background: linear-gradient(90deg, transparent, var(--blue-400), transparent);
+  border:0;
+  margin: 0;
+}
+/* Animation */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .9s cubic-bezier(.2,.7,.2,1) both}
+/* Service split tag */
+.svc-pill{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:6px 14px; border-radius:999px;
+  font-size:11px; font-weight:600;
+  font-family: var(--font-mono);
+  letter-spacing:.1em; text-transform:uppercase;
+}
+.svc-biz{background:#EAF1FF; color:#1230FF; border:1px solid #C8D8FF}
+.svc-ai{background:#E5F6FF; color:#0E6FD1; border:1px solid #B6E2FF}
+/* Page hero */
+.page-hero{
+  padding: 140px 0 100px;
+  background: var(--grad-hero);
+  position:relative; overflow:hidden;
+}
+.page-hero::before{
+  content:""; position:absolute;
+  width:700px;height:700px;border-radius:50%;
+  background: radial-gradient(circle, rgba(255,255,255,.5) 0%, rgba(255,255,255,0) 70%);
+  top:-300px; right:-200px;
+  pointer-events:none;
+}
+.page-hero .container{position:relative}
+/* Forms */
+.field{display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
+.field label{font-size:13px;font-weight:600;color:var(--ink-700)}
+.field input,.field textarea,.field select{
+  padding:14px 16px;
+  border-radius:12px;
+  border:1px solid var(--ink-100);
+  background: var(--white);
+  font: inherit;
+  color: var(--ink-900);
+  transition: border-color .2s, box-shadow .2s;
+}
+.field input:focus,.field textarea:focus,.field select:focus{
+  outline:0;
+  border-color: var(--blue-500);
+  box-shadow: 0 0 0 4px rgba(61,134,255,.12);
+}
+.required{color: var(--blue-700)}
+/* ===== Mobile optimizations (SP) ===== */
+@media(max-width:640px){
+  h1{font-size:38px; line-height:1.12}
+  h2{font-size:24px; line-height:1.3}
+  h3{font-size:18px}
+  .lead{font-size:14.5px; line-height:1.85}
+  section{padding:56px 0}
+  /* Section heads: tighten + let auto-wrap handle line breaks */
+  .section-head{margin-bottom:32px; gap:14px; max-width:100%}
+  .section-head h2 br{display:none}
+  .section-head .lead{margin-top:0}
+  /* Page hero (Biz Core / AI Core) */
+  .page-hero{padding:80px 0 48px}
+  .page-hero h1{font-size:64px; margin:16px 0 12px}
+  .page-hero .catch{font-size:22px; line-height:1.35; margin-bottom:18px}
+  .page-hero .catch br{display:none}
+  .page-hero .lead{font-size:14.5px}
+  .page-hero .actions{margin-top:24px}
+  .page-hero .pills{gap:6px}
+  /* Index hero */
+  .hero h1 br{display:none}
+  .hero .lead{font-size:14.5px}
+  /* Member / deliver cards padding tighten */
+  .deliver-card .body,
+  .member-block .body{padding:28px 22px}
+  .deliver-card .ja,
+  .member-block .ja{font-size:22px}
+  /* Process step */
+  .process-step{padding:24px 22px}
+  .process-step .step-num{font-size:28px}
+  /* Value cards */
+  .val-card,
+  .value-card,
+  .ch-list,
+  .fit-card{padding:24px 22px}
+  /* Cards & generic */
+  .card{padding:24px 22px}
+}
+/* === index.html の <head> 内 <style> (Hero / Role / Challenges / Services / Strengths / Members / Final CTA 用) === */
+/* Hero */
+.hero{
+  background: var(--grad-hero);
+  padding: 140px 0 120px;
+  position:relative; overflow:hidden;
+}
+.hero::before{
+  content:""; position:absolute;
+  width:900px;height:900px;border-radius:50%;
+  background: radial-gradient(circle, rgba(255,255,255,.6) 0%, rgba(255,255,255,0) 65%);
+  top:-400px; right:-300px;
+  pointer-events:none;
+}
+.hero::after{
+  content:""; position:absolute;
+  width:700px;height:700px;border-radius:50%;
+  background: radial-gradient(circle, rgba(18,48,255,.18) 0%, rgba(18,48,255,0) 65%);
+  bottom:-300px; left:-200px;
+  pointer-events:none;
+}
+.hero .container{position:relative; z-index:1}
+.hero h1{margin: 28px 0 32px; max-width: 920px}
+.hero h1 .accent{background:var(--grad-text); -webkit-background-clip:text; background-clip:text; color:transparent}
+.hero .lead{max-width: 780px; font-size:17px; color:var(--ink-700); white-space:pre-line}
+.hero-actions{display:flex;gap:14px;margin-top:48px;flex-wrap:wrap}
+/* Hero badges */
+.hero-badges{
+  display:flex; gap:14px; margin-top:64px; flex-wrap:wrap;
+  padding-top:48px; border-top:1px solid rgba(11,21,48,.08);
+}
+.hero-badge{
+  background: rgba(255,255,255,.6);
+  backdrop-filter: blur(10px);
+  border:1px solid rgba(255,255,255,.7);
+  border-radius: 14px;
+  padding: 18px 22px;
+  flex:1; min-width: 220px;
+  display:flex; gap:14px; align-items:center;
+}
+.hero-badge .num{
+  font-family: var(--font-mono);
+  font-weight:700;
+  font-size:13px;
+  color: var(--blue-700);
+  letter-spacing:.06em;
+}
+.hero-badge .lbl{font-size:14px; font-weight:600; color: var(--ink-900)}
+.hero-badge .sub{font-size:12px; color: var(--ink-400); display:block; margin-top:2px}
+/* Role */
+.role-grid{display:grid; grid-template-columns: repeat(3,1fr); gap:24px; margin-top: 16px}
+@media(max-width:880px){.role-grid{grid-template-columns:1fr}}
+.role-card{
+  position:relative; padding-top: 48px;
+}
+.role-card .num{
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--blue-700);
+  letter-spacing:.06em;
+}
+.role-card h3{margin:14px 0 14px}
+.role-card p{font-size:14.5px}
+/* Challenges */
+.challenges{background:var(--ink-50)}
+.challenges .grid-2{display:grid; grid-template-columns: 1fr 1fr; gap:80px; align-items:start}
+@media(max-width:880px){.challenges .grid-2{grid-template-columns:1fr; gap:48px}}
+.challenge-list{
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 36px;
+  border:1px solid var(--ink-100);
+  box-shadow: var(--shadow-md);
+}
+.challenge-list ul{list-style:none}
+.challenge-list li{
+  display:flex; gap:14px; padding: 14px 0;
+  border-bottom:1px dashed var(--ink-100);
+  font-size:14.5px; color:var(--ink-700);
+  line-height:1.6;
+}
+.challenge-list li:last-child{border-bottom:0}
+.challenge-list li::before{
+  content:"!"; flex-shrink:0;
+  width:22px; height:22px; border-radius:50%;
+  background: var(--grad-deep);
+  color:#fff; font-size:11px; font-weight:700;
+  display:flex; align-items:center; justify-content:center;
+  margin-top:1px;
+}
+/* Services */
+.svc-grid{display:grid; grid-template-columns: 1fr 1fr; gap:28px; margin-top:24px}
+@media(max-width:880px){.svc-grid{grid-template-columns:1fr}}
+.svc-card{
+  background: var(--white);
+  border-radius: var(--radius-xl);
+  border:1px solid var(--ink-100);
+  padding: 44px;
+  display:flex; flex-direction:column;
+  position:relative; overflow:hidden;
+  transition: transform .3s, box-shadow .3s;
+}
+.svc-card::before{
+  content:""; position:absolute; top:0; left:0; right:0; height:5px;
+  background: var(--grad-deep);
+}
+.svc-card.ai::before{background: linear-gradient(135deg,#2A6BFF 0%,#5BC8FF 100%)}
+.svc-card:hover{transform:translateY(-4px); box-shadow: var(--shadow-xl)}
+.svc-card .pill-row{display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap}
+.svc-card h2{font-size:42px; margin: 6px 0 14px; letter-spacing:-.03em}
+.svc-card .catch{font-size:18px; font-weight:700; color: var(--ink-900); margin-bottom: 18px}
+.svc-card > p{font-size:14.5px; margin-bottom: 24px}
+.svc-details{
+  background: var(--blue-50);
+  border-radius: var(--radius-md);
+  padding: 20px 22px;
+  margin-bottom: 24px;
+  font-size:13px; color: var(--ink-700);
+  display:flex; flex-direction:column; gap:10px;
+}
+.svc-details span{display:block}
+.svc-details b{color: var(--ink-900); font-weight:700; margin-right:6px}
+.svc-list{display:flex; flex-direction:column; gap:10px; margin-bottom: 28px}
+.svc-list .row{
+  display:flex; gap:14px; padding: 12px 0;
+  border-bottom:1px solid var(--ink-100); font-size:14px;
+}
+.svc-list .row:last-child{border-bottom:0}
+.svc-list .num{font-family:var(--font-mono); color:var(--blue-700); font-weight:700; font-size:12px; min-width:24px}
+.svc-actions{margin-top:auto; display:flex; gap:10px; flex-wrap:wrap}
+/* Strengths */
+.strengths{background: var(--paper)}
+.str-grid{display:grid; grid-template-columns: repeat(6, 1fr); gap:20px; margin-top: 24px}
+@media(max-width:1100px){.str-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.str-grid{grid-template-columns:1fr}}
+.str-card{
+  grid-column: span 2;
+  padding:32px;
+  background:var(--white);
+  border-radius: var(--radius-lg);
+  border:1px solid var(--ink-100);
+}
+.str-card.wide{grid-column: span 3}
+.str-card.full{grid-column: span 6}
+@media(max-width:1100px){.str-card,.str-card.wide,.str-card.full{grid-column: span 1}}
+.str-card .num{font-family:var(--font-mono); font-weight:700; color:var(--blue-700); font-size:13px; letter-spacing:.06em; margin-bottom:14px; display:block}
+.str-card h3{font-size:20px; margin-bottom:12px; line-height:1.4}
+.str-card p{font-size:14.5px; margin-bottom:18px}
+.str-tags{display:flex; gap:6px; flex-wrap:wrap}
+.closing-text{
+  text-align:center;
+  margin-top: 56px;
+  font-size: 17px;
+  color: var(--ink-900);
+  font-weight: 600;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  border:1px dashed var(--blue-300);
+}
+/* Members */
+.members-section{background: var(--ink-50)}
+.members-grid{display:grid; grid-template-columns: repeat(3,1fr); gap:24px; margin-top:24px}
+@media(max-width:880px){.members-grid{grid-template-columns:1fr}}
+.member-card{
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  border:1px solid var(--ink-100);
+  padding: 32px;
+  position:relative; overflow:hidden;
+}
+.member-card .avatar{
+  width: 100%; aspect-ratio: 1.1/1;
+  border-radius: var(--radius-md);
+  background: var(--grad-light);
+  margin-bottom: 22px;
+  position:relative; overflow:hidden;
+  display:flex; align-items:center; justify-content:center;
+}
+.member-card .avatar::before{
+  content:""; position:absolute; inset:0;
+  background: repeating-linear-gradient(45deg, transparent 0 14px, rgba(18,48,255,.05) 14px 15px);
+}
+.member-card .avatar.has-photo{padding:0}
+.member-card .avatar.has-photo::before{display:none}
+.member-card .avatar img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:2}
+.avatar img[alt="田中利空"]{object-position:center 22%}
+.member-card .avatar .initials{
+  position:relative; z-index:1;
+  font-size: 64px; font-weight: 800;
+  letter-spacing: -.04em;
+  background: var(--grad-text);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.member-card .en{font-family:var(--font-mono); font-size:11px; letter-spacing:.15em; color: var(--blue-700); margin-bottom:6px}
+.member-card .ja{font-size:22px; font-weight:800; margin-bottom:8px; letter-spacing:-.02em}
+.member-card .pos{font-size:13px; color: var(--ink-500); margin-bottom: 14px}
+.member-card .skills{font-size:13px; color: var(--ink-700); border-top:1px solid var(--ink-100); padding-top:14px}
+/* Final CTA */
+.final-cta{
+  background: var(--grad-hero);
+  position:relative; overflow:hidden;
+}
+.final-cta::before{
+  content:""; position:absolute;
+  width:800px;height:800px;border-radius:50%;
+  background: radial-gradient(circle, rgba(255,255,255,.5) 0%, rgba(255,255,255,0) 65%);
+  top:-300px; left:-200px;
+}
+.final-cta .container{position:relative; text-align:center}
+.final-cta h2{margin-bottom: 24px; white-space:pre-line}
+.final-cta p{font-size:16px; color: var(--ink-700); max-width: 640px; margin: 0 auto 36px; white-space:pre-line}
+/* === SWELL header との衝突回避 ===  */
+.ai-fullhtml-wrap section { padding: 120px 0; position: relative; }
+.ai-fullhtml-wrap .container { max-width: 1240px; margin: 0 auto; padding: 0 32px; }
+@media(max-width:720px){ .ai-fullhtml-wrap section{padding:72px 0} .ai-fullhtml-wrap .container{padding:0 20px} }
+</style>
+
+<div class="ai-fullhtml-wrap">
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <span class="eyebrow">CORE DRIVEN</span>
+    <h1>経営者の熱意を実現する<br/><span class="accent">経営伴走・事業共創パートナー</span></h1>
+    <p class="lead">Core Drivenは、経営者の熱意や構想を、実現へ導く経営伴走チームです。
+人による経営伴走を担う Biz Core と、AIによる経営伴走を担う AI Core によって、
+構想整理から事業推進、仕組み化まで一気通貫で支援します。</p>
+    <div class="hero-actions">
+      <a href="/contact-new/" class="btn btn-primary btn-arrow">相談する</a>
+      <a href="#services" class="btn btn-ghost btn-arrow">サービスを見る</a>
+    </div>
+  </div>
+</section>
+
+<!-- ROLE -->
+<section id="role">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">ROLE</span>
+      <h2>熱意を、構想で終わらせない。
+実現まで共に動く経営伴走・事業共創。</h2>
+      <p class="lead" style="white-space:pre-line">Core Drivenは、経営者の頭の中にある熱意や構想を整理し、
+事業として実現するための論点、優先順位、実行計画を明確にします。
+
+助言だけで終わらず、事業推進、現場実装、AIによる仕組み化まで一気通貫で伴走します。</p>
+    </div>
+    <div class="role-grid">
+      <div class="card role-card">
+        <span class="num">01 / 構想整理</span>
+        <h3>構想整理</h3>
+        <p>経営者の頭の中にある熱意、構想、違和感を整理し、実現に向けた方向性・優先順位・勝ち筋を明確にします。</p>
+      </div>
+      <div class="card role-card">
+        <span class="num">02 / 事業推進</span>
+        <h3>事業推進</h3>
+        <p>決めた方針を前に進めるために、PMO、マーケティング、営業、事業開発、現場改善などを横断して支援します。</p>
+      </div>
+      <div class="card role-card">
+        <span class="num">03 / 仕組み化</span>
+        <h3>仕組み化</h3>
+        <p>属人的な業務や散在した情報を整理し、AIや業務設計を活用して、継続的に回る仕組みへ変えます。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CHALLENGES -->
+<section class="challenges" id="challenges">
+  <div class="container">
+    <div class="grid-2">
+      <div>
+        <div class="section-head" style="margin-bottom:32px">
+          <span class="eyebrow">CHALLENGES</span>
+          <h2>経営者の熱意はある。<br/>しかし、実現までの道筋がない。</h2>
+        </div>
+        <p class="lead" style="white-space:pre-line">やりたいことはある。
+実現したい構想もある。
+しかし、その熱意が事業として前に進む前に、曖昧さや属人性の中で止まってしまう。
+
+何を先に決めるべきかが整理されない。
+構想が、計画や実行に落ちない。
+現場に伝わらない。
+推進役がいない。
+情報が散在し、判断も実行も重くなる。
+
+Core Drivenは、そうした経営者の構想を止めず、
+人とAIの両面から、実現までの推進力をつくります。</p>
+      </div>
+      <div class="challenge-list">
+        <ul>
+          <li>やりたいことはあるが、構想が整理しきれていない</li>
+          <li>優先順位が曖昧で、何から進めるべきか決めきれない</li>
+          <li>構想が事業計画や収支設計まで落ちていない</li>
+          <li>実行を担う推進役が社内にいない</li>
+          <li>会議で話しても、具体的なタスクや進行に接続されない</li>
+          <li>施策が単発で終わり、継続的な改善につながらない</li>
+          <li>現場まで意図が伝わらず、構想が実装されない</li>
+          <li>経営者自身が細かい確認や整理まで抱え込みすぎている</li>
+          <li>情報が散在し、同じ説明や判断を何度も繰り返している</li>
+          <li>AIを使いたいが、自社の実務にどう落とすべきかわからない</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">SERVICES</span>
+      <h2>経営者の熱意を実現する、<br/>2つの経営伴走・事業共創。</h2>
+      <p class="lead" style="white-space:pre-line">Core Drivenは、経営者の熱意や構想を実現へ導くために、
+人による経営伴走を担う Biz Core と、
+AIによる経営伴走を担う AI Core を提供します。
+
+人が深く入り込むことで構想を実行へ進め、
+AIが判断・情報整理・実行を支えることで、継続的に回る仕組みをつくります。</p>
+    </div>
+
+    <div class="svc-grid">
+      <!-- Biz Core -->
+      <div class="svc-card biz">
+        <div class="pill-row">
+          <span class="svc-pill svc-biz">SERVICE 01</span>
+          <span class="svc-pill svc-biz">BIZ CORE · 人による経営伴走</span>
+        </div>
+        <h2 class="grad-text">Biz Core</h2>
+        <div class="catch">人が入り、経営者の構想を実現へ導く。</div>
+        <p>経営者・事業責任者の熱意や構想を起点に、事業設計、収支計画、マーケティング、営業導線、現場運用までを一気通貫で支援します。</p>
+        <div class="svc-details">
+          <span><b>担うもの:</b>経営者の構想整理、事業設計、実行推進、現場実装</span>
+          <span><b>進め方:</b>Core Drivenのメンバーが事業の内側に入り、共に考え、共に動く</span>
+          <span><b>残るもの:</b>実現へ進む構想、整理された事業計画、継続的に回る実行体制</span>
+        </div>
+        <div class="svc-list">
+          <div class="row"><span class="num">01</span><span>構想整理・優先順位設計</span></div>
+          <div class="row"><span class="num">02</span><span>事業計画・収支設計</span></div>
+          <div class="row"><span class="num">03</span><span>マーケティング・営業・PMO推進</span></div>
+          <div class="row"><span class="num">04</span><span>店舗 / FC / 現場運営改善</span></div>
+          <div class="row"><span class="num">05</span><span>仕組み化・追加施策の設計</span></div>
+        </div>
+        <div class="svc-actions">
+          <a href="/biz-core/" class="btn btn-primary btn-arrow">Biz Coreを見る</a>
+          <a href="/contact-new/" class="btn btn-ghost">相談する</a>
+        </div>
+      </div>
+
+      <!-- AI Core -->
+      <div class="svc-card ai">
+        <div class="pill-row">
+          <span class="svc-pill svc-ai">SERVICE 02</span>
+          <span class="svc-pill svc-ai">AI CORE · AIによる経営伴走</span>
+        </div>
+        <h2 class="grad-text">AI Core</h2>
+        <div class="catch">AIが支え、経営者の判断と実行を仕組み化する。</div>
+        <p>会議、議事録、タスク、顧客情報、社内ナレッジを整理し、経営者が構想や意思決定に集中できるAI業務OSを構築します。</p>
+        <div class="svc-details">
+          <span><b>担うもの:</b>情報整理、判断支援、実行管理、ナレッジ蓄積、業務OS化</span>
+          <span><b>進め方:</b>4週間の集中構築と運用伴走によって、実務に使えるAI環境を構築する</span>
+          <span><b>残るもの:</b>会社の文脈を覚えたAI、判断と実行を支えるAI業務OS、継続的に改善される業務基盤</span>
+        </div>
+        <div class="svc-list">
+          <div class="row"><span class="num">01</span><span>AI秘書・議事録自動化</span></div>
+          <div class="row"><span class="num">02</span><span>ナレッジ蓄積と横断検索</span></div>
+          <div class="row"><span class="num">03</span><span>業務OSの設計と実装</span></div>
+          <div class="row"><span class="num">04</span><span>運用定着まで伴走</span></div>
+        </div>
+        <div class="svc-actions">
+          <a href="/ai-core/" class="btn btn-primary btn-arrow">AI Coreを見る</a>
+          <a href="/contact-new/" class="btn btn-ghost">相談する</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STRENGTHS -->
+<section class="strengths" id="strengths">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">STRENGTHS</span>
+      <h2>なぜCore Drivenは、<br/>事業共創パートナーになれるのか。</h2>
+      <p class="lead">経営・事業・マーケティング・AI・実装・チーム。経営者の構想を実現するために必要な領域を、分断せずに横断して担えることが、Core Drivenの強みです。</p>
+    </div>
+    <div class="str-grid">
+      <div class="str-card">
+        <span class="num">01</span>
+        <h3>経営者の構想整理から入れる</h3>
+        <p>表面的な課題ではなく、経営者の熱意や違和感から始め、何を実現すべきかを整理します。</p>
+        <div class="str-tags"><span class="tag">経営</span><span class="tag">構想整理</span></div>
+      </div>
+      <div class="str-card">
+        <span class="num">02</span>
+        <h3>事業設計と実行をつなげられる</h3>
+        <p>戦略を語るだけでなく、意思決定と実行の間に入り、施策が前に進む状態をつくります。</p>
+        <div class="str-tags"><span class="tag">経営</span><span class="tag">実行</span></div>
+      </div>
+      <div class="str-card">
+        <span class="num">03</span>
+        <h3>マーケティングと事業開発を横断できる</h3>
+        <p>売上構造、集客導線、訴求設計、営業導線、実行体制まで一体で整理します。</p>
+        <div class="str-tags"><span class="tag">事業</span><span class="tag">マーケティング</span></div>
+      </div>
+      <div class="str-card wide">
+        <span class="num">04</span>
+        <h3>AIを業務に実装できる</h3>
+        <p>会議、議事録、資料、タスク、顧客情報を整理し、AIが日常業務を支える仕組みとして導入します。</p>
+        <div class="str-tags"><span class="tag">AI</span><span class="tag">実装</span></div>
+      </div>
+      <div class="str-card wide">
+        <span class="num">05</span>
+        <h3>少数精鋭で実現まで担える</h3>
+        <p>経営、AI設計、実装の領域を担うメンバーが連携し、構想から実装まで支援します。</p>
+        <div class="str-tags"><span class="tag">経営</span><span class="tag">AI</span><span class="tag">実装</span><span class="tag">チーム</span></div>
+      </div>
+    </div>
+    <div class="closing-text">一領域の専門家ではなく、経営者の構想を実現するために必要な領域を一体で担います。</div>
+  </div>
+</section>
+
+<!-- MEMBERS -->
+<section class="members-section" id="members">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">MEMBERS</span>
+      <h2>経営・AI・実装を横断するチーム</h2>
+      <p class="lead">Core Drivenは、経営、AI・業務設計、実装の3領域を担うメンバーが連携し、経営者の構想を実現まで支援します。</p>
+    </div>
+    <div class="members-grid">
+      <div class="member-card">
+        <div class="avatar has-photo"><img src="/wp-content/uploads/coredriven-html/yoshida.webp" alt="吉田柾長"/></div>
+        <div class="en">MASANAGA YOSHIDA</div>
+        <div class="ja">吉田柾長</div>
+        <div class="pos">代表取締役</div>
+        <div class="skills">経営伴走 / 事業開発 / マーケティング戦略</div>
+      </div>
+      <div class="member-card">
+        <div class="avatar has-photo"><img src="/wp-content/uploads/coredriven-html/machida.jpg" alt="町田大地"/></div>
+        <div class="en">DAICHI MACHIDA</div>
+        <div class="ja">町田大地</div>
+        <div class="pos">執行役員 / CAIO</div>
+        <div class="skills">AI事業開発 / 業務設計 / プロダクト設計</div>
+      </div>
+      <div class="member-card">
+        <div class="avatar has-photo"><img src="/wp-content/uploads/coredriven-html/tanaka.jpg" alt="田中利空"/></div>
+        <div class="en">RIKU TANAKA</div>
+        <div class="ja">田中利空</div>
+        <div class="pos">執行役員 / CTO</div>
+        <div class="skills">システム導入 / 実装 / 運用設計</div>
+      </div>
+    </div>
+    <div style="margin-top:48px; text-align:center">
+      <a href="/company-new/#members" class="btn btn-ghost btn-arrow">メンバー詳細を見る</a>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div class="container">
+    <span class="eyebrow">LET'S TALK</span>
+    <h2 style="margin-top:20px">経営者の熱意を、<br/>実現へ進めるために。</h2>
+    <p>まだ課題が整理されていない段階でも構いません。
+今考えていること、違和感、実現したいことをお聞かせください。
+
+Core Drivenが、人とAIの両面から、
+構想を実現へ導く道筋を一緒に整理します。</p>
+    <a href="/contact-new/" class="btn btn-primary btn-arrow" style="font-size:15px; padding:16px 32px">相談する</a>
+  </div>
+</section>
+
+</div><!-- /.ai-fullhtml-wrap -->
+
+<!-- /wp:html -->

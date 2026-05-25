@@ -13,6 +13,7 @@ description: >-
   で作成する。Airレジ側は週報プロジェクトの内部手順を流用、ダッシュボード側は実際のUI（/store/bfa-001/upload）の画面キャプチャで説明する。
 deliverable_refs:
   - d-bfa-20260523-001
+  - d-bfa-20260526-001
 cockpit_task_ids: []
 pending_questions: []
 decisions:
@@ -48,3 +49,12 @@ decisions:
       Dashboard 側は Playwright で CSS overlay を inject してキャプチャ、Airレジ側は PIL で後処理で描画。
       実装メモ: dev:prod サーバの HMR が React state を頻繁にリセットする問題で、3-5 列マッピング画面のライブキャプチャは断念し、テキスト説明に変更（実害は小さい—ユーザーは Airレジ形式選択時に自動マッピングされた状態を画面で見るのみ）。
       使った座標と画像処理ロジックは /tmp/annotate_screenshots.py と /tmp/annotate_dashboard.py に保存（次回再生時の参照用）。
+  - at: '2026-05-26T01:10:00.000Z'
+    type: commitment
+    by: ai
+    content: >-
+      v3 PDF 化完了。田中さん指示「これをPDFで出力してください」を反映。
+      Python markdown ライブラリで md → HTML 変換 → Chrome headless で HTML → PDF (A4, 14 ページ, 約 5.8 MB)。
+      Hiragino Sans フォント、@page 印刷スタイル (ページ番号付き)、画像 max-width 100% / box-shadow、コードブロック・引用ブロック・テーブルの印刷向けスタイリング、--no-pdf-header-footer で Chrome デフォルトのヘッダー除去。
+      生成スクリプトは Flow/.../BFA/md_to_pdf.py に保存。再生成は `python3 md_to_pdf.py` で再現可能。
+      また mt deliverable register で今回も BL-0001 取り違えバグが再発したため、同じ手順 (BL-0002 ミニタキオン側で既知バグ化済) で deliverables.yaml と BL.deliverable_refs を手動修正。

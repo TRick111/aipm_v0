@@ -151,7 +151,7 @@ html_doc = f"""<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<title>BAR FIVE Arrows 様向け｜売上データ アップロードマニュアル</title>
+<title>FIVE Arrows 様向け｜売上データ アップロードマニュアル</title>
 <style>{CSS}</style>
 </head>
 <body>

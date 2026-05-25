@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<title>BAR FIVE Arrows 様向け｜売上データ アップロードマニュアル</title>
+<title>FIVE Arrows 様向け｜売上データ アップロードマニュアル</title>
 <style>
 @page {
   size: A4;
@@ -128,7 +128,7 @@ h2 { page-break-before: auto; }
 </style>
 </head>
 <body>
-<h1 id="bar-five-arrows">BAR FIVE Arrows 様向け｜売上データ アップロードマニュアル</h1>
+<h1 id="five-arrows">FIVE Arrows 様向け｜売上データ アップロードマニュアル</h1>
 <p>Airレジからダウンロードした売上 CSV を、Restaurant AI Lab のダッシュボードにアップロードして、月別の売上分析グラフに反映するまでの手順です。</p>
 <ul>
 <li>所要時間: 約 5〜10 分（CSV ダウンロード含む）</li>
@@ -157,7 +157,7 @@ h2 { page-break-before: auto; }
 </ol>
 <p><img alt="Airレジ ログイン画面" src="file:///Users/rikutanaka/aipm_v0/Flow/202605/2026-05-23/RestaurantAILab/BFA/screenshots/airregi-01-login-annot.png" /></p>
 <ol>
-<li>店舗選択画面が表示されたら <strong>「BAR FIVE Arrows」</strong> をクリック</li>
+<li>店舗選択画面が表示されたら <strong>「FIVE Arrows」</strong> をクリック</li>
 </ol>
 <p><img alt="店舗選択画面" src="file:///Users/rikutanaka/aipm_v0/Flow/202605/2026-05-23/RestaurantAILab/BFA/screenshots/airregi-02-store-select-annot.png" /></p>
 <p>ログインに成功すると、Airレジのバックオフィストップ画面が表示されます。</p>
@@ -198,7 +198,7 @@ h2 { page-break-before: auto; }
 </thead>
 <tbody>
 <tr>
-<td><code>20260501-20260531-BAR FIVE Arrows.csv</code></td>
+<td><code>20260501-20260531-FIVE Arrows.csv</code></td>
 <td><code>{開始日}-{終了日}-{店名}.csv</code></td>
 </tr>
 </tbody>
@@ -253,14 +253,14 @@ h2 { page-break-before: auto; }
 <pre><code>https://&lt;ダッシュボードのURL&gt;/store/bfa-001/upload
 </code></pre>
 <blockquote>
-<p>URL の <code>bfa-001</code> の部分が BAR FIVE Arrows 用の店舗コードです。<strong>店舗ごとに固有なので、他店舗の URL を使わないようにご注意ください。</strong></p>
+<p>URL の <code>bfa-001</code> の部分が FIVE Arrows 用の店舗コードです。<strong>店舗ごとに固有なので、他店舗の URL を使わないようにご注意ください。</strong></p>
 </blockquote>
 <p>開くと、以下のようなアップロード画面（ステップ 1: ファイル選択）が表示されます。</p>
 <p><img alt="アップロード画面 - 初期状態" src="file:///Users/rikutanaka/aipm_v0/Flow/202605/2026-05-23/RestaurantAILab/BFA/screenshots/03-upload-step1-empty-annot.png" /></p>
 <h3 id="3-2-csv">3-2. CSV ファイルを選択</h3>
 <ol>
 <li>画面中央の <strong>「クリックしてファイルを選択 またはドラッグ＆ドロップ」</strong> エリアをクリック</li>
-<li>ステップ 1 でダウンロードした Airレジの CSV ファイル（例: <code>20260301-20260331-BAR FIVE Arrows.csv</code>）を選択</li>
+<li>ステップ 1 でダウンロードした Airレジの CSV ファイル（例: <code>20260301-20260331-FIVE Arrows.csv</code>）を選択</li>
 <li>ファイル名・サイズが青文字で表示されたら OK</li>
 </ol>
 <h3 id="3-3-csv">3-3. CSV フォーマットを選ぶ</h3>
@@ -363,7 +363,7 @@ h2 { page-break-before: auto; }
 <p>担当: Restaurant AI Lab（田中）</p>
 <hr />
 <h2 id="a">付録 A｜ダッシュボード側のフォーマット仕様（参考）</h2>
-<p>Airレジ形式を選ぶと、以下のマッピングが自動で適用されます（BAR FIVE Arrows 様で操作の必要はありません）。</p>
+<p>Airレジ形式を選ぶと、以下のマッピングが自動で適用されます（FIVE Arrows 様で操作の必要はありません）。</p>
 <table>
 <thead>
 <tr>
@@ -415,9 +415,10 @@ h2 { page-break-before: auto; }
 </tbody>
 </table>
 <hr />
-<p><em>更新日: 2026-05-25 (v3) / 作成: Restaurant AI Lab</em></p>
+<p><em>更新日: 2026-05-26 (v4) / 作成: Restaurant AI Lab</em></p>
 <h3 id="_4">変更履歴</h3>
 <ul>
+<li><strong>v4 (2026-05-26)</strong>: 店舗名表記を「BAR FIVE Arrows」から正式名「FIVE Arrows」に統一。店舗コード <code>bfa-001</code> は v3 時点で既に統一済。</li>
 <li><strong>v3 (2026-05-25)</strong>: 全スクリーンショット（Airレジ 5 枚 + ダッシュボード 4 枚）に、次にクリックする箇所を示す赤いハイライトボックスを追加。3-5（列マッピング）は実機キャプチャを断念し、テキストで詳細に説明する形式に変更。</li>
 <li><strong>v2 (2026-05-25)</strong>: Airレジ操作画面のスクリーンショット 5 枚を追加。アップロード画面（3-1）のスクリーンショットを完全描画後のものに撮り直し。店舗コード表記を <code>bfa-001</code> で統一。集計期間の説明を「前月1日から当日分まで」の Airレジ仕様に合わせて訂正。</li>
 <li><strong>v1 (2026-05-23)</strong>: 初版。</li>

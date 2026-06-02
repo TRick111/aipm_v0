@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>麻布しき 本店 週次営業報告 — 2026-W22</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;font-size:20px;color:#334155;}
+.slide{width:1280px;height:720px;position:relative;overflow:hidden;background:#ffffff;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;}
+.slide-header{background:#1E3A5F;color:#fff;padding:14px 40px;display:flex;align-items:center;justify-content:space-between;position:relative;}
+.slide-header h2{font-size:30px;font-weight:700;white-space:nowrap;display:flex;align-items:center;}
+.slide-header .pn{font-size:16px;opacity:0.7;white-space:nowrap;margin-left:20px;}
+.progress-bar{position:absolute;bottom:0;left:0;height:3px;background:rgba(255,255,255,0.4);border-radius:0 2px 2px 0;}
+.slide-header .section-tag{background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:4px;font-size:14px;font-weight:500;margin-right:12px;letter-spacing:0.5px;}
+.msg-bar{background:#FFF7ED;border-left:5px solid #F97316;padding:12px 40px;font-size:24px;font-weight:800;color:#1E293B;line-height:1.4;}
+.classification-bar{background:#EFF6F0;border-left:4px solid #2D6B4F;padding:6px 32px;font-size:14px;color:#1F2A28;}
+.classification-bar ul{margin:2px 0;padding-left:20px;}
+.classification-bar li{line-height:1.5;}
+.footer-cite{position:absolute;bottom:6px;left:32px;right:32px;font-size:11px;color:#6B7280;border-top:1px solid #E5E7EB;padding-top:4px;}
+.slide-body{padding:14px 40px;height:calc(100% - 170px);overflow:hidden;}
+.slide-body.no-msg{height:calc(100% - 70px);}
+.kpi-cards{display:flex;gap:20px;justify-content:center;align-items:stretch;margin-top:12px;}
+.kpi-card{flex:1;background:#F8FAFC;border-radius:12px;padding:18px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.kpi-label{font-size:17px;font-weight:600;color:#64748B;display:block;margin-bottom:8px;}
+.kpi-value{font-size:42px;font-weight:800;color:#1E293B;display:block;margin-bottom:8px;}
+.kpi-change{font-size:20px;font-weight:700;display:block;}
+.kpi-change.positive{color:#22C55E;}
+.kpi-change.negative{color:#EF4444;}
+.kpi-sub{font-size:17px;color:#64748B;display:block;margin-top:4px;}
+.dt{width:100%;border-collapse:collapse;font-size:18px;}
+.dt th{background:#1E3A5F;color:#fff;padding:10px 14px;text-align:left;font-size:17px;font-weight:700;}
+.dt td{padding:10px 14px;border-bottom:1px solid #E2E8F0;font-size:18px;}
+.dt tr:nth-child(even){background:#F8FAFC;}
+.dt .highlight-row{background:#FFF7ED;border-left:4px solid #F97316;}
+.dt .highlight-row td{font-weight:800;color:#C2410C;}
+.dt td.num{text-align:right;}
+.dt td.pos{color:#22C55E;font-weight:700;}
+.dt td.neg{color:#EF4444;font-weight:700;}
+.gauge-card{background:#F8FAFC;border-radius:12px;padding:16px 20px;box-shadow:0 2px 8px rgba(0,0,0,0.06);text-align:center;}
+.gauge-value{font-size:44px;font-weight:900;}
+.success-item,.challenge-item{background:#F8FAFC;border-radius:10px;padding:14px 18px;box-shadow:0 1px 4px rgba(0,0,0,0.05);margin-bottom:10px;}
+.success-item h4{color:#22C55E;font-size:20px;font-weight:700;margin-bottom:6px;}
+.challenge-item h4{color:#EF4444;font-size:20px;font-weight:700;margin-bottom:6px;}
+.success-item p,.challenge-item p{font-size:17px;color:#334155;}
+.action-table{width:100%;border-collapse:collapse;font-size:15px;}
+.action-table th{background:#1E3A5F;color:#fff;padding:8px 10px;text-align:left;font-size:15px;font-weight:700;}
+.action-table td{padding:8px 10px;border-bottom:1px solid #E2E8F0;font-size:15px;}
+.action-table tr:nth-child(even){background:#F8FAFC;}
+blockquote{border-left:3px solid #3B82F6;padding:8px 16px;margin-bottom:8px;background:#F8FAFC;border-radius:0 8px 8px 0;font-size:15px;line-height:1.45;}
+blockquote strong{font-size:15px;color:#1E293B;}
+.two-col{display:flex;gap:30px;}
+.two-col>div{flex:1;}
+.pillar-card{background:#F8FAFC;border-radius:12px;padding:14px 18px;box-shadow:0 2px 8px rgba(0,0,0,0.06);margin-bottom:10px;}
+.pillar-card h4{font-size:19px;font-weight:700;color:#1E293B;margin-bottom:6px;}
+.pillar-card p,.pillar-card li{font-size:16px;color:#334155;}
+.bullet-list{list-style:none;padding:0;}
+.bullet-list li{display:flex;align-items:flex-start;gap:12px;padding:10px 14px;border-radius:10px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,0.05);background:#F8FAFC;}
+.bullet-list .icon{font-size:26px;flex-shrink:0;width:34px;text-align:center;}
+.bullet-list .text{font-size:16px;}
+.bullet-list .text strong{font-size:17px;color:#1E293B;}
+.chart-container{background:#F8FAFC;border-radius:12px;padding:14px 18px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.note-box{background:#FFF7ED;border-left:4px solid #F97316;padding:10px 16px;border-radius:0 8px 8px 0;font-size:16px;margin-top:10px;}
+@media print{body{margin:0;padding:0;background:#fff;}.slide{page-break-after:always;page-break-inside:avoid;break-after:page;break-inside:avoid;box-shadow:none;margin:0;}.slide:last-child{page-break-after:auto;}}
+@media screen{.slide{margin:0 auto 40px auto;box-shadow:0 4px 20px rgba(0,0,0,0.12);}}
+</style>
+</head>
+<body>
+
+<!-- ==================== SLIDE 1: TITLE ==================== -->
+<div class="slide" id="slide-1" style="background:linear-gradient(135deg,#1E3A5F 0%,#0F172A 100%);display:flex;flex-direction:column;justify-content:center;align-items:center;color:#fff;">
+<div style="font-size:48px;font-weight:800;letter-spacing:2px;">麻布しき 本店</div>
+<div style="font-size:28px;font-weight:400;margin-top:12px;opacity:0.9;">週次営業報告</div>
+<div style="font-size:22px;margin-top:24px;opacity:0.7;">2026年第22週（5/25〜5/31）</div>
+<div style="margin-top:40px;width:80px;height:3px;background:rgba(255,255,255,0.3);border-radius:2px;"></div>
+<div style="font-size:16px;margin-top:20px;opacity:0.5;">20260525_20260531_麻布しき本店_週次報告資料</div>
+</div>
+
+<!-- ==================== SLIDE 2: EXECUTIVE SUMMARY ==================== -->
+<div class="slide" id="slide-2">
+<div class="slide-header"><h2><span class="section-tag">全体サマリー</span>エグゼクティブサマリー</h2><span class="pn">2 / 32</span><div class="progress-bar" style="width:3.2%"></div></div>
+<div class="msg-bar">💡 売上¥1,489,515（前年比+7.8%）、客単価¥20,129で5週最高水準。客数74人と組数100組のギャップで店内グループ需要が課題</div>
+<div class="classification-bar"><ul><li>集計対象: 2026-W22 の業務日（2026/05/25 6:00 〜 2026/06/01 5:59 JST、朝6時境界 ／ POS売上分析画面と一致）</li><li>比較対象: 前週（2026-W21）／ 直前4週間平均</li></ul></div>
+<div class="slide-body">
+<div class="kpi-cards">
+<div class="kpi-card"><span class="kpi-label">💰週間売上</span><span class="kpi-value">¥1,489,515</span><span class="kpi-change negative">▼ 前週比 -8.9%</span><span class="kpi-sub">4週平均比 +5.4%</span></div>
+<div class="kpi-card"><span class="kpi-label">👥客数</span><span class="kpi-value">74人</span><span class="kpi-change negative">▼ 前週比 -12.9%</span><span class="kpi-sub">4週平均比 -9.8%</span></div>
+<div class="kpi-card"><span class="kpi-label">💴客単価</span><span class="kpi-value">¥20,129</span><span class="kpi-change positive">▲ 前週比 +4.7%</span><span class="kpi-sub">4週平均比 +15.5%</span></div>
+<div class="kpi-card"><span class="kpi-label">🧾組数</span><span class="kpi-value">100組</span><span class="kpi-change positive">▲ 前週比 +5.3%</span><span class="kpi-sub">4週平均比 +12.0%</span></div>
+</div>
+<div class="note-box" style="margin-top:16px;">📌 金曜（5/29）は¥260,645で4週平均比161.0%、3-4名10会計＋深夜帯1-4時の高額会計¥200,685が集中。日曜（5/31）は¥140,095・客数6人で店内ディナーが消失、テイクアウト67.3%偏重。</div>
+</div>
+<div class="footer-cite">出典: USENレジ売上データ ／ 集計対象: 2026-W22 の業務日（2026/05/25 6:00 〜 2026/06/01 5:59 JST、朝6時境界）</div>
+</div>
+
+<!-- ==================== SLIDE 3: SALES TREND ==================== -->
+<div class="slide" id="slide-3">
+<div class="slide-header"><h2><span class="section-tag">全体サマリー</span>売上トレンド（直近5週間）</h2><span class="pn">3 / 32</span><div class="progress-bar" style="width:6.5%"></div></div>
+<div class="msg-bar">💡 5週で売上は1.16M〜1.63Mを推移し、W22は¥1,489,515で4週平均（¥1,412,879）を上回る</div>
+<div class="classification-bar"><ul><li>集計対象: 2026-W18〜W22 の各週業務日合計（朝6時境界 ／ POS売上分析画面と一致）</li><li>前年同週: 2025-W22（2025/05/26〜2025/06/01）</li></ul></div>
+<div class="slide-body" style="display:flex;gap:20px;">
+<div class="chart-container" style="flex:2;"><svg id="chart-sales" width="720" height="380"></svg></div>
+<div style="flex:1;padding-top:10px;">
+<div class="gauge-card" style="margin-bottom:14px;"><div class="kpi-label">前年同週比較</div><div style="font-size:18px;margin-top:6px;">今週: <strong>¥1,489,515</strong></div><div style="font-size:18px;">前年: <strong>¥1,381,500</strong></div><div class="gauge-value" style="color:#22C55E;margin-top:6px;">▲+7.8%</div></div>
+<div class="note-box">📈 W21の¥1,634,829から-8.9%反落するも、4週平均¥1,412,879を上回り月内2番目の水準を維持。</div>
+</div>
+</div>
+<div class="footer-cite">出典: USENレジ売上データ ／ 集計対象: 2026-W22 の業務日（2026/05/25 6:00 〜 2026/06/01 5:59 JST、朝6時境界）</div>
+</div>
+
+<!-- ==================== SLIDE 4: CUSTOMER COUNT TREND ==================== -->
+<div class="slide" id="slide-4">
+<div class="slide-header"><h2><span class="section-tag">全体サマリー</span>客数トレンド（直近5週間）</h2><span class="pn">4 / 32</span><div class="progress-bar" style="width:9.7%"></div></div>
+<div class="msg-bar">⚠️ 客数74人は5週で2番目に低く、前年同週102人比-27.5%。客数構造の弱さが継続課題</div>
+<div class="classification-bar"><ul><li>集計対象: 2026-W18〜W22 の各週業務日の客数合計</li><li>前年同週: 2025-W22（客数102人）</li></ul></div>
+<div class="slide-body" style="display:flex;gap:20px;">
+<div class="chart-container" style="flex:2;"><svg id="chart-customers" width="720" height="380"></svg></div>
+<div style="flex:1;padding-top:10px;">
+<div class="gauge-card" style="margin-bottom:14px;"><div class="kpi-label">前年同週比較</div><div style="font-size:18px;margin-top:6px;">今週: <strong>74人</strong></div><div style="font-size:18px;">前年: <strong>102人</strong></div><div class="gauge-value" style="color:#EF4444;margin-top:6px;">▼-27.5%</div></div>
+<div class="note-box">👥 客数74人は前週85人比-11人、4週平均82人比-9.8%。前年比-27.5%で構造的に弱い。</div>
+</div>
+</div>
+<div class="footer-cite">出典: USENレジ売上データ ／ 集計対象: 2026-W22 の業務日（2026/05/25 6:00 〜 2026/06/01 5:59 JST、朝6時境界）</div>
+</div>
+
+<!-- ==================== SLIDE 5: SPEND PER CUSTOMER TREND ==================== -->
+<div class="slide" id="slide-5">
+<div class="slide-header"><h2><span class="section-tag">全体サマリー</span>客単価トレンド（直近5週間）</h2><span class="pn">5 / 32</span><div class="progress-bar" style="width:12.9%"></div></div>
+<div class="msg-bar">✅ 客単価¥20,129は5週で最高水準。W20の¥14,104から3週連続で上昇し¥20,000台到達</div>
+<div class="classification-bar"><ul><li>集計対象: 2026-W18〜W22 の各週業務日の客単価（売上 ÷ 客数）</li><li>前年同週: 2025-W22（客単価¥13,544）</li></ul></div>
+<div class="slide-body" style="display:flex;gap:20px;">
+<div class="chart-container" style="flex:2;"><svg id="chart-spend" width="720" height="380"></svg></div>
+<div style="flex:1;padding-top:10px;">
+<div class="gauge-card" style="margin-bottom:14px;"><div class="kpi-label">前年同週比較</div><div style="font-size:18px;margin-top:6px;">今週: <strong>¥20,129</strong></div><div style="font-size:18px;">前年: <strong>¥13,544</strong></div><div class="gauge-value" style="color:#22C55E;margin-top:6px;">▲+48.6%</div></div>
+<div class="note-box">📈 客単価¥20,129は5週最高。W20の底値¥14,104から3週連続で上昇、収益性が大幅改善。</div>
+</div>
+</div>
+<div class="footer-cite">出典: USENレジ売上データ ／ 集計対象: 2026-W22 の業務日（2026/05/25 6:00 〜 2026/06/01 5:59 JST、朝6時境界）</div>
+</div>
+
+<!-- ==================== SLIDE 6: YoY SUMMARY ==================== -->
+<div class="slide" id="slide-6">
+<div class="slide-header"><h2><span class="section-tag">全体サマリー</span>前年同週比サマリー</h2><span class="pn">6 / 32</span><div class="progress-bar" style="width:16.1%"></div></div>
+<div class="msg-bar">✅ 売上+7.8%・客単価+48.6%でプラス転換。客数-27.5%の弱さを単価大幅伸長で補う収益改善型構造</div>
+<div class="classification-bar"><ul><li>集計対象: 2026-W22 業務日 vs 2025-W22 業務日</li><li>比較指標: 売上 / 客数 / 客単価</li></ul></div>
+<div class="slide-body">
+<div class="kpi-cards" style="margin-top:14px;">
+<div class="gauge-card" style="flex:1;"><div class="kpi-label">💰売上 前年比</div><div class="gauge-value" style="color:#22C55E;">▲+7.8%</div><div style="font-size:17px;margin-top:8px;">¥1,489,515 → 前年 ¥1,381,500</div></div>
+<div class="gauge-card" style="flex:1;"><div class="kpi-label">👥客数 前年比</div><div class="gauge-value" style="color:#EF4444;">▼-27.5%</div><div style="font-size:17px;margin-top:8px;">74人 → 前年 102人</div></div>
+<div class="gauge-card" style="flex:1;"><div class="kpi-label">💴客単価 前年比</div><div class="gauge-value" style="color:#22C55E;">▲+48.6%</div><div style="font-size:17px;margin-top:8px;">¥20,129 → 前年 ¥13,544</div></div>
+</div>
+<div class="note-box" style="margin-top:24px;font-size:18px;">💡 前年同週からの収益性大幅改善：客単価¥13,544→¥20,129（+¥6,585）の高単価路線が定着し、客数減を補って売上+7.8%を達成。</div>
+</div>
+<div class="footer-cite">出典: USENレジ売上データ ／ 集計対象: 2026-W22 の業務日（2026/05/25 6:00 〜 2026/06/01 5:59 JST、朝6時境界）</div>
+</div>
+
+<!-- ==================== SLIDE 7: WEEKDAY OVERVIEW ==================== -->
+<div class="slide" id="slide-7">
+<div class="slide-header"><h2><span class="section-tag">曜日別分析</span>曜日別概況</h2><span class="pn">7 / 32</span><div class="progress-bar" style="width:19.4%"></div></div>
+<div class="msg-bar">⚠️ 金+¥98,771・土+¥82,259・水+¥51,818が好調、日-¥101,066・火-¥37,099が不調</div>
+<div class="classification-bar"><ul><li>集計対象: 2026-W22 の各業務日（朝6時境界）の売上</li><li>比較対象: 直前4週間（W18-W21）の同曜日売上の平均</li><li>差額 = 客数要因寄与 + 客単価要因寄与</li></ul></div>
+<div class="slide-body"><svg id="chart-weekday" width="1200" height="380"></svg></div>
+<div class="footer-cite">出典: USENレジ売上データ ／ 集計対象: 2026-W22 の業務日（2026/05/25 6:00 〜 2026/06/01 5:59 JST、朝6時境界）</div>
+</div>
+
+<!-- ==================== SLIDE 8: SUNDAY POOR - BASICS ==================== -->
+<div class="slide" id="slide-8">
+<div class="slide-header"><h2><span class="section-tag">曜日別分析</span>日曜日 不調の分析：基本数字</h2><span class="pn">8 / 32</span><div class="progress-bar" style="width:22.6%"></div></div>
+<div class="msg-bar">⚠️ 客数6人（4週平均比42.9%）が壊滅。客単価¥23,349は高いが、客数の絶対不足で売上崩壊</div>
+<div class="classification-bar"><ul><li>集計対象: 2026-05-31（日）の業務日売上・客数・客単価</li><li>比較対象: 直前4週間（W18-W21）の日曜日の平均値</li></ul></div>
+<div class="slide-body" style="display:flex;gap:30px;align-items:flex-start;">
+<div class="chart-container" style="flex:2;"><svg id="chart-sun-ratio" width="680" height="360"></svg></div>
+<div style="flex:1;">
+<table class="dt" style="margin-bottom:14px;">
+<tr><th>指標</th><th>対象週</th><th>4週平均</th><th>4週平均比</th></tr>
+<tr><td>売上</td><td class="num">¥140,095</td><td class="num">¥241,161</td><td class="num neg">58.1%</td></tr>
+<tr class="highlight-row"><td>🚨 客数</td><td class="num">6人</td><td class="num">14.0人</td><td class="num">42.9%</td></tr>
+<tr><td>客単価</td><td class="num">¥23,349</td><td class="num">¥19,063</td><td class="num pos">122.5%</td></tr>
+</table>
+<div class="note-box">客数6人は4週平均14人の42.9%。客単価は高いが、客数の絶対不足で売上¥140,095（4週平均比58.1%）と低位。</div>
+</div>
+</div>
+<div class="footer-cite">出典: USENレジ売上データ ／ 集計対象: 2026-W22 の業務日（2026/05/25 6:00 〜 2026/06/01 5:59 JST、朝6時境界）</div>
+</div>
+
+<!-- ==================== SLIDE 9: SUNDAY POOR - DEPTH ==================== -->
+<div class="slide" id="slide-9">
+<div class="slide-header"><h2><span class="section-tag">曜日別分析</span>日曜日 不調の分析：客数要因の深掘り</h2><span class="pn">9 / 32</span><div class="progress-bar" style="width:25.8%"></div></div>
+<div class="msg-bar">⚠️ 客数要因-¥169,650が売上崩壊の主因。3-4名10件は全て深夜帯テイクアウトで店内客が消滅</div>
+<div class="classification-bar"><ul><li>集計対象: 2026-05-31（日）の会計データ</li><li>パーティサイズ判定: account_id 単位の customer_count に基づく</li></ul></div>
+<div class="slide-body">
+<ul class="bullet-list" style="margin-top:14px;">
+<li><div class="icon">📉</div><div class="text"><strong>客数6人は4週平均14人の42.9%、絶対水準で1ケタ</strong><br>店内グループ需要が完全に消失</div></li>
+<li><div class="icon">📦</div><div class="text"><strong>3-4名グループ10会計¥95,630は全て深夜帯のテイクアウト（客数計上なし）</strong><br>テイクアウト経由で売上は出るが、店内客の頭数が伴わない</div></li>
+<li><div class="icon">🍶</div><div class="text"><strong>店内利用は1-2名の小規模来店4件のみ（売上計¥44,465）</strong><br>店内ディナーの厚みが完全に欠落</div></li>
+</ul>
+<div style="display:flex;gap:18px;margin-top:14px;">
+<div class="gauge-card" style="flex:1;"><div class="kpi-label">客数要因</div><div class="gauge-value" style="color:#EF4444;">-¥169,650</div></div>
+<div class="gauge-card" style="flex:1;"><div class="kpi-label">客単価要因</div><div class="gauge-value" style="color:#22C55E;">+¥42,858</div></div>
+<div class="gauge-card" style="flex:1;"><div class="kpi-label">差額合計</div><div class="gauge-value" style="color:#EF4444;">-¥101,066</div></div>
+</div>
+</div>
+<div class="footer-cite">出典: USENレジ売上データ ／ 集計対象: 2026-W22 の業務日（2026/05/25 6:00 〜 2026/06/01 5:59 JST、朝6時境界）</div>
+</div>
+
+<!-- ==================== SLIDE 10: SUNDAY POOR - TIMESLOT ==================== -->
+<div class="slide" id="slide-10">
+<div class="slide-header"><h2><span class="section-tag">曜日別分析</span>日曜日 不調の分析：時間帯別売上</h2><span class="pn">10 / 32</span><div class="progress-bar" style="width:29.0%"></div></div>
+<div class="msg-bar">⚠️ 20時台ゼロ、21-22時台計2件¥18,530。店内ディナー枠が事実上空白</div>
+<div class="classification-bar"><ul><li>集計対象: 2026-05-31（日）の時間帯別会計データ（業務日基準・朝6時境界）</li><li>深夜帯（0-5時）は 5/31 の業務日として集計</li></ul></div>
+<div class="slide-body">
+<table class="dt" style="margin-top:6px;">
+<tr><th>時間帯</th><th>売上</th><th>会計数</th><th>客数</th></tr>
+<tr><td>18-19時台</td><td class="num">¥0</td><td class="num">0件</td><td class="num">0</td></tr>
+<tr style="background:#FEF2F2;"><td>⚠️ 20時台</td><td class="num" style="font-weight:700;color:#EF4444;">¥0</td><td class="num" style="font-weight:700;color:#EF4444;">0件</td><td class="num" style="font-weight:700;color:#EF4444;">0</td></tr>
+<tr><td>21時台</td><td class="num">¥5,700</td><td class="num">1件</td><td class="num">0</td></tr>
+<tr><td>22時台</td><td class="num">¥12,830</td><td class="num">1件</td><td class="num">0</td></tr>
+<tr class="highlight-row"><td>📦 24時以降（深夜・テイクアウト）</td><td class="num">¥121,565</td><td class="num">12件</td><td class="num">6</td></tr>
+</table>
+<ul class="bullet-list" style="margin-top:12px;">
+<li><div class="icon">⏰</div><div class="text"><strong>20時台ゼロ、21-22時計2件¥18,530で店内ディナー枠が事実上空白</strong><br>週末締めの売上機会を取りこぼし</div></li>
+<li><div class="icon">📦</div><div class="text"><strong>深夜帯計上¥121,565と売上の87%を占有</strong><br>店内売上の厚みが完全に欠落し配達依存度が極端に上昇</div></li>
+</ul>
+</div>
+<div class="footer-cite">出典: USENレジ売上データ ／ 集計対象: 2026-W22 の業務日（2026/05/25 6:00 〜 2026/06/01 5:59 JST、朝6時境界）</div>
+</div>
+
+<!-- ==================== SLIDE 11: SUNDAY POOR - PRODUCTS ==================== -->
+<div class="slide" id="slide-11">
+<div class="slide-header"><h2><span class="section-tag">曜日別分析</span>日曜日 不調の分析：商品別売上</h2><span class="pn">11 / 32</span><div class="progress-bar" style="width:32.3%"></div></div>
+<div class="msg-bar">⚠️ テイクアウト67.3%偏重、コース・ランチがゼロで店内ディナーの厚みが完全欠落</div>
+<div class="classification-bar"><ul><li>集計対象: 2026-05-31（日）のカテゴリ別売上</li><li>カテゴリ分類: category1 フィールドに基づく</li></ul></div>
+<div class="slide-body">
+<table class="dt" style="margin-top:6px;">
+<tr><th>カテゴリ</th><th>売上</th><th>構成比</th></tr>
+<tr class="highlight-row"><td>📦 テイクアウト</td><td class="num">¥93,400</td><td class="num">67.3%</td></tr>
+<tr><td>フード</td><td class="num">¥37,700</td><td class="num">27.2%</td></tr>
+<tr><td>ドリンク</td><td class="num">¥5,450</td><td class="num">3.9%</td></tr>
+<tr><td>ウーバーイーツ</td><td class="num">¥2,230</td><td class="num">1.6%</td></tr>
+<tr style="background:#FEF2F2;"><td>⚠️ コース</td><td class="num" style="font-weight:700;color:#EF4444;">¥0</td><td class="num" style="font-weight:700;color:#EF4444;">0.0%</td></tr>
+<tr style="background:#FEF2F2;"><td>⚠️ ランチ</td><td class="num" style="font-weight:700;color:#EF4444;">¥0</td><td class="num" style="font-weight:700;color:#EF4444;">0.0%</td></tr>
+</table>
+<ul class="bullet-list" style="margin-top:12px;">
+<li><div class="icon">🏆</div><div class="text"><strong>TOP商品はUberうな重梅¥28,500、うな重竹¥17,400、Uberうな重竹¥15,600、Uberうな重ハーフ肝焼き入り¥12,600</strong><br>テイクアウト中心の品揃え</div></li>
+<li><div class="icon">⚠️</div><div class="text"><strong>コース・ランチがゼロ、ドリンク3.9%と店内ディナーの構成要素が完全欠落</strong><br>客単価¥23,349を維持できる店内商材なし</div></li>
+</ul>
+</div>
+<div class="footer-cite">出典: USENレジ売上データ ／ 集計対象: 2026-W22 の業務日（2026/05/25 6:00 〜 2026/06/01 5:59 JST、朝6時境界）</div>
+</div>
+
+<!-- ==================== SLIDE 12: SUNDAY POOR - SUMMARY ==================== -->
+<div class="slide" id="slide-12">
+<div class="slide-header"><h2><span class="section-tag">曜日別分析</span>日曜日 不調の分析：まとめ</h2><span class="pn">12 / 32</span><div class="progress-bar" style="width:35.5%"></div></div>
+<div class="msg-bar">⚠️ 日曜不振の主因は「店内ディナー消失」「コース・ランチゼロ」「2万円以上会計ゼロ」</div>
+<div class="classification-bar"><ul><li>集計対象: 2026-05-31（日）の会計データ統合分析</li><li>来週施策の方向性として整理</li></ul></div>
+<div class="slide-body" style="display:flex;gap:30px;">
+<div style="flex:1;">
+<h3 style="font-size:21px;font-weight:800;color:#1E293B;margin-bottom:12px;">🔴 不調の主要因（3点）</h3>
+<ul class="bullet-list">
+<li><div class="icon">⏰</div><div class="text"><strong>20時台ゼロ、21-22時店内ディナー計2件¥18,530</strong><br>店内客が事実上消滅</div></li>
+<li><div class="icon">📦</div><div class="text"><strong>コース・ランチがゼロ、テイクアウト67.3%偏重</strong><br>店内ディナー商材が完全欠落</div></li>
+<li><div class="icon">💰</div><div class="text"><strong>最大会計¥16,045・2万円以上会計ゼロ</strong><br>上位会計の不在、平均¥10,007止まり</div></li>
+</ul>
+</div>
+<div style="flex:1;">
+<h3 style="font-size:21px;font-weight:800;color:#1E293B;margin-bottom:12px;">💡 来週に向けた緊急課題</h3>
+<ul class="bullet-list">
+<li><div class="icon">🌙</div><div class="text"><strong>日曜21時以降のシェアコース／夜割うな重ハーフ</strong><br>22時帯ディナーを底支え</div></li>
+<li><div class="icon">📋</div><div class="text"><strong>日曜限定コース予約特典の常設化</strong><br>麻布しきコース・下関ふぐづくしの優先表示</div></li>
+<li><div class="icon">📱</div><div class="text"><strong>一休・食べログでの日曜夜枠プロモーション拡充</strong><br>店内うな重松・コースの予約特典で平均単価¥18,000台へ</div></li>
+</ul>
+</div>
+</div>
+<div class="footer-cite">出典: USENレジ売上データ ／ 集計対象: 2026-W22 の業務日（2026/05/25 6:00 〜 2026/06/01 5:59 JST、朝6時境界）</div>
+</div>
+
+<!-- ==================== SLIDE 13: FRIDAY GOOD - BASICS ==================== -->
+<div class="slide" id="slide-13">
+<div class="slide-header"><h2><span class="section-tag">曜日別分析</span>金曜日 好調の分析：基本数字</h2><span class="pn">13 / 32</span><div class="progress-bar" style="width:38.7%"></div></div>
+<div class="msg-bar">✅ 売上は4週平均の161.0%、客数14人（4週平均比164.7%）が圧倒的に牽引</div>
+<div class="classification-bar"><ul><li>集計対象: 2026-05-29（金）の業務日売上・客数・客単価</li><li>比較対象: 直前4週間（W18-W21）の金曜日の平均値</li></ul></div>
+<div class="slide-body" style="display:flex;gap:30px;align-items:flex-start;">
+<div class="chart-container" style="flex:2;"><svg id="chart-fri-ratio" width="680" height="360"></svg></div>
+<div style="flex:1;">
+<table class="dt" style="margin-bottom:14px;">
+<tr class="highlight-row"><td>🏆 売上</td><td class="num">¥260,645</td><td class="num">¥161,874</td><td class="num">161.0%</td></tr>
+<tr><th>指標</th><th>対象週</th><th>4週平均</th><th>4週平均比</th></tr>
+<tr><td>客数</td><td class="num">14人</td><td class="num">8.5人</td><td class="num pos">164.7%</td></tr>
+<tr><td>客単価</td><td class="num">¥18,618</td><td class="num">¥21,003</td><td class="num neg">88.6%</td></tr>
+</table>
+<div class="note-box">客数+¥108,956の要因寄与で単価マイナス（-¥26,835）を上回り売上+¥98,771プラスを獲得。客数増による典型的な好調パターン。</div>
+</div>
+</div>
+<div class="footer-cite">出典: USENレジ売上データ ／ 集計対象: 2026-W22 の業務日（2026/05/25 6:00 〜 2026/06/01 5:59 JST、朝6時境界）</div>
+</div>
+
+<!-- ==================== SLIDE 14: FRIDAY GOOD - DEPTH ==================== -->
+<div class="slide" id="slide-14">
+<div class="slide-header"><h2><span class="section-tag">曜日別分析</span>金曜日 好調の分析：客数要因の深掘り</h2><span class="pn">14 / 32</span><div class="progress-bar" style="width:41.9%"></div></div>
+<div class="msg-bar">✅ 3-4名10会計＋2名5会計の店内グループ集中で客数14人を獲得、最大¥54,605の高額会計あり</div>
+<div class="classification-bar"><ul><li>集計対象: 2026-05-29（金）の会計データ</li><li>パーティサイズ判定: account_id 単位の customer_count に基づく</li></ul></div>
+<div class="slide-body">
+<ul class="bullet-list" style="margin-top:14px;">
+<li><div class="icon">👥</div><div class="text"><strong>客数14人は4週平均8.5人の164.7%</strong><br>3-4名10会計¥154,965（66.7%）・2名5会計¥105,680（33.3%）でグループ来店が集中</div></li>
+<li><div class="icon">💰</div><div class="text"><strong>2万円以上会計3件（20.0%）、最大¥54,605の高額会計</strong><br>P90¥37,958と上位会計の厚みあり</div></li>
+<li><div class="icon">🏆</div><div class="text"><strong>客単価¥18,618は4週平均比88.6%だが客数の絶対増で売上を押し上げ</strong><br>全曜日で最大の客数要因プラス。法人接待・グループ来店が機能</div></li>
+</ul>
+<div style="display:flex;gap:18px;margin-top:14px;">
+<div class="gauge-card" style="flex:1;"><div class="kpi-label">客数要因</div><div class="gauge-value" style="color:#22C55E;">+¥108,956</div></div>
+<div class="gauge-card" style="flex:1;"><div class="kpi-label">客単価要因</div><div class="gauge-value" style="color:#EF4444;">-¥26,835</div></div>
+<div class="gauge-card" style="flex:1;"><div class="kpi-label">差額合計</div><div class="gauge-value" style="color:#22C55E;">+¥98,771</div></div>
+</div>
+</div>
+<div class="footer-cite">出典: USENレジ売上データ ／ 集計対象: 2026-W22 の業務日（2026/05/25 6:00 〜 2026/06/01 5:59 JST、朝6時境界）</div>
+</div>
+
+<!-- ==================== SLIDE 15: FRIDAY GOOD - TIMESLOT ==================== -->
+<div class="slide" id="slide-15">
+<div class="slide-header"><h2><span class="section-tag">曜日別分析</span>金曜日 好調の分析：時間帯別売上</h2><span class="pn">15 / 32</span><div class="progress-bar" style="width:45.2%"></div></div>
+<div class="msg-bar">✅ 20時台3件¥35,260＋深夜帯10件¥200,685で店内と配達の両軸稼働</div>
+<div class="classification-bar"><ul><li>集計対象: 2026-05-29（金）の時間帯別会計データ（業務日基準・朝6時境界）</li><li>深夜帯（0-5時）は 5/29 の業務日として集計</li></ul></div>
+<div class="slide-body">
+<table class="dt" style="margin-top:6px;">
+<tr><th>時間帯</th><th>売上</th><th>会計数</th><th>客数</th></tr>
+<tr><td>18-19時台</td><td class="num">¥0</td><td class="num">0件</td><td class="num">0</td></tr>
+<tr class="highlight-row"><td>🏆 20時台</td><td class="num">¥35,260</td><td class="num">3件</td><td class="num">6</td></tr>
+<tr><td>21時台</td><td class="num">¥9,400</td><td class="num">1件</td><td class="num">0</td></tr>
+<tr><td>22時台</td><td class="num">¥15,300</td><td class="num">1件</td><td class="num">0</td></tr>
+<tr style="background:#FFF7ED;border-left:4px solid #F97316;"><td style="font-weight:800;color:#C2410C;">📦 24時以降（深夜・テイクアウト）</td><td class="num" style="font-weight:800;color:#C2410C;">¥200,685</td><td class="num" style="font-weight:800;color:#C2410C;">10件</td><td class="num" style="font-weight:800;color:#C2410C;">8</td></tr>
+</table>
+<ul class="bullet-list" style="margin-top:12px;">
+<li><div class="icon">🍽️</div><div class="text"><strong>20時台¥35,260（6人）の店内ディナー＋22時台¥15,300の高単価会計</strong><br>店内客が定着し客単価を支える</div></li>
+<li><div class="icon">📦</div><div class="text"><strong>深夜帯計上10件¥200,685が売上の77%を占有</strong><br>Uberテイクアウト基盤も同時稼働、平日金曜の両軸モデル</div></li>
+</ul>
+</div>
+<div class="footer-cite">出典: USENレジ売上データ ／ 集計対象: 2026-W22 の業務日（2026/05/25 6:00 〜 2026/06/01 5:59 JST、朝6時境界）</div>
+</div>
+
+<!-- ==================== SLIDE 16: FRIDAY GOOD - PRODUCTS ==================== -->
+<div class="slide" id="slide-16">
+<div class="slide-header"><h2><span class="section-tag">曜日別分析</span>金曜日 好調の分析：商品別売上</h2><span class="pn">16 / 32</span><div class="progress-bar" style="width:48.4%"></div></div>
+<div class="msg-bar">✅ テイクアウト38.3%＋店内フード23.6%＋コース19.8%＋ドリンク12.1%のバランス型構成</div>
+<div class="classification-bar"><ul><li>集計対象: 2026-05-29（金）のカテゴリ別売上</li><li>カテゴリ分類: category1 フィールドに基づく</li></ul></div>
+<div class="slide-body">
+<table class="dt" style="margin-top:6px;">
+<tr><th>カテゴリ</th><th>売上</th><th>構成比</th></tr>
+<tr class="highlight-row"><td>📦 テイクアウト</td><td class="num">¥97,330</td><td class="num">38.3%</td></tr>
+<tr><td>🍱 フード</td><td class="num">¥60,000</td><td class="num">23.6%</td></tr>
+<tr style="background:#F0FDF4;"><td style="font-weight:700;color:#166534;">🥂 コース</td><td class="num" style="font-weight:700;color:#166534;">¥50,360</td><td class="num" style="font-weight:700;color:#166534;">19.8%</td></tr>
+<tr><td>🥤 ドリンク</td><td class="num">¥30,850</td><td class="num">12.1%</td></tr>
+<tr><td>ランチ</td><td class="num">¥14,600</td><td class="num">5.7%</td></tr>
+<tr><td>ウーバーイーツ</td><td class="num">¥1,230</td><td class="num">0.5%</td></tr>
+</table>
+<ul class="bullet-list" style="margin-top:12px;">
+<li><div class="icon">🏆</div><div class="text"><strong>TOP商品はUberうな重松¥56,400（6個）、下関ふぐづくしコース¥44,000（2個）、Uberうな重梅¥28,500、ランチコース¥14,000</strong><br>松ランクとコースが上位</div></li>
+<li><div class="icon">🥂</div><div class="text"><strong>コース19.8%＋店内フード23.6%＋ドリンク12.1%の店内売上¥141,210（54.2%）</strong><br>下関ふぐづくしコース¥44,000の特別利用が高額会計を生む</div></li>
+</ul>
+</div>
+<div class="footer-cite">出典: USENレジ売上データ ／ 集計対象: 2026-W22 の業務日（2026/05/25 6:00 〜 2026/06/01 5:59 JST、朝6時境界）</div>
+</div>
+
+<!-- ==================== SLIDE 17: FRIDAY GOOD - SUMMARY ==================== -->
+<div class="slide" id="slide-17">
+<div class="slide-header"><h2><span class="section-tag">曜日別分析</span>金曜日 好調の分析：まとめ</h2><span class="pn">17 / 32</span><div class="progress-bar" style="width:51.6%"></div></div>
+<div class="msg-bar">✅ 金曜好調の主因は「3-4名グループ集中」「店内・深夜両軸稼働」「最大¥54,605の高額会計」</div>
+<div class="classification-bar"><ul><li>集計対象: 2026-05-29（金）の会計データ統合分析</li><li>来週以降の継続テーマとして整理</li></ul></div>
+<div class="slide-body" style="display:flex;gap:30px;">
+<div style="flex:1;">
+<h3 style="font-size:21px;font-weight:800;color:#1E293B;margin-bottom:12px;">🟢 好調の主要因（3点）</h3>
+<ul class="bullet-list">
+<li><div class="icon">👥</div><div class="text"><strong>3-4名グループ10会計¥154,965＋2名5会計¥105,680</strong><br>客数14人を獲得</div></li>
+<li><div class="icon">⏰</div><div class="text"><strong>20時台3件＋深夜帯10件で店内・配達両軸稼働</strong><br>22時台¥15,300の高単価会計あり</div></li>
+<li><div class="icon">💰</div><div class="text"><strong>下関ふぐづくしコース¥44,000・Uberうな重松¥56,400</strong><br>最大¥54,605の上位会計集中</div></li>
+</ul>
+</div>
+<div style="flex:1;">
+<h3 style="font-size:21px;font-weight:800;color:#1E293B;margin-bottom:12px;">💡 来週以降の継続テーマ</h3>
+<ul class="bullet-list">
+<li><div class="icon">🏢</div><div class="text"><strong>金曜の3-4名・2名グループ需要を平日接待コースとして恒常化</strong><br>法人接待・記念日利用の予約特典強化</div></li>
+<li><div class="icon">📅</div><div class="text"><strong>20時台店内ディナー予約獲得</strong><br>一休・食べログで強化</div></li>
+<li><div class="icon">📦</div><div class="text"><strong>Uberうな重松（¥56,400/金）・下関ふぐづくしコース</strong><br>予約導線整備</div></li>
+</ul>
+</div>
+</div>
+<div class="footer-cite">出典: USENレジ売上データ ／ 集計対象: 2026-W22 の業務日（2026/05/25 6:00 〜 2026/06/01 5:59 JST、朝6時境界）</div>
+</div>
+
+<!-- ==================== SLIDE 18: WEEKDAY SUMMARY ==================== -->
+<div class="slide" id="slide-18">
+<div class="slide-header"><h2><span class="section-tag">曜日別分析</span>曜日別評価まとめ</h2><span class="pn">18 / 32</span><div class="progress-bar" style="width:54.8%"></div></div>
+<div class="msg-bar">💡 金土水が好調で売上を牽引、日火が客数・単価の弱さで足を引っ張る</div>
+<div class="classification-bar"><ul><li>集計対象: 2026-W22 の各業務日（朝6時境界）の売上・客数・客単価</li><li>比較対象: 直前4週間（W18-W21）の同曜日平均</li></ul></div>
+<div class="slide-body">
+<div class="two-col" style="margin-top:8px;">
+<div>
+<h3 style="font-size:21px;font-weight:800;color:#22C55E;margin-bottom:12px;">🟢 好調：金曜日（+¥98,771）</h3>
+<div class="success-item"><h4>👥 客数14人（4週平均比164.7%）の絶対増</h4><p>3-4名グループ10会計＋2名5会計</p></div>
+<div class="success-item"><h4>💰 2万円以上会計3件（20.0%）</h4><p>最大¥54,605の高額会計で上位の厚み</p></div>
+<div class="success-item"><h4>⏰ 店内・配達両軸稼働</h4><p>20時店内＋深夜配達の両輪</p></div>
+</div>
+<div>
+<h3 style="font-size:21px;font-weight:800;color:#EF4444;margin-bottom:12px;">🔴 不調：日曜日（-¥101,066）</h3>
+<div class="challenge-item"><h4>📉 客数6人（4週平均比42.9%）</h4><p>店内ディナー枠が事実上空白</p></div>
+<div class="challenge-item"><h4>📦 コース・ランチゼロ、テイクアウト67.3%偏重</h4><p>店内ディナー商材が完全欠落</p></div>
+<div class="challenge-item"><h4>💰 最大会計¥16,045・2万円以上ゼロ</h4><p>上位会計の不在</p></div>
+</div>
+</div>
+<div class="note-box" style="margin-top:14px;">📌 週全体は前年比+7.8%・客単価+48.6%でプラス転換、客単価¥20,129を維持。客数底上げが次週の主軸。</div>
+</div>
+<div class="footer-cite">出典: USENレジ売上データ ／ 集計対象: 2026-W22 の業務日（2026/05/25 6:00 〜 2026/06/01 5:59 JST、朝6時境界）</div>
+</div>
+
+<!-- ==================== SLIDE 19: CATEGORY BREAKDOWN ==================== -->
+<div class="slide" id="slide-19">
+<div class="slide-header"><h2><span class="section-tag">商品・カテゴリ分析</span>カテゴリ別売上構成比</h2><span class="pn">19 / 32</span><div class="progress-bar" style="width:58.1%"></div></div>
+<div class="msg-bar">💡 テイクアウト50.2%（+0.7pt）首位維持、コース10.8%（+2.8pt）・ドリンク8.5%（+1.6pt）が拡大</div>
+<div class="classification-bar"><ul><li>集計対象: 2026-W22 の業務日（朝6時境界）のカテゴリ別売上</li><li>前週比: 2026-W21 のカテゴリ別構成比との差（ポイント）</li></ul></div>
+<div class="slide-body" style="display:flex;gap:20px;">
+<div class="chart-container" style="flex:1;"><svg id="chart-donut" width="500" height="420"></svg></div>
+<div style="flex:1;">
+<table class="dt">
+<tr><th>カテゴリ</th><th>売上</th><th>構成比</th><th>前週比</th></tr>
+<tr class="highlight-row"><td>🏆 テイクアウト</td><td class="num">¥730,400</td><td class="num">50.2%</td><td class="num pos">+0.7pt</td></tr>
+<tr><td>フード</td><td class="num">¥414,950</td><td class="num">28.5%</td><td class="num neg">-0.3pt</td></tr>
+<tr style="background:#F0FDF4;"><td style="font-weight:700;color:#166534;">📈 コース</td><td class="num" style="font-weight:700;color:#166534;">¥156,960</td><td class="num" style="font-weight:700;color:#166534;">10.8%</td><td class="num pos">+2.8pt</td></tr>
+<tr style="background:#F0FDF4;"><td style="font-weight:700;color:#166534;">📈 ドリンク</td><td class="num" style="font-weight:700;color:#166534;">¥123,950</td><td class="num" style="font-weight:700;color:#166534;">8.5%</td><td class="num pos">+1.6pt</td></tr>
+<tr style="background:#FEF2F2;"><td>📉 ランチ</td><td class="num" style="font-weight:700;color:#EF4444;">¥14,900</td><td class="num" style="font-weight:700;color:#EF4444;">1.0%</td><td class="num neg">-5.5pt</td></tr>
+<tr><td>ウーバーイーツ</td><td class="num">¥13,460</td><td class="num">0.9%</td><td class="num pos">+0.7pt</td></tr>
+</table>
+</div>
+</div>
+<div class="footer-cite">出典: USENレジ売上データ ／ 集計対象: 2026-W22 の業務日（2026/05/25 6:00 〜 2026/06/01 5:59 JST、朝6時境界）</div>
+</div>
+
+<!-- ==================== SLIDE 20: CATEGORY DEEP DIVE ==================== -->
+<div class="slide" id="slide-20">
+<div class="slide-header"><h2><span class="section-tag">商品・カテゴリ分析</span>好調カテゴリの深掘り</h2><span class="pn">20 / 32</span><div class="progress-bar" style="width:61.3%"></div></div>
+<div class="msg-bar">✅ コース+2.8pt・ドリンク+1.6ptで高単価商材が拡大、テイクアウト50.2%は首位を維持</div>
+<div class="classification-bar"><ul><li>集計対象: 2026-W22 の業務日のカテゴリ別売上・構成比・対4週平均比</li><li>カテゴリ別の主要商品・成長要因を分析</li></ul></div>
+<div class="slide-body">
+<div class="two-col" style="margin-top:8px;">
+<div>
+<div class="pillar-card" style="border-top:4px solid #22C55E;"><h4>🥂 コース（10.8%、+2.8pt）</h4>
+<ul style="list-style:none;padding:0;"><li style="font-size:16px;margin-bottom:5px;">・麻布しきコース¥70,000（<strong>+110.0%</strong>）、下関ふぐづくしコース¥44,000（新規寄与）、ランチコース¥14,000の3コースが稼働</li><li style="font-size:16px;margin-bottom:5px;">・法人接待・記念日需要（金曜の3-4名グループ）と整合</li><li style="font-size:16px;">・単価¥8,720/個の高単価商材</li></ul></div>
+<div class="pillar-card" style="border-top:4px solid #22C55E;"><h4>🥤 ドリンク（8.5%、+1.6pt）</h4>
+<ul style="list-style:none;padding:0;"><li style="font-size:16px;margin-bottom:5px;">・お通し¥31,500（45個）、ｻﾞ･ﾌﾟﾚﾐｱﾑ･ﾓﾙﾂ¥23,100（33個）等が安定</li><li style="font-size:16px;">・店内ディナーの客単価押し上げに寄与</li></ul></div>
+</div>
+<div>
+<div class="pillar-card" style="border-left:4px solid #3B82F6;"><h4>📦 テイクアウト（50.2%、+0.7pt／首位維持）</h4>
+<ul style="list-style:none;padding:0;"><li style="font-size:16px;margin-bottom:5px;">・Uberうな重梅¥148,200（<strong>+14.3%</strong>）、TOうな重松¥69,000（<strong>+300.0%</strong>）、Uberうな重ハーフ肝焼き入り¥37,800（+28.6%）</li><li style="font-size:16px;margin-bottom:5px;">・一方Uberうな重松-3.2%、Uberうな重竹-12.2%で松・竹は4週平均比マイナス</li></ul></div>
+<div class="note-box" style="margin-top:12px;font-size:16px;">💡 来週テーマ: コース・ドリンクの店内売上を維持しつつ、Uber松・竹のシェア回復で売上下限を厚くする。</div>
+</div>
+</div>
+</div>
+<div class="footer-cite">出典: USENレジ売上データ ／ 集計対象: 2026-W22 の業務日（2026/05/25 6:00 〜 2026/06/01 5:59 JST、朝6時境界）</div>
+</div>
+
+<!-- ==================== SLIDE 21: TOP 10 PRODUCTS ==================== -->
+<div class="slide" id="slide-21">
+<div class="slide-header"><h2><span class="section-tag">商品・カテゴリ分析</span>商品別売上上位10</h2><span class="pn">21 / 32</span><div class="progress-bar" style="width:64.5%"></div></div>
+<div class="msg-bar">✅ TOうな重松+300.0%、麻布しきコース+110.0%、うな重竹+52.4%が4週平均比で大幅伸長</div>
+<div class="classification-bar"><ul><li>集計対象: 2026-W22 の業務日の商品別売上 上位10</li><li>4週平均: 直前4週間（W18-W21）の各商品売上の平均</li></ul></div>
+<div class="slide-body">
+<table class="dt" style="margin-top:6px;">
+<tr><th>商品名</th><th>売上</th><th>構成比</th><th>4週平均</th><th>成長率</th></tr>
+<tr class="highlight-row"><td>🏆 Uberうな重梅</td><td class="num">¥148,200</td><td class="num">10.2%</td><td class="num">¥129,675</td><td class="num pos" style="font-weight:800;">+14.3%</td></tr>
+<tr><td>Uberうな重松</td><td class="num">¥141,000</td><td class="num">9.7%</td><td class="num">¥145,700</td><td class="num neg">-3.2%</td></tr>
+<tr><td>Uberうな重竹</td><td class="num">¥140,400</td><td class="num">9.7%</td><td class="num">¥159,900</td><td class="num neg">-12.2%</td></tr>
+<tr><td>うな重梅</td><td class="num">¥71,400</td><td class="num">4.9%</td><td class="num">¥60,900</td><td class="num pos">+17.2%</td></tr>
+<tr style="background:#F0FDF4;"><td>📈 麻布しきコース</td><td class="num" style="font-weight:700;color:#166534;">¥70,000</td><td class="num" style="font-weight:700;color:#166534;">4.8%</td><td class="num">¥33,333</td><td class="num pos" style="font-weight:800;font-size:20px;">+110.0%</td></tr>
+<tr style="background:#F0FDF4;"><td>📈 TOうな重松</td><td class="num" style="font-weight:700;color:#166534;">¥69,000</td><td class="num" style="font-weight:700;color:#166534;">4.7%</td><td class="num">¥17,250</td><td class="num pos" style="font-weight:800;font-size:20px;">+300.0%</td></tr>
+<tr><td>うな重竹</td><td class="num">¥46,400</td><td class="num">3.2%</td><td class="num">¥30,450</td><td class="num pos" style="font-weight:700;">+52.4%</td></tr>
+<tr><td>下関ふぐづくしコース</td><td class="num">¥44,000</td><td class="num">3.0%</td><td class="num">—</td><td class="num pos" style="font-weight:700;">新規</td></tr>
+<tr><td>Uberうな重ハーフ肝焼き入り</td><td class="num">¥37,800</td><td class="num">2.6%</td><td class="num">¥29,400</td><td class="num pos">+28.6%</td></tr>
+<tr><td>お通し</td><td class="num">¥31,500</td><td class="num">2.2%</td><td class="num">¥28,350</td><td class="num pos">+11.1%</td></tr>
+</table>
+</div>
+<div class="footer-cite">出典: USENレジ売上データ ／ 集計対象: 2026-W22 の業務日（2026/05/25 6:00 〜 2026/06/01 5:59 JST、朝6時境界）</div>
+</div>
+
+<!-- ==================== SLIDE 22: PRODUCT COMPOSITION CHANGE ==================== -->
+<div class="slide" id="slide-22">
+<div class="slide-header"><h2><span class="section-tag">商品・カテゴリ分析</span>商品構成比の変化</h2><span class="pn">22 / 32</span><div class="progress-bar" style="width:67.7%"></div></div>
+<div class="msg-bar">💡 TOうな重松+3.03pt、麻布しきコース+1.71ptが大幅増。ランチコース-5.56ptが最大減</div>
+<div class="classification-bar"><ul><li>集計対象: 2026-W22 と 2026-W21 の商品別構成比の差（ポイント）</li><li>構成比 = 商品売上 ÷ 週次総売上</li></ul></div>
+<div class="slide-body">
+<div class="two-col" style="margin-top:6px;">
+<div>
+<h3 style="font-size:21px;font-weight:800;color:#22C55E;margin-bottom:10px;">📈 構成比増加上位5</h3>
+<table class="dt">
+<tr><th>商品名</th><th>今週</th><th>前週</th><th>変化</th></tr>
+<tr class="highlight-row"><td>🏆 TOうな重松</td><td class="num">4.74%</td><td class="num">1.71%</td><td class="num pos">+3.03pt</td></tr>
+<tr><td>麻布しきコース</td><td class="num">4.81%</td><td class="num">3.10%</td><td class="num pos">+1.71pt</td></tr>
+<tr><td>うな重竹</td><td class="num">3.19%</td><td class="num">1.80%</td><td class="num pos">+1.39pt</td></tr>
+<tr><td>うな重梅</td><td class="num">4.91%</td><td class="num">3.91%</td><td class="num pos">+1.00pt</td></tr>
+<tr><td>うなぎ白焼き</td><td class="num">2.06%</td><td class="num">1.12%</td><td class="num pos">+0.94pt</td></tr>
+</table>
+</div>
+<div>
+<h3 style="font-size:21px;font-weight:800;color:#EF4444;margin-bottom:10px;">📉 構成比減少上位5</h3>
+<table class="dt">
+<tr><th>商品名</th><th>今週</th><th>前週</th><th>変化</th></tr>
+<tr class="highlight-row"><td>⚠️ ランチコース</td><td class="num">0.96%</td><td class="num">6.52%</td><td class="num neg">-5.56pt</td></tr>
+<tr><td>Uber白焼き</td><td class="num">0.59%</td><td class="num">2.67%</td><td class="num neg">-2.08pt</td></tr>
+<tr><td>ロケットナウうな重松</td><td class="num">0.47%</td><td class="num">1.71%</td><td class="num neg">-1.24pt</td></tr>
+<tr><td>ランチ松セット1ドリンク</td><td class="num">1.99%</td><td class="num">3.17%</td><td class="num neg">-1.18pt</td></tr>
+<tr><td>ランチうな重</td><td class="num">1.89%</td><td class="num">2.73%</td><td class="num neg">-0.84pt</td></tr>
+</table>
+</div>
+</div>
+</div>
+<div class="footer-cite">出典: USENレジ売上データ ／ 集計対象: 2026-W22 の業務日（2026/05/25 6:00 〜 2026/06/01 5:59 JST、朝6時境界）</div>
+</div>
+
+<!-- ==================== SLIDE 23: PRODUCT SUMMARY ==================== -->
+<div class="slide" id="slide-23">
+<div class="slide-header"><h2><span class="section-tag">商品・カテゴリ分析</span>商品分析まとめ</h2><span class="pn">23 / 32</span><div class="progress-bar" style="width:71.0%"></div></div>
+<div class="msg-bar">💡 高単価コース・テイクアウト松ランクの躍進と、ランチ商材の後退が今週の二大潮流</div>
+<div class="classification-bar"><ul><li>集計対象: 2026-W22 の商品・カテゴリ別売上構造</li><li>来週施策の方向性として整理</li></ul></div>
+<div class="slide-body">
+<div class="two-col" style="margin-top:10px;">
+<div class="pillar-card" style="border-top:4px solid #22C55E;">
+<h4 style="font-size:20px;">🥂 高単価コース・松ランク（コース10.8%、+2.8pt／テイクアウト50.2%、+0.7pt）</h4>
+<ul style="list-style:none;padding:0;margin-top:8px;">
+<li style="font-size:17px;margin-bottom:6px;">・麻布しきコース<strong>+110.0%</strong>、TOうな重松<strong>+300.0%</strong>、下関ふぐづくしコース新規寄与</li>
+<li style="font-size:17px;margin-bottom:6px;">・金曜の3-4名10会計＋2名5会計、最大¥54,605の高額会計に直結</li>
+<li style="font-size:17px;">・客単価¥20,129（前年比+48.6%）の押し上げ要因</li>
+</ul>
+</div>
+<div class="pillar-card" style="border-top:4px solid #EF4444;">
+<h4 style="font-size:20px;">📉 ランチ商材の後退（ランチ1.0%、-5.5pt）</h4>
+<ul style="list-style:none;padding:0;margin-top:8px;">
+<li style="font-size:17px;margin-bottom:6px;">・ランチコース<strong>-5.56pt</strong>、ランチ松セット1ドリンク-1.18pt、ランチうな重-0.84ptが軒並み減</li>
+<li style="font-size:17px;margin-bottom:6px;">・前週の祝日効果が消失し、平日ランチの取りこぼし</li>
+</ul>
+</div>
+</div>
+<div class="note-box" style="margin-top:14px;">💡 来週以降の方向性: 高単価コース・松ランクの定着（金曜の成功パターンを他曜日にも広げる）と、ランチ商材の建て直し（平日ランチセット・うな重ハーフセットの常設訴求）を並行。</div>
+</div>
+<div class="footer-cite">出典: USENレジ売上データ ／ 集計対象: 2026-W22 の業務日（2026/05/25 6:00 〜 2026/06/01 5:59 JST、朝6時境界）</div>
+</div>
+
+<!-- ==================== SLIDE 24: WIN ==================== -->
+<div class="slide" id="slide-24">
+<div class="slide-header"><h2><span class="section-tag">今週の総括</span>今週の総括：強み</h2><span class="pn">24 / 32</span><div class="progress-bar" style="width:74.2%"></div></div>
+<div class="msg-bar">✅ 客単価¥20,129で5週最高、前年比+48.6%。コース+2.8pt、金曜大口集中で高単価路線が定着</div>
+<div class="classification-bar"><ul><li>集計対象: 2026-W22 の業務日全体</li><li>強み: 前週比・4週平均比・前年比・好調曜日の観点で整理</li></ul></div>
+<div class="slide-body" style="padding-top:18px;">
+<div class="success-item"><h4>💴 客単価¥20,129（前週比+4.7%）で5週最高水準、前年比+48.6%</h4><p>W20の¥14,104底値から3週連続で上昇し¥20,000台到達。前年同週¥13,544から+¥6,585の大幅伸長で収益性が改善。</p></div>
+<div class="success-item"><h4>🥂 コース+2.8pt（10.8%）・ドリンク+1.6pt（8.5%）で高単価商材が拡大</h4><p>麻布しきコース+110.0%、TOうな重松+300.0%、下関ふぐづくしコース新規寄与。金曜の3-4名10会計＋2名5会計が高単価商材と整合。</p></div>
+<div class="success-item"><h4>🏆 金曜（5/29）売上¥260,645で4週平均比161.0%、客数14人で大幅好調</h4><p>3-4名グループ10会計¥154,965＋2名5会計¥105,680。最大¥54,605・2万円以上3件の上位会計の厚み。</p></div>
+</div>
+<div class="footer-cite">出典: USENレジ売上データ ／ 集計対象: 2026-W22 の業務日（2026/05/25 6:00 〜 2026/06/01 5:59 JST、朝6時境界）</div>
+</div>
+
+<!-- ==================== SLIDE 25: LOSS ==================== -->
+<div class="slide" id="slide-25">
+<div class="slide-header"><h2><span class="section-tag">今週の総括</span>今週の総括：課題</h2><span class="pn">25 / 32</span><div class="progress-bar" style="width:77.4%"></div></div>
+<div class="msg-bar">⚠️ 客数74人で前年比-27.5%、日曜店内ディナー消失、火曜客数枯渇、ランチ商材後退の4点</div>
+<div class="classification-bar"><ul><li>集計対象: 2026-W22 の業務日全体</li><li>課題: 前週比・前年比・不調曜日・商品後退の観点で整理</li></ul></div>
+<div class="slide-body" style="padding-top:18px;">
+<div class="challenge-item"><h4>👥 客数74人（前週比-12.9%、前年比-27.5%）で構造的に弱い</h4><p>客単価で売上を補うが、客数構造の弱さは継続課題。4週平均82.0人の90.2%、5週で2番目に低い。</p></div>
+<div class="challenge-item"><h4>🌙 日曜（5/31）売上¥140,095・客数6人で店内ディナー消失</h4><p>4週平均比58.1%、20時台ゼロ・21-22時計2件¥18,530。コース・ランチゼロ、テイクアウト67.3%偏重で店内ディナーの厚みが完全欠落。</p></div>
+<div class="challenge-item"><h4>🚨 火曜（5/26）客数要因-¥18,189、単価要因-¥29,111で両要因マイナス</h4><p>売上¥131,810で曜日内最低、月-木の店内集客が継続的に薄い。</p></div>
+<div class="challenge-item"><h4>📉 ランチ商材の後退（ランチコース-5.56pt、ランチ松セット-1.18pt、ランチうな重-0.84pt）</h4><p>前週の祝日効果消失で平日ランチを取りこぼし。ランチ構成比1.0%（-5.5pt）と大幅減。</p></div>
+</div>
+<div class="footer-cite">出典: USENレジ売上データ ／ 集計対象: 2026-W22 の業務日（2026/05/25 6:00 〜 2026/06/01 5:59 JST、朝6時境界）</div>
+</div>
+
+<!-- ==================== SLIDE 26: DAILY REPORT 1 ==================== -->
+<div class="slide" id="slide-26">
+<div class="slide-header"><h2><span class="section-tag">日報サマリー</span>店舗の様子① — 多様な客層と外国人ゲストの来店</h2><span class="pn">26 / 32</span><div class="progress-bar" style="width:80.6%"></div></div>
+<div class="msg-bar">💡 20代〜70代の幅広い客層、外国人ゲスト・観光客の来店が継続的に観察</div>
+<div class="classification-bar"><ul><li>集計対象: 2026-W22（5/25-5/30）の DailyReport（スタッフ日報）</li><li>引用は内容に関係する箇所のみ抜粋</li></ul></div>
+<div class="slide-body" style="padding-top:10px;">
+<h3 style="font-size:18px;font-weight:800;color:#1E293B;margin-bottom:6px;">👥 20代〜70代までの幅広い客層と多様なグループ利用</h3>
+<blockquote><strong>5月25日（日）齊藤さん:</strong><br>「ディナーは30代男性と20代女性（上司と部下）がしきコースを利用、30代外国人カップルがつまみと鰻重を注文。」「客層は20〜50代、男女・カップル・仕事関係・グループなど多様な利用が見られた。」</blockquote>
+<blockquote><strong>5月25日（日）鈴木さん:</strong><br>「本日の来店客は、会社の先輩男性と後輩女性の30代ペア、韓国系観光客30代夫婦、50代男性と20代女性2人など多様な構成。」「お客様の年齢層は20代〜50代と幅広く、観光客の利用も見られた。」</blockquote>
+<blockquote><strong>5月30日（土）アーカーミョーさん:</strong><br>「本日は25〜50歳のご家族や友人同士のお客様が多数来店。」「常連・新規の両方のお客様が来店し、うなぎ料理を含む多くの料理をご注文。」</blockquote>
+<h3 style="font-size:18px;font-weight:800;color:#1E293B;margin-bottom:6px;margin-top:8px;">🌐 外国人ゲスト・観光客の来店</h3>
+<blockquote><strong>5月27日（水）齊藤さん:</strong><br>「ランチに20代中国人男性1名が来店。」</blockquote>
+<blockquote><strong>5月28日（木）齊藤さん:</strong><br>「ディナーは50代男性1名と30代男性3名の仕事仲間グループ、50代夫婦（中国人）、30代男性2名・女性1名（韓国人）が来店。」</blockquote>
+</div>
+<div class="footer-cite">出典: Dashboard DailyReport API ／ 集計対象: 2026-W22 の DailyReport エントリ</div>
+</div>
+
+<!-- ==================== SLIDE 27: DAILY REPORT 2 ==================== -->
+<div class="slide" id="slide-27">
+<div class="slide-header"><h2><span class="section-tag">日報サマリー</span>店舗の様子② — 常連客の交流利用と記念日対応</h2><span class="pn">27 / 32</span><div class="progress-bar" style="width:83.9%"></div></div>
+<div class="msg-bar">💡 常連客の親睦・仕事交流の場として機能、記念日対応（プレート・コース）が好評</div>
+<div class="classification-bar"><ul><li>集計対象: 2026-W22（5/25-5/30）の DailyReport（スタッフ日報）</li><li>引用は内容に関係する箇所のみ抜粋</li></ul></div>
+<div class="slide-body" style="padding-top:10px;">
+<h3 style="font-size:18px;font-weight:800;color:#1E293B;margin-bottom:6px;">🥂 常連客同士の親睦・仕事交流の場としての利用</h3>
+<blockquote><strong>5月27日（水）齊藤さん:</strong><br>「ディナーは50代男性2名＋70代男性1名の常連様が久々に来店し、仕事や昔話を会長と交えて談笑。」「40-50代男性6名（大成建設、常連様）も来店し、仕事や思い出話で盛り上がっていた。」</blockquote>
+<blockquote><strong>5月27日（水）鈴木さん:</strong><br>「いずれも親睦を深める目的での食事利用」「お客様同士で仕事の話や笑い声が多く、和やかな雰囲気が見られた」「乾杯や名刺交換など交流の場面も確認」</blockquote>
+<h3 style="font-size:18px;font-weight:800;color:#1E293B;margin-bottom:6px;margin-top:8px;">🎉 記念日・特別利用と次回来店の予約</h3>
+<blockquote><strong>5月29日（金）齊藤さん:</strong><br>「70代男性と40代女性（親子、常連）がディナー来店、次回来店用（6/10）に三岳のボトルを入れた。」「50代男性と20代女性（親子）がフグコースを利用、お父様の誕生日でプレートを用意し大変喜ばれた。」「記念日対応（プレート用意）が好評だったため、今後も積極的に実施する。」</blockquote>
+<blockquote><strong>5月26日（火）齊藤さん:</strong><br>「60代男性1名は『知り合いから当店を教えてもらった』と話し、鰻重と旬菜3点盛りを注文」「30代男性1名はランチにも来店経験があり、今回はつまみとお酒を楽しみ1時間ほど滞在した」「紹介やリピーターの来店があった点は今後の集客施策に活用可能」</blockquote>
+</div>
+<div class="footer-cite">出典: Dashboard DailyReport API ／ 集計対象: 2026-W22 の DailyReport エントリ</div>
+</div>
+
+<!-- ==================== SLIDE 28: DAILY REPORT 3 ==================== -->
+<div class="slide" id="slide-28">
+<div class="slide-header"><h2><span class="section-tag">日報サマリー</span>店舗の様子③ — スタッフのスキル向上と新業務挑戦</h2><span class="pn">28 / 32</span><div class="progress-bar" style="width:87.1%"></div></div>
+<div class="msg-bar">💡 アーカーミョーさんの主体的なスキル向上、仕込み運営の改善余地が浮き彫り</div>
+<div class="classification-bar"><ul><li>集計対象: 2026-W22（5/25-5/30）の DailyReport（スタッフ日報）</li><li>引用は内容に関係する箇所のみ抜粋</li></ul></div>
+<div class="slide-body" style="padding-top:10px;">
+<h3 style="font-size:18px;font-weight:800;color:#1E293B;margin-bottom:6px;">🎓 スタッフの主体的なスキル向上</h3>
+<blockquote><strong>5月26日（火）アーカーミョーさん:</strong><br>「アーカーミョーが本日、馬刺しの盛り合わせを初めて自分で作成し、スムーズに問題なく作業できた。」「仕事に積極的かつ丁寧に取り組む姿勢が見られた。」「今後も新しいことに積極的に挑戦したいという意欲を示している。」「次回は他の新しい調理や盛り付けにもチャレンジできるようサポート予定。」</blockquote>
+<blockquote><strong>5月30日（土）アーカーミョーさん:</strong><br>「本日は料理の注文が多く、アーカーミョーさんが一つひとつ丁寧に作業を行った。」「忙しい中でも積極的かつ丁寧に仕事に取り組む姿勢が見られた。」「今後も丁寧な作業を継続し、さらにスキルアップを目指す。」</blockquote>
+<h3 style="font-size:18px;font-weight:800;color:#1E293B;margin-bottom:6px;margin-top:8px;">⚙️ 仕込み・在庫運営の課題</h3>
+<blockquote><strong>5月26日（火）齊藤さん:</strong><br>「仕込み工数が多く、スタッフの休憩開始が遅れたが、営業には支障なし。」「仕込み作業の中で特に時間がかかった項目や原因の特定が今後の課題。」「明日は仕込み作業の分担や手順の見直し、事前準備の工夫を検討する。」</blockquote>
+</div>
+<div class="footer-cite">出典: Dashboard DailyReport API ／ 集計対象: 2026-W22 の DailyReport エントリ</div>
+</div>
+
+<!-- ==================== SLIDE 29: DAILY REPORT 4 ==================== -->
+<div class="slide" id="slide-29">
+<div class="slide-header"><h2><span class="section-tag">日報サマリー</span>店舗の様子④ — 営業上の特記事項</h2><span class="pn">29 / 32</span><div class="progress-bar" style="width:90.3%"></div></div>
+<div class="msg-bar">⚠️ 利用目的の多様化とリピート利用、5/28のスタッフ欠勤によるランチ休業</div>
+<div class="classification-bar"><ul><li>集計対象: 2026-W22（5/25-5/30）の DailyReport（スタッフ日報）</li><li>引用は内容に関係する箇所のみ抜粋</li></ul></div>
+<div class="slide-body" style="padding-top:10px;">
+<h3 style="font-size:18px;font-weight:800;color:#1E293B;margin-bottom:6px;">🔁 利用目的の多様化とリピート利用</h3>
+<blockquote><strong>5月26日（火）齊藤さん:</strong><br>「40代男性1名がランチで来店、刺身・日本酒を楽しんだ後に鰻重を注文、昨年11/21以来4回目の来店。」「40代男性1名はランチで初来店後、気に入った様子で夜も再来店。」「『気に入ったら夜も来店』など、お客様の満足度向上がリピートにつながっている。」</blockquote>
+<blockquote><strong>5月26日（火）齊藤さん:</strong><br>「20代カップルがディナーで来店し、鳥の唐揚げと鰻を注文、食事後は早めに退店した」「30代男性1名はランチにも来店経験があり、今回はつまみとお酒を楽しみ1時間ほど滞在した」「紹介やリピーターの来店があった点は今後の集客施策に活用可能」</blockquote>
+<h3 style="font-size:18px;font-weight:800;color:#1E293B;margin-bottom:6px;margin-top:8px;">⚠️ スタッフ欠勤によるランチ休業と運営対応</h3>
+<blockquote><strong>5月28日（木）齊藤さん:</strong><br>「ランチ営業はスタッフ欠勤のため休業し、来店客なし」「ディナーは50代男性1名と30代男性3名の仕事仲間グループ、50代夫婦（中国人）、30代男性2名・女性1名（韓国人）が来店」</blockquote>
+</div>
+<div class="footer-cite">出典: Dashboard DailyReport API ／ 集計対象: 2026-W22 の DailyReport エントリ</div>
+</div>
+
+<!-- ==================== SLIDE 30: ACTION PLAN 1 ==================== -->
+<div class="slide" id="slide-30">
+<div class="slide-header"><h2><span class="section-tag">施策一覧</span>施策一覧①：メニュー・集客</h2><span class="pn">30 / 32</span><div class="progress-bar" style="width:93.5%"></div></div>
+<div class="msg-bar">💡 客単価¥20,129定着と、日曜・火曜の店内ディナー再構築で売上¥1,600,000を狙う</div>
+<div class="classification-bar"><ul><li>集計対象: 2026-W22 の分析を踏まえた来週施策（短期1-3ヶ月）</li><li>カテゴリ: メニュー開発／集客・マーケティング</li></ul></div>
+<div class="slide-body">
+<div class="two-col" style="margin-top:6px;">
+<div>
+<h3 style="font-size:19px;font-weight:800;color:#1E293B;margin-bottom:8px;">🍽️ メニュー開発</h3>
+<table class="action-table">
+<tr><th>施策内容</th><th>狙い</th></tr>
+<tr><td>「日曜限定 シェアコース」（21時以降予約特典付き）</td><td>日曜21-22時店内ディナー枠の底支え</td></tr>
+<tr><td>「平日限定 うな重松ランクアップ500円OFF」の継続</td><td>客単価¥20,129の定着と高単価誘導</td></tr>
+<tr><td>下関ふぐづくしコース・麻布しきコースの平日プロモーション</td><td>コース構成比10.8%→12.0%への拡大</td></tr>
+<tr><td>「平日ランチ松セット」「ランチうな重ハーフセット」常設化</td><td>ランチ商材の建て直し（-5.5pt回復）</td></tr>
+<tr><td>Uberうな重松・竹のメニュー写真・説明文の刷新</td><td>Uber松-3.2%・竹-12.2%の回復</td></tr>
+</table>
+</div>
+<div>
+<h3 style="font-size:19px;font-weight:800;color:#1E293B;margin-bottom:8px;">📢 集客・マーケティング</h3>
+<table class="action-table">
+<tr><th>施策内容</th><th>狙い</th></tr>
+<tr><td>日曜限定特典（21時以降予約にお通し・肝吸いサービス）</td><td>日曜店内ディナーの客数底上げ</td></tr>
+<tr><td>火曜会員DAY（ドリンク半額・LINE登録者向け）</td><td>火曜客数-¥18,189・単価-¥29,111の解消</td></tr>
+<tr><td>一休・食べログでの日曜夜枠プロモーション拡充</td><td>週末締めの予約獲得</td></tr>
+<tr><td>Uber Eats特集枠への松・竹掲載強化</td><td>デリバリーラインナップ均衡</td></tr>
+<tr><td>Instagram・SNSフラッシュ販売（当日席案内）</td><td>平日ディナー枠の埋め込み</td></tr>
+</table>
+</div>
+</div>
+</div>
+<div class="footer-cite">出典: USENレジ売上データ ／ 集計対象: 2026-W22 の業務日（2026/05/25 6:00 〜 2026/06/01 5:59 JST、朝6時境界）</div>
+</div>
+
+<!-- ==================== SLIDE 31: ACTION PLAN 2 ==================== -->
+<div class="slide" id="slide-31">
+<div class="slide-header"><h2><span class="section-tag">施策一覧</span>施策一覧②：顧客・運営</h2><span class="pn">31 / 32</span><div class="progress-bar" style="width:96.8%"></div></div>
+<div class="msg-bar">💡 金曜大口グループの恒常化、記念日対応の標準化、口コミ獲得導線で安定基盤を強化</div>
+<div class="classification-bar"><ul><li>集計対象: 2026-W22 の分析を踏まえた来週施策（短期1-3ヶ月）</li><li>カテゴリ: 顧客育成・リピーター／運営改善</li></ul></div>
+<div class="slide-body">
+<div class="two-col" style="margin-top:6px;">
+<div>
+<h3 style="font-size:19px;font-weight:800;color:#1E293B;margin-bottom:8px;">👥 顧客育成・リピーター</h3>
+<table class="action-table">
+<tr><th>施策内容</th><th>狙い</th></tr>
+<tr><td>金曜大口グループ（3-4名10会計＋2名5会計）の予約リスト化</td><td>接待・記念日リピート促進</td></tr>
+<tr><td>記念日プレート・コース予約特典の常設化（5/29好評を踏まえ）</td><td>高単価記念日利用の獲得（金曜パターン）</td></tr>
+<tr><td>三岳ボトル等のボトル入れ顧客への次回案内DM</td><td>客数固定化と来店間隔短縮</td></tr>
+<tr><td>デリバリー注文へのサンクスカード同封（口コミ誘導QR）</td><td>口コミ獲得（複数週連続0件改善）</td></tr>
+<tr><td>店内飲食客への会計時の口コミ依頼カード手渡し再徹底</td><td>Google口コミ投稿数の確保</td></tr>
+</table>
+</div>
+<div>
+<h3 style="font-size:19px;font-weight:800;color:#1E293B;margin-bottom:8px;">⚙️ 運営改善</h3>
+<table class="action-table">
+<tr><th>施策内容</th><th>狙い</th></tr>
+<tr><td>仕込み作業の分担・手順見直し（5/26課題を踏まえ）</td><td>仕込み時間短縮・スタッフ休憩確保</td></tr>
+<tr><td>平日（火・日）の仕込み量予測ロジック整備</td><td>客数変動への柔軟対応</td></tr>
+<tr><td>ランチ営業のスタッフシフト二重化</td><td>5/28スタッフ欠勤時の休業回避</td></tr>
+<tr><td>デリバリー注文確認フローの徹底</td><td>キッチン混乱の防止</td></tr>
+<tr><td>22時以降の店内ディナー受付ルールの再整備</td><td>週末ディナーの機会損失最小化</td></tr>
+</table>
+</div>
+</div>
+</div>
+<div class="footer-cite">出典: USENレジ売上データ ／ 集計対象: 2026-W22 の業務日（2026/05/25 6:00 〜 2026/06/01 5:59 JST、朝6時境界）</div>
+</div>
+
+<!-- ==================== SLIDE 32: ACTION PLAN 3 ==================== -->
+<div class="slide" id="slide-32">
+<div class="slide-header"><h2><span class="section-tag">施策一覧</span>施策一覧③：スタッフ育成</h2><span class="pn">32 / 32</span><div class="progress-bar" style="width:100%"></div></div>
+<div class="msg-bar">💡 接客スキル・観察力・スタッフの主体的な挑戦を支援し、高単価客対応と店舗基盤を強化</div>
+<div class="classification-bar"><ul><li>集計対象: 2026-W22 の分析を踏まえた来週施策（短期1-3ヶ月）</li><li>カテゴリ: スタッフ育成・組織強化</li></ul></div>
+<div class="slide-body">
+<h3 style="font-size:19px;font-weight:800;color:#1E293B;margin-bottom:8px;margin-top:4px;">🎓 スタッフ育成・組織強化</h3>
+<table class="action-table">
+<tr><th>施策内容</th><th>狙い</th></tr>
+<tr><td>接待・団体利用時の接客マナー研修</td><td>金曜大口グループ対応力向上</td></tr>
+<tr><td>コース提供のタイミング管理研修</td><td>高単価客の満足度向上</td></tr>
+<tr><td>観察記録（来客動機・客層）スキルの全スタッフ展開</td><td>顧客理解の深化</td></tr>
+<tr><td>記念日対応マニュアルの整備（プレート・サプライズ等）</td><td>5/29好評パターンの全店展開</td></tr>
+<tr><td>鰻焼き技術の継続向上（焼き加減の安定化・スピード両立）</td><td>提供時間と品質の両立</td></tr>
+<tr><td>アーカーミョーさんの新業務挑戦サポート（5/26馬刺し盛り）</td><td>多能工化と即戦力化</td></tr>
+<tr><td>スタッフ間の情報共有ミーティングの定例化</td><td>チームワーク向上</td></tr>
+<tr><td>繁忙時間帯の連携強化トレーニング</td><td>金曜・土曜ピーク時対応</td></tr>
+<tr><td>ランチ・ディナー帯のオペレーション研修</td><td>単価押し上げ商材の提案力向上</td></tr>
+<tr><td>日報の改善点記入の精度向上</td><td>観察データの定常取得・改善PDCA</td></tr>
+</table>
+</div>
+<div class="footer-cite">出典: USENレジ売上データ ／ 集計対象: 2026-W22 の業務日（2026/05/25 6:00 〜 2026/06/01 5:59 JST、朝6時境界）</div>
+</div>
+
+<!-- ==================== D3.js SCRIPTS ==================== -->
+<script>
+const COLORS = {
+  header: '#1E3A5F',
+  positive: '#22C55E',
+  negative: '#EF4444',
+  orange: '#F97316',
+  blue: '#3B82F6',
+  gray: '#94A3B8',
+  bgLight: '#F8FAFC',
+  textDark: '#334155',
+  textHeading: '#1E293B'
+};
+
+function addCallout(g, x, y, text, options) {
+  options = options || {};
+  var bgColor = options.bgColor || '#FFF7ED';
+  var borderColor = options.borderColor || COLORS.orange;
+  var textColor = options.textColor || COLORS.textHeading;
+  var fontSize = options.fontSize || '18px';
+  var fontWeight = options.fontWeight || '800';
+  var anchor = options.anchor || 'middle';
+  var arrowTarget = options.arrowTarget || null;
+
+  var cg = g.append('g').attr('class','callout');
+  if(arrowTarget){
+    cg.append('line').attr('x1',x).attr('y1',y+12)
+      .attr('x2',arrowTarget.x).attr('y2',arrowTarget.y)
+      .attr('stroke',borderColor).attr('stroke-width',1.5).attr('stroke-dasharray','4,3');
+  }
+  var txt = cg.append('text').attr('x',x).attr('y',y)
+    .attr('text-anchor',anchor).attr('font-size',fontSize).attr('font-weight',fontWeight).attr('fill',textColor).text(text);
+  var bb = txt.node().getBBox();
+  var px=12, py=6;
+  cg.insert('rect','text')
+    .attr('x',bb.x-px).attr('y',bb.y-py).attr('width',bb.width+px*2).attr('height',bb.height+py*2)
+    .attr('rx',6).attr('fill',bgColor).attr('stroke',borderColor).attr('stroke-width',1.5);
+}
+
+function addTrendArrow(svg, svgId, x1, y1, x2, y2, color, label) {
+  var mid = svgId + '-trend-' + Math.random().toString(36).substr(2,5);
+  svg.append('defs').append('marker').attr('id',mid)
+    .attr('viewBox','0 0 10 10').attr('refX',8).attr('refY',5)
+    .attr('markerWidth',8).attr('markerHeight',8).attr('orient','auto-start-reverse')
+    .append('path').attr('d','M 0 0 L 10 5 L 0 10 z').attr('fill',color);
+  var ag = svg.append('g').attr('opacity',0.65);
+  var oy = y2 < y1 ? 6 : -6;
+  ag.append('line')
+    .attr('x1',x1+14).attr('y1',y1+oy)
+    .attr('x2',x2-14).attr('y2',y2-oy)
+    .attr('stroke',color).attr('stroke-width',3.5)
+    .attr('marker-end','url(#'+mid+')');
+  ag.append('text')
+    .attr('x',(x1+x2)/2+20).attr('y',(y1+y2)/2-8)
+    .attr('font-size','15px').attr('font-weight','700').attr('fill',color).text(label);
+}
+
+function drawLineChart(svgId, data, yLabel, fmt, yoyVal, yoyLabel) {
+  var svg = d3.select('#'+svgId);
+  var W = +svg.attr('width'), H = +svg.attr('height');
+  var m = {top:50, right:60, bottom:50, left:80};
+  var iw = W-m.left-m.right, ih = H-m.top-m.bottom;
+  var g = svg.append('g').attr('transform','translate('+m.left+','+m.top+')');
+
+  var x = d3.scalePoint().domain(data.map(function(d){return d.label;})).range([0,iw]).padding(0.3);
+  var yMin = d3.min(data, function(d){return d.value;}) * 0.85;
+  var yMax = d3.max(data, function(d){return d.value;}) * 1.1;
+  if(yoyVal) { yMin = Math.min(yMin, yoyVal*0.85); yMax = Math.max(yMax, yoyVal*1.1); }
+  var y = d3.scaleLinear().domain([yMin, yMax]).range([ih, 0]);
+
+  g.selectAll('.grid-line').data(y.ticks(5)).join('line')
+    .attr('x1',0).attr('x2',iw).attr('y1',function(d){return y(d);}).attr('y2',function(d){return y(d);})
+    .attr('stroke','#E2E8F0').attr('stroke-dasharray','3,3');
+
+  g.append('g').attr('transform','translate(0,'+ih+')').call(d3.axisBottom(x)).selectAll('text').attr('font-size','16px');
+  g.append('g').call(d3.axisLeft(y).ticks(5).tickFormat(function(d){return fmt(d);})).selectAll('text').attr('font-size','14px');
+
+  if(yoyVal){
+    g.append('line').attr('x1',0).attr('x2',iw).attr('y1',y(yoyVal)).attr('y2',y(yoyVal))
+      .attr('stroke',COLORS.orange).attr('stroke-width',1.5).attr('stroke-dasharray','6,4');
+    g.append('text').attr('x',iw+4).attr('y',y(yoyVal)+4).attr('font-size','14px').attr('fill',COLORS.orange).attr('font-weight','600').text('前年同週');
+  }
+
+  var line = d3.line().x(function(d){return x(d.label);}).y(function(d){return y(d.value);}).curve(d3.curveMonotoneX);
+  g.append('path').datum(data).attr('d',line).attr('fill','none').attr('stroke',COLORS.blue).attr('stroke-width',3);
+
+  g.selectAll('.dot').data(data).join('circle')
+    .attr('cx',function(d){return x(d.label);}).attr('cy',function(d){return y(d.value);})
+    .attr('r',function(d,i){return i===data.length-1?8:5;})
+    .attr('fill',function(d,i){return i===data.length-1?COLORS.blue:'#fff';})
+    .attr('stroke',COLORS.blue).attr('stroke-width',2);
+
+  var n = data.length;
+  if(n>=2){
+    var prevX = x(data[n-2].label), prevY = y(data[n-2].value);
+    var currX = x(data[n-1].label), currY = y(data[n-1].value);
+    var pctChange = ((data[n-1].value - data[n-2].value) / data[n-2].value * 100).toFixed(1);
+    var tColor = data[n-1].value >= data[n-2].value ? COLORS.positive : COLORS.negative;
+    addTrendArrow(g, svgId, prevX, prevY, currX, currY, tColor, (pctChange>=0?'+':'')+pctChange+'%');
+  }
+
+  var last = data[n-1];
+  var lx = x(last.label);
+  var ly = y(last.value);
+  var coX = lx > iw*0.85 ? lx - 50 : lx;
+  var coAnchor = lx > iw*0.85 ? 'end' : 'middle';
+  addCallout(g, coX, ly - 30, fmt(last.value), {anchor: coAnchor, arrowTarget: lx > iw*0.85 ? {x:lx, y:ly-10} : null});
+}
+
+// SALES TREND
+drawLineChart('chart-sales',
+  [{label:'W18',value:1530270},{label:'W19',value:1160600},{label:'W20',value:1325820},{label:'W21',value:1634829},{label:'W22',value:1489515}],
+  '売上', function(v){return '¥'+Math.round(v/10000)+'万';}, 1381500, '前年同週');
+
+// CUSTOMER TREND
+drawLineChart('chart-customers',
+  [{label:'W18',value:90},{label:'W19',value:60},{label:'W20',value:94},{label:'W21',value:85},{label:'W22',value:74}],
+  '客数', function(v){return Math.round(v)+'人';}, 102, '前年同週');
+
+// SPEND TREND
+drawLineChart('chart-spend',
+  [{label:'W18',value:17003},{label:'W19',value:19343},{label:'W20',value:14104},{label:'W21',value:19233},{label:'W22',value:20129}],
+  '客単価', function(v){return '¥'+v.toLocaleString();}, 13544, '前年同週');
+
+// WEEKDAY CHART
+(function(){
+  var svg = d3.select('#chart-weekday');
+  var W=1200, H=380;
+  var m={top:40,right:40,bottom:50,left:80};
+  var iw=W-m.left-m.right, ih=H-m.top-m.bottom;
+  var g = svg.append('g').attr('transform','translate('+m.left+','+m.top+')');
+
+  var data = [
+    {day:'月',thisW:169190,avg4:179528,diff:-10338},
+    {day:'火',thisW:131810,avg4:168909,diff:-37099},
+    {day:'水',thisW:286130,avg4:234312,diff:51818},
+    {day:'木',thisW:180230,avg4:187939,diff:-7709},
+    {day:'金',thisW:260645,avg4:161874,diff:98771},
+    {day:'土',thisW:321415,avg4:239156,diff:82259},
+    {day:'日',thisW:140095,avg4:241161,diff:-101066}
+  ];
+
+  var x0 = d3.scaleBand().domain(data.map(function(d){return d.day;})).range([0,iw]).padding(0.25);
+  var x1 = d3.scaleBand().domain(['thisW','avg4']).range([0,x0.bandwidth()]).padding(0.08);
+  var yMax = d3.max(data,function(d){return Math.max(d.thisW,d.avg4);})*1.15;
+  var y = d3.scaleLinear().domain([0,yMax]).range([ih,0]);
+
+  g.selectAll('.grid').data(y.ticks(5)).join('line')
+    .attr('x1',0).attr('x2',iw).attr('y1',function(d){return y(d);}).attr('y2',function(d){return y(d);})
+    .attr('stroke','#E2E8F0').attr('stroke-dasharray','3,3');
+
+  g.append('g').attr('transform','translate(0,'+ih+')').call(d3.axisBottom(x0)).selectAll('text').attr('font-size','18px').attr('font-weight','700');
+  g.append('g').call(d3.axisLeft(y).ticks(5).tickFormat(function(d){return '¥'+Math.round(d/10000)+'万';})).selectAll('text').attr('font-size','14px');
+
+  // Highlight band for Friday (best)
+  g.append('rect').attr('x',x0('金')-4).attr('y',0).attr('width',x0.bandwidth()+8).attr('height',ih)
+    .attr('fill','#F0FDF4').attr('rx',6).attr('opacity',0.5);
+  // Highlight band for Sunday (worst)
+  g.append('rect').attr('x',x0('日')-4).attr('y',0).attr('width',x0.bandwidth()+8).attr('height',ih)
+    .attr('fill','#FEF2F2').attr('rx',6).attr('opacity',0.5);
+
+  data.forEach(function(d){
+    var barColor = d.day==='金'?COLORS.positive : d.day==='日'?COLORS.negative : COLORS.blue;
+    g.append('rect').attr('x',x0(d.day)+x1('thisW')).attr('y',y(d.thisW)).attr('width',x1.bandwidth()).attr('height',ih-y(d.thisW))
+      .attr('fill',barColor).attr('rx',3);
+    g.append('rect').attr('x',x0(d.day)+x1('avg4')).attr('y',y(d.avg4)).attr('width',x1.bandwidth()).attr('height',ih-y(d.avg4))
+      .attr('fill',COLORS.gray).attr('rx',3);
+
+    var isHL = d.day==='金'||d.day==='日';
+    g.append('text').attr('x',x0(d.day)+x1('thisW')+x1.bandwidth()/2).attr('y',y(d.thisW)-6)
+      .attr('text-anchor','middle').attr('font-size',isHL?'18px':'16px').attr('font-weight',isHL?'800':'500')
+      .attr('fill',isHL?COLORS.textHeading:'#64748B')
+      .text('¥'+Math.round(d.thisW/10000)+'万');
+  });
+
+  addCallout(g, x0('金')+x0.bandwidth()/2, y(260645)-36, '+¥98,771', {bgColor:'#F0FDF4',borderColor:COLORS.positive,textColor:'#166534'});
+  // Sunday is the rightmost - shift callout left to avoid clipping
+  var sunCx = x0('日') + x0.bandwidth()/2;
+  var sunMaxX = iw - 10;
+  var sunCalloutX = Math.min(sunCx, sunMaxX - 60);
+  addCallout(g, sunCalloutX, y(140095)-36, '-¥101,066', {bgColor:'#FEF2F2',borderColor:COLORS.negative,textColor:'#991B1B',anchor:'end',arrowTarget:{x:sunCx,y:y(140095)-12}});
+
+  var lg = g.append('g').attr('transform','translate('+(iw-200)+',0)');
+  lg.append('rect').attr('width',16).attr('height',16).attr('fill',COLORS.blue).attr('rx',2);
+  lg.append('text').attr('x',22).attr('y',13).attr('font-size','16px').attr('fill',COLORS.textDark).text('対象週');
+  lg.append('rect').attr('y',24).attr('width',16).attr('height',16).attr('fill',COLORS.gray).attr('rx',2);
+  lg.append('text').attr('x',22).attr('y',37).attr('font-size','16px').attr('fill',COLORS.textDark).text('4週平均');
+})();
+
+// RATIO BAR (Sunday worst)
+(function(){
+  var svg = d3.select('#chart-sun-ratio');
+  var W=680, H=360;
+  var m={top:30,right:160,bottom:30,left:100};
+  var iw=W-m.left-m.right, ih=H-m.top-m.bottom;
+  var g = svg.append('g').attr('transform','translate('+m.left+','+m.top+')');
+
+  var data = [
+    {label:'売上',ratio:58.1,fmt:'¥140,095'},
+    {label:'客数',ratio:42.9,fmt:'6人'},
+    {label:'客単価',ratio:122.5,fmt:'¥23,349'}
+  ];
+
+  var y = d3.scaleBand().domain(data.map(function(d){return d.label;})).range([0,ih]).padding(0.35);
+  var x = d3.scaleLinear().domain([0,160]).range([0,iw]);
+
+  g.append('line').attr('x1',x(100)).attr('x2',x(100)).attr('y1',-10).attr('y2',ih+10)
+    .attr('stroke',COLORS.textHeading).attr('stroke-width',2);
+  g.append('text').attr('x',x(100)).attr('y',-16).attr('text-anchor','middle').attr('font-size','14px').attr('fill',COLORS.textHeading).attr('font-weight','700').text('100%（4週平均）');
+
+  data.forEach(function(d){
+    var barW = x(Math.min(d.ratio,160));
+    var color = d.ratio < 80 ? COLORS.negative : d.ratio > 120 ? COLORS.positive : COLORS.blue;
+    g.append('rect').attr('x',0).attr('y',y(d.label)).attr('width',barW).attr('height',y.bandwidth())
+      .attr('fill',color).attr('rx',4);
+
+    if(d.ratio < 50){
+      g.append('rect').attr('x',-1.5).attr('y',y(d.label)-1.5).attr('width',barW+3).attr('height',y.bandwidth()+3)
+        .attr('fill','none').attr('stroke',COLORS.negative).attr('stroke-width',3).attr('rx',5);
+    }
+
+    g.append('text').attr('x',-10).attr('y',y(d.label)+y.bandwidth()/2+6).attr('text-anchor','end')
+      .attr('font-size','18px').attr('font-weight','700').attr('fill',COLORS.textHeading).text(d.label);
+    g.append('text').attr('x',barW+8).attr('y',y(d.label)+y.bandwidth()/2+6)
+      .attr('font-size','18px').attr('font-weight','700').attr('fill',color).text(d.ratio+'% ('+d.fmt+')');
+  });
+
+  var bg = g.append('g');
+  var bt = bg.append('text').attr('x',x(42.9)+50).attr('y',y('客数')+y.bandwidth()+24)
+    .attr('text-anchor','middle').attr('font-size','16px').attr('font-weight','800').attr('fill','#991B1B').text('▼ 要改善');
+  var bb = bt.node().getBBox();
+  bg.insert('rect','text').attr('x',bb.x-6).attr('y',bb.y-3).attr('width',bb.width+12).attr('height',bb.height+6)
+    .attr('rx',4).attr('fill','#FEF2F2').attr('stroke','#991B1B').attr('stroke-width',1.5);
+})();
+
+// RATIO BAR (Friday best)
+(function(){
+  var svg = d3.select('#chart-fri-ratio');
+  var W=680, H=360;
+  var m={top:30,right:160,bottom:30,left:100};
+  var iw=W-m.left-m.right, ih=H-m.top-m.bottom;
+  var g = svg.append('g').attr('transform','translate('+m.left+','+m.top+')');
+
+  var data = [
+    {label:'売上',ratio:161.0,fmt:'¥260,645'},
+    {label:'客数',ratio:164.7,fmt:'14人'},
+    {label:'客単価',ratio:88.6,fmt:'¥18,618'}
+  ];
+
+  var y = d3.scaleBand().domain(data.map(function(d){return d.label;})).range([0,ih]).padding(0.35);
+  var x = d3.scaleLinear().domain([0,200]).range([0,iw]);
+
+  g.append('line').attr('x1',x(100)).attr('x2',x(100)).attr('y1',-10).attr('y2',ih+10)
+    .attr('stroke',COLORS.textHeading).attr('stroke-width',2);
+  g.append('text').attr('x',x(100)).attr('y',-16).attr('text-anchor','middle').attr('font-size','14px').attr('fill',COLORS.textHeading).attr('font-weight','700').text('100%（4週平均）');
+
+  data.forEach(function(d){
+    var barW = x(Math.min(d.ratio,200));
+    var color = d.ratio < 80 ? COLORS.negative : d.ratio > 120 ? COLORS.positive : COLORS.blue;
+    g.append('rect').attr('x',0).attr('y',y(d.label)).attr('width',barW).attr('height',y.bandwidth())
+      .attr('fill',color).attr('rx',4);
+
+    if(d.ratio > 150){
+      g.append('rect').attr('x',-1.5).attr('y',y(d.label)-1.5).attr('width',barW+3).attr('height',y.bandwidth()+3)
+        .attr('fill','none').attr('stroke',COLORS.positive).attr('stroke-width',3).attr('rx',5);
+    }
+
+    g.append('text').attr('x',-10).attr('y',y(d.label)+y.bandwidth()/2+6).attr('text-anchor','end')
+      .attr('font-size','18px').attr('font-weight','700').attr('fill',COLORS.textHeading).text(d.label);
+    g.append('text').attr('x',barW+8).attr('y',y(d.label)+y.bandwidth()/2+6)
+      .attr('font-size','18px').attr('font-weight','700').attr('fill',color).text(d.ratio+'% ('+d.fmt+')');
+  });
+
+  var bg = g.append('g');
+  var bt = bg.append('text').attr('x',x(164.7)+30).attr('y',y('客数')-10)
+    .attr('text-anchor','middle').attr('font-size','16px').attr('font-weight','800').attr('fill','#166534').text('★ 客数大幅プラス');
+  var bb = bt.node().getBBox();
+  bg.insert('rect','text').attr('x',bb.x-6).attr('y',bb.y-3).attr('width',bb.width+12).attr('height',bb.height+6)
+    .attr('rx',4).attr('fill','#F0FDF4').attr('stroke','#166534').attr('stroke-width',1.5);
+})();
+
+// DONUT CHART
+(function(){
+  var svg = d3.select('#chart-donut');
+  var W=500, H=420;
+  var g = svg.append('g').attr('transform','translate('+W/2+','+H/2+')');
+
+  var data = [
+    {label:'テイクアウト',value:730400,pct:'50.2%'},
+    {label:'フード',value:414950,pct:'28.5%'},
+    {label:'コース',value:156960,pct:'10.8%'},
+    {label:'ドリンク',value:123950,pct:'8.5%'},
+    {label:'ランチ',value:14900,pct:'1.0%'},
+    {label:'ウーバーイーツ',value:13460,pct:'0.9%'}
+  ];
+  var colors = [COLORS.blue,'#22C55E','#F97316','#8B5CF6','#EC4899','#CBD5E1'];
+
+  var radius = 160;
+  var arc = d3.arc().innerRadius(radius*0.55).outerRadius(radius);
+  var pie = d3.pie().value(function(d){return d.value;}).sort(null);
+
+  var arcs = g.selectAll('.arc').data(pie(data)).join('g').attr('class','arc');
+
+  arcs.append('path').attr('d',arc).attr('fill',function(d,i){return colors[i];}).attr('stroke','#fff').attr('stroke-width',2);
+
+  // Highlight largest segment (テイクアウト - first)
+  arcs.filter(function(d,i){return i===0;}).attr('transform',function(d){
+    var c = arc.centroid(d);
+    var dist = Math.sqrt(c[0]*c[0]+c[1]*c[1]);
+    return 'translate('+(c[0]/dist*18)+','+(c[1]/dist*18)+')';
+  });
+
+  arcs.filter(function(d){return (d.endAngle-d.startAngle)>0.3;}).append('text')
+    .attr('transform',function(d){return 'translate('+arc.centroid(d)+')';})
+    .attr('text-anchor','middle').attr('font-size','16px').attr('font-weight','700').attr('fill','#fff')
+    .text(function(d){return d.data.pct;});
+
+  g.append('text').attr('text-anchor','middle').attr('y',-8).attr('font-size','18px').attr('fill','#64748B').text('合計');
+  g.append('text').attr('text-anchor','middle').attr('y',22).attr('font-size','24px').attr('font-weight','800').attr('fill',COLORS.textHeading).text('¥1,454,620');
+
+  var toSlice = pie(data)[0];
+  var midAngle = (toSlice.startAngle + toSlice.endAngle)/2 - Math.PI/2;
+  var outerPt = [Math.cos(midAngle)*(radius+30), Math.sin(midAngle)*(radius+30)];
+  var labelPt = [Math.cos(midAngle)*(radius+60), Math.sin(midAngle)*(radius+60)];
+  var endX = labelPt[0] > 0 ? labelPt[0]+40 : labelPt[0]-40;
+  g.append('polyline')
+    .attr('points', outerPt[0]+','+outerPt[1]+' '+labelPt[0]+','+labelPt[1]+' '+endX+','+labelPt[1])
+    .attr('fill','none').attr('stroke',COLORS.blue).attr('stroke-width',1.5);
+  g.append('text').attr('x',endX+(labelPt[0]>0?6:-6)).attr('y',labelPt[1]+5)
+    .attr('text-anchor',labelPt[0]>0?'start':'end')
+    .attr('font-size','16px').attr('font-weight','700').attr('fill',COLORS.blue).text('テイクアウト 50.2% (+0.7pt)');
+})();
+
+</script>
+</body>
+</html>

@@ -1,4 +1,3 @@
-schema_version: 2
 id: BL-0089
 title: 'ダッシュボード改: 税金をコストに含める実装'
 project: ダッシュボード改
@@ -6,10 +5,29 @@ category: RestaurantAILab
 state: in_progress
 priority: high
 created_at: '2026-05-23T01:49:34.344Z'
-updated_at: '2026-05-23T01:49:34.344Z'
+updated_at: '2026-06-03T01:30:08.769Z'
 created_by: mt-cli
 description: ダッシュボード改の PL/コスト計算で税金 (酒税・消費税等) をコスト項目に含める実装を進行中。バックログ整理時点で進行中の認識のため、今日中〜直近で完了させる。
-deliverable_refs: []
-cockpit_task_ids: []
-pending_questions: []
-decisions: []
+deliverable_refs:
+  - d-20260603-002
+schema_version: 2
+cockpit_task_ids:
+  - 83ed7ea1
+pending_questions:
+  - id: q-BL-0089-1-20260603013008
+    at: '2026-06-03T01:30:08.769Z'
+    cockpit_task_id: 83ed7ea1
+    content: >-
+      BL-0089 の今日のクラスA完了をどこに置くか確認したい。実装本体は dev ブランチに未コミットで既に乗っているため、選択肢は3案: 【案A 最小】commit + PR レビュー待ち (30-60min,
+      テスト未整備で回帰検出弱)。【案B 堅実】案A + salesDeduction.ts 単体テスト + Prisma migration ファイル化 + dev DB 適用 (2-3h)。【案C 完全】案B +
+      既存テスト型エラー10件修正 + 本番 SQL 適用 + 旧customSettings→新テーブル移行 + PR マージ (4-6h)。本番 DB 操作 (案Cの後半) は私がデフォルトでは触らない想定。それと、税金
+      (酒税・消費税) 専用 UI が欲しいですか? 現状の汎用 PlSalesDeductionRule は『ルール名に酒税と書けば動く』設計で、税金特化の表示 (例: 利益カードに「うち税金 ¥xxx」内訳) は無いです。
+decisions:
+  - at: '2026-06-03T01:29:59.486Z'
+    type: commitment
+    by: ai
+    content: >-
+      現状整理を実施: 実装本体 (PlSalesDeductionRule = 売上控除/費用振替の汎用ルール) は dev ブランチに「ほぼ完成・未コミット」で既に存在 (9 files / +439 行 / SQL
+      migration + repository 453行 + 集計 logic 127行 + 設定/日次入力 UI + 旧設定→新ルール移行スクリプト)。残作業: ①commit ②Prisma migration ファイル化
+      ③単体テスト ④dev/本番 DB への SQL 適用と旧 customSettings 移行 ⑤既存テストの型エラー10件 (既存負債、別件)。詳細は d-20260603-002。今日のクラスA完了範囲を案A(commit
+      のみ)/B(test + migration ファイル化まで)/C(本番適用 + CI green まで) のいずれにするか質問を立てた。

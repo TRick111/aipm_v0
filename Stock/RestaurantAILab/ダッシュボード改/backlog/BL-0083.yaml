@@ -5,15 +5,39 @@ category: RestaurantAILab
 state: in_progress
 priority: normal
 created_at: '2026-05-04T14:12:26.982Z'
-updated_at: '2026-05-23T01:48:26.020Z'
+updated_at: '2026-06-03T01:31:34.921Z'
 created_by: mt-cli
 description: >-
   BAR FIVE Arrows のオペレーターが Airレジ (or Dashboard) のメモ欄に来客層フラグ (常連 / インバウンド / 社員 など) を記録している。これを週報・月報に分析項目として反映できるようにする。背景:
   客層別の売上構成・回転率・客単価を把握したいというニーズ。タスク: (1) メモ欄入力ルール定義 / (2) Dashboard 取込み (CSV or 手動) / (3) 週報・月報フォーマットへの反映方法設計 / (4) 実装。
-deliverable_refs: []
+deliverable_refs:
+  - d-20260603-003
 schema_version: 2
-cockpit_task_ids: []
-pending_questions: []
+cockpit_task_ids:
+  - 3df8a3a2
+pending_questions:
+  - id: q-BL-0083-1-20260603013040
+    at: '2026-06-03T01:30:40.798Z'
+    cockpit_task_id: 3df8a3a2
+    content: >-
+      Q-A: 5/19 マスター判断 K-5 で『インバウンド週報追加 = 月報のみ』と確定済 (週報ルール展開/_weekly_rules/questions_to_user.md)。5/23『週報への反映が未完了』発言を K-5
+      を覆す方針変更として扱ってよいか。よければ理由 (週報に追加するメリット) を一言いただきたい。詳細は d-20260603-003 §5 Q-A 参照。
+  - id: q-BL-0083-2-20260603013117
+    at: '2026-06-03T01:31:17.612Z'
+    cockpit_task_id: 3df8a3a2
+    content: >-
+      Q-B: 客層フラグ対象範囲。BL description は『常連/インバウンド/社員』だが月報実装済は『インバウンド(メモ「海外」)+CLP社員(メニュー「CLP」)』のみ。週報も (1) 同じ2系統 / (2) 常連を追加
+      (メモ欄運用ルール別途要定義) / (3) インバウンドのみ のどれを採用?
+  - id: q-BL-0083-3-20260603013120
+    at: '2026-06-03T01:31:20.563Z'
+    cockpit_task_id: 3df8a3a2
+    content: >-
+      Q-C: 週次サンプル数小の取り扱い。週次集計だとインバウンド/CLP共に0件の週が頻発見込み。(a) 0件週はスライド非表示 / (b) 0件でも『該当なし』スライド表示 / (c) 4週移動平均で月次相当の参考値を併記
+      のどれ?
+  - id: q-BL-0083-4-20260603013123
+    at: '2026-06-03T01:31:23.399Z'
+    cockpit_task_id: 3df8a3a2
+    content: 'Q-D: 週報テンプレ挿入位置。(推奨) 第3部後に第3.5部『客層分析』2枚新設 (28→30枚) / (軽量) 第1部KPIに1行追加 (28枚維持) / (見送り) K-5維持 のどれ?'
 decisions:
   - at: '2026-05-13T13:10:46.439Z'
     type: answer
@@ -25,3 +49,11 @@ decisions:
     content: >-
       2026-05-23 田中さん指示: BAR FIVE Arrows のメモ欄(来客層フラグ)を Dashboard 取込みする部分はほぼ完了。残りタスク =
       週報への反映が未完了の認識。次は週報に来客層フラグの集計項目を反映する作業を進める。
+  - at: '2026-06-03T01:31:34.921Z'
+    type: commitment
+    by: ai
+    content: >-
+      2026-06-03 claude (cockpit 3df8a3a2): 現状調査完了 — 月報側 (Slide-7 インバウンド/Slide-8 CLP社員) は 5/18 リリース・6/2 の 2026-05
+      月報で稼働確認済。残課題は週報側のみ。ただし 5/19 マスター判断 K-5 で『週報には追加しない』と確定済のため、方針変更の根拠と詳細仕様 (対象範囲/週次サンプル小対応/挿入位置) を確定するまで実装は保留。方針整理 v1
+      を d-20260603-003 として登録 (state=unreviewed)、Q-A〜Q-D を pending_questions に登録。回答後に週報スクリプト新設
+      (Stock/RestaurantAILab/週報/Scripts/) と週報テンプレ更新 → 直近週 (2026-W22 = 5/25-5/31) で動作確認の順で進める。

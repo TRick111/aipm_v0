@@ -1,0 +1,44 @@
+id: BL-0044
+title: 'PONさん案件: 商品知識データの作成と連携検証'
+project: バンコクPonさん案件
+category: RestaurantAILab
+state: in_progress
+priority: high
+created_at: '2026-06-03T01:32:21.991Z'
+updated_at: '2026-06-03T01:33:02.309Z'
+created_by: mt-cli
+description: 実データに近い形で商品知識を作成し、アドバイザーが正しく取得・活用できるか検証
+deliverable_refs:
+  - d-20260603-002
+  - d-20260603-003
+schema_version: 2
+cockpit_task_ids: []
+pending_questions:
+  - id: q-BL-0044-1-20260603013257
+    at: '2026-06-03T01:32:57.086Z'
+    cockpit_task_id: '0'
+    content: >-
+      Q1. 商品 catalog の本体は (A) Mia DEMO 用の架空商品セット (今日 v1 はこちらで作成) / (B) PON さん店舗の実販売商品 (本番投入前提、PON さん側ヒアリング要) / (C)
+      JBeauty 文脈で日本コスメ大手 (花王/資生堂/コーセー、BL-0070 が要求) のどれを進めますか? スキーマは共通使用可、商品リスト全置換のみ必要。
+  - id: q-BL-0044-2-20260603013259
+    at: '2026-06-03T01:32:59.201Z'
+    cockpit_task_id: '0'
+    content: >-
+      Q2. Phase 2 (lookup_product tool 追加でハルシネーション対策) の優先度は? (a) Phase 1 で 7/9 シナリオ合格なら急がない (system prompt で 30-50
+      件まで耐える) / (b) PON さん本番 or JBeauty 展示会が近く Phase 2 並走着手 / (c) BL-0072 実プロダクト連携と合流して RAG (Phase 3) まで一気通貫の別 BL を切る。
+  - id: q-BL-0044-3-20260603013302
+    at: '2026-06-03T01:33:02.309Z'
+    cockpit_task_id: '0'
+    content: >-
+      Q3. catalog の格納先と版管理方針は? (a) voice-beauty-advisor/src/data/catalog.json (リポ内、型チェック容易、今日の v1 想定) / (b)
+      RestaurantAILab/共通商品 catalog/ の独立リポ (複数アプリ共有想定、BL-0070 JBeauty と共有可能) / (c) DB (Supabase / Vercel KV、動的更新前提)。
+decisions:
+  - at: '2026-06-03T01:32:47.757Z'
+    type: commitment
+    by: ai
+    content: >-
+      2026-06-03 着手 → 商品知識データ設計 v1 と PoC catalog 8 件を完了 (d-20260603-002, d-20260603-003)。Mia 現状=system prompt 直書き 3
+      件、tool は recommend_product のみで lookup tool なし→ハルシネーション余地あり。設計方針: Phase 1 (catalog JSON + prompt 動的生成)→ Phase 2
+      (lookup_product tool 追加)→ Phase 3 (RAG)。今日は Phase 1 の設計と PoC 用 8 件カタログまで。catalog スキーマ:
+      id/name_ja/name_en/name_th/brand/category/price_jpy/price_display/volume/suitable_skin_types[]/tags[]/key_ingredients[]/concerns[]/contraindications[]/description_short/description_long/usage/image/release_year/active。次セッションは
+      Q1〜Q3 田中さん回答待ち→Phase 1 実装 PR (mia-prompt.ts refactor + src/data/catalog.json 配置 + 検証シナリオ A/B/C 実行)。

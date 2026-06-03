@@ -1,0 +1,110 @@
+id: BL-0096
+title: 'ダッシュボード改: 消費税控除機能のレビュー'
+project: ダッシュボード改
+category: RestaurantAILab
+state: pending
+priority: high
+created_at: '2026-06-03T01:34:13.050Z'
+updated_at: '2026-06-03T01:40:32.367Z'
+created_by: mt-cli
+description: 消費税控除機能の追加実装は完了済み。コードレビュー + 動作確認のみで完了見込。今日のタスク。
+deliverable_refs: []
+schema_version: 2
+cockpit_task_ids:
+  - 01ed562e
+pending_questions: []
+decisions:
+  - at: '2026-06-03T01:40:32.367Z'
+    type: commitment
+    by: ai
+    content: |-
+      【消費税控除機能（実体は『売上控除・費用振替』）レビュー結果】
+
+      対象: 未コミット作業ツリーの売上控除ルール機能
+      - prisma: PlSalesDeductionRule 追加 (店舗×売上カテゴリ×割合×振替先費用カテゴリ×有効期間)
+      - lib/db/repositories/salesDeductionRulesRepository.ts (CRUD + 期間重複/100%超過/手動入力衝突の3層バリデーション)
+      - lib/pl/salesDeduction.ts (日次売上 × ルール一覧 から控除/振替額を算出)
+      - /api/pl/sales-deduction/rules{,/[ruleId]} (GET/POST/PUT/DELETE)
+      - /api/pl/dashboard/route.ts (旧 customSettings.salesDeduction を新ルールに置換)
+      - /api/pl/daily-expenses/route.ts (振替先カテゴリへの手動入力をブロック)
+      - settings/page.tsx & daily/page.tsx (ルール管理UI + 入力ロック)
+
+      判定: 【条件付きOK】重大な計算バグはないが、リリース前に必ず対処すべき項目あり。
+
+      ==========================
+      🔴 リリース前に必須 (Must-fix)
+      ==========================
+      [1] prisma db push が3環境に未適用の可能性
+        - prisma/schema.prisma の PlSalesDeductionRule 追加が未コミット
+        - CLAUDE.md ルール: dev → staging → prod の順で pnpm db:push:dev/staging/prod を実行必須
+        - 本番に table が無いまま deploy すると、ルール画面とダッシュボード集計の両方が 500 になる
+        - 確認コマンド: pnpm db:push:dev / pnpm db:push:staging / pnpm db:push:prod
+
+      [2] __tests__/pl/api/dashboard.test.ts が4件失敗
+        - 新規依存 getActiveRulesForMonth (salesDeductionRulesRepository) と
+          既存依存 getStoreSettingsByCode (settingsRepository) のモックが未追加
+        - 結果、テストが実DBに接続を試みて PrismaClientInitializationError で落ちる
+        - vi.mock('@/lib/db/repositories/salesDeductionRulesRepository', () => ({ getActiveRulesForMonth: vi.fn().mockResolvedValue([]) })) と
+          vi.mock('@/lib/db/repositories/settingsRepository', () => ({ getStoreSettingsByCode: vi.fn().mockResolvedValue(null) })) を追加すれば通る
+
+      ==========================
+      🟠 中程度 (Should-fix)
+      ==========================
+      [3] 旧 /api/pl/sales-deduction エンドポイントが残存
+        - 設計書 Phase 5「旧エンドポイント削除」未実施
+        - 設定画面からは呼ばれないが POST で customSettings.salesDeduction を書き換え可能
+        - 二重書き込みでデータ不整合が起きる前に削除推奨
+
+      [4] featureFlags.salesDeduction の取扱いが乖離
+        - 設定画面: フラグ ON でしかルール管理 UI が出ない
+        - ダッシュボード集計: フラグ無視、ルール存在のみで適用
+        - フラグ OFF + 過去ルール残存の店舗で「UI で見えないのに集計が歪む」状態が発生
+        - 設計書 4.3「フラグ削除」に従い両側から外すのが正
+        - 暫定なら getActiveRulesForMonth 呼び出し前に featureFlags.salesDeduction をチェック
+
+      [5] dashboard/route.ts L82-89 のコメントと実装が乖離
+        - コメント「expensesByCategory に新規追加する」「念のため非活性カテゴリへの振替も拾う」
+        - 実コードは if (existing) のみで未表示カテゴリへの振替額が消失する
+        - 防御策: salesDeductionRulesRepository.runValidations() で expenseCategory.isActive=true を validate して、
+          非活性カテゴリを振替先にできなくする
+
+      [6] 削除確認ダイアログの文言ミスリード
+        - settings/page.tsx: confirm(`「${rule.name || cat.name}」を削除しますか？`)
+        - rule.name 空のとき売上カテゴリ名 (cat.name) が出るので「カテゴリごと消す」と誤読されかねない
+        - `rule.name || '(名称未設定)'` に変更
+
+      ==========================
+      🟡 軽微 (Nice-to-have)
+      ==========================
+      [7] lib/pl/salesDeduction.ts のユニットテスト不在
+        - 設計書 9.1 で要求の6パターン（期間内/外、複数ルール合算、複数売上→1費用、振替先なし、100%超過、期間重複）テストゼロ
+        - 計算ロジックは集計の正本なので、calculator.ts 同等のテストを推奨
+
+      [8] 円未満の小数誤差
+        - (amount * ratio) / 100 を Math.round せず累積
+        - 設計書「表示時計算」前提なので致命的ではないが、PDF/CSV 出力時に手動入力との 1円不一致が出る可能性
+        - 振替額は category 単位で Math.round してから加算が安全
+
+      [9] N+1 クエリ (daily-expenses)
+        - isManualExpenseAllowed をエントリごとに await
+        - 実害は薄いが、有効ルール一覧を1回引いて Map 突合のほうが綺麗
+
+      ==========================
+      ✅ 良かった点
+      ==========================
+      - 期間重複/100%超過/手動入力衝突の3層バリデーションを runValidations に集約、CREATE/UPDATE 共通利用
+      - getActiveRulesForMonth で月度範囲ルールを1回取得 → entry ごとに isDateInRuleRange で per-day フィルタする2段構成、クエリ削減が効いている
+      - relation: onDelete=Cascade(salesCategory)/SetNull(expenseCategory) でカテゴリ削除時の整合性担保
+      - 100%超過の判定にイベントポイント方式 (sweep) を採用、複数ルールの期間重複でも正しく合算判定
+      - 検証経路の多重防御: クライアント側 (UI 無効化) + サーバー側 (POST 拒否)
+
+      ==========================
+      推奨アクション (優先順)
+      ==========================
+      1) pnpm db:push:dev → staging → prod を実行 (CLAUDE.md ルール)
+      2) dashboard.test.ts に getActiveRulesForMonth / getStoreSettingsByCode のモック追加
+      3) /api/pl/sales-deduction (旧) を削除
+      4) featureFlags.salesDeduction の取り扱い統一 or 削除
+      5) 振替先カテゴリの isActive チェックを runValidations に追加
+      6) 削除確認文言の修正
+      7) salesDeduction.ts のユニットテスト追加 (Phase 5)

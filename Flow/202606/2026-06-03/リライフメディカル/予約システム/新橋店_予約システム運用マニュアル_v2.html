@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>C5med 新橋店 予約システム 運用マニュアル v2 (スタッフ向け)</title>
+<style>
+  :root {
+    --ink: #2b2420;
+    --ink-soft: #4d4540;
+    --rose: #c97e6c;
+    --rose-deep: #a85b4b;
+    --ivory: #fbf6ef;
+    --warn: #b85c00;
+    --bad: #c0392b;
+    --good: #2f7a3d;
+    --line: #e5dccf;
+    --code-bg: #f3ede2;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body {
+    margin: 0;
+    background: #fff;
+    color: var(--ink);
+    font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", system-ui, -apple-system, sans-serif;
+    line-height: 1.75;
+    font-size: 15px;
+  }
+  .page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 56px 56px 80px;
+  }
+  /* Cover */
+  .cover {
+    background: linear-gradient(180deg, var(--ivory) 0%, #fff 100%);
+    border-bottom: 1px solid var(--line);
+    padding: 80px 56px 64px;
+    margin-bottom: 16px;
+    page-break-after: always;
+  }
+  .cover .eyebrow {
+    font-family: "Italiana", Georgia, serif;
+    letter-spacing: 0.18em;
+    color: var(--rose-deep);
+    font-size: 13px;
+  }
+  .cover h1 {
+    font-family: "Shippori Mincho B1", "Yu Mincho", "Hiragino Mincho ProN", serif;
+    font-size: 34px;
+    line-height: 1.4;
+    margin: 8px 0 16px;
+    color: var(--ink);
+  }
+  .cover .sub {
+    color: var(--ink-soft);
+    font-size: 15px;
+    margin: 0 0 28px;
+  }
+  .cover .meta {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 6px 16px;
+    color: var(--ink-soft);
+    font-size: 13px;
+    border-top: 1px solid var(--line);
+    padding-top: 18px;
+    margin-top: 24px;
+  }
+  .cover .meta dt { font-weight: 600; color: var(--ink); }
+  .cover .toc {
+    margin-top: 36px;
+    padding: 24px 28px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+  }
+  .cover .toc h2 {
+    font-size: 14px;
+    letter-spacing: 0.12em;
+    color: var(--rose-deep);
+    margin: 0 0 12px;
+    text-transform: uppercase;
+  }
+  .cover .toc ol {
+    margin: 0;
+    padding-left: 22px;
+    columns: 2;
+    column-gap: 24px;
+  }
+  .cover .toc li { margin: 4px 0; break-inside: avoid; }
+  /* Sections */
+  h2.section {
+    font-family: "Shippori Mincho B1", "Yu Mincho", "Hiragino Mincho ProN", serif;
+    font-size: 24px;
+    margin: 56px 0 8px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--rose-deep);
+    color: var(--ink);
+    page-break-after: avoid;
+  }
+  h3 {
+    font-size: 18px;
+    margin: 32px 0 8px;
+    color: var(--ink);
+    page-break-after: avoid;
+  }
+  h4 {
+    font-size: 15px;
+    margin: 20px 0 6px;
+    color: var(--rose-deep);
+    page-break-after: avoid;
+  }
+  p { margin: 8px 0 12px; }
+  ul, ol { padding-left: 24px; }
+  li { margin: 4px 0; }
+  /* Callouts */
+  .callout {
+    margin: 16px 0;
+    padding: 14px 18px;
+    border-radius: 6px;
+    border-left: 4px solid var(--rose);
+    background: var(--ivory);
+    page-break-inside: avoid;
+  }
+  .callout.warn {
+    border-left-color: var(--warn);
+    background: #fff5e8;
+  }
+  .callout.bad {
+    border-left-color: var(--bad);
+    background: #fceae8;
+  }
+  .callout.good {
+    border-left-color: var(--good);
+    background: #ecf6ee;
+  }
+  .callout .label {
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--rose-deep);
+    margin-bottom: 4px;
+    display: block;
+  }
+  .callout.warn .label { color: var(--warn); }
+  .callout.bad .label { color: var(--bad); }
+  .callout.good .label { color: var(--good); }
+  .callout p:first-of-type { margin-top: 0; }
+  .callout p:last-of-type { margin-bottom: 0; }
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0 20px;
+    font-size: 14px;
+  }
+  th, td {
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  th {
+    background: var(--ivory);
+    font-weight: 600;
+    color: var(--ink);
+    border-bottom: 2px solid var(--line);
+  }
+  /* Inline code & url */
+  code, .url {
+    font-family: "Menlo", "Consolas", "SFMono-Regular", monospace;
+    background: var(--code-bg);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.92em;
+    color: var(--ink);
+    word-break: break-all;
+  }
+  /* Figure */
+  figure {
+    margin: 24px 0;
+    padding: 0;
+    page-break-inside: avoid;
+  }
+  figure img {
+    display: block;
+    max-width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  figure.mobile img {
+    max-width: 320px;
+    margin: 0 auto;
+  }
+  figcaption {
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    text-align: center;
+  }
+  figcaption .num {
+    font-weight: 700;
+    color: var(--rose-deep);
+    margin-right: 6px;
+  }
+  /* Step list */
+  ol.steps {
+    counter-reset: step;
+    padding-left: 0;
+    list-style: none;
+  }
+  ol.steps > li {
+    counter-increment: step;
+    position: relative;
+    padding: 10px 12px 10px 56px;
+    margin: 8px 0;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+  }
+  ol.steps > li::before {
+    content: counter(step);
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    background: var(--rose-deep);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 17px;
+  }
+  /* Footer line */
+  footer.docfoot {
+    margin-top: 80px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    font-size: 12px;
+    color: var(--ink-soft);
+    text-align: center;
+  }
+  /* Section anchor */
+  .anchor {
+    color: var(--rose-deep);
+    font-family: "Italiana", Georgia, serif;
+    letter-spacing: 0.18em;
+    font-size: 12px;
+    text-transform: uppercase;
+    display: block;
+    margin-top: 56px;
+  }
+  /* Print */
+  @media print {
+    .page { padding: 0 24px; max-width: none; }
+    .cover { padding: 40px 24px; }
+    h2.section { page-break-before: always; }
+    .cover h2.section,
+    .cover + .page > .anchor:first-child + h2.section { page-break-before: avoid; }
+    figure { page-break-inside: avoid; }
+    a { color: inherit; text-decoration: none; }
+  }
+  @page { size: A4; margin: 18mm 16mm; }
+</style>
+</head>
+<body>
+
+<!-- ============= COVER ============= -->
+<section class="cover">
+  <div class="eyebrow">C5MED BEAUTY · SHIMBASHI · OPERATIONS MANUAL</div>
+  <h1>新橋店 予約システム<br/>運用マニュアル</h1>
+  <p class="sub">スタッフ向け / 日常運用 · LP メンテナンス · トラブル対応</p>
+  <dl class="meta">
+    <dt>版数</dt><dd>v2 (画像付き HTML 版)</dd>
+    <dt>発行日</dt><dd>2026-06-03</dd>
+    <dt>対応システム</dt><dd>c5med-shimbashi (https://c5med-shimbashi-lovat.vercel.app)</dd>
+    <dt>対象読者</dt><dd>リライフメディカル新橋店 スタッフ</dd>
+    <dt>作成元</dt><dd>BL-0093 / d-20260603-002</dd>
+    <dt>配布形式</dt><dd>HTML → PDF 化 → Google Docs 共有</dd>
+  </dl>
+  <div class="toc">
+    <h2>Table of Contents</h2>
+    <ol>
+      <li>このマニュアルの使い方</li>
+      <li>システム全体像 (1 分で理解)</li>
+      <li>URL 早見表</li>
+      <li>管理画面ログイン</li>
+      <li>日常運用</li>
+      <li>LP メンテナンス</li>
+      <li>トラブル対応 FAQ</li>
+      <li>エスカレーション基準</li>
+      <li>運用 FAQ</li>
+      <li>月次チェックリスト</li>
+      <li>用語集 / やってはいけない</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============= BODY ============= -->
+<main class="page">
+
+<!-- 1 -->
+<span class="anchor">— Section 01 —</span>
+<h2 class="section">1. このマニュアルの使い方</h2>
+<p>このマニュアルは「<strong>新橋店のスタッフが、開発者の手を借りずに自分でできること</strong>」をまとめた手順書です。</p>
+<ul>
+  <li><strong>章立て</strong>: 「日常運用」「LP メンテナンス」「トラブル対応」「エスカレーション」の 4 領域</li>
+  <li><strong>粒度</strong>: スマホ / PC のブラウザだけで完結する操作を中心に説明</li>
+  <li><strong>想定読者</strong>: SQL / Git / CLI を触らない店舗運用担当者</li>
+  <li><strong>「これは開発側」と書いてある操作</strong>: 田中 (むしめがね) に依頼</li>
+  <li><strong>このマニュアルに無い操作が出てきた場合</strong>: 自己判断で本番に触らず、まず連絡</li>
+</ul>
+<div class="callout">
+  <span class="label">Note</span>
+  <p>開発者向けの技術手順 (CLI / SQL / Vercel CLI 等) は <code>docs/operations.md</code> に別途あります。本マニュアルとは別物です。</p>
+</div>
+
+<!-- 2 -->
+<span class="anchor">— Section 02 —</span>
+<h2 class="section">2. システム全体像 (1 分で理解する)</h2>
+
+<figure>
+  <img src="images/lp_desktop_top.png" alt="LP トップ (PC 表示)" />
+  <figcaption><span class="num">図 2-1</span>お客様が最初に見る予約 LP (PC 表示)。https://c5med-shimbashi-lovat.vercel.app/</figcaption>
+</figure>
+
+<figure class="mobile">
+  <img src="images/lp_top.png" alt="LP トップ (スマホ表示)" />
+  <figcaption><span class="num">図 2-2</span>同 LP のスマホ表示。お客様の大半はこの幅で見ています。</figcaption>
+</figure>
+
+<h3>システム同士の関係</h3>
+<pre style="background:var(--code-bg);padding:14px;border-radius:6px;font-size:12px;line-height:1.55;overflow-x:auto;">
+お客様
+  │
+  ├─→ ① 予約 LP (https://c5med-shimbashi-lovat.vercel.app/)
+  │      └─ コース選択 → 日時選択 → 連絡先入力 → 予約確定
+  │
+  └─← ④ 予約完了メール (店舗 Gmail から自動送信)
+
+店舗 (新橋店)
+  │
+  ├─→ ② Google Calendar (c5clinic.tokyo.hokuseikai@gmail.com)
+  │      └─ 自動で予約イベントが入る (本予約 + 前後 30 分の準備時間)
+  │
+  ├─→ ③ 予約通知メール (店舗 Gmail 受信箱に届く)
+  │
+  └─→ ⑤ 管理画面 (/admin)
+         └─ 営業時間 / 定休日 / コースの編集</pre>
+
+<table>
+  <thead><tr><th>役割</th><th>システム</th><th>スタッフが触るか</th></tr></thead>
+  <tbody>
+    <tr><td>空き枠の真実</td><td>Google Calendar (店舗 Gmail)</td><td>はい (手動で予定を入れれば空き枠から外せる)</td></tr>
+    <tr><td>店舗 / コース情報</td><td>管理画面 <code>/admin</code></td><td>はい (営業時間・コースを編集)</td></tr>
+    <tr><td>予約 LP の見た目</td><td>デプロイ済みサイト</td><td>いいえ (文言変更は開発側)</td></tr>
+    <tr><td>顧客への自動メール</td><td>Gmail SMTP</td><td>いいえ (送信文面は固定)</td></tr>
+  </tbody>
+</table>
+
+<div class="callout warn">
+  <span class="label">覚えておく重要ポイント</span>
+  <ol style="margin:6px 0 0;">
+    <li><strong>Google Calendar が真実。</strong>店舗 Gmail のカレンダーに何か手動で予定を入れると、その時間はお客様から見て予約不可になる。逆に、システム経由の予約は Calendar に自動で入る。</li>
+    <li><strong>管理画面で営業時間を変えると、最大 60 秒で LP に反映</strong>される (即時ではない)。</li>
+    <li><strong>コース写真や文言の差し替えは、コースは管理画面で OK / LP 全体は開発側。</strong></li>
+  </ol>
+</div>
+
+<!-- 3 -->
+<span class="anchor">— Section 03 —</span>
+<h2 class="section">3. URL / アカウント早見表</h2>
+<table>
+  <tbody>
+    <tr><th>予約 LP (お客様用)</th><td><span class="url">https://c5med-shimbashi-lovat.vercel.app/</span></td></tr>
+    <tr><th>管理画面</th><td><span class="url">https://c5med-shimbashi-lovat.vercel.app/admin</span></td></tr>
+    <tr><th>店舗 Gmail (予約通知 / Calendar)</th><td><code>c5clinic.tokyo.hokuseikai@gmail.com</code></td></tr>
+    <tr><th>Google Calendar</th><td>上記 Gmail にログインしてカレンダー</td></tr>
+    <tr><th>LINE 公式 (相談ボタン遷移先)</th><td><span class="url">https://lin.ee/y4yB6lD</span></td></tr>
+  </tbody>
+</table>
+<div class="callout bad">
+  <span class="label">セキュリティ</span>
+  <p>ID / パスワードは LastPass / 1Password など別管理。<strong>このマニュアルには絶対書かない</strong>。</p>
+</div>
+
+<!-- 4 -->
+<span class="anchor">— Section 04 —</span>
+<h2 class="section">4. 管理画面 (<code>/admin</code>) へのログイン</h2>
+
+<figure>
+  <img src="images/admin_signin.png" alt="管理画面ログイン画面" />
+  <figcaption><span class="num">図 4-1</span>管理画面サインイン画面。Google アカウントでログインするボタンのみのシンプルな画面。</figcaption>
+</figure>
+
+<h3>4.1 手順</h3>
+<ol class="steps">
+  <li>ブラウザで <span class="url">https://c5med-shimbashi-lovat.vercel.app/admin</span> にアクセス</li>
+  <li>「Google でサインイン」をクリック</li>
+  <li><strong>許可された Gmail アカウント</strong> (店舗 Gmail or 開発側で登録済みアカウント) を選ぶ</li>
+  <li>認可されると <code>/admin</code> のトップ「店舗一覧」が表示される</li>
+</ol>
+
+<h3>4.2 ログインできない時</h3>
+<table>
+  <thead><tr><th>症状</th><th>原因 / 対応</th></tr></thead>
+  <tbody>
+    <tr><td>「権限がありません」エラー</td><td>アクセス許可リストに入っていない → 開発側に「このメアドを admin に追加して」と依頼</td></tr>
+    <tr><td>Google ログイン画面でループ</td><td>ブラウザの Cookie をクリア / シークレットウィンドウで再試行</td></tr>
+    <tr><td>画面が真っ白</td><td>サイト障害の可能性。「予約 LP は開けるか」を確認 → 開けないなら障害 (7 章へ)</td></tr>
+  </tbody>
+</table>
+
+<!-- 5 -->
+<span class="anchor">— Section 05 —</span>
+<h2 class="section">5. 日常運用</h2>
+
+<h3>5.1 予約の確認 (今日 / 今週の予約を見たい)</h3>
+
+<h4>方法 1: Google Calendar (推奨)</h4>
+<ol class="steps">
+  <li>店舗 Gmail でログインしたカレンダーを開く</li>
+  <li>「日」「週」表示で予約状況を確認</li>
+  <li>1 件の予約に対して 3 つのイベントが並ぶ仕様 (これは正常):
+    <ul>
+      <li>「準備時間 (前)」… 開始 30 分前から (薄色 / 透明)</li>
+      <li>「本予約」… 実際の施術時間</li>
+      <li>「準備時間 (後)」… 終了 30 分後まで (薄色 / 透明)</li>
+    </ul>
+  </li>
+  <li>本予約イベントを開くと「お客様名 / メール / 電話 / コース」が記載されている</li>
+</ol>
+<div class="callout">
+  <span class="label">補足</span>
+  <p>薄色の準備時間イベントが消えない / 見えないという場合: それは正常です。お客様向けの「空き枠」には影響しません。</p>
+</div>
+
+<h4>方法 2: 店舗 Gmail の通知メール</h4>
+<p>新規予約が入るたびに <code>c5clinic.tokyo.hokuseikai@gmail.com</code> に「【新規予約】〜」という通知メールが届きます。Gmail の検索窓で <code>subject:"【新規予約】"</code> と入れると一覧できます。</p>
+
+<h3>5.2 営業時間を変える</h3>
+<p>例: 火曜日を 11:00-19:00 に変更したい / 水曜は午前のみ営業にしたい。</p>
+<ol class="steps">
+  <li><code>/admin</code> にログイン → 「店舗」→ 「新橋店」をクリック</li>
+  <li>「営業時間」セクションで該当曜日の <strong>[+ 時間帯追加]</strong> を使って入力。1 日に 2 つ以上の時間帯 (例: 10:00-13:00 と 15:00-19:00) も設定可能 (休憩を挟む場合)</li>
+  <li>画面下部の「保存」をクリック</li>
+  <li><strong>最大 60 秒後</strong>に LP の空き枠表示に反映 (キャッシュが切れるまで)</li>
+</ol>
+<div class="callout warn">
+  <span class="label">注意</span>
+  <p><strong>当日分の営業時間は変えない</strong>。すでに当日分の予約を受け付けてしまった場合、整合性が崩れる。前日までに変更してください。</p>
+</div>
+
+<h3>5.3 定休日 / 臨時休業を追加する</h3>
+<p>例: 「年末年始 12/30-1/3 を休業にしたい」「9 月 15 日臨時休業」</p>
+<ol class="steps">
+  <li><code>/admin</code> → 「新橋店」→ 「定休日」セクション</li>
+  <li>カレンダーで休業日をクリック (複数日連打で OK)</li>
+  <li>「保存」</li>
+  <li>その日は予約フォームのカレンダーに表示されなくなる</li>
+</ol>
+<div class="callout warn">
+  <span class="label">注意</span>
+  <p>既に予約が入っている日を定休日にしても、その予約は自動キャンセルされません。個別連絡が必要です (5.4 参照)。</p>
+</div>
+
+<h3>5.4 予約をキャンセルする (店舗側都合 / お客様希望)</h3>
+<p>必ずこの順番で実施します:</p>
+<ol class="steps">
+  <li><strong>Google Calendar で該当の 3 イベントを削除</strong>: 本予約 / 準備時間 (前) / 準備時間 (後) の 3 つ全部 (同じお客様名 / 同日のもの)。本予約 1 件だけ消しても空き枠としては復活するが、見た目の混乱を避けるため 3 件まとめて削除</li>
+  <li><strong>お客様にキャンセル連絡</strong> (メール or LINE)。専用テンプレなし。営業文面で対応</li>
+  <li>(任意) お客様の事情で全額返金などが必要な場合は、店舗運用ルールに従う</li>
+</ol>
+<div class="callout">
+  <span class="label">DB について</span>
+  <p>DB から予約レコードを消したい場合は開発側に依頼。スタッフは Calendar 削除までで OK。</p>
+</div>
+
+<h3>5.5 コースの追加 / 編集 / 写真差し替え</h3>
+
+<h4>新しいコースを追加</h4>
+<ol class="steps">
+  <li><code>/admin</code> → 「コース」→ 「+ 新規作成」</li>
+  <li>以下を入力:
+    <ul>
+      <li>コース名 (例: 初回体験 60 分コース)</li>
+      <li>説明 (任意)</li>
+      <li>カテゴリ (facial / body 等、既存の値を使う)</li>
+      <li>所要時間 (分単位、例: 90)</li>
+      <li>価格 (税込円、例: 13980)</li>
+      <li>タグ (任意、カンマ区切り)</li>
+      <li>並び順 (数字、小さい方が先頭)</li>
+      <li>画像 (PNG/JPG、推奨 1080x720px 程度)</li>
+    </ul>
+  </li>
+  <li>「保存」</li>
+  <li><strong>重要</strong>: 続けて「店舗」→「新橋店」→ 「コース紐付け」で新コースをチェック → 保存しないと LP に出ない</li>
+</ol>
+
+<h4>既存コースを編集 (価格変更・説明変更など)</h4>
+<ol class="steps">
+  <li><code>/admin</code> → 「コース」→ 該当コースの「編集」</li>
+  <li>内容を変更 → 「保存」</li>
+</ol>
+
+<h4>コース写真を差し替え</h4>
+<ol class="steps">
+  <li><code>/admin</code> → 「コース」→ 該当コース → 「編集」</li>
+  <li>既存画像の下の「画像を変更」→ 新ファイル選択</li>
+  <li>「保存」(古い画像は自動的に削除される)</li>
+</ol>
+
+<h4>コースを一時非公開にする (一覧から消したい)</h4>
+<p>「編集」画面の <code>isActive</code> のチェックを外して保存。再公開はチェックを戻すだけ。</p>
+
+<h3>5.6 お客様の予約フロー (参考: LP の見え方)</h3>
+<p>スタッフがお客様から問い合わせを受けた時、お客様がどの画面にいるのかを共通言語にするための参考です。</p>
+
+<figure class="mobile">
+  <img src="images/lp_booking_course_select.png" alt="STEP1 コース選択" />
+  <figcaption><span class="num">図 5-1</span>STEP 1 「コースを選ぶ」画面。コース名 / 価格 / 所要時間 / カテゴリタグ が表示されます。</figcaption>
+</figure>
+
+<figure class="mobile">
+  <img src="images/lp_booking_calendar.png" alt="STEP2 日付選択" />
+  <figcaption><span class="num">図 5-2</span>STEP 2 「日付を選ぶ」週カレンダー。定休日 / 受付終了日は黒色の「予約終了」表示になります。</figcaption>
+</figure>
+
+<figure class="mobile">
+  <img src="images/lp_booking_slots.png" alt="STEP3 時間スロット" />
+  <figcaption><span class="num">図 5-3</span>STEP 3 「時間を選ぶ」。空き枠は <code>10:00 / 10:30 ...</code> の形で並び、予約済み / 営業時間外は出てきません。</figcaption>
+</figure>
+
+<h3>5.7 1 日の流れ (チェックリスト)</h3>
+<table>
+  <thead><tr><th>タイミング</th><th>やること</th></tr></thead>
+  <tbody>
+    <tr><td>朝</td><td>Google Calendar で当日の予約を確認</td></tr>
+    <tr><td>予約通知が来た時</td><td>Gmail の通知メールでお客様情報を確認 (来店準備)</td></tr>
+    <tr><td>営業時間外</td><td>お客様からの電話 / LINE 問い合わせ対応のみ</td></tr>
+    <tr><td>月末</td><td>翌月以降の定休日 / 臨時休業を <code>/admin</code> で先行登録</td></tr>
+  </tbody>
+</table>
+
+<!-- 6 -->
+<span class="anchor">— Section 06 —</span>
+<h2 class="section">6. LP (ランディングページ) メンテナンス</h2>
+
+<h3>6.1 スタッフが触れる範囲 (まとめ)</h3>
+<table>
+  <thead><tr><th>変えたいもの</th><th>方法</th><th>反映タイミング</th></tr></thead>
+  <tbody>
+    <tr><td>コース名 / 価格 / 説明 / 写真</td><td><code>/admin</code> → コース編集</td><td>即時 (画面によっては最大 60 秒)</td></tr>
+    <tr><td>営業時間 / 定休日</td><td><code>/admin</code> → 店舗編集</td><td>最大 60 秒</td></tr>
+    <tr><td>LP の見出し / 本文 / FAQ の文章</td><td><strong>開発側 (田中) に依頼</strong></td><td>デプロイ後</td></tr>
+    <tr><td>LP の写真 (Hero / Empathy / Nurse / Monitor 等)</td><td><strong>開発側に依頼</strong></td><td>デプロイ後</td></tr>
+    <tr><td>店舗住所 / 電話 (LP 上に表示される値)</td><td><strong>開発側に依頼</strong></td><td>デプロイ後</td></tr>
+    <tr><td>LINE 相談ボタンの遷移先</td><td><strong>開発側に依頼</strong></td><td>デプロイ後</td></tr>
+  </tbody>
+</table>
+
+<h3>6.2 文言修正を開発側に依頼する時のフォーマット</h3>
+<p>依頼時には以下を 1 セットで送ると往復が減ります:</p>
+<pre style="background:var(--code-bg);padding:14px;border-radius:6px;font-size:13px;line-height:1.55;">
+[修正依頼]
+URL: https://c5med-shimbashi-lovat.vercel.app/
+セクション: (例) 「お悩み (Empathy)」
+現在の文言: 「針なしで…」
+希望の文言: 「針を使わず…」
+理由: 院長監修の表現に揃えたい
+締切: 2026-06-XX
+</pre>
+<p>スクリーンショット (該当部分を赤丸で囲む) を添えると確実です。</p>
+
+<h3>6.3 季節キャンペーン / お知らせの掲載</h3>
+<p>現状の LP には常設のお知らせバナーはありません。<strong>期間限定キャンペーンを LP に載せたい場合は開発側にバナー追加を依頼</strong>してください。</p>
+<p>簡易的に「コース名に <code>[期間限定]</code>」と付けて <code>/admin</code> から編集すれば、LP のコース一覧には反映されます (例: <code>初回体験コース [6月限定 ¥7,980]</code>)。</p>
+
+<!-- 7 -->
+<span class="anchor">— Section 07 —</span>
+<h2 class="section">7. トラブル対応 FAQ</h2>
+
+<h3>7.1 お客様「予約完了メールが届かない」と連絡があった</h3>
+<ol class="steps">
+  <li><strong>迷惑メールフォルダを見てもらう</strong>。Gmail から Gmail 宛は通常届くが、他社メーラー (Outlook / iCloud 等) は迷惑フォルダ行きの可能性</li>
+  <li><strong>店舗側の Gmail で予約通知メールが届いているか</strong>を確認 (件名: <code>【新規予約】〜</code>)
+    <ul>
+      <li>届いている → 予約自体は成立済み。お客様には<strong>口頭/別途メールで日時を再案内</strong>すれば運用上問題なし</li>
+      <li>届いていない → システム障害の可能性 → 7.5 へ</li>
+    </ul>
+  </li>
+  <li><strong>メールアドレスのスペルミスがないか</strong>お客様に確認 (画面入力ミス)</li>
+  <li>それでも未着 → 開発側にエスカレーション</li>
+</ol>
+
+<h3>7.2 お客様「予約をキャンセル / 変更したい」と連絡があった</h3>
+<ul>
+  <li><strong>キャンセル</strong>: 5.4 の手順で対応</li>
+  <li><strong>日時変更</strong>: 「現予約をキャンセル + LP から新規予約取り直し」が確実</li>
+  <li><strong>コース変更だけ</strong>: Google Calendar イベントを開いて備考欄に変更内容を記載 + 当日対応 (DB を直接変える必要なし)</li>
+</ul>
+
+<h3>7.3 お客様「予約フォームでエラーが出る / 進めない」</h3>
+<ol class="steps">
+  <li>お客様に<strong>ブラウザ名と画面のスクリーンショット</strong>を聞く</li>
+  <li>スタッフ自身のスマホで LP を開いて再現を試す
+    <ul>
+      <li>再現する → 開発側に即連絡 (7.6 障害テンプレ)</li>
+      <li>再現しない → お客様側のブラウザ問題の可能性。「別のブラウザ (Chrome / Safari)」「シークレットウィンドウ」「最新版に更新」を案内</li>
+    </ul>
+  </li>
+  <li>お客様が急いでいる場合は<strong>電話 / LINE から手動受付</strong> → スタッフが Calendar に直接予定を入れて対応</li>
+</ol>
+
+<h3>7.4 スタッフ「店舗 Gmail に予約通知メールが来ない」</h3>
+<ol class="steps">
+  <li>Gmail の迷惑メール / すべてのメール / ラベル振り分けを確認。送信元が自分自身 (<code>c5clinic.tokyo.hokuseikai@gmail.com</code>) のため、Gmail のフィルタによっては「送信済み」に分類されている場合あり。検索: <code>subject:"【新規予約】" newer_than:7d</code></li>
+  <li>1 件も見つからない場合は、テスト予約 (自分のメールで予約)
+    <ul>
+      <li>通知が来る → 単発の取りこぼし、運用上問題なし</li>
+      <li>通知が来ない → 開発側に連絡 (<code>STORE_NOTIFY_EMAIL</code> 未設定の可能性)</li>
+    </ul>
+  </li>
+</ol>
+
+<h3>7.5 スタッフ「Google Calendar に予約予定が入っていない」</h3>
+<ol class="steps">
+  <li>お客様の「予約完了画面のスクリーンショット」 or 「お客様宛の予約完了メール」があるか確認</li>
+  <li>ある → システムは予約を受け付けたが Calendar 反映に失敗した可能性 → <strong>すぐに開発側に連絡</strong> (お客様にはまず<strong>手動で電話 / メール確認</strong>を入れる)</li>
+  <li>ない → そもそも予約が成立していない可能性。お客様に「予約完了メールの有無」を確認</li>
+</ol>
+
+<h3>7.6 全体「LP が開けない / 表示が崩れている / 真っ白」</h3>
+<table>
+  <thead><tr><th>状況</th><th>対応</th></tr></thead>
+  <tbody>
+    <tr><td>スタッフのスマホ 1 台だけで再現</td><td>お客様には別のブラウザ案内、緊急度低</td></tr>
+    <tr><td>別のスタッフ / 別のデバイスでも同じ</td><td><strong>即時 開発側へ連絡</strong> (障害テンプレ参照)</td></tr>
+    <tr><td>LP は OK、<code>/admin</code> だけ開かない</td><td>緊急度中 (お客様影響は小、運用影響大)</td></tr>
+    <tr><td>LP / <code>/admin</code> 両方 NG</td><td><strong>緊急度最高、即連絡</strong></td></tr>
+  </tbody>
+</table>
+
+<div class="callout bad">
+  <span class="label">障害報告テンプレ</span>
+  <pre style="background:transparent;padding:0;margin:6px 0 0;font-size:13px;line-height:1.55;">
+[障害報告]
+発生日時: 2026-06-XX HH:MM 頃
+影響: LP が開けない / 予約フォームでエラー / メールが来ない 等
+影響範囲: 全お客様 / 特定の人だけ
+スクリーンショット: 添付
+試した対応: ブラウザ更新 / 別端末で確認 / 再起動
+連絡者: スタッフ氏名
+  </pre>
+</div>
+
+<!-- 8 -->
+<span class="anchor">— Section 08 —</span>
+<h2 class="section">8. エスカレーション基準</h2>
+<table>
+  <thead><tr><th>カテゴリ</th><th>スタッフ対応</th><th>開発側依頼</th></tr></thead>
+  <tbody>
+    <tr><td>営業時間 / 定休日</td><td><code>/admin</code> から変更</td><td>(なし)</td></tr>
+    <tr><td>コース追加 / 編集 / 写真</td><td><code>/admin</code> から変更</td><td>表示順や見た目の不具合があれば</td></tr>
+    <tr><td>予約キャンセル (1 件単位)</td><td>Calendar 削除 + 顧客連絡</td><td>DB クリーニングが必要な時のみ</td></tr>
+    <tr><td>価格表記の修正</td><td><code>/admin</code> から変更</td><td>(なし)</td></tr>
+    <tr><td>LP の文言 / 写真 / レイアウト</td><td>(触らない)</td><td><strong>全て開発側</strong></td></tr>
+    <tr><td>店舗住所 / 電話番号 (LP 表示)</td><td>(触らない)</td><td><strong>開発側</strong></td></tr>
+    <tr><td>メールが届かない (単発)</td><td>顧客に再案内</td><td>1 日に複数発生したら開発側</td></tr>
+    <tr><td>メールが届かない (全件)</td><td>(即)</td><td><strong>即連絡</strong></td></tr>
+    <tr><td>Calendar に予約が入らない</td><td>(即)</td><td><strong>即連絡</strong></td></tr>
+    <tr><td>LP / 管理画面が開けない</td><td>(即)</td><td><strong>即連絡</strong></td></tr>
+    <tr><td>ドメイン変更 / 会社名変更 / 大幅デザイン変更</td><td>(触らない)</td><td><strong>開発側 (要 BL 起票)</strong></td></tr>
+  </tbody>
+</table>
+
+<!-- 9 -->
+<span class="anchor">— Section 09 —</span>
+<h2 class="section">9. 運用 FAQ</h2>
+
+<h4>Q. 同じ時間帯に手動で 2 件目を入れたい</h4>
+<p>A. Google Calendar に直接イベントを追加すれば、システム経由の予約はその時間を避ける。<strong>ただし「準備時間 (前)」「準備時間 (後)」までは自動でブロックされないので、施術 30 分前後の余裕を手動で確保する必要あり</strong>。</p>
+
+<h4>Q. 1 日 1 件だけ特別枠 (VIP 等) を作りたい</h4>
+<p>A. 該当時間帯を Google Calendar で「VIP 枠」イベントとしてブロックしておく → 当日にお客様を別途案内。</p>
+
+<h4>Q. 営業時間外の問い合わせをどう捌くか</h4>
+<p>A. お客様の問い合わせは LINE 相談ボタン (<code>https://lin.ee/y4yB6lD</code>) に集約されている。営業時間内にまとめて返信。</p>
+
+<h4>Q. お客様から「コースの所要時間が思っていたより短い」と言われた</h4>
+<p>A. 管理画面 → コース編集 → 「所要時間 (分)」を変更。<strong>ただし変更後の所要時間は新規予約から適用</strong>。既存予約の時間枠は Calendar 上で別途調整が必要。</p>
+
+<h4>Q. 予約画面のテスト方法</h4>
+<p>A. スタッフ自身のメールアドレスで実際に予約を入れて、メール / Calendar まで通しで確認する。テストが終わったら 5.4 の手順でキャンセル。</p>
+
+<!-- 10 -->
+<span class="anchor">— Section 10 —</span>
+<h2 class="section">10. 月次チェックリスト</h2>
+<p>毎月 1 日に以下を確認しておくと事故が減ります:</p>
+<ul style="list-style:none;padding-left:0;">
+  <li>☐ 翌月の定休日 / 臨時休業を <code>/admin</code> に登録済みか</li>
+  <li>☐ 翌月のキャンペーンに合わせたコース価格の更新は済んでいるか</li>
+  <li>☐ 店舗 Gmail の予約通知が<strong>直近 1 週間で 1 件以上</strong>届いているか (届いていない場合、システム障害の可能性)</li>
+  <li>☐ テスト予約 1 件 → メール 2 通 (顧客 + 店舗) → Calendar 反映を<strong>通し確認</strong></li>
+  <li>☐ 予約 LP / 管理画面の URL が変わっていないか (本マニュアルの URL を再確認)</li>
+</ul>
+
+<!-- 11 -->
+<span class="anchor">— Section 11 —</span>
+<h2 class="section">11. 用語集 / やってはいけないリスト</h2>
+
+<h3>11.1 用語集</h3>
+<table>
+  <thead><tr><th>用語</th><th>意味</th></tr></thead>
+  <tbody>
+    <tr><td>LP</td><td>ランディングページ。お客様が最初に見る予約用 Web ページのこと</td></tr>
+    <tr><td>管理画面 (<code>/admin</code>)</td><td>スタッフ用の店舗 / コース編集画面</td></tr>
+    <tr><td>BookingWidget</td><td>LP 内の予約フォーム部分のこと (技術名)</td></tr>
+    <tr><td>サービスアカウント</td><td>Google Calendar に予約を自動で書き込む裏のアカウント (スタッフが直接触ることはない)</td></tr>
+    <tr><td>Vercel</td><td>LP / 管理画面が動いているクラウドサービス (運用は開発側)</td></tr>
+    <tr><td>Neon</td><td>予約 / 店舗 / コースの情報を保存する DB (運用は開発側)</td></tr>
+    <tr><td>Blob</td><td>コース画像を保存するクラウドストレージ (画像差し替えは管理画面から間接的に操作)</td></tr>
+    <tr><td>キャッシュ TTL 60 秒</td><td>営業時間 / 定休日を変えても LP に出るまで最大 60 秒のタイムラグがある仕様</td></tr>
+  </tbody>
+</table>
+
+<h3>11.2 やってはいけないリスト</h3>
+<div class="callout bad">
+  <ul style="margin:0;">
+    <li>店舗 Gmail のパスワードをこのマニュアルや共有チャットに書く</li>
+    <li>管理画面で「サインアウト」ボタン以外の方法 (ブラウザの戻る等) で離脱して <code>?</code> のままにする (再ログインで解決)</li>
+    <li>DB を直接編集する操作 (SQL / drizzle-kit studio) — 開発側専用</li>
+    <li><code>vercel</code> CLI / <code>bun</code> コマンド系の実行 — 開発側専用</li>
+    <li><code>/admin/stores/shimbashi</code> で <strong>Calendar ID</strong> の値を変更する — 連携が切れる。変更が必要な場合は必ず開発側</li>
+    <li>同一時間帯に複数の予約を捌くために手動 Calendar イベントを大量に増減させる — 整合性が崩れたら開発側に DB クリーニング依頼</li>
+  </ul>
+</div>
+
+<h3>11.3 改訂履歴</h3>
+<table>
+  <thead><tr><th>版</th><th>日付</th><th>内容</th></tr></thead>
+  <tbody>
+    <tr><td>v1</td><td>2026-06-03</td><td>初版 (markdown のみ)</td></tr>
+    <tr><td>v2</td><td>2026-06-03</td><td>画像付き HTML 版 (Playwright で取得した実画面スクショを埋め込み、PDF 化想定で印刷 CSS を整備、連絡先セクションを削除)</td></tr>
+  </tbody>
+</table>
+
+<footer class="docfoot">
+  C5med BEAUTY · 新橋店 予約システム 運用マニュアル v2 · 2026-06-03 · BL-0093
+</footer>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,651 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]: C5MED BEAUTY · SHIMBASHI · OPERATIONS MANUAL
+    - heading "新橋店 予約システム 運用マニュアル" [level=1] [ref=e4]:
+      - text: 新橋店 予約システム
+      - text: 運用マニュアル
+    - paragraph [ref=e5]: スタッフ向け / 日常運用 · LP メンテナンス · トラブル対応
+    - generic [ref=e6]:
+      - term [ref=e7]: 版数
+      - definition [ref=e8]: v2 (画像付き HTML 版)
+      - term [ref=e9]: 発行日
+      - definition [ref=e10]: 2026-06-03
+      - term [ref=e11]: 対応システム
+      - definition [ref=e12]: c5med-shimbashi (https://c5med-shimbashi-lovat.vercel.app)
+      - term [ref=e13]: 対象読者
+      - definition [ref=e14]: リライフメディカル新橋店 スタッフ
+      - term [ref=e15]: 作成元
+      - definition [ref=e16]: BL-0093 / d-20260603-002
+      - term [ref=e17]: 配布形式
+      - definition [ref=e18]: HTML → PDF 化 → Google Docs 共有
+    - generic [ref=e19]:
+      - heading "Table of Contents" [level=2] [ref=e20]
+      - list [ref=e21]:
+        - listitem [ref=e22]: このマニュアルの使い方
+        - listitem [ref=e23]: システム全体像 (1 分で理解)
+        - listitem [ref=e24]: URL 早見表
+        - listitem [ref=e25]: 管理画面ログイン
+        - listitem [ref=e26]: 日常運用
+        - listitem [ref=e27]: LP メンテナンス
+        - listitem [ref=e28]: トラブル対応 FAQ
+        - listitem [ref=e29]: エスカレーション基準
+        - listitem [ref=e30]: 運用 FAQ
+        - listitem [ref=e31]: 月次チェックリスト
+        - listitem [ref=e32]: 用語集 / やってはいけない
+  - main [ref=e33]:
+    - generic [ref=e34]: — Section 01 —
+    - heading "1. このマニュアルの使い方" [level=2] [ref=e35]
+    - paragraph [ref=e36]:
+      - text: このマニュアルは「
+      - strong [ref=e37]: 新橋店のスタッフが、開発者の手を借りずに自分でできること
+      - text: 」をまとめた手順書です。
+    - list [ref=e38]:
+      - listitem [ref=e39]:
+        - strong [ref=e40]: 章立て
+        - text: ": 「日常運用」「LP メンテナンス」「トラブル対応」「エスカレーション」の 4 領域"
+      - listitem [ref=e41]:
+        - strong [ref=e42]: 粒度
+        - text: ": スマホ / PC のブラウザだけで完結する操作を中心に説明"
+      - listitem [ref=e43]:
+        - strong [ref=e44]: 想定読者
+        - text: ": SQL / Git / CLI を触らない店舗運用担当者"
+      - listitem [ref=e45]:
+        - strong [ref=e46]: 「これは開発側」と書いてある操作
+        - text: ": 田中 (むしめがね) に依頼"
+      - listitem [ref=e47]:
+        - strong [ref=e48]: このマニュアルに無い操作が出てきた場合
+        - text: ": 自己判断で本番に触らず、まず連絡"
+    - generic [ref=e49]:
+      - generic [ref=e50]: Note
+      - paragraph [ref=e51]:
+        - text: 開発者向けの技術手順 (CLI / SQL / Vercel CLI 等) は
+        - code [ref=e52]: docs/operations.md
+        - text: に別途あります。本マニュアルとは別物です。
+    - generic [ref=e53]: — Section 02 —
+    - heading "2. システム全体像 (1 分で理解する)" [level=2] [ref=e54]
+    - figure "図 2-1お客様が最初に見る予約 LP (PC 表示)。https://c5med-shimbashi-lovat.vercel.app/" [ref=e55]:
+      - img "LP トップ (PC 表示)" [ref=e56]
+      - generic [ref=e57]: 図 2-1お客様が最初に見る予約 LP (PC 表示)。https://c5med-shimbashi-lovat.vercel.app/
+    - figure "図 2-2同 LP のスマホ表示。お客様の大半はこの幅で見ています。" [ref=e58]:
+      - img "LP トップ (スマホ表示)" [ref=e59]
+      - generic [ref=e60]: 図 2-2同 LP のスマホ表示。お客様の大半はこの幅で見ています。
+    - heading "システム同士の関係" [level=3] [ref=e61]
+    - generic [ref=e62]: お客様 │ ├─→ ① 予約 LP (https://c5med-shimbashi-lovat.vercel.app/) │ └─ コース選択 → 日時選択 → 連絡先入力 → 予約確定 │ └─← ④ 予約完了メール (店舗 Gmail から自動送信) 店舗 (新橋店) │ ├─→ ② Google Calendar (c5clinic.tokyo.hokuseikai@gmail.com) │ └─ 自動で予約イベントが入る (本予約 + 前後 30 分の準備時間) │ ├─→ ③ 予約通知メール (店舗 Gmail 受信箱に届く) │ └─→ ⑤ 管理画面 (/admin) └─ 営業時間 / 定休日 / コースの編集
+    - table [ref=e63]:
+      - rowgroup [ref=e64]:
+        - row "役割 システム スタッフが触るか" [ref=e65]:
+          - columnheader "役割" [ref=e66]
+          - columnheader "システム" [ref=e67]
+          - columnheader "スタッフが触るか" [ref=e68]
+      - rowgroup [ref=e69]:
+        - row "空き枠の真実 Google Calendar (店舗 Gmail) はい (手動で予定を入れれば空き枠から外せる)" [ref=e70]:
+          - cell "空き枠の真実" [ref=e71]
+          - cell "Google Calendar (店舗 Gmail)" [ref=e72]
+          - cell "はい (手動で予定を入れれば空き枠から外せる)" [ref=e73]
+        - row "店舗 / コース情報 管理画面 /admin はい (営業時間・コースを編集)" [ref=e74]:
+          - cell "店舗 / コース情報" [ref=e75]
+          - cell "管理画面 /admin" [ref=e76]:
+            - text: 管理画面
+            - code [ref=e77]: /admin
+          - cell "はい (営業時間・コースを編集)" [ref=e78]
+        - row "予約 LP の見た目 デプロイ済みサイト いいえ (文言変更は開発側)" [ref=e79]:
+          - cell "予約 LP の見た目" [ref=e80]
+          - cell "デプロイ済みサイト" [ref=e81]
+          - cell "いいえ (文言変更は開発側)" [ref=e82]
+        - row "顧客への自動メール Gmail SMTP いいえ (送信文面は固定)" [ref=e83]:
+          - cell "顧客への自動メール" [ref=e84]
+          - cell "Gmail SMTP" [ref=e85]
+          - cell "いいえ (送信文面は固定)" [ref=e86]
+    - generic [ref=e87]:
+      - generic [ref=e88]: 覚えておく重要ポイント
+      - list [ref=e89]:
+        - listitem [ref=e90]:
+          - strong [ref=e91]: Google Calendar が真実。
+          - text: 店舗 Gmail のカレンダーに何か手動で予定を入れると、その時間はお客様から見て予約不可になる。逆に、システム経由の予約は Calendar に自動で入る。
+        - listitem [ref=e92]:
+          - strong [ref=e93]: 管理画面で営業時間を変えると、最大 60 秒で LP に反映
+          - text: される (即時ではない)。
+        - listitem [ref=e94]:
+          - strong [ref=e95]: コース写真や文言の差し替えは、コースは管理画面で OK / LP 全体は開発側。
+    - generic [ref=e96]: — Section 03 —
+    - heading "3. URL / アカウント早見表" [level=2] [ref=e97]
+    - table [ref=e98]:
+      - rowgroup [ref=e99]:
+        - row "予約 LP (お客様用) https://c5med-shimbashi-lovat.vercel.app/" [ref=e100]:
+          - rowheader "予約 LP (お客様用)" [ref=e101]
+          - cell "https://c5med-shimbashi-lovat.vercel.app/" [ref=e102]
+        - row "管理画面 https://c5med-shimbashi-lovat.vercel.app/admin" [ref=e103]:
+          - rowheader "管理画面" [ref=e104]
+          - cell "https://c5med-shimbashi-lovat.vercel.app/admin" [ref=e105]
+        - row "店舗 Gmail (予約通知 / Calendar) c5clinic.tokyo.hokuseikai@gmail.com" [ref=e106]:
+          - rowheader "店舗 Gmail (予約通知 / Calendar)" [ref=e107]
+          - cell "c5clinic.tokyo.hokuseikai@gmail.com" [ref=e108]:
+            - code [ref=e109]: c5clinic.tokyo.hokuseikai@gmail.com
+        - row "Google Calendar 上記 Gmail にログインしてカレンダー" [ref=e110]:
+          - rowheader "Google Calendar" [ref=e111]
+          - cell "上記 Gmail にログインしてカレンダー" [ref=e112]
+        - row "LINE 公式 (相談ボタン遷移先) https://lin.ee/y4yB6lD" [ref=e113]:
+          - rowheader "LINE 公式 (相談ボタン遷移先)" [ref=e114]
+          - cell "https://lin.ee/y4yB6lD" [ref=e115]
+    - generic [ref=e116]:
+      - generic [ref=e117]: セキュリティ
+      - paragraph [ref=e118]:
+        - text: ID / パスワードは LastPass / 1Password など別管理。
+        - strong [ref=e119]: このマニュアルには絶対書かない
+        - text: 。
+    - generic [ref=e120]: — Section 04 —
+    - heading "4. 管理画面 (/admin) へのログイン" [level=2] [ref=e121]:
+      - text: 4. 管理画面 (
+      - code [ref=e122]: /admin
+      - text: ) へのログイン
+    - figure "図 4-1管理画面サインイン画面。Google アカウントでログインするボタンのみのシンプルな画面。" [ref=e123]:
+      - img "管理画面ログイン画面" [ref=e124]
+      - generic [ref=e125]: 図 4-1管理画面サインイン画面。Google アカウントでログインするボタンのみのシンプルな画面。
+    - heading "4.1 手順" [level=3] [ref=e126]
+    - list [ref=e127]:
+      - listitem [ref=e128]: ブラウザで https://c5med-shimbashi-lovat.vercel.app/admin にアクセス
+      - listitem [ref=e129]: 「Google でサインイン」をクリック
+      - listitem [ref=e130]:
+        - strong [ref=e131]: 許可された Gmail アカウント
+        - text: (店舗 Gmail or 開発側で登録済みアカウント) を選ぶ
+      - listitem [ref=e132]:
+        - text: 認可されると
+        - code [ref=e133]: /admin
+        - text: のトップ「店舗一覧」が表示される
+    - heading "4.2 ログインできない時" [level=3] [ref=e134]
+    - table [ref=e135]:
+      - rowgroup [ref=e136]:
+        - row "症状 原因 / 対応" [ref=e137]:
+          - columnheader "症状" [ref=e138]
+          - columnheader "原因 / 対応" [ref=e139]
+      - rowgroup [ref=e140]:
+        - row "「権限がありません」エラー アクセス許可リストに入っていない → 開発側に「このメアドを admin に追加して」と依頼" [ref=e141]:
+          - cell "「権限がありません」エラー" [ref=e142]
+          - cell "アクセス許可リストに入っていない → 開発側に「このメアドを admin に追加して」と依頼" [ref=e143]
+        - row "Google ログイン画面でループ ブラウザの Cookie をクリア / シークレットウィンドウで再試行" [ref=e144]:
+          - cell "Google ログイン画面でループ" [ref=e145]
+          - cell "ブラウザの Cookie をクリア / シークレットウィンドウで再試行" [ref=e146]
+        - row "画面が真っ白 サイト障害の可能性。「予約 LP は開けるか」を確認 → 開けないなら障害 (7 章へ)" [ref=e147]:
+          - cell "画面が真っ白" [ref=e148]
+          - cell "サイト障害の可能性。「予約 LP は開けるか」を確認 → 開けないなら障害 (7 章へ)" [ref=e149]
+    - generic [ref=e150]: — Section 05 —
+    - heading "5. 日常運用" [level=2] [ref=e151]
+    - heading "5.1 予約の確認 (今日 / 今週の予約を見たい)" [level=3] [ref=e152]
+    - 'heading "方法 1: Google Calendar (推奨)" [level=4] [ref=e153]'
+    - list [ref=e154]:
+      - listitem [ref=e155]: 店舗 Gmail でログインしたカレンダーを開く
+      - listitem [ref=e156]: 「日」「週」表示で予約状況を確認
+      - listitem [ref=e157]:
+        - text: "1 件の予約に対して 3 つのイベントが並ぶ仕様 (これは正常):"
+        - list [ref=e158]:
+          - listitem [ref=e159]: 「準備時間 (前)」… 開始 30 分前から (薄色 / 透明)
+          - listitem [ref=e160]: 「本予約」… 実際の施術時間
+          - listitem [ref=e161]: 「準備時間 (後)」… 終了 30 分後まで (薄色 / 透明)
+      - listitem [ref=e162]: 本予約イベントを開くと「お客様名 / メール / 電話 / コース」が記載されている
+    - generic [ref=e163]:
+      - generic [ref=e164]: 補足
+      - paragraph [ref=e165]: "薄色の準備時間イベントが消えない / 見えないという場合: それは正常です。お客様向けの「空き枠」には影響しません。"
+    - 'heading "方法 2: 店舗 Gmail の通知メール" [level=4] [ref=e166]'
+    - paragraph [ref=e167]:
+      - text: 新規予約が入るたびに
+      - code [ref=e168]: c5clinic.tokyo.hokuseikai@gmail.com
+      - text: に「【新規予約】〜」という通知メールが届きます。Gmail の検索窓で
+      - code [ref=e169]: subject:"【新規予約】"
+      - text: と入れると一覧できます。
+    - heading "5.2 営業時間を変える" [level=3] [ref=e170]
+    - paragraph [ref=e171]: "例: 火曜日を 11:00-19:00 に変更したい / 水曜は午前のみ営業にしたい。"
+    - list [ref=e172]:
+      - listitem [ref=e173]:
+        - code [ref=e174]: /admin
+        - text: にログイン → 「店舗」→ 「新橋店」をクリック
+      - listitem [ref=e175]:
+        - text: 「営業時間」セクションで該当曜日の
+        - strong [ref=e176]: "[+ 時間帯追加]"
+        - text: "を使って入力。1 日に 2 つ以上の時間帯 (例: 10:00-13:00 と 15:00-19:00) も設定可能 (休憩を挟む場合)"
+      - listitem [ref=e177]: 画面下部の「保存」をクリック
+      - listitem [ref=e178]:
+        - strong [ref=e179]: 最大 60 秒後
+        - text: に LP の空き枠表示に反映 (キャッシュが切れるまで)
+    - generic [ref=e180]:
+      - generic [ref=e181]: 注意
+      - paragraph [ref=e182]:
+        - strong [ref=e183]: 当日分の営業時間は変えない
+        - text: 。すでに当日分の予約を受け付けてしまった場合、整合性が崩れる。前日までに変更してください。
+    - heading "5.3 定休日 / 臨時休業を追加する" [level=3] [ref=e184]
+    - paragraph [ref=e185]: "例: 「年末年始 12/30-1/3 を休業にしたい」「9 月 15 日臨時休業」"
+    - list [ref=e186]:
+      - listitem [ref=e187]:
+        - code [ref=e188]: /admin
+        - text: → 「新橋店」→ 「定休日」セクション
+      - listitem [ref=e189]: カレンダーで休業日をクリック (複数日連打で OK)
+      - listitem [ref=e190]: 「保存」
+      - listitem [ref=e191]: その日は予約フォームのカレンダーに表示されなくなる
+    - generic [ref=e192]:
+      - generic [ref=e193]: 注意
+      - paragraph [ref=e194]: 既に予約が入っている日を定休日にしても、その予約は自動キャンセルされません。個別連絡が必要です (5.4 参照)。
+    - heading "5.4 予約をキャンセルする (店舗側都合 / お客様希望)" [level=3] [ref=e195]
+    - paragraph [ref=e196]: "必ずこの順番で実施します:"
+    - list [ref=e197]:
+      - listitem [ref=e198]:
+        - strong [ref=e199]: Google Calendar で該当の 3 イベントを削除
+        - text: ": 本予約 / 準備時間 (前) / 準備時間 (後) の 3 つ全部 (同じお客様名 / 同日のもの)。本予約 1 件だけ消しても空き枠としては復活するが、見た目の混乱を避けるため 3 件まとめて削除"
+      - listitem [ref=e200]:
+        - strong [ref=e201]: お客様にキャンセル連絡
+        - text: (メール or LINE)。専用テンプレなし。営業文面で対応
+      - listitem [ref=e202]: (任意) お客様の事情で全額返金などが必要な場合は、店舗運用ルールに従う
+    - generic [ref=e203]:
+      - generic [ref=e204]: DB について
+      - paragraph [ref=e205]: DB から予約レコードを消したい場合は開発側に依頼。スタッフは Calendar 削除までで OK。
+    - heading "5.5 コースの追加 / 編集 / 写真差し替え" [level=3] [ref=e206]
+    - heading "新しいコースを追加" [level=4] [ref=e207]
+    - list [ref=e208]:
+      - listitem [ref=e209]:
+        - code [ref=e210]: /admin
+        - text: → 「コース」→ 「+ 新規作成」
+      - listitem [ref=e211]:
+        - text: "以下を入力:"
+        - list [ref=e212]:
+          - listitem [ref=e213]: "コース名 (例: 初回体験 60 分コース)"
+          - listitem [ref=e214]: 説明 (任意)
+          - listitem [ref=e215]: カテゴリ (facial / body 等、既存の値を使う)
+          - listitem [ref=e216]: "所要時間 (分単位、例: 90)"
+          - listitem [ref=e217]: "価格 (税込円、例: 13980)"
+          - listitem [ref=e218]: タグ (任意、カンマ区切り)
+          - listitem [ref=e219]: 並び順 (数字、小さい方が先頭)
+          - listitem [ref=e220]: 画像 (PNG/JPG、推奨 1080x720px 程度)
+      - listitem [ref=e221]: 「保存」
+      - listitem [ref=e222]:
+        - strong [ref=e223]: 重要
+        - text: ": 続けて「店舗」→「新橋店」→ 「コース紐付け」で新コースをチェック → 保存しないと LP に出ない"
+    - heading "既存コースを編集 (価格変更・説明変更など)" [level=4] [ref=e224]
+    - list [ref=e225]:
+      - listitem [ref=e226]:
+        - code [ref=e227]: /admin
+        - text: → 「コース」→ 該当コースの「編集」
+      - listitem [ref=e228]: 内容を変更 → 「保存」
+    - heading "コース写真を差し替え" [level=4] [ref=e229]
+    - list [ref=e230]:
+      - listitem [ref=e231]:
+        - code [ref=e232]: /admin
+        - text: → 「コース」→ 該当コース → 「編集」
+      - listitem [ref=e233]: 既存画像の下の「画像を変更」→ 新ファイル選択
+      - listitem [ref=e234]: 「保存」(古い画像は自動的に削除される)
+    - heading "コースを一時非公開にする (一覧から消したい)" [level=4] [ref=e235]
+    - paragraph [ref=e236]:
+      - text: 「編集」画面の
+      - code [ref=e237]: isActive
+      - text: のチェックを外して保存。再公開はチェックを戻すだけ。
+    - 'heading "5.6 お客様の予約フロー (参考: LP の見え方)" [level=3] [ref=e238]'
+    - paragraph [ref=e239]: スタッフがお客様から問い合わせを受けた時、お客様がどの画面にいるのかを共通言語にするための参考です。
+    - figure "図 5-1STEP 1 「コースを選ぶ」画面。コース名 / 価格 / 所要時間 / カテゴリタグ が表示されます。" [ref=e240]:
+      - img "STEP1 コース選択" [ref=e241]
+      - generic [ref=e242]: 図 5-1STEP 1 「コースを選ぶ」画面。コース名 / 価格 / 所要時間 / カテゴリタグ が表示されます。
+    - figure "図 5-2STEP 2 「日付を選ぶ」週カレンダー。定休日 / 受付終了日は黒色の「予約終了」表示になります。" [ref=e243]:
+      - img "STEP2 日付選択" [ref=e244]
+      - generic [ref=e245]: 図 5-2STEP 2 「日付を選ぶ」週カレンダー。定休日 / 受付終了日は黒色の「予約終了」表示になります。
+    - figure "図 5-3STEP 3 「時間を選ぶ」。空き枠は 10:00 / 10:30 ... の形で並び、予約済み / 営業時間外は出てきません。" [ref=e246]:
+      - img "STEP3 時間スロット" [ref=e247]
+      - generic [ref=e248]:
+        - text: 図 5-3STEP 3 「時間を選ぶ」。空き枠は
+        - code [ref=e249]: 10:00 / 10:30 ...
+        - text: の形で並び、予約済み / 営業時間外は出てきません。
+    - heading "5.7 1 日の流れ (チェックリスト)" [level=3] [ref=e250]
+    - table [ref=e251]:
+      - rowgroup [ref=e252]:
+        - row "タイミング やること" [ref=e253]:
+          - columnheader "タイミング" [ref=e254]
+          - columnheader "やること" [ref=e255]
+      - rowgroup [ref=e256]:
+        - row "朝 Google Calendar で当日の予約を確認" [ref=e257]:
+          - cell "朝" [ref=e258]
+          - cell "Google Calendar で当日の予約を確認" [ref=e259]
+        - row "予約通知が来た時 Gmail の通知メールでお客様情報を確認 (来店準備)" [ref=e260]:
+          - cell "予約通知が来た時" [ref=e261]
+          - cell "Gmail の通知メールでお客様情報を確認 (来店準備)" [ref=e262]
+        - row "営業時間外 お客様からの電話 / LINE 問い合わせ対応のみ" [ref=e263]:
+          - cell "営業時間外" [ref=e264]
+          - cell "お客様からの電話 / LINE 問い合わせ対応のみ" [ref=e265]
+        - row "月末 翌月以降の定休日 / 臨時休業を /admin で先行登録" [ref=e266]:
+          - cell "月末" [ref=e267]
+          - cell "翌月以降の定休日 / 臨時休業を /admin で先行登録" [ref=e268]:
+            - text: 翌月以降の定休日 / 臨時休業を
+            - code [ref=e269]: /admin
+            - text: で先行登録
+    - generic [ref=e270]: — Section 06 —
+    - heading "6. LP (ランディングページ) メンテナンス" [level=2] [ref=e271]
+    - heading "6.1 スタッフが触れる範囲 (まとめ)" [level=3] [ref=e272]
+    - table [ref=e273]:
+      - rowgroup [ref=e274]:
+        - row "変えたいもの 方法 反映タイミング" [ref=e275]:
+          - columnheader "変えたいもの" [ref=e276]
+          - columnheader "方法" [ref=e277]
+          - columnheader "反映タイミング" [ref=e278]
+      - rowgroup [ref=e279]:
+        - row "コース名 / 価格 / 説明 / 写真 /admin → コース編集 即時 (画面によっては最大 60 秒)" [ref=e280]:
+          - cell "コース名 / 価格 / 説明 / 写真" [ref=e281]
+          - cell "/admin → コース編集" [ref=e282]:
+            - code [ref=e283]: /admin
+            - text: → コース編集
+          - cell "即時 (画面によっては最大 60 秒)" [ref=e284]
+        - row "営業時間 / 定休日 /admin → 店舗編集 最大 60 秒" [ref=e285]:
+          - cell "営業時間 / 定休日" [ref=e286]
+          - cell "/admin → 店舗編集" [ref=e287]:
+            - code [ref=e288]: /admin
+            - text: → 店舗編集
+          - cell "最大 60 秒" [ref=e289]
+        - row "LP の見出し / 本文 / FAQ の文章 開発側 (田中) に依頼 デプロイ後" [ref=e290]:
+          - cell "LP の見出し / 本文 / FAQ の文章" [ref=e291]
+          - cell "開発側 (田中) に依頼" [ref=e292]:
+            - strong [ref=e293]: 開発側 (田中) に依頼
+          - cell "デプロイ後" [ref=e294]
+        - row "LP の写真 (Hero / Empathy / Nurse / Monitor 等) 開発側に依頼 デプロイ後" [ref=e295]:
+          - cell "LP の写真 (Hero / Empathy / Nurse / Monitor 等)" [ref=e296]
+          - cell "開発側に依頼" [ref=e297]:
+            - strong [ref=e298]: 開発側に依頼
+          - cell "デプロイ後" [ref=e299]
+        - row "店舗住所 / 電話 (LP 上に表示される値) 開発側に依頼 デプロイ後" [ref=e300]:
+          - cell "店舗住所 / 電話 (LP 上に表示される値)" [ref=e301]
+          - cell "開発側に依頼" [ref=e302]:
+            - strong [ref=e303]: 開発側に依頼
+          - cell "デプロイ後" [ref=e304]
+        - row "LINE 相談ボタンの遷移先 開発側に依頼 デプロイ後" [ref=e305]:
+          - cell "LINE 相談ボタンの遷移先" [ref=e306]
+          - cell "開発側に依頼" [ref=e307]:
+            - strong [ref=e308]: 開発側に依頼
+          - cell "デプロイ後" [ref=e309]
+    - heading "6.2 文言修正を開発側に依頼する時のフォーマット" [level=3] [ref=e310]
+    - paragraph [ref=e311]: "依頼時には以下を 1 セットで送ると往復が減ります:"
+    - generic [ref=e312]: "[修正依頼] URL: https://c5med-shimbashi-lovat.vercel.app/ セクション: (例) 「お悩み (Empathy)」 現在の文言: 「針なしで…」 希望の文言: 「針を使わず…」 理由: 院長監修の表現に揃えたい 締切: 2026-06-XX"
+    - paragraph [ref=e313]: スクリーンショット (該当部分を赤丸で囲む) を添えると確実です。
+    - heading "6.3 季節キャンペーン / お知らせの掲載" [level=3] [ref=e314]
+    - paragraph [ref=e315]:
+      - text: 現状の LP には常設のお知らせバナーはありません。
+      - strong [ref=e316]: 期間限定キャンペーンを LP に載せたい場合は開発側にバナー追加を依頼
+      - text: してください。
+    - paragraph [ref=e317]:
+      - text: 簡易的に「コース名に
+      - code [ref=e318]: "[期間限定]"
+      - text: 」と付けて
+      - code [ref=e319]: /admin
+      - text: "から編集すれば、LP のコース一覧には反映されます (例:"
+      - code [ref=e320]: 初回体験コース [6月限定 ¥7,980]
+      - text: )。
+    - generic [ref=e321]: — Section 07 —
+    - heading "7. トラブル対応 FAQ" [level=2] [ref=e322]
+    - heading "7.1 お客様「予約完了メールが届かない」と連絡があった" [level=3] [ref=e323]
+    - list [ref=e324]:
+      - listitem [ref=e325]:
+        - strong [ref=e326]: 迷惑メールフォルダを見てもらう
+        - text: 。Gmail から Gmail 宛は通常届くが、他社メーラー (Outlook / iCloud 等) は迷惑フォルダ行きの可能性
+      - listitem [ref=e327]:
+        - strong [ref=e328]: 店舗側の Gmail で予約通知メールが届いているか
+        - text: "を確認 (件名:"
+        - code [ref=e329]: 【新規予約】〜
+        - text: )
+        - list [ref=e330]:
+          - listitem [ref=e331]:
+            - text: 届いている → 予約自体は成立済み。お客様には
+            - strong [ref=e332]: 口頭/別途メールで日時を再案内
+            - text: すれば運用上問題なし
+          - listitem [ref=e333]: 届いていない → システム障害の可能性 → 7.5 へ
+      - listitem [ref=e334]:
+        - strong [ref=e335]: メールアドレスのスペルミスがないか
+        - text: お客様に確認 (画面入力ミス)
+      - listitem [ref=e336]: それでも未着 → 開発側にエスカレーション
+    - heading "7.2 お客様「予約をキャンセル / 変更したい」と連絡があった" [level=3] [ref=e337]
+    - list [ref=e338]:
+      - listitem [ref=e339]:
+        - strong [ref=e340]: キャンセル
+        - text: ": 5.4 の手順で対応"
+      - listitem [ref=e341]:
+        - strong [ref=e342]: 日時変更
+        - text: ": 「現予約をキャンセル + LP から新規予約取り直し」が確実"
+      - listitem [ref=e343]:
+        - strong [ref=e344]: コース変更だけ
+        - text: ": Google Calendar イベントを開いて備考欄に変更内容を記載 + 当日対応 (DB を直接変える必要なし)"
+    - heading "7.3 お客様「予約フォームでエラーが出る / 進めない」" [level=3] [ref=e345]
+    - list [ref=e346]:
+      - listitem [ref=e347]:
+        - text: お客様に
+        - strong [ref=e348]: ブラウザ名と画面のスクリーンショット
+        - text: を聞く
+      - listitem [ref=e349]:
+        - text: スタッフ自身のスマホで LP を開いて再現を試す
+        - list [ref=e350]:
+          - listitem [ref=e351]: 再現する → 開発側に即連絡 (7.6 障害テンプレ)
+          - listitem [ref=e352]: 再現しない → お客様側のブラウザ問題の可能性。「別のブラウザ (Chrome / Safari)」「シークレットウィンドウ」「最新版に更新」を案内
+      - listitem [ref=e353]:
+        - text: お客様が急いでいる場合は
+        - strong [ref=e354]: 電話 / LINE から手動受付
+        - text: → スタッフが Calendar に直接予定を入れて対応
+    - heading "7.4 スタッフ「店舗 Gmail に予約通知メールが来ない」" [level=3] [ref=e355]
+    - list [ref=e356]:
+      - listitem [ref=e357]:
+        - text: Gmail の迷惑メール / すべてのメール / ラベル振り分けを確認。送信元が自分自身 (
+        - code [ref=e358]: c5clinic.tokyo.hokuseikai@gmail.com
+        - text: ") のため、Gmail のフィルタによっては「送信済み」に分類されている場合あり。検索:"
+        - code [ref=e359]: subject:"【新規予約】" newer_than:7d
+      - listitem [ref=e360]:
+        - text: 1 件も見つからない場合は、テスト予約 (自分のメールで予約)
+        - list [ref=e361]:
+          - listitem [ref=e362]: 通知が来る → 単発の取りこぼし、運用上問題なし
+          - listitem [ref=e363]:
+            - text: 通知が来ない → 開発側に連絡 (
+            - code [ref=e364]: STORE_NOTIFY_EMAIL
+            - text: 未設定の可能性)
+    - heading "7.5 スタッフ「Google Calendar に予約予定が入っていない」" [level=3] [ref=e365]
+    - list [ref=e366]:
+      - listitem [ref=e367]: お客様の「予約完了画面のスクリーンショット」 or 「お客様宛の予約完了メール」があるか確認
+      - listitem [ref=e368]:
+        - text: ある → システムは予約を受け付けたが Calendar 反映に失敗した可能性 →
+        - strong [ref=e369]: すぐに開発側に連絡
+        - text: (お客様にはまず
+        - strong [ref=e370]: 手動で電話 / メール確認
+        - text: を入れる)
+      - listitem [ref=e371]: ない → そもそも予約が成立していない可能性。お客様に「予約完了メールの有無」を確認
+    - heading "7.6 全体「LP が開けない / 表示が崩れている / 真っ白」" [level=3] [ref=e372]
+    - table [ref=e373]:
+      - rowgroup [ref=e374]:
+        - row "状況 対応" [ref=e375]:
+          - columnheader "状況" [ref=e376]
+          - columnheader "対応" [ref=e377]
+      - rowgroup [ref=e378]:
+        - row "スタッフのスマホ 1 台だけで再現 お客様には別のブラウザ案内、緊急度低" [ref=e379]:
+          - cell "スタッフのスマホ 1 台だけで再現" [ref=e380]
+          - cell "お客様には別のブラウザ案内、緊急度低" [ref=e381]
+        - row "別のスタッフ / 別のデバイスでも同じ 即時 開発側へ連絡 (障害テンプレ参照)" [ref=e382]:
+          - cell "別のスタッフ / 別のデバイスでも同じ" [ref=e383]
+          - cell "即時 開発側へ連絡 (障害テンプレ参照)" [ref=e384]:
+            - strong [ref=e385]: 即時 開発側へ連絡
+            - text: (障害テンプレ参照)
+        - row "LP は OK、/admin だけ開かない 緊急度中 (お客様影響は小、運用影響大)" [ref=e386]:
+          - cell "LP は OK、/admin だけ開かない" [ref=e387]:
+            - text: LP は OK、
+            - code [ref=e388]: /admin
+            - text: だけ開かない
+          - cell "緊急度中 (お客様影響は小、運用影響大)" [ref=e389]
+        - row "LP / /admin 両方 NG 緊急度最高、即連絡" [ref=e390]:
+          - cell "LP / /admin 両方 NG" [ref=e391]:
+            - text: LP /
+            - code [ref=e392]: /admin
+            - text: 両方 NG
+          - cell "緊急度最高、即連絡" [ref=e393]:
+            - strong [ref=e394]: 緊急度最高、即連絡
+    - generic [ref=e395]:
+      - generic [ref=e396]: 障害報告テンプレ
+      - generic [ref=e397]: "[障害報告] 発生日時: 2026-06-XX HH:MM 頃 影響: LP が開けない / 予約フォームでエラー / メールが来ない 等 影響範囲: 全お客様 / 特定の人だけ スクリーンショット: 添付 試した対応: ブラウザ更新 / 別端末で確認 / 再起動 連絡者: スタッフ氏名"
+    - generic [ref=e398]: — Section 08 —
+    - heading "8. エスカレーション基準" [level=2] [ref=e399]
+    - table [ref=e400]:
+      - rowgroup [ref=e401]:
+        - row "カテゴリ スタッフ対応 開発側依頼" [ref=e402]:
+          - columnheader "カテゴリ" [ref=e403]
+          - columnheader "スタッフ対応" [ref=e404]
+          - columnheader "開発側依頼" [ref=e405]
+      - rowgroup [ref=e406]:
+        - row "営業時間 / 定休日 /admin から変更 (なし)" [ref=e407]:
+          - cell "営業時間 / 定休日" [ref=e408]
+          - cell "/admin から変更" [ref=e409]:
+            - code [ref=e410]: /admin
+            - text: から変更
+          - cell "(なし)" [ref=e411]
+        - row "コース追加 / 編集 / 写真 /admin から変更 表示順や見た目の不具合があれば" [ref=e412]:
+          - cell "コース追加 / 編集 / 写真" [ref=e413]
+          - cell "/admin から変更" [ref=e414]:
+            - code [ref=e415]: /admin
+            - text: から変更
+          - cell "表示順や見た目の不具合があれば" [ref=e416]
+        - row "予約キャンセル (1 件単位) Calendar 削除 + 顧客連絡 DB クリーニングが必要な時のみ" [ref=e417]:
+          - cell "予約キャンセル (1 件単位)" [ref=e418]
+          - cell "Calendar 削除 + 顧客連絡" [ref=e419]
+          - cell "DB クリーニングが必要な時のみ" [ref=e420]
+        - row "価格表記の修正 /admin から変更 (なし)" [ref=e421]:
+          - cell "価格表記の修正" [ref=e422]
+          - cell "/admin から変更" [ref=e423]:
+            - code [ref=e424]: /admin
+            - text: から変更
+          - cell "(なし)" [ref=e425]
+        - row "LP の文言 / 写真 / レイアウト (触らない) 全て開発側" [ref=e426]:
+          - cell "LP の文言 / 写真 / レイアウト" [ref=e427]
+          - cell "(触らない)" [ref=e428]
+          - cell "全て開発側" [ref=e429]:
+            - strong [ref=e430]: 全て開発側
+        - row "店舗住所 / 電話番号 (LP 表示) (触らない) 開発側" [ref=e431]:
+          - cell "店舗住所 / 電話番号 (LP 表示)" [ref=e432]
+          - cell "(触らない)" [ref=e433]
+          - cell "開発側" [ref=e434]:
+            - strong [ref=e435]: 開発側
+        - row "メールが届かない (単発) 顧客に再案内 1 日に複数発生したら開発側" [ref=e436]:
+          - cell "メールが届かない (単発)" [ref=e437]
+          - cell "顧客に再案内" [ref=e438]
+          - cell "1 日に複数発生したら開発側" [ref=e439]
+        - row "メールが届かない (全件) (即) 即連絡" [ref=e440]:
+          - cell "メールが届かない (全件)" [ref=e441]
+          - cell "(即)" [ref=e442]
+          - cell "即連絡" [ref=e443]:
+            - strong [ref=e444]: 即連絡
+        - row "Calendar に予約が入らない (即) 即連絡" [ref=e445]:
+          - cell "Calendar に予約が入らない" [ref=e446]
+          - cell "(即)" [ref=e447]
+          - cell "即連絡" [ref=e448]:
+            - strong [ref=e449]: 即連絡
+        - row "LP / 管理画面が開けない (即) 即連絡" [ref=e450]:
+          - cell "LP / 管理画面が開けない" [ref=e451]
+          - cell "(即)" [ref=e452]
+          - cell "即連絡" [ref=e453]:
+            - strong [ref=e454]: 即連絡
+        - row "ドメイン変更 / 会社名変更 / 大幅デザイン変更 (触らない) 開発側 (要 BL 起票)" [ref=e455]:
+          - cell "ドメイン変更 / 会社名変更 / 大幅デザイン変更" [ref=e456]
+          - cell "(触らない)" [ref=e457]
+          - cell "開発側 (要 BL 起票)" [ref=e458]:
+            - strong [ref=e459]: 開発側 (要 BL 起票)
+    - generic [ref=e460]: — Section 09 —
+    - heading "9. 運用 FAQ" [level=2] [ref=e461]
+    - heading "Q. 同じ時間帯に手動で 2 件目を入れたい" [level=4] [ref=e462]
+    - paragraph [ref=e463]:
+      - text: A. Google Calendar に直接イベントを追加すれば、システム経由の予約はその時間を避ける。
+      - strong [ref=e464]: ただし「準備時間 (前)」「準備時間 (後)」までは自動でブロックされないので、施術 30 分前後の余裕を手動で確保する必要あり
+      - text: 。
+    - heading "Q. 1 日 1 件だけ特別枠 (VIP 等) を作りたい" [level=4] [ref=e465]
+    - paragraph [ref=e466]: A. 該当時間帯を Google Calendar で「VIP 枠」イベントとしてブロックしておく → 当日にお客様を別途案内。
+    - heading "Q. 営業時間外の問い合わせをどう捌くか" [level=4] [ref=e467]
+    - paragraph [ref=e468]:
+      - text: A. お客様の問い合わせは LINE 相談ボタン (
+      - code [ref=e469]: https://lin.ee/y4yB6lD
+      - text: ) に集約されている。営業時間内にまとめて返信。
+    - heading "Q. お客様から「コースの所要時間が思っていたより短い」と言われた" [level=4] [ref=e470]
+    - paragraph [ref=e471]:
+      - text: A. 管理画面 → コース編集 → 「所要時間 (分)」を変更。
+      - strong [ref=e472]: ただし変更後の所要時間は新規予約から適用
+      - text: 。既存予約の時間枠は Calendar 上で別途調整が必要。
+    - heading "Q. 予約画面のテスト方法" [level=4] [ref=e473]
+    - paragraph [ref=e474]: A. スタッフ自身のメールアドレスで実際に予約を入れて、メール / Calendar まで通しで確認する。テストが終わったら 5.4 の手順でキャンセル。
+    - generic [ref=e475]: — Section 10 —
+    - heading "10. 月次チェックリスト" [level=2] [ref=e476]
+    - paragraph [ref=e477]: "毎月 1 日に以下を確認しておくと事故が減ります:"
+    - list [ref=e478]:
+      - listitem [ref=e479]:
+        - text: ☐ 翌月の定休日 / 臨時休業を
+        - code [ref=e480]: /admin
+        - text: に登録済みか
+      - listitem [ref=e481]: ☐ 翌月のキャンペーンに合わせたコース価格の更新は済んでいるか
+      - listitem [ref=e482]:
+        - text: ☐ 店舗 Gmail の予約通知が
+        - strong [ref=e483]: 直近 1 週間で 1 件以上
+        - text: 届いているか (届いていない場合、システム障害の可能性)
+      - listitem [ref=e484]:
+        - text: ☐ テスト予約 1 件 → メール 2 通 (顧客 + 店舗) → Calendar 反映を
+        - strong [ref=e485]: 通し確認
+      - listitem [ref=e486]: ☐ 予約 LP / 管理画面の URL が変わっていないか (本マニュアルの URL を再確認)
+    - generic [ref=e487]: — Section 11 —
+    - heading "11. 用語集 / やってはいけないリスト" [level=2] [ref=e488]
+    - heading "11.1 用語集" [level=3] [ref=e489]
+    - table [ref=e490]:
+      - rowgroup [ref=e491]:
+        - row "用語 意味" [ref=e492]:
+          - columnheader "用語" [ref=e493]
+          - columnheader "意味" [ref=e494]
+      - rowgroup [ref=e495]:
+        - row "LP ランディングページ。お客様が最初に見る予約用 Web ページのこと" [ref=e496]:
+          - cell "LP" [ref=e497]
+          - cell "ランディングページ。お客様が最初に見る予約用 Web ページのこと" [ref=e498]
+        - row "管理画面 (/admin) スタッフ用の店舗 / コース編集画面" [ref=e499]:
+          - cell "管理画面 (/admin)" [ref=e500]:
+            - text: 管理画面 (
+            - code [ref=e501]: /admin
+            - text: )
+          - cell "スタッフ用の店舗 / コース編集画面" [ref=e502]
+        - row "BookingWidget LP 内の予約フォーム部分のこと (技術名)" [ref=e503]:
+          - cell "BookingWidget" [ref=e504]
+          - cell "LP 内の予約フォーム部分のこと (技術名)" [ref=e505]
+        - row "サービスアカウント Google Calendar に予約を自動で書き込む裏のアカウント (スタッフが直接触ることはない)" [ref=e506]:
+          - cell "サービスアカウント" [ref=e507]
+          - cell "Google Calendar に予約を自動で書き込む裏のアカウント (スタッフが直接触ることはない)" [ref=e508]
+        - row "Vercel LP / 管理画面が動いているクラウドサービス (運用は開発側)" [ref=e509]:
+          - cell "Vercel" [ref=e510]
+          - cell "LP / 管理画面が動いているクラウドサービス (運用は開発側)" [ref=e511]
+        - row "Neon 予約 / 店舗 / コースの情報を保存する DB (運用は開発側)" [ref=e512]:
+          - cell "Neon" [ref=e513]
+          - cell "予約 / 店舗 / コースの情報を保存する DB (運用は開発側)" [ref=e514]
+        - row "Blob コース画像を保存するクラウドストレージ (画像差し替えは管理画面から間接的に操作)" [ref=e515]:
+          - cell "Blob" [ref=e516]
+          - cell "コース画像を保存するクラウドストレージ (画像差し替えは管理画面から間接的に操作)" [ref=e517]
+        - row "キャッシュ TTL 60 秒 営業時間 / 定休日を変えても LP に出るまで最大 60 秒のタイムラグがある仕様" [ref=e518]:
+          - cell "キャッシュ TTL 60 秒" [ref=e519]
+          - cell "営業時間 / 定休日を変えても LP に出るまで最大 60 秒のタイムラグがある仕様" [ref=e520]
+    - heading "11.2 やってはいけないリスト" [level=3] [ref=e521]
+    - list [ref=e523]:
+      - listitem [ref=e524]: 店舗 Gmail のパスワードをこのマニュアルや共有チャットに書く
+      - listitem [ref=e525]:
+        - text: 管理画面で「サインアウト」ボタン以外の方法 (ブラウザの戻る等) で離脱して
+        - code [ref=e526]: "?"
+        - text: のままにする (再ログインで解決)
+      - listitem [ref=e527]: DB を直接編集する操作 (SQL / drizzle-kit studio) — 開発側専用
+      - listitem [ref=e528]:
+        - code [ref=e529]: vercel
+        - text: CLI /
+        - code [ref=e530]: bun
+        - text: コマンド系の実行 — 開発側専用
+      - listitem [ref=e531]:
+        - code [ref=e532]: /admin/stores/shimbashi
+        - text: で
+        - strong [ref=e533]: Calendar ID
+        - text: の値を変更する — 連携が切れる。変更が必要な場合は必ず開発側
+      - listitem [ref=e534]: 同一時間帯に複数の予約を捌くために手動 Calendar イベントを大量に増減させる — 整合性が崩れたら開発側に DB クリーニング依頼
+    - heading "11.3 改訂履歴" [level=3] [ref=e535]
+    - table [ref=e536]:
+      - rowgroup [ref=e537]:
+        - row "版 日付 内容" [ref=e538]:
+          - columnheader "版" [ref=e539]
+          - columnheader "日付" [ref=e540]
+          - columnheader "内容" [ref=e541]
+      - rowgroup [ref=e542]:
+        - row "v1 2026-06-03 初版 (markdown のみ)" [ref=e543]:
+          - cell "v1" [ref=e544]
+          - cell "2026-06-03" [ref=e545]
+          - cell "初版 (markdown のみ)" [ref=e546]
+        - row "v2 2026-06-03 画像付き HTML 版 (Playwright で取得した実画面スクショを埋め込み、PDF 化想定で印刷 CSS を整備、連絡先セクションを削除)" [ref=e547]:
+          - cell "v2" [ref=e548]
+          - cell "2026-06-03" [ref=e549]
+          - cell "画像付き HTML 版 (Playwright で取得した実画面スクショを埋め込み、PDF 化想定で印刷 CSS を整備、連絡先セクションを削除)" [ref=e550]
+    - generic [ref=e551]: C5med BEAUTY · 新橋店 予約システム 運用マニュアル v2 · 2026-06-03 · BL-0093

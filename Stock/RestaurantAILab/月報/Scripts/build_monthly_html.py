@@ -56,13 +56,42 @@ def diff_pct(cur, prev):
 
 # Convenience
 M = D["month_kpis"]
-m04 = M["2026-04"]
-m03 = M.get("2026-03")
-m04_py = M.get("2025-04")
 
-# Trend months (oldest first, last = 当月)
-trend_months = ["2025-11","2025-12","2026-01","2026-02","2026-03","2026-04"]
+def _prev_month(ym: str) -> str:
+    y, m = map(int, ym.split("-"))
+    if m == 1:
+        return f"{y-1}-12"
+    return f"{y}-{m-1:02d}"
+
+def _prev_year_same_month(ym: str) -> str:
+    y, m = map(int, ym.split("-"))
+    return f"{y-1}-{m:02d}"
+
+_TM_PREV = _prev_month(_tm)
+_TM_PY = _prev_year_same_month(_tm)
+
+m04 = M[_tm]
+m03 = M.get(_TM_PREV)
+m04_py = M.get(_TM_PY)
+
+# Trend months: 直近6ヶ月（当月含む、当月が最終）
+def _trend_months_for(ym: str, n: int = 6):
+    y, m = map(int, ym.split("-"))
+    out = []
+    for _ in range(n):
+        out.append(f"{y}-{m:02d}")
+        m -= 1
+        if m == 0:
+            m = 12
+            y -= 1
+    return list(reversed(out))
+
+trend_months = _trend_months_for(_tm, 6)
 trend_data = [(m, M[m]) for m in trend_months if m in M]
+
+# 月表記ヘルパー
+_TM_PREV_M = int(_TM_PREV.split("-")[1])
+_TM_PY_Y = int(_TM_PY.split("-")[0])
 
 # ============================================
 # HTMLビルド
@@ -83,7 +112,7 @@ slides.append({
     "title": STORE_NAME,
     "subtitle": "月次営業報告",
     "period": _PERIOD_JP_HEADER,
-    "note": "第二稿ドラフト v2draft / 2026-05-18 作成",
+    "note": f"自動生成 / {D.get('generated_at', '')[:10]} 作成",
 })
 
 # ───────────────────────────────────────────────
@@ -96,7 +125,7 @@ slides.append({
     "subtitle": None,
     "message_icon": "⚠️",
     "message": (lambda: (
-        f"4月の売上は{yen(m04['sales_total'])}（前年比 "
+        f"{_m}月の売上は{yen(m04['sales_total'])}（前年比 "
         + (diff_pct(m04['sales_total'], m04_py['sales_total']) if m04_py else '—')
         + "）、営業利益は"
         + ((yen(D['pl']['op_profit']) + f"（{D['pl']['op_profit_rate']:+.1f}%）") if D['pl'].get('available') else "【BFA】本部サポート / PLシート にデータがないため出力していません")
@@ -104,7 +133,7 @@ slides.append({
     ))(),
     "classification": [
         f"集計対象: {_y}年{_m}月の業務日（{_m}/1 6:00 〜 {_next_m}/1 5:59 JST、朝6時境界 ／ エアレジ売上分析画面と一致）",
-        "PL系KPI（総費用／営業利益／FL率／人件費率）の出典: 4月はダッシュボードDB／過去月は【BFA】本部サポート / PLシート",
+        f"PL系KPI（総費用／営業利益／FL率／人件費率）の出典: 当月はダッシュボードDB／過去月は【BFA】本部サポート / PLシート",
         "FL率の分母 = 月次総売上（ボトル含む）。FL率 =（食材+ドリンク）÷ 売上",
     ],
     "kpis": [
@@ -114,8 +143,6 @@ slides.append({
         ], "note": "ボトル含む"},
         {"label": "🍾 うちボトル購入", "value": yen(m04["bottle_sales"]), "comp": [
             ("構成比", pctv(m04["bottle_sales"]/m04["sales_total"]*100)),
-            ("4/30 計上", "¥233,184"),
-            ("注記", "5/1朝入力分を補正"),
         ]},
         {"label": "💰 売上（ボトル除く）", "value": yen(m04["sales_excl_bottle"]), "comp": [
             ("前月比", diff_pct(m04["sales_excl_bottle"], (m03["sales_excl_bottle"] if m03 else None))),
@@ -141,7 +168,8 @@ slides.append({
             ("前月比", diff_pct(m04["daily_avg_sales"], m03["daily_avg_sales"]) if m03 else "—"),
             ("前年同月比", diff_pct(m04["daily_avg_sales"], m04_py["daily_avg_sales"]) if m04_py else "—"),
         ], "note": "ボトル除く"},
-        # PL系（v1.2 イテレーション7 追加・出典: ダッシュボードDB）
+        # PL系（v1.2 イテレーション7 追加・出典: ダッシュボードDB） — PLデータがある時のみ表示
+    ] + ([
         {"label": "💸 総費用", "value": yen(D["pl"]["expense_total"]), "comp": [
             ("売上比", f"{D['pl']['expense_total']/m04['sales_total']*100:.1f}%"),
             ("出典", "ダッシュボードDB"),
@@ -162,8 +190,12 @@ slides.append({
             ("内訳", "人件費"),
             ("目安", "30%前後"),
         ], "note": "売上比"},
-    ],
-    "caption": "売上は前年比で減少、PLは営業利益▲34万円の赤字。FL率35%・人件費率5%は目安より低水準。",
+    ] if D["pl"].get("available") else []),
+    "caption": (
+        f"売上 {yen(m04['sales_total'])}（前月比 {diff_pct(m04['sales_total'], m03['sales_total']) if m03 else '—'}／前年比 {diff_pct(m04['sales_total'], m04_py['sales_total']) if m04_py else '—'}）、"
+        f"客数 {m04['customers']}人（前年比 {diff_pct(m04['customers'], m04_py['customers']) if m04_py else '—'}）。"
+        + ("PLデータは未取得（PLソース未指定）。" if not D['pl'].get('available') else "")
+    ),
 })
 
 # ───────────────────────────────────────────────
@@ -176,7 +208,7 @@ slides.append({
     "x_label": "月",
     "y_label": "売上（円）",
     "message_icon": "⚠️",
-    "message": (f"売上は2026-01以降4ヶ月連続の減少傾向となり、当月{yen(m04['sales_total'])}は2025年4月{yen(m04_py['sales_total'])}から{diff_pct(m04['sales_total'], m04_py['sales_total'])}と大きく縮小している。" if m04_py else f"当月の売上は{yen(m04['sales_total'])}。前年同月の比較データは取得元（ダッシュボード経由のローデータ）に含まれていません。"),
+    "message": (f"当月の売上{yen(m04['sales_total'])}は前月比{diff_pct(m04['sales_total'], m03['sales_total']) if m03 else '—'}、前年同月{yen(m04_py['sales_total'])}から{diff_pct(m04['sales_total'], m04_py['sales_total'])}と推移している。" if m04_py else f"当月の売上は{yen(m04['sales_total'])}。前年同月の比較データは取得元（ダッシュボード経由のローデータ）に含まれていません。"),
     "classification": [
         f"集計対象: {_y}年{_m}月の業務日（{_m}/1 6:00 〜 {_next_m}/1 5:59 JST、朝6時境界 ／ エアレジ売上分析画面と一致）",
         "前年同月以前のデータはダッシュボード経由のエアレジ会計明細",
@@ -187,7 +219,7 @@ slides.append({
     ],
     "highlight_last": True,
     "annotation": f"当月 {yen(m04['sales_total'])}（ボトル除く {yen(m04['sales_excl_bottle'])}）",
-    "caption": "2026-01以降、減少傾向が続いている。4月はボトル購入が押し上げ要因。",
+    "caption": f"当月{yen(m04['sales_total'])}（前月比 {diff_pct(m04['sales_total'], m03['sales_total']) if m03 else '—'}）。ボトル購入 {yen(m04['bottle_sales'])} を含む。",
 })
 
 slides.append({
@@ -198,7 +230,7 @@ slides.append({
     "y_label": "客数（人）",
     "unit": "人",
     "message_icon": "✅",
-    "message": f"客数は前月{m03['customers']}人から{m04['customers']}人へ{diff_pct(m04['customers'], m03['customers'])}と微増に転じ、4ヶ月連続の減少基調から回復の兆しを見せている。",
+    "message": f"客数は前月{m03['customers']}人から{m04['customers']}人へ{diff_pct(m04['customers'], m03['customers'])}と推移し、前年同月{m04_py['customers']}人比では{diff_pct(m04['customers'], m04_py['customers']) if m04_py else '—'}となっている。",
     "classification": [
         f"集計対象: {_y}年{_m}月の業務日（{_m}/1 6:00 〜 {_next_m}/1 5:59 JST、朝6時境界）",
         "客数=会計ヘッダーの『人数』合算（伝票数ではない）",
@@ -209,7 +241,7 @@ slides.append({
     ],
     "highlight_last": True,
     "annotation": f"当月 {m04['customers']}人",
-    "caption": "客数は緩やかな減少傾向。3月から4月は微増（+0.7%）に転じている。",
+    "caption": f"当月客数 {m04['customers']}人。前月{m03['customers']}人比 {diff_pct(m04['customers'], m03['customers'])}／前年同月{m04_py['customers'] if m04_py else '—'}人比 {diff_pct(m04['customers'], m04_py['customers']) if m04_py else '—'}。",
 })
 
 slides.append({
@@ -219,7 +251,7 @@ slides.append({
     "x_label": "月",
     "y_label": "客単価（円）",
     "message_icon": "⚠️",
-    "message": f"客単価（ボトル除く）は前月{yen(m03['kyakutanka'])}から{yen(m04['kyakutanka'])}へ{diff_pct(m04['kyakutanka'], m03['kyakutanka'])}と低下し、平均客単価の押し下げ要因の特定が必要となった。",
+    "message": f"客単価（ボトル除く）は前月{yen(m03['kyakutanka'])}から{yen(m04['kyakutanka'])}へ{diff_pct(m04['kyakutanka'], m03['kyakutanka'])}と推移し、全部込み（エアメイト比較用）では{yen(m04['kyakutanka_with_bottle'])}となった。",
     "classification": [
         f"集計対象: {_y}年{_m}月の業務日（{_m}/1 6:00 〜 {_next_m}/1 5:59 JST、朝6時境界）",
         "客単価=売上÷客数。実線はボトル購入を分子から除外（経営判断用）",
@@ -232,7 +264,7 @@ slides.append({
     ],
     "highlight_last": True,
     "annotation": f"当月 ボトル除く{yen(m04['kyakutanka'])} / 全部込み{yen(m04['kyakutanka_with_bottle'])}",
-    "caption": "客単価は3月のピーク（¥5,599）から4月は¥4,941へ低下。コース・イベント比率が下がった可能性。全部込みは¥5,373（ボトル販売により+¥432）。",
+    "caption": f"当月客単価 ボトル除く{yen(m04['kyakutanka'])}／全部込み{yen(m04['kyakutanka_with_bottle'])}（差 +{yen(m04['kyakutanka_with_bottle']-m04['kyakutanka'])} はボトル販売によるもの）。",
 })
 
 # ───────────────────────────────────────────────
@@ -241,14 +273,14 @@ slides.append({
 slides.append({
     "type": "comparison_table",
     "icon": "📅",
-    "title": "前年同月比（2025年4月との比較）",
+    "title": f"前年同月比（{_TM_PY_Y}年{_m}月との比較）",
     "message_icon": "⚠️",
-    "message": (f"売上は前年同月から{diff_pct(m04['sales_total'], m04_py['sales_total'])}（差額{yen(m04_py['sales_total']-m04['sales_total'])}）、客数は{diff_pct(m04['customers'], m04_py['customers'])}（差{m04_py['customers']-m04['customers']}人）と縮小しており、市場環境の回復が継続課題となっている。" if m04_py else "前年同月の比較データは取得元のローデータに含まれていないため出力していません。"),
+    "message": (f"売上は前年同月から{diff_pct(m04['sales_total'], m04_py['sales_total'])}（差額{yen(m04_py['sales_total']-m04['sales_total'])}）、客数は{diff_pct(m04['customers'], m04_py['customers'])}（差{m04_py['customers']-m04['customers']}人）と推移している。" if m04_py else "前年同月の比較データは取得元のローデータに含まれていないため出力していません。"),
     "classification": [
         f"集計対象: {_y}年{_m}月の業務日（{_m}/1 6:00 〜 {_next_m}/1 5:59 JST、朝6時境界）",
-        "前年同月（2025-04）はダッシュボード経由のエアレジ会計明細から取得",
+        f"前年同月（{_TM_PY}）はダッシュボード経由のエアレジ会計明細から取得",
     ],
-    "headers": ["指標", "2026-04", "2025-04", "前年比"],
+    "headers": ["指標", _tm, _TM_PY, "前年比"],
     "rows": [
         ["売上（総額）", yen(m04["sales_total"]), yen(m04_py["sales_total"]) if m04_py else "—",
          diff_pct(m04["sales_total"], m04_py["sales_total"]) if m04_py else "—"],
@@ -267,7 +299,7 @@ slides.append({
          yen(m04_py["daily_avg_sales"]) if m04_py else "—",
          diff_pct(m04["daily_avg_sales"], m04_py["daily_avg_sales"]) if m04_py else "—"],
     ],
-    "caption": "前年同月対比は売上・客数ともに大きく減少。客単価のみほぼ同水準。",
+    "caption": f"前年同月対比 売上 {diff_pct(m04['sales_total'], m04_py['sales_total']) if m04_py else '—'}／客数 {diff_pct(m04['customers'], m04_py['customers']) if m04_py else '—'}／客単価（ボトル除く）{diff_pct(m04['kyakutanka'], m04_py['kyakutanka']) if m04_py else '—'}。",
 })
 
 # ───────────────────────────────────────────────
@@ -280,7 +312,7 @@ slides.append({
     "title": "客層分析①：インバウンド比率",
     "subtitle": "エアレジ会計明細のメモ欄から抽出",
     "message_icon": "✅",
-    "message": f"4月はインバウンド客が{p11['customers']}人来店し、売上構成比{p11['share_sales']:.1f}%を占めた。Google検索経由が主流で、訪日客の取り込みが収益基盤の一角を形成している。",
+    "message": f"{_m}月はインバウンド客が{p11['customers']}人来店し、売上構成比{p11['share_sales']:.1f}%を占めた。エアレジ会計明細のメモ欄『海外』記載分から抽出。",
     "classification": [
         f"集計対象: {_y}年{_m}月の業務日（{_m}/1 6:00 〜 {_next_m}/1 5:59 JST、朝6時境界）",
         f"抽出キー: 会計ヘッダーの『メモ』カラムに『海外』を部分一致（{p11['accounts']}件ヒット）",
@@ -304,7 +336,7 @@ slides.append({
         "share_sales": 100 - p11["share_sales"],
         "share_customers": 100 - p11["share_customers"],
     },
-    "caption": f"4月はインバウンド客が{p11['customers']}人来店、売上構成比 {p11['share_sales']:.1f}%。Google検索経由の来店が多数。",
+    "caption": f"{_m}月のインバウンド: {p11['accounts']}件・{p11['customers']}人で売上¥{p11['sales']:,.0f}（構成比 {p11['share_sales']:.1f}%）。",
 })
 
 # ───────────────────────────────────────────────
@@ -349,9 +381,13 @@ slides.append({
     "type": "three_set",
     "icon": "🎉",
     "title": "客層分析③：イベント比率",
-    "subtitle": "4月のみ計上（5月以降は該当なし想定）",
-    "message_icon": "✅",
-    "message": f"4月のイベント売上は¥{p13['sales']:,.0f}（売上構成比{p13['share_sales']:.1f}%）と大きく、3件のイベントで{p13['customers']}人を集客し収益基盤を強化した。",
+    "subtitle": "POSカテゴリ「イベント」全件",
+    "message_icon": ("✅" if p13["accounts"] > 0 else "⚠️"),
+    "message": (
+        f"{_m}月のイベント売上は¥{p13['sales']:,.0f}（売上構成比{p13['share_sales']:.1f}%）、{p13['accounts']}件で{p13['customers']}人を集客した。"
+        if p13["accounts"] > 0
+        else f"{_m}月はカテゴリ「イベント」に該当する取引が0件のため、イベント売上は計上なし。"
+    ),
     "classification": "イベント = エアレジ会計明細 の明細行『カテゴリ』が『イベント』に完全一致する取引（CLP主催セミナー／イベント等を含む）",
     "donut": {"target": "イベント", "value": p13["sales"], "rest": m04["sales_total"] - p13["sales"],
               "target_color": "#2D6B4F", "rest_color": "#E2E8F0",
@@ -372,7 +408,11 @@ slides.append({
         "share_sales": 100 - p13["share_sales"],
         "share_customers": 100 - p13["share_customers"],
     },
-    "caption": f"4月のイベント売上は¥{p13['sales']:,.0f}（{p13['share_sales']:.1f}%）。3件のイベントで{p13['customers']}人を集客。",
+    "caption": (
+        f"{_m}月のイベント: {p13['accounts']}件・{p13['customers']}人で売上¥{p13['sales']:,.0f}（構成比 {p13['share_sales']:.1f}%）。"
+        if p13["accounts"] > 0
+        else f"{_m}月はイベントカテゴリの取引が0件（該当なし）。"
+    ),
 })
 
 # ───────────────────────────────────────────────
@@ -385,24 +425,27 @@ slides.append({
     "title": "商品構造①：ボトル購入",
     "subtitle": "POSカテゴリ「ボトル購入」全件",
     "message_icon": "💡",
-    "message": f"4月から開始したボトル販売は2件で¥{p14['sales']:,.0f}を計上し、月次売上の{p14['share_sales']:.1f}%を占める新規収益柱となった（前月¥0）。",
+    "message": (
+        f"{_m}月のボトル販売は{p14['accounts']}件で¥{p14['sales']:,.0f}を計上し、月次売上の{p14['share_sales']:.1f}%を占めた。"
+        if p14["sales"] > 0
+        else f"{_m}月はカテゴリ「ボトル購入」の取引が0件のため、ボトル売上は計上なし。"
+    ),
     "classification": "ボトル購入 = エアレジ会計明細 の明細行『カテゴリ』が『ボトル購入』（SAKAYA用／仕入れボトル／CLP利用分等の内訳は区別せず合算）／集計範囲: 月次総売上のみ含む。日次・曜日別・時間帯別・週次・客単価分子からはすべて除外。",
     "donut": {"target": "ボトル購入", "value": p14["sales"], "rest": m04["sales_total"] - p14["sales"],
               "target_color": "#C9A961", "rest_color": "#E2E8F0",
               "center_sub": "売上構成比"},
     "big": {
-        "label": "ボトル購入 4月計上額",
+        "label": f"ボトル購入 {_m}月計上額",
         "value": yen(p14["sales"]),
         "sub": f"会計件数 {p14['accounts']}件 / 客数 {p14['customers']}人 / 月次売上比 {p14['share_sales']:.1f}%",
     },
     "headers": ["項目", "値", "備考"],
     "rows": [
         ["売上（月次計上）", yen(p14["sales"]), "月次総売上にのみ含める"],
-        ["会計件数", f"{p14['accounts']}件", "うち手動補正 2件"],
+        ["会計件数", f"{p14['accounts']}件", "—"],
         ["客数", f"{p14['customers']}人", "—"],
-        ["前月比較", "前月は¥0", "4月から計上開始（3月以前と単純比較不可）"],
+        ["前月", yen(m03["bottle_sales"]) if m03 else "—", f"{m03['month']}実績" if m03 else "—"],
         ["日次・曜日・時間帯", "除外", "単位売上の傾向を歪めないため"],
-        ["手動補正", "+ 2件（5/1朝→4/30扱い）", "5/1 08:57, 08:59 入力分（事務処理上）"],
     ],
     "caption": "ボトル購入は月次総売上にのみ含め、それ以外のすべての集計（客単価／週次／日次／曜日別／時間帯別）から除外。",
 })
@@ -424,7 +467,7 @@ slides.append({
               "target_color": "#1B4D3E", "rest_color": "#E2E8F0",
               "center_sub": "売上構成比"},
     "big": {
-        "label": "コース全体 4月売上",
+        "label": f"コース全体 {_m}月売上",
         "value": yen(p15["sales"]),
         "sub": f"会計件数 {p15['accounts']}件 / 入客数 {p15['customers']}人 / 売上構成比 {p15['share_sales']:.1f}% / 客数構成比 {p15['share_customers']:.1f}%",
     },
@@ -504,7 +547,10 @@ slides.append({
     "title": "フード 出数ランキング（上位15）",
     "subtitle": "数量ベース",
     "message_icon": "✅",
-    "message": "ワカモレチップス（32食・83人）・ミントのジェノベーゼ・ボロネーゼラザニアがフード出数TOP3を構成し、シェア型アペタイザーが定番化している。",
+    "message": (lambda t=food_qty: (
+        f"フード出数TOP3は {t[0]['menu_name']}（{t[0]['qty']:.0f}食・{t[0]['customers']}人）／{t[1]['menu_name']}（{t[1]['qty']:.0f}食）／{t[2]['menu_name']}（{t[2]['qty']:.0f}食）の3品で構成された。"
+        if len(t) >= 3 else "フード出数ランキングはデータ不足のため出力していません。"
+    ))(),
     "classification": [
         "対象: 共通ルール『カテゴリ分類マスタ』で food タグのカテゴリ群（COLD/HOT APPETIZERS, MAIN DISHES, DESSERT, BAR SNACKS, スナック等）",
         "入客数: そのメニューを含む会計の『人数』合算（同一会計の複数明細でも人数は1回のみ）",
@@ -512,7 +558,10 @@ slides.append({
     ],
     "headers": ["順位", "メニュー名", "出数", "入客数", "売上", "平均販売価格", "構成比（数量）"],
     "rows": rank_rows(food_qty),
-    "caption": f"ワカモレチップス（32食/83人）・ミントのジェノベーゼ・ボロネーゼラザニアがフードの出数TOP3。{RANK_CAPTION_NOTE}",
+    "caption": (lambda t=food_qty: (
+        f"フード出数TOP3: {t[0]['menu_name']}（{t[0]['qty']:.0f}食）／{t[1]['menu_name']}（{t[1]['qty']:.0f}食）／{t[2]['menu_name']}（{t[2]['qty']:.0f}食）。{RANK_CAPTION_NOTE}"
+        if len(t) >= 3 else RANK_CAPTION_NOTE
+    ))(),
 })
 
 slides.append({
@@ -521,7 +570,10 @@ slides.append({
     "title": "ドリンク 出数ランキング（上位15）",
     "subtitle": "数量ベース",
     "message_icon": "✅",
-    "message": "ハウスハイボール（168杯・111人）が圧倒的1位を獲得し、森のジントニック（87杯・116人）が定番カクテルの主力として続いた。",
+    "message": (lambda t=drink_qty: (
+        f"ドリンク出数TOP3は {t[0]['menu_name']}（{t[0]['qty']:.0f}杯・{t[0]['customers']}人）／{t[1]['menu_name']}（{t[1]['qty']:.0f}杯）／{t[2]['menu_name']}（{t[2]['qty']:.0f}杯）の構成となった。"
+        if len(t) >= 3 else "ドリンク出数ランキングはデータ不足のため出力していません。"
+    ))(),
     "classification": [
         "対象: 共通ルール『カテゴリ分類マスタ』で drink タグのカテゴリ群（NEW CLASSIC COCKTAIL, JAPANESE COCKTAIL, ウイスキー, ジン, ワイン, ビール, ソフトドリンク等）",
         "入客数: そのメニューを含む会計の『人数』合算",
@@ -529,7 +581,10 @@ slides.append({
     ],
     "headers": ["順位", "メニュー名", "出数", "入客数", "売上", "平均販売価格", "構成比（数量）"],
     "rows": rank_rows(drink_qty),
-    "caption": f"ハウスハイボール（168杯/111人）が圧倒的1位。森のジントニックがNEW CLASSIC COCKTAILのトップ（87杯/116人）。{RANK_CAPTION_NOTE}",
+    "caption": (lambda t=drink_qty: (
+        f"ドリンク出数TOP3: {t[0]['menu_name']}（{t[0]['qty']:.0f}杯）／{t[1]['menu_name']}（{t[1]['qty']:.0f}杯）／{t[2]['menu_name']}（{t[2]['qty']:.0f}杯）。{RANK_CAPTION_NOTE}"
+        if len(t) >= 3 else RANK_CAPTION_NOTE
+    ))(),
 })
 
 # ───────────────────────────────────────────────
@@ -543,7 +598,10 @@ slides.append({
     "title": "フード 売上ランキング（上位15）",
     "subtitle": "売上ベース",
     "message_icon": "💡",
-    "message": "フード売上TOP3はワカモレチップス／ミントのジェノベーゼ／ボロネーゼラザニアで出数TOP3と一致しており、シェア型アペタイザーが収益も同時にけん引している。",
+    "message": (lambda t=food_sales: (
+        f"フード売上TOP3は {t[0]['menu_name']}（{yen(t[0]['sales'])}）／{t[1]['menu_name']}（{yen(t[1]['sales'])}）／{t[2]['menu_name']}（{yen(t[2]['sales'])}）の構成となった。"
+        if len(t) >= 3 else "フード売上ランキングはデータ不足のため出力していません。"
+    ))(),
     "classification": [
         "対象: 共通ルール『カテゴリ分類マスタ』で food タグのカテゴリ群",
         "売上 = subtotal（価格×数量）合算 ／ 平均販売価格 = 売上÷出数",
@@ -551,7 +609,10 @@ slides.append({
     ],
     "headers": ["順位", "メニュー名", "売上", "出数", "入客数", "平均販売価格", "構成比（売上）"],
     "rows": rank_rows_sales(food_sales),
-    "caption": f"フード売上TOP3 は ワカモレチップス／ミントのジェノベーゼ／ボロネーゼラザニア（出数TOP3と一致）。{RANK_CAPTION_NOTE}",
+    "caption": (lambda t=food_sales: (
+        f"フード売上TOP3: {t[0]['menu_name']}（{yen(t[0]['sales'])}）／{t[1]['menu_name']}（{yen(t[1]['sales'])}）／{t[2]['menu_name']}（{yen(t[2]['sales'])}）。{RANK_CAPTION_NOTE}"
+        if len(t) >= 3 else RANK_CAPTION_NOTE
+    ))(),
 })
 
 slides.append({
@@ -560,7 +621,10 @@ slides.append({
     "title": "ドリンク 売上ランキング（上位15）",
     "subtitle": "売上ベース",
     "message_icon": "✅",
-    "message": "ドリンク売上1位はハウスハイボール（¥201,600・16.7%）で、森のジントニック（¥129,000）が2位を確保した。低単価×高回転の構造が収益基盤となっている。",
+    "message": (lambda t=drink_sales: (
+        f"ドリンク売上1位は {t[0]['menu_name']}（{yen(t[0]['sales'])}・{t[0]['share']:.1f}%）、2位は {t[1]['menu_name']}（{yen(t[1]['sales'])}）。"
+        if len(t) >= 2 else "ドリンク売上ランキングはデータ不足のため出力していません。"
+    ))(),
     "classification": [
         "対象: 共通ルール『カテゴリ分類マスタ』で drink タグのカテゴリ群",
         "売上 = subtotal（価格×数量）合算 ／ 平均販売価格 = 売上÷出数",
@@ -568,7 +632,10 @@ slides.append({
     ],
     "headers": ["順位", "メニュー名", "売上", "出数", "入客数", "平均販売価格", "構成比（売上）"],
     "rows": rank_rows_sales(drink_sales),
-    "caption": f"ドリンク売上1位はハウスハイボール（¥201,600 / 16.7%）。森のジントニックが2位。{RANK_CAPTION_NOTE}",
+    "caption": (lambda t=drink_sales: (
+        f"ドリンク売上TOP3: {t[0]['menu_name']}（{yen(t[0]['sales'])}）／{t[1]['menu_name']}（{yen(t[1]['sales'])}）／{t[2]['menu_name']}（{yen(t[2]['sales'])}）。{RANK_CAPTION_NOTE}"
+        if len(t) >= 3 else RANK_CAPTION_NOTE
+    ))(),
 })
 
 # ───────────────────────────────────────────────
@@ -582,7 +649,7 @@ slides.append({
     "icon": "📅",
     "title": "週別概況 — 1日あたり売上（日平均・ボトル除く）",
     "message_icon": "💡",
-    "message": f"4月の週別日平均売上は W16（4/13週）が{yen(max_w['daily_avg'])}/日と最高を記録し、W15（4/6週）が{yen(min_w['daily_avg'])}/日と最低となり、月内で約2倍の振れ幅が発生した。",
+    "message": f"{_m}月の週別日平均売上は {max_w['year_week']}が{yen(max_w['daily_avg'])}/日と最高、{min_w['year_week']}が{yen(min_w['daily_avg'])}/日と最低となり、月内で約{max_w['daily_avg']/max(min_w['daily_avg'],1):.1f}倍の振れ幅が発生した。",
     "classification": [
         "営業日基準（朝6時境界 ／ 0:00〜5:59 は前日扱い）",
         "日平均売上 = 週の売上 ÷ 営業日数（営業日数差を吸収）",
@@ -619,10 +686,11 @@ slides.append({
     "icon": "📅",
     "title": "曜日別 日平均売上（ボトル除く）",
     "message_icon": "💡",
-    "message": f"金曜日が日平均{yen(max_wd['daily_avg_sales'])}と最強の曜日となった一方、月曜日が{yen(min_wd['daily_avg_sales'])}と最弱で、平日強化が継続課題となっている。",
+    "message": f"日平均売上が最も高いのは{max_wd['weekday']}（{yen(max_wd['daily_avg_sales'])}）、最も低いのは{min_wd['weekday']}（{yen(min_wd['daily_avg_sales'])}）となった。",
     "classification": [
         "営業日基準（朝6時境界 ／ 0:00〜5:59 は前日扱い）",
-        "曜日 = 営業日付の曜日（4月: 月4日／火4日／水5日／木4日／金4日／土4日／日4日）",
+        "曜日 = 営業日付の曜日（"
+        + "／".join([f"{w['weekday']}{w['business_days']}日" for w in wd]) + "）",
         "ボトル除外: POSカテゴリ『ボトル購入』（曜日傾向を歪めないため）",
     ],
     "x_label": "曜日",
@@ -642,7 +710,7 @@ slides.append({
     "table_rows": [[w["weekday"], f"{w['business_days']}日", f"{w['daily_avg_customers']:.1f}人",
                     yen(w["kyakutanka"]), yen(w["daily_avg_sales"])]
                    for w in wd],
-    "caption": f"金曜日（{yen(max_wd['daily_avg_sales'])}）が最強、月曜日（{yen(min_wd['daily_avg_sales'])}）が最弱。",
+    "caption": f"日平均売上トップは{max_wd['weekday']}（{yen(max_wd['daily_avg_sales'])}）、ボトムは{min_wd['weekday']}（{yen(min_wd['daily_avg_sales'])}）。",
 })
 
 # ───────────────────────────────────────────────
@@ -655,7 +723,10 @@ slides.append({
     "icon": "🕐",
     "title": "時間帯別 月間売上（入店時刻ベース・ボトル除く）",
     "message_icon": "💡",
-    "message": "20-22時帯が売上のピーク（43.3%）を形成し、深夜帯（24-26時）は1.3%まで縮小しているため、深夜需要の取り込みが収益拡大の余地となる。",
+    "message": (lambda hs=hr_sorted: (
+        f"時間帯別売上は {max(hs, key=lambda h: h['sales_excl_bottle'])['hour_bucket']}時帯が最大（構成比 {max(hs, key=lambda h: h['sales_excl_bottle'])['share']:.1f}%）、最小は {min(hs, key=lambda h: h['sales_excl_bottle'])['hour_bucket']}時帯（{min(hs, key=lambda h: h['sales_excl_bottle'])['share']:.1f}%）となった。"
+        if hs else "時間帯別売上はデータがないため出力していません。"
+    ))(),
     "classification": [
         "入店時刻ベース（会計時間 − 滞在時間）",
         "バケット: 18-20 / 20-22 / 22-24 / 24-26時（営業日基準・朝6時境界）",
@@ -671,7 +742,10 @@ slides.append({
     "table_headers": ["時間帯", "売上(ボトル除く)", "客数", "構成比"],
     "table_rows": [[h["hour_bucket"]+"時", yen(h["sales_excl_bottle"]), f"{h['customers']}人", pctv(h["share"])]
                    for h in hr_sorted],
-    "caption": "20-22時帯が売上のピーク（43.3%）。24時以降は1.3%と少ない。",
+    "caption": (lambda hs=hr_sorted: (
+        f"時間帯別売上ピーク: {max(hs, key=lambda h: h['sales_excl_bottle'])['hour_bucket']}時帯（{max(hs, key=lambda h: h['sales_excl_bottle'])['share']:.1f}%）。"
+        if hs else "—"
+    ))(),
 })
 
 # ───────────────────────────────────────────────
@@ -684,7 +758,10 @@ slides.append({
     "title": "カテゴリ別 月間売上 上位10",
     "subtitle": "全カテゴリ（ボトル購入含む）",
     "message_icon": "💡",
-    "message": "コース&セットが構成比20.9%で最大カテゴリとなり、NEW CLASSIC COCKTAIL（9.4%）・ボトル購入（8.0%）が続いた。コース・カクテル・新規ボトルの3軸が収益構造を形成している。",
+    "message": (lambda c=cat: (
+        f"カテゴリ別売上は {c[0]['category1']}（{c[0]['share']:.1f}%）が最大で、{c[1]['category1']}（{c[1]['share']:.1f}%）／{c[2]['category1']}（{c[2]['share']:.1f}%）が続いた。"
+        if len(c) >= 3 else "カテゴリ別売上はデータ不足のため出力していません。"
+    ))(),
     "classification": [
         f"集計対象: {_y}年{_m}月の業務日（{_m}/1 6:00 〜 {_next_m}/1 5:59 JST、朝6時境界）",
         "POSカテゴリ別の月間売上（subtotal = 価格×数量 合算）",
@@ -693,7 +770,10 @@ slides.append({
     "headers": ["順位", "カテゴリ", "月間売上", "数量", "構成比"],
     "rows": [[str(i+1), c["category1"], yen(c["sales"]), f"{c['qty']:.0f}", pctv(c["share"])]
              for i, c in enumerate(cat)],
-    "caption": "コース&セットが20.9%で最大。ボトル購入8.0%、その他9.0%（チャージ等）。",
+    "caption": (lambda c=cat: (
+        f"カテゴリ上位3: {c[0]['category1']}（{c[0]['share']:.1f}%）／{c[1]['category1']}（{c[1]['share']:.1f}%）／{c[2]['category1']}（{c[2]['share']:.1f}%）。"
+        if len(c) >= 3 else "—"
+    ))(),
 })
 
 # ═══════════════════════════════════════════════
@@ -767,15 +847,19 @@ if _PL_AVAILABLE: slides.append({
 # ───────────────────────────────────────────────
 # 主要費目のみ折れ線（家賃、ドリンク、人件費、食材）
 main_cats = ["家賃","ドリンク","食材","人件費"]
-trend_months_pl = [t["month"] for t in PL["trend"] if t["month"] != "2026-05"]
-def get_series(cat):
-    return [(t["month"], t["exp_breakdown"].get(cat, 0)) for t in PL["trend"] if t["month"] != "2026-05"]
-pl2_series = [
-    {"name": "家賃", "color": "#1B4D3E", "data": get_series("家賃")},
-    {"name": "ドリンク", "color": "#C9A961", "data": get_series("ドリンク"), "dash": True},
-    {"name": "食材", "color": "#2D6B4F", "data": get_series("食材")},
-    {"name": "人件費", "color": "#8B3A3A", "data": get_series("人件費"), "dash": True},
-]
+if _PL_AVAILABLE:
+    trend_months_pl = [t["month"] for t in PL["trend"] if t["month"] != _tm]
+    def get_series(cat):
+        return [(t["month"], t["exp_breakdown"].get(cat, 0)) for t in PL["trend"] if t["month"] != _tm]
+    pl2_series = [
+        {"name": "家賃", "color": "#1B4D3E", "data": get_series("家賃")},
+        {"name": "ドリンク", "color": "#C9A961", "data": get_series("ドリンク"), "dash": True},
+        {"name": "食材", "color": "#2D6B4F", "data": get_series("食材")},
+        {"name": "人件費", "color": "#8B3A3A", "data": get_series("人件費"), "dash": True},
+    ]
+else:
+    trend_months_pl = []
+    pl2_series = []
 if _PL_AVAILABLE: slides.append({
     "type": "line_chart",
     "icon": "📈",
@@ -829,19 +913,19 @@ if dr:
     slides.append({
         "type": "daily_reports",
         "icon": "📝",
-        "title": "店舗の様子 — 日報より（4月）",
+        "title": f"店舗の様子 — 日報より（{_m}月）",
         "subtitle": f"対象月の日報入力件数: {len(dr)}件",
         "message_icon": "💡",
-        "message": "4月後半に集中して入力された3件の日報は、海外ゲスト・コース利用・常連グループの3パターンを繰り返し言及しており、現場の収益源と一致している。",
+        "message": f"{_m}月の日報入力は{len(dr)}件。各レポートで来客特徴と改善ポイントが記録された。",
         "classification": [
-            "対象期間: 2026-04-01〜2026-04-30 の日報入力分（ダッシュボード経由）",
+            f"対象期間: {_y}-{_m:02d}-01〜{_y}-{_m:02d}-{_last_day:02d} の日報入力分（ダッシュボード経由）",
             "引用項目: ①来客特徴、②改善ポイント",
         ],
         "reports": [{"date": r["営業日"], "name": r["入力者氏名"],
                      "guests": (r["①来客特徴"] or "")[:300],
                      "improve": (r["②改善ポイント"] or "")[:300]}
                     for r in dr],
-        "caption": "4月後半に集中した日報入力。海外ゲスト・コース利用・常連グループの3パターンが繰り返し言及。",
+        "caption": f"{_m}月の日報入力 {len(dr)}件。来客特徴・改善ポイントの記録あり。",
     })
 
 # ───────────────────────────────────────────────
@@ -852,18 +936,18 @@ slides.append({
     "icon": "✅",
     "title": "今月の強み",
     "message_icon": "✅",
-    "message": "新規切り口での可視化により、インバウンド・コース・ボトル販売の3軸が4月の収益柱として明確に確認できた。",
+    "message": f"インバウンド（売上構成比{p11['share_sales']:.1f}%）・コース（{p15['share_sales']:.1f}%）・ボトル販売（{p14['share_sales']:.1f}%）の3軸が{_m}月の収益柱となった。",
     "classification": [
         "抽出基準: 前年比 or 前月比でプラス、構成比10%超、または新規収益柱となった指標",
     ],
     "items": [
-        f"インバウンド客が{p11['customers']}人・売上¥{p11['sales']:,.0f}（売上構成比 {p11['share_sales']:.1f}%）。Google検索経由の認知が成果に",
-        f"コース利用が好調（{p15['accounts']}件・{p15['customers']}人・¥{p15['sales']:,.0f}／{p15['share_sales']:.1f}%）。CLP関連のコース予約が安定収益源",
-        f"金曜日（日平均{yen(max_wd['daily_avg_sales'])}）と土曜日（日平均¥{wd[5]['daily_avg_sales']:,.0f}）が引き続き強い",
-        f"ハウスハイボール（168杯／¥201,600）が安定したドリンク主力商品",
-        f"4月からボトル販売を計上開始（¥{p14['sales']:,.0f}）。月次売上の押し上げ要因に",
+        f"インバウンド客が{p11['customers']}人・売上¥{p11['sales']:,.0f}（売上構成比 {p11['share_sales']:.1f}%）。エアレジ会計明細メモ欄『海外』記載分から抽出",
+        f"コース利用は{p15['accounts']}件・{p15['customers']}人・¥{p15['sales']:,.0f}（構成比 {p15['share_sales']:.1f}%）",
+        f"日平均売上トップは {max_wd['weekday']}（{yen(max_wd['daily_avg_sales'])}/日）",
+        (lambda t=drink_sales: f"ドリンク売上1位は {t[0]['menu_name']}（{yen(t[0]['sales'])}・{t[0]['share']:.1f}%）" if t else "ドリンクランキング: データなし")(),
+        f"ボトル販売は{p14['accounts']}件で¥{p14['sales']:,.0f}（売上構成比 {p14['share_sales']:.1f}%）" if p14['sales'] > 0 else f"ボトル販売は{_m}月は計上なし",
     ],
-    "caption": "新規切り口で見ると、インバウンド・CLP・コースが収益の柱として可視化された。",
+    "caption": "インバウンド・コース・ボトル販売の3軸が収益の柱として可視化された。",
 })
 
 # ───────────────────────────────────────────────
@@ -874,20 +958,23 @@ slides.append({
     "icon": "⚠️",
     "title": "今月の課題",
     "message_icon": "⚠️",
-    "message": "全体トレンドは前年比減で、平日の弱さと深夜需要の不足が顕在化、PL上は営業利益▲34万円の赤字と利益構造の改善が急務となっている。",
+    "message": f"前年同月比で売上 {diff_pct(m04['sales_total'], m04_py['sales_total']) if m04_py else '—'}、客数 {diff_pct(m04['customers'], m04_py['customers']) if m04_py else '—'} と縮小しており、客単価・曜日別の弱点も継続課題となっている。",
     "classification": [
         "抽出基準: 前年比 or 前月比でマイナス、曜日・時間帯で著しく低い水準、客単価低下セグメント、PL赤字要因",
     ],
     "items": [
         f"売上は前年同月比 {diff_pct(m04['sales_total'], m04_py['sales_total']) if m04_py else '—'}（{yen(m04['sales_total'])} vs {yen(m04_py['sales_total']) if m04_py else '—'}）",
         f"客数は前年同月比 {diff_pct(m04['customers'], m04_py['customers']) if m04_py else '—'}（{m04['customers']}人 vs {m04_py['customers'] if m04_py else '—'}人）",
-        f"客単価が前月の¥{m03['kyakutanka']:,.0f}から¥{m04['kyakutanka']:,.0f}に低下（{diff_pct(m04['kyakutanka'], m03['kyakutanka']) if m03 else '—'}）",
-        f"月曜日が日平均¥{min_wd['daily_avg_sales']:,.0f}と弱く、火曜・木曜も低調",
-        f"24-26時帯の売上が1.3%まで低下。深夜需要の取り込み余地",
-        (f"【PL】営業利益 ¥{PL['op_profit']:,.0f}（{PL['op_profit_rate']:+.1f}%）の赤字。家賃¥{PL['expense_breakdown'][0]['amount']:,.0f}＋ローン返済が固定費として圧迫" if _PL_AVAILABLE else "【PL】【BFA】本部サポート / PLシート にデータがないため出力していません"),
-        (f"【PL】人件費率 {PL['labor_rate']:.1f}% と目安30%を大幅下回り、オーナー過剰負担が継続している可能性" if _PL_AVAILABLE else "【PL】人件費率: 【BFA】本部サポート / PLシート にデータがないため出力していません"),
+        f"客単価（ボトル除く）は前月¥{m03['kyakutanka']:,.0f}→¥{m04['kyakutanka']:,.0f}（{diff_pct(m04['kyakutanka'], m03['kyakutanka']) if m03 else '—'}）",
+        f"日平均最弱は {min_wd['weekday']}（¥{min_wd['daily_avg_sales']:,.0f}/日）",
+        (lambda hs=hr_sorted: (
+            f"時間帯別売上の最弱バケットは {min(hs, key=lambda h: h['sales_excl_bottle'])['hour_bucket']}時帯（構成比 {min(hs, key=lambda h: h['sales_excl_bottle'])['share']:.1f}%）"
+            if hs else "時間帯別売上: データなし"
+        ))(),
+        (f"【PL】営業利益 ¥{PL['op_profit']:,.0f}（{PL['op_profit_rate']:+.1f}%）" if _PL_AVAILABLE else "【PL】PLソース未指定のため出力していません"),
+        (f"【PL】人件費率 {PL['labor_rate']:.1f}%（目安30%）" if _PL_AVAILABLE else "【PL】人件費率: PLソース未指定のため出力していません"),
     ],
-    "caption": "売上低迷とPL赤字の二重課題。曜日強化・深夜需要に加え、固定費の見直しと人件費の適正化が論点。",
+    "caption": "売上・客数とも前年比減。客単価・曜日別の弱点が継続課題。",
 })
 
 # ───────────────────────────────────────────────
@@ -898,23 +985,23 @@ slides.append({
     "icon": "🎯",
     "title": "次月以降の施策案",
     "message_icon": "💡",
-    "message": "高優先は売上回復＋PL赤字脱却の直接対策、中優先は新規収益柱（ボトル・深夜需要）の拡大策、PL観点（固定費見直し・人件費適正化）を新規施策として追加した。",
+    "message": "売上・客数の前年比減を踏まえ、客単価回復・平日強化・新規収益柱（ボトル販売・インバウンド）の拡大を中心に施策を整理した。",
     "classification": [
-        "優先順位: 高=売上構造／PL赤字の即時改善、中=新規収益柱の拡大、低=運用体制の継続改善",
+        "優先順位: 高=売上構造／客単価の即時改善、中=新規収益柱の拡大、低=運用体制の継続改善",
+        "数値目標は前月実績および前年同月の水準を基準",
     ],
     "headers": ["優先", "テーマ", "施策案", "狙い・指標"],
     "rows": [
-        ["高", "インバウンド", "Googleマップ口コミ強化（英語応答テンプレ／写真追加）", "海外比率を10%→15%へ"],
-        ["高", "客単価回復", "コース後アラカルト追加の常時提案 ／ ペアリングメニュー導入", "客単価¥4,740→¥5,500"],
-        ["高", "平日強化", "月曜「インバウンド限定割引」or「平日早割」（18-19時）", "月曜日平均¥49,400→¥75,000"],
-        ["高", "PL赤字脱却", "売上¥3,024,490→¥3,400,000復元（前年水準への戻し）", "営業利益▲34万→±0へ"],
-        ["中", "ボトル販売", "CLP社員向けボトルキープ施策の継続・定型化", "月次¥25万→¥30万"],
-        ["中", "深夜需要", "金土の24-26時限定「ナイトキャップセット」", "24-26時構成比 1.3%→5%"],
-        ["中", "固定費見直し", "家賃交渉 ／ ローン借換検討", "固定費比率を5%圧縮"],
-        ["中", "人件費適正化", "オーナー稼働の可視化 ／ スポット人員投入の費用対効果検証", "人件費率 5%→10〜15%適正化"],
-        ["低", "日報強化", "4月の日報入力3件は少ない。週次入力リズム化", "月10〜15件入力"],
+        ["高", "インバウンド", "Googleマップ口コミ強化（英語応答テンプレ／写真追加）", f"インバウンド構成比を{p11['share_sales']:.0f}%→15%超へ"],
+        ["高", "客単価回復", "コース後アラカルト追加の常時提案／ペアリングメニュー導入", f"客単価（ボトル除く）{yen(m04['kyakutanka'])}→¥5,500水準復元"],
+        ["高", "平日強化", f"{min_wd['weekday']}対象の早割・特典導入", f"{min_wd['weekday']}日平均 ¥{min_wd['daily_avg_sales']:,.0f}→¥75,000"],
+        ["高", "売上水準復元", f"前年同月{yen(m04_py['sales_total']) if m04_py else '—'}水準への売上戻し", f"{yen(m04['sales_total'])}→{yen(m04_py['sales_total']) if m04_py else '—'}"],
+        ["中", "ボトル販売", "CLP社員向けボトルキープ施策の継続・定型化", f"月次{yen(p14['sales'])}水準を維持／拡大"],
+        ["中", "深夜需要", "金土の24-26時限定「ナイトキャップセット」", "24-26時構成比の引き上げ"],
+        ["中", "コース提案", "コース予約からアラカルト導線の標準化", f"コース構成比 {p15['share_sales']:.0f}%を維持しつつ追加客単価"],
+        ["低", "日報運用", f"日報入力{len(dr)}件。継続して週次リズムを維持", "月10〜15件入力"],
     ],
-    "caption": "売上回復とPL赤字脱却が両輪。高優先4件は売上・PLの即時改善、中優先4件は構造的な収益力強化に向けた施策。",
+    "caption": "客単価回復・平日強化・新規収益柱の3軸で売上水準を前年並みに戻すことが論点。",
 })
 
 # v1.2 イテレーション9: 確認事項スライド（旧 Slide 24）は削除

@@ -1,0 +1,99 @@
+# 個別会話サマリー化タスク（バッチ {{BATCH_NUM}} / 全5バッチ）
+
+あなたは PONさんのChatGPT会話履歴を AIOS ナレッジベースに統合するためのサマリー作成エージェントです。
+
+## あなたの仕事
+
+入力された **10件の ChatGPT 会話 JSON** を読み、それぞれを **1ファイル = 1サマリー** の markdown に整形して保存してください。
+
+## 入力ファイル
+
+`{{BATCH_FILE}}` (JSON配列、10件分)
+
+各要素のキー:
+- `conversation_id`: 会話ID
+- `json_path`: 生会話JSON のフルパス（ここを Read して中身を読む）
+- `category`: 大カテゴリ（美容室 / 美容専門店 / 自社ブランド / J-Beauty）
+- `subcategory`: サブカテゴリ（店舗名・事業名）
+- `title`: 会話タイトル
+- `date`: 会話日付（YYYY-MM-DD）
+- `has_artifacts`: 成果物有無（true/false）
+- `artifact_files`: 関連 artifact のファイル名リスト
+- `total_chars`: 全メッセージの合計文字数
+
+## 出力先
+
+`/Users/rikutanaka/aipm_v0/Flow/202606/2026-06-05/RestaurantAILab/バンコクPonさん案件/output/per_conversation/{category}/{date}_{slug}_{convId8}.md`
+
+- `{slug}` は title を半角英数+日本語+`-`/`_` のみに正規化したもの（最大40文字）
+- `{convId8}` は conversation_id の先頭8文字
+
+例: `output/per_conversation/美容室/2024-08-15_服屋と美容室プロモーションアイディア_64423ac3.md`
+
+## サマリーのフォーマット
+
+```markdown
+---
+conversation_id: {full_id}
+title: {original_title}
+date: {YYYY-MM-DD}
+category: {大カテゴリ}
+subcategory: {サブカテゴリ}
+has_artifacts: {true|false}
+artifact_files: [{file1}, {file2}]
+total_chars: {数値}
+source_json: {生会話JSONの相対パスまたは絶対パス}
+---
+
+# {タイトル}
+
+## ひとことサマリー
+（1〜2文、100文字程度で「この会話で何を話し、どんな結論に至ったか」）
+
+## 論点と結論
+- 論点A → 結論/AI回答の要約
+- 論点B → 結論/AI回答の要約
+- ...（3〜7項目）
+
+## 決定事項・アクション
+- 明確に決まったこと
+- PONさんが次やると述べたこと
+- （該当なしなら「該当なし」と書く）
+
+## 言及された人物・店舗・商品
+- 名前 — 役割や文脈
+- （該当なしなら「該当なし」）
+
+## 関連 artifacts
+- [{artifact_file_name}](../../../../../Stock/RestaurantAILab/バンコクPonさん案件/output_2026-04-22/pon-chatgpt-knowledge/ChatGPT履歴/{category}/{subcategory}/artifacts/{artifact_file_name})
+- （複数あれば列挙、無ければ「なし」）
+
+## 重要な引用（原文）
+> {ユーザー or アシスタントの印象的な一節 1〜2か所、各 100〜300 文字}
+```
+
+## 進め方の指針
+
+1. **`json_path` を Read** して `messages` 配列を全部読む（user/assistant 両方）
+2. 内容を理解した上で上記テンプレに沿って markdown を生成
+3. **タイトルが「サマリー」とほぼ重複する短い会話**でも、テンプレの全セクションは埋める（「該当なし」可）
+4. 出力ファイル名のスラッグは安全化（`/`, スペース, 記号は `_` に置換）
+5. 出力先ディレクトリは既に存在する（`mkdir -p` 不要）
+6. 一つ書いたら次へ。**10件全部処理し終わったら**「Done: 10件完了。ファイルリスト: …」と報告
+
+## 重要事項
+
+- **既存ファイルは上書きしてOK**（再実行された場合）
+- 自分でディレクトリを移動しない（`cd` 不要）
+- 各サマリーは独立して書く（他の9件を読む必要はない）
+- **想像で補完しない**。生JSONに書いてあることだけをサマリー化
+- 言及人物・店舗は messages のテキストから抽出（CSV 参照不要）
+- 引用は messages の `text` フィールドからそのまま抜く
+
+## 完了条件
+
+- 出力ディレクトリに 10 個の .md ファイルが生成されている
+- 各ファイルがテンプレ通りに埋まっている
+- 報告メッセージで処理した会話ID一覧を返す
+
+それでは始めてください。

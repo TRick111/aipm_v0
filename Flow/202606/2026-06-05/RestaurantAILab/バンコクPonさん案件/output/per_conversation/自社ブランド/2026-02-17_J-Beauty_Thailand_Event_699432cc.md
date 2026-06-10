@@ -36,7 +36,7 @@ source_json: /Users/rikutanaka/RestaurantAILab/Markdowns-1/Stock/バンコクPon
 - Clé de Peau Beauté — ラグジュアリー日本の象徴として SNS 投稿が多いブランド。
 
 ## 関連 artifacts
-- [699432cc_j-beauty-thailand-event-proposal.md](../../../../../Stock/RestaurantAILab/バンコクPonさん案件/output_2026-04-22/pon-chatgpt-knowledge/ChatGPT履歴/自社ブランド/KINUJO/artifacts/699432cc_j-beauty-thailand-event-proposal.md)
+- [699432cc_j-beauty-thailand-event-proposal.md](artifacts/j-beauty-thailand-event-proposal.md)
 
 ## 重要な引用（原文）
 > 本企画の目的は販売ではなく、日本美容ブランドの認知拡大／「日本美容＝高品質」というイメージ形成／SNSでの話題化と拡散／今後の展開につながる成功実績づくりを目指します。👉 売上よりも「体験＋SNS拡散」を最優先に設計します。

@@ -41,11 +41,11 @@ source_json: /Users/rikutanaka/RestaurantAILab/Markdowns-1/Stock/バンコクPon
 - @thesensenailsalon — ヤワラート地区ローカル密着型
 
 ## 関連 artifacts
-- [6905ae01_instagram_caption_trends_2025.md](../../../../../Stock/RestaurantAILab/バンコクPonさん案件/output_2026-04-22/pon-chatgpt-knowledge/ChatGPT履歴/美容専門店/ネイルサロン/artifacts/6905ae01_instagram_caption_trends_2025.md)
-- [6905ae01_nail_salon_caption_templates.md](../../../../../Stock/RestaurantAILab/バンコクPonさん案件/output_2026-04-22/pon-chatgpt-knowledge/ChatGPT履歴/美容専門店/ネイルサロン/artifacts/6905ae01_nail_salon_caption_templates.md)
-- [6905ae01_bangkok_nail_instagram_accounts_analysis.md](../../../../../Stock/RestaurantAILab/バンコクPonさん案件/output_2026-04-22/pon-chatgpt-knowledge/ChatGPT履歴/美容専門店/ネイルサロン/artifacts/6905ae01_bangkok_nail_instagram_accounts_analysis.md)
-- [6905ae01_bangkok_nail_accounts_line_format.md](../../../../../Stock/RestaurantAILab/バンコクPonさん案件/output_2026-04-22/pon-chatgpt-knowledge/ChatGPT履歴/美容専門店/ネイルサロン/artifacts/6905ae01_bangkok_nail_accounts_line_format.md)
-- [6905ae01_bangkok_nail_hashtag_strategy.md](../../../../../Stock/RestaurantAILab/バンコクPonさん案件/output_2026-04-22/pon-chatgpt-knowledge/ChatGPT履歴/美容専門店/ネイルサロン/artifacts/6905ae01_bangkok_nail_hashtag_strategy.md)
+- [6905ae01_instagram_caption_trends_2025.md](artifacts/instagram_caption_trends_2025.md)
+- [6905ae01_nail_salon_caption_templates.md](artifacts/nail_salon_caption_templates.md)
+- [6905ae01_bangkok_nail_instagram_accounts_analysis.md](artifacts/bangkok_nail_instagram_accounts_analysis.md)
+- [6905ae01_bangkok_nail_accounts_line_format.md](artifacts/bangkok_nail_accounts_line_format.md)
+- [6905ae01_bangkok_nail_hashtag_strategy.md](artifacts/bangkok_nail_hashtag_strategy.md)
 
 ## 重要な引用（原文）
 > 今、ネイルサロンをバンコクで開業しようと思ってまして インスタグラムでポップアップショップを美容室と絡めながら 最初にスタートしていくことで スタートでどのくらいお客さんの反応があるかと思ってテストしようとしています。

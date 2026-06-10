@@ -41,9 +41,10 @@ def load_and_process_data(sales_file, target_week, end_date):
     # データ読み込み
     df = pd.read_csv(sales_file)
 
-    # UTC → JST変換
-    df['entry_at'] = pd.to_datetime(df['entry_at'], utc=True)
-    df['entry_at_jst'] = df['entry_at'].dt.tz_convert('Asia/Tokyo')
+    # rawdata.csv の entry_at は JST ナイーブ文字列（Dashboard API が
+    # formatUTCtoJST で生成）。tz_localize で TZ 情報のみ付与する。
+    # 参照: _investigations/2026-06-10_timezone_bug.md
+    df['entry_at_jst'] = pd.to_datetime(df['entry_at']).dt.tz_localize('Asia/Tokyo')
 
     # 営業日定義（JST 0-5時は前日の営業日）
     df['business_date'] = df['entry_at_jst'].apply(

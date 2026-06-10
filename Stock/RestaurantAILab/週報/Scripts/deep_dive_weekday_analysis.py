@@ -43,8 +43,25 @@ def parse_args():
 def load_rawdata(input_dir):
     """rawdata.csvを読み込み、営業日基準で変換"""
     df = pd.read_csv(f'{input_dir}/rawdata.csv')
-    df['entry_at'] = pd.to_datetime(df['entry_at'], utc=True)
-    df['entry_at_jst'] = df['entry_at'].dt.tz_convert('Asia/Tokyo')
+    # rawdata.csv の entry_at は JST ナイーブ文字列（Dashboard API が
+    # formatUTCtoJST で生成）。tz_localize で TZ 情報のみ付与する。
+    # 参照: _investigations/2026-06-10_timezone_bug.md
+    df['entry_at_jst'] = pd.to_datetime(df['entry_at']).dt.tz_localize('Asia/Tokyo')
+
+    # === Sanity check: rawdata.csv の day_of_week 列と JST 解釈の整合性 ===
+    # rawdata.csv の day_of_week は Dashboard API が entry_at の暦日（JST）から
+    # 算出した曜日を入れているため、entry_at_jst.dt.dayofweek と一致するはず。
+    # UTC 誤解釈（+9h シフト）が混入すると本チェックが落ちる。
+    if 'day_of_week' in df.columns:
+        _dow_map_ja = {0: '月', 1: '火', 2: '水', 3: '木', 4: '金', 5: '土', 6: '日'}
+        _dow_calc = df['entry_at_jst'].dt.dayofweek.map(_dow_map_ja)
+        _mask = df['day_of_week'].notna() & df['entry_at_jst'].notna()
+        _total = int(_mask.sum())
+        _match = int((_dow_calc[_mask].values == df.loc[_mask, 'day_of_week'].values).sum())
+        _rate = _match / _total if _total else 0
+        print(f"[sanity] entry_at JST 解釈の day_of_week 整合率: {_match}/{_total} = {_rate:.1%}")
+        assert _rate >= 0.95, f"day_of_week整合率が95%未満（{_rate:.1%}）。rawdata.csvの時刻列がJSTでない可能性あり。要調査。"
+
     df['business_date'] = df['entry_at_jst'].apply(
         lambda dt: (dt - pd.Timedelta(days=1)).date() if 0 <= dt.hour < 6 else dt.date()
     )

@@ -91,9 +91,11 @@ def _load_rawdata_csv(path, target_month):
         menu_name, price, quantity, subtotal, category1, ordered_at, cost_rate
     """
     raw = pd.read_csv(path)
-    # JST 化
-    raw["entry_jst"] = pd.to_datetime(raw["entry_at"], utc=True).dt.tz_convert("Asia/Tokyo")
-    raw["exit_jst"]  = pd.to_datetime(raw["exit_at"],  utc=True).dt.tz_convert("Asia/Tokyo")
+    # rawdata.csv の entry_at / exit_at は JST ナイーブ文字列（Dashboard API が
+    # formatUTCtoJST で生成）。tz_localize で TZ 情報のみ付与する（+9hシフトはしない）。
+    # 参照: 週報/_investigations/2026-06-10_timezone_bug.md
+    raw["entry_jst"] = pd.to_datetime(raw["entry_at"]).dt.tz_localize("Asia/Tokyo")
+    raw["exit_jst"]  = pd.to_datetime(raw["exit_at"]).dt.tz_localize("Asia/Tokyo")
     raw["dt"] = raw["exit_jst"]  # 会計日時 = exit
     raw["business_date"] = raw["dt"].apply(to_business_date)
     raw["business_month"] = pd.to_datetime(raw["business_date"]).dt.strftime("%Y-%m")
@@ -230,7 +232,8 @@ def kpi_from_rawdata(rawdata_path, month_str):
     """比較データ（前月／前年同月）を rawdata.csv から取得"""
     if not rawdata_path or not os.path.exists(rawdata_path): return None
     raw = pd.read_csv(rawdata_path)
-    raw["entry_jst"] = pd.to_datetime(raw["entry_at"], utc=True).dt.tz_convert("Asia/Tokyo")
+    # JST ナイーブ文字列 → tz_localize（参照: 週報/_investigations/2026-06-10_timezone_bug.md）
+    raw["entry_jst"] = pd.to_datetime(raw["entry_at"]).dt.tz_localize("Asia/Tokyo")
     raw["business_date"] = raw["entry_jst"].apply(to_business_date)
     raw["business_month"] = pd.to_datetime(raw["business_date"]).dt.strftime("%Y-%m")
     sub = raw[raw["business_month"] == month_str]

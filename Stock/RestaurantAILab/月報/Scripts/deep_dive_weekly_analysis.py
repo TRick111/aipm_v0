@@ -47,8 +47,10 @@ def parse_args():
 def load_rawdata(sales_path):
     """rawdata.csv を読み込み、営業日基準で変換"""
     df = pd.read_csv(sales_path)
-    df['entry_at'] = pd.to_datetime(df['entry_at'], utc=True)
-    df['entry_at_jst'] = df['entry_at'].dt.tz_convert('Asia/Tokyo')
+    # rawdata.csv の entry_at は JST ナイーブ文字列（Dashboard API が
+    # formatUTCtoJST で生成）。tz_localize で TZ 情報のみ付与する。
+    # 参照: 週報/_investigations/2026-06-10_timezone_bug.md
+    df['entry_at_jst'] = pd.to_datetime(df['entry_at']).dt.tz_localize('Asia/Tokyo')
     df['business_date'] = df['entry_at_jst'].apply(
         lambda dt: (dt - pd.Timedelta(days=1)).date() if 0 <= dt.hour < 6 else dt.date()
     )

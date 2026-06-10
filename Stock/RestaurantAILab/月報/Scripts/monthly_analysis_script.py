@@ -77,15 +77,30 @@ sales_df = pd.read_csv(args.sales_data)
 reviews_df = pd.read_csv(args.reviews_data, encoding='utf-8-sig')
 
 # ==========================================
-# UTC → JST 変換と営業日定義（週報と同一ロジック）
+# JST 解釈と営業日定義（週報と同一ロジック）
 # ==========================================
-sales_df['entry_at'] = pd.to_datetime(sales_df['entry_at'], utc=True)
-sales_df['exit_at'] = pd.to_datetime(sales_df['exit_at'], utc=True)
+# rawdata.csv の entry_at / exit_at / ordered_at は
+# Dashboard API が formatUTCtoJST で生成した JST ナイーブ文字列。
+# tz_localize で TZ 情報のみ付与する（+9hシフトはしない）。
+# 参照: _investigations/2026-06-10_timezone_bug.md
+sales_df['entry_at_jst'] = pd.to_datetime(sales_df['entry_at']).dt.tz_localize('Asia/Tokyo')
+sales_df['exit_at_jst']  = pd.to_datetime(sales_df['exit_at']).dt.tz_localize('Asia/Tokyo')
 if 'ordered_at' in sales_df.columns:
-    sales_df['ordered_at'] = pd.to_datetime(sales_df['ordered_at'], utc=True, errors='coerce')
+    sales_df['ordered_at_jst'] = pd.to_datetime(sales_df['ordered_at'], errors='coerce').dt.tz_localize('Asia/Tokyo')
 
-sales_df['entry_at_jst'] = sales_df['entry_at'].dt.tz_convert('Asia/Tokyo')
-sales_df['exit_at_jst'] = sales_df['exit_at'].dt.tz_convert('Asia/Tokyo')
+# === Sanity check: rawdata.csv の day_of_week 列と JST 解釈の整合性 ===
+# rawdata.csv の day_of_week は Dashboard API が entry_at の暦日（JST）から
+# 算出した曜日を入れているため、entry_at_jst.dt.dayofweek と一致するはず。
+# UTC 誤解釈（+9h シフト）が混入すると本チェックが落ちる。
+if 'day_of_week' in sales_df.columns:
+    _dow_map_ja = {0: '月', 1: '火', 2: '水', 3: '木', 4: '金', 5: '土', 6: '日'}
+    _dow_calc = sales_df['entry_at_jst'].dt.dayofweek.map(_dow_map_ja)
+    _mask = sales_df['day_of_week'].notna() & sales_df['entry_at_jst'].notna()
+    _total = int(_mask.sum())
+    _match = int((_dow_calc[_mask].values == sales_df.loc[_mask, 'day_of_week'].values).sum())
+    _rate = _match / _total if _total else 0
+    print(f"[sanity] entry_at JST 解釈の day_of_week 整合率: {_match}/{_total} = {_rate:.1%}")
+    assert _rate >= 0.95, f"day_of_week整合率が95%未満（{_rate:.1%}）。rawdata.csvの時刻列がJSTでない可能性あり。要調査。"
 
 def get_business_date(dt):
     if pd.isna(dt):

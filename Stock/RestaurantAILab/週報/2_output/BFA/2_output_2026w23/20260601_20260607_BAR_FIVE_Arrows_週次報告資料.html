@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BAR FIVE Arrows 週次営業報告 — 2026-W23</title>
+<title>BAR FIVE Arrows 週次営業報告 — 2026-W23（TZバグ修正後）</title>
 <script src="https://cdn.plot.ly/plotly-2.35.0.min.js"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;font-size:20px;color:#334155;}
@@ -97,41 +98,41 @@ body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN'
 <div class="slide slide-title" id="slide-1">
   <div class="main-title">BAR FIVE Arrows 週次営業報告</div>
   <div class="sub-title">2026年第23週 / 6月1日（月）〜6月7日（日）</div>
-  <div class="period">作成日: 2026-06-10 / 売上前週比+15.7%・前年比-0.8%まで回復、土曜の集客力が下支え</div>
+  <div class="period">作成日: 2026-06-13（TZバグ修正後・再生成） / 売上¥806,830・前週比+82%・前年比+71% — 日曜20名CLP団体+金曜45人で押し上げ</div>
 </div>
 
 <!-- SLIDE 2: Executive Summary -->
 <div class="slide" id="slide-2">
   <div class="slide-header"><h2><span class="section-tag">全体サマリー</span>エグゼクティブサマリー</h2><span class="pn">2 / 31</span><div class="progress-bar" style="width:3.3%"></div></div>
-  <div class="msg-bar">✅ 売上¥496,610は前週比+15.7%・前年同週比-0.8%まで回復。客単価¥5,067(+11%)と土曜集客力が牽引</div>
+  <div class="msg-bar">✅ 売上¥806,830は前週比+82%・前年同週比+71%。日曜20名CLP単発¥360K(売上44%)＋金曜45人集客で押し上げ</div>
   <div class="classification-bar"><ul>
     <li>集計対象: 2026-W23 の業務日（2026/06/01 06:00 〜 2026/06/08 05:59 JST、朝6時境界）</li>
-    <li>比較対象: 前週 W22 ／ 過去4週平均（W19-W22）／ 前年同週は別ページで扱う</li>
+    <li>比較対象: 前週 W22 ／ 過去4週平均（W19-W22）／ 前年同週 2025-W23</li>
     <li>BFA W23 はボトル購入カテゴリ売上=0のため、客単価2系統は同値</li>
   </ul></div>
   <div class="slide-body">
     <div class="kpi-row">
-      <div class="kpi-card"><span class="kpi-label">💰 売上</span><span class="kpi-value">¥496,610</span><span class="kpi-change positive">▲ +15.7% <span style="font-size:14px;color:#64748B;">前週比</span></span><span class="kpi-sub">4週平均比 ▼ -27.6%</span></div>
-      <div class="kpi-card"><span class="kpi-label">👥 客数</span><span class="kpi-value">98人</span><span class="kpi-change positive">▲ +4.3% <span style="font-size:14px;color:#64748B;">前週比</span></span><span class="kpi-sub">4週平均比 ▼ -21.1%</span></div>
-      <div class="kpi-card"><span class="kpi-label">💴 客単価（ボトル除く）</span><span class="kpi-value">¥5,067</span><span class="kpi-change positive">▲ +11.0% <span style="font-size:14px;color:#64748B;">前週比</span></span><span class="kpi-sub">4週平均比 ▲ +2.1%</span></div>
-      <div class="kpi-card"><span class="kpi-label">💴 客単価（全部込み）</span><span class="kpi-value">¥5,067</span><span class="kpi-change positive">▲ +11.0% <span style="font-size:14px;color:#64748B;">前週比</span></span><span class="kpi-sub">W23ボトル¥0</span></div>
-      <div class="kpi-card"><span class="kpi-label">🧾 組数</span><span class="kpi-value">34組</span><span class="kpi-change negative">▼ -17.1% <span style="font-size:14px;color:#64748B;">前週比</span></span><span class="kpi-sub">4週平均比 ▼ -23.6%</span></div>
+      <div class="kpi-card"><span class="kpi-label">💰 売上</span><span class="kpi-value">¥806,830</span><span class="kpi-change positive">▲ +82.4% <span style="font-size:14px;color:#64748B;">前週比</span></span><span class="kpi-sub">4週平均比 ▲ +17.2%</span></div>
+      <div class="kpi-card"><span class="kpi-label">👥 客数</span><span class="kpi-value">107人</span><span class="kpi-change positive">▲ +16.3% <span style="font-size:14px;color:#64748B;">前週比</span></span><span class="kpi-sub">4週平均比 ▼ -14.6%</span></div>
+      <div class="kpi-card"><span class="kpi-label">💴 客単価（ボトル除く）</span><span class="kpi-value">¥7,540</span><span class="kpi-change positive">▲ +56.9% <span style="font-size:14px;color:#64748B;">前週比</span></span><span class="kpi-sub">4週平均比 ▲ +52.1%</span></div>
+      <div class="kpi-card"><span class="kpi-label">💴 客単価（全部込み）</span><span class="kpi-value">¥7,540</span><span class="kpi-change positive">▲ +56.9% <span style="font-size:14px;color:#64748B;">前週比</span></span><span class="kpi-sub">W23ボトル¥0</span></div>
+      <div class="kpi-card"><span class="kpi-label">🧾 組数</span><span class="kpi-value">27組</span><span class="kpi-change negative">▼ -37.2% <span style="font-size:14px;color:#64748B;">前週比</span></span><span class="kpi-sub">4週平均比 ▼ -41.0%</span></div>
     </div>
     <div style="margin-top:10px;">
       <ul class="bullet-list">
-        <li><div class="icon">✅</div><div class="text">売上 ¥496,610 は<strong>前年同週水準（¥500K）まで回復</strong>、客単価+10.4%で高単価化が定着</div></li>
-        <li><div class="icon">🏆</div><div class="text">土曜売上 <strong>¥181,930（客数45人、4週平均の1.94倍）</strong>が週全体を牽引</div></li>
-        <li><div class="icon">⚠️</div><div class="text">水曜会計2件のみ・火/木営業0日 — 平日テコ入れと運用方針整理が課題</div></li>
+        <li><div class="icon">✅</div><div class="text">売上 ¥806,830 はW21特需(¥1.51M)を除けば<strong>W18(¥830K)以来の高水準</strong>、前年比+71%</div></li>
+        <li><div class="icon">🏆</div><div class="text"><strong>CLP関連2組で売上¥437,000（54.2%）</strong> — 日曜20名×¥18,000 + 火曜11名団体</div></li>
+        <li><div class="icon">⚠️</div><div class="text">組数27組は直近5週で最低 — 単発客／中型グループの来店が極端に少ない</div></li>
       </ul>
     </div>
   </div>
-  <div class="footer-cite">出典: エアレジ会計明細 ／ 集計対象: 2026-W23 の業務日（朝6時境界）</div>
+  <div class="footer-cite">出典: エアレジ会計明細 ／ 集計対象: 2026-W23 の業務日（朝6時境界） ／ TZバグ修正後（analysis_script.py af5fbb91）</div>
 </div>
 
 <!-- SLIDE 3: Revenue Trend -->
 <div class="slide" id="slide-3">
   <div class="slide-header"><h2><span class="section-tag">全体サマリー</span>売上トレンド</h2><span class="pn">3 / 31</span><div class="progress-bar" style="width:6.7%"></div></div>
-  <div class="msg-bar">✅ 売上¥497Kは5週ぶりにW20水準を超え、前年同週比-0.8%でベース回帰</div>
+  <div class="msg-bar">✅ 売上¥806KはW21特需を除けばW18以来の高水準。前年同週比+71%でベース水準を大きく超過</div>
   <div class="classification-bar"><ul>
     <li>集計対象: 2026-W23 の業務日（業務日基準・ボトル含む全カテゴリ）</li>
     <li>直近5週間（W19-W23）の週次売上推移</li>
@@ -142,13 +143,13 @@ body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN'
       <div class="col-1-3" style="padding-top:14px;">
         <div class="content-card">
           <div style="font-size:16px;font-weight:600;color:#64748B;">前年同週比較</div>
-          <div style="font-size:18px;font-weight:800;color:#1E293B;margin-top:4px;">今週: ¥496,610</div>
-          <div style="font-size:16px;color:#94A3B8;margin-top:2px;">前年同週: ¥500,460</div>
-          <div style="font-size:22px;font-weight:800;color:#EF4444;margin-top:4px;">▼ -0.8%</div>
+          <div style="font-size:18px;font-weight:800;color:#1E293B;margin-top:4px;">今週: ¥806,830</div>
+          <div style="font-size:16px;color:#94A3B8;margin-top:2px;">前年同週: ¥471,960</div>
+          <div style="font-size:22px;font-weight:800;color:#22C55E;margin-top:4px;">▲ +71.0%</div>
         </div>
         <div class="content-card" style="margin-top:8px;">
           <div style="font-size:16px;font-weight:600;color:#64748B;">トレンド</div>
-          <p style="font-size:15px;margin-top:4px;">W22¥429Kからの回復基調。前年同週水準にほぼ復帰</p>
+          <p style="font-size:15px;margin-top:4px;">W22¥442Kから¥806Kへ大幅回復。W21特需を除けばW18(¥830K)以来の高水準</p>
         </div>
       </div>
     </div>
@@ -159,7 +160,7 @@ body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN'
 <!-- SLIDE 4: Customer Count Trend -->
 <div class="slide" id="slide-4">
   <div class="slide-header"><h2><span class="section-tag">全体サマリー</span>客数トレンド</h2><span class="pn">4 / 31</span><div class="progress-bar" style="width:10.0%"></div></div>
-  <div class="msg-bar">⚠️ 客数98人は前週並み回復。前年同週(109人)比-10%だが客単価で穴埋め</div>
+  <div class="msg-bar">💡 客数107人は前週比+16%・前年比+5%でほぼ前年並み。組数27組(5週最低)が示す通り単発・中型客の薄さが課題</div>
   <div class="classification-bar"><ul>
     <li>集計対象: 2026-W23 の業務日基準客数</li>
     <li>直近5週間（W19-W23）の週次客数推移</li>
@@ -170,13 +171,13 @@ body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN'
       <div class="col-1-3" style="padding-top:14px;">
         <div class="content-card">
           <div style="font-size:16px;font-weight:600;color:#64748B;">前年同週比較</div>
-          <div style="font-size:18px;font-weight:800;color:#1E293B;margin-top:4px;">今週: 98人</div>
-          <div style="font-size:16px;color:#94A3B8;margin-top:2px;">前年同週: 109人</div>
-          <div style="font-size:22px;font-weight:800;color:#EF4444;margin-top:4px;">▼ -10.1%</div>
+          <div style="font-size:18px;font-weight:800;color:#1E293B;margin-top:4px;">今週: 107人</div>
+          <div style="font-size:16px;color:#94A3B8;margin-top:2px;">前年同週: 102人</div>
+          <div style="font-size:22px;font-weight:800;color:#22C55E;margin-top:4px;">▲ +4.9%</div>
         </div>
         <div class="content-card" style="margin-top:8px;">
           <div style="font-size:16px;font-weight:600;color:#64748B;">トレンド</div>
-          <p style="font-size:15px;margin-top:4px;">客数は前週並み98人を維持。火/木の営業0日が下押し</p>
+          <p style="font-size:15px;margin-top:4px;">客数は前年並み。組数27の少なさが構造的課題（1組平均3.96人 = W22の1.85倍）</p>
         </div>
       </div>
     </div>
@@ -187,7 +188,7 @@ body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN'
 <!-- SLIDE 5: Spend Trend -->
 <div class="slide" id="slide-5">
   <div class="slide-header"><h2><span class="section-tag">全体サマリー</span>客単価トレンド</h2><span class="pn">5 / 31</span><div class="progress-bar" style="width:13.3%"></div></div>
-  <div class="msg-bar">✅ 客単価¥5,067は前年同週比+10.4%。コース系定着で高単価化が進行</div>
+  <div class="msg-bar">✅ 客単価¥7,540は前年比+63%・4週平均比+52%。日曜20名@¥18,000・CLPコース・7000円コースで高単価化が顕著</div>
   <div class="classification-bar"><ul>
     <li>集計対象: 客単価（ボトル除く・W23はボトル¥0のため全部込みと同値）</li>
     <li>直近5週間の週次客単価推移</li>
@@ -198,13 +199,13 @@ body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN'
       <div class="col-1-3" style="padding-top:14px;">
         <div class="content-card">
           <div style="font-size:16px;font-weight:600;color:#64748B;">前年同週比較</div>
-          <div style="font-size:18px;font-weight:800;color:#1E293B;margin-top:4px;">今週: ¥5,067</div>
-          <div style="font-size:16px;color:#94A3B8;margin-top:2px;">前年同週: ¥4,591</div>
-          <div style="font-size:22px;font-weight:800;color:#22C55E;margin-top:4px;">▲ +10.4%</div>
+          <div style="font-size:18px;font-weight:800;color:#1E293B;margin-top:4px;">今週: ¥7,540</div>
+          <div style="font-size:16px;color:#94A3B8;margin-top:2px;">前年同週: ¥4,627</div>
+          <div style="font-size:22px;font-weight:800;color:#22C55E;margin-top:4px;">▲ +63.0%</div>
         </div>
         <div class="content-card" style="margin-top:8px;">
           <div style="font-size:16px;font-weight:600;color:#64748B;">トレンド</div>
-          <p style="font-size:15px;margin-top:4px;">7000円コース+CLPコース+本わさびジンソニックで高単価化が定着</p>
+          <p style="font-size:15px;margin-top:4px;">5週で最高。組単価¥29,883（W22比+190%）。バー指標として組単価も併読推奨</p>
         </div>
       </div>
     </div>
@@ -215,21 +216,21 @@ body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN'
 <!-- SLIDE 6: YoY Summary -->
 <div class="slide" id="slide-6">
   <div class="slide-header"><h2><span class="section-tag">全体サマリー</span>前年同週比サマリー</h2><span class="pn">6 / 31</span><div class="progress-bar" style="width:16.7%"></div></div>
-  <div class="msg-bar">💡 売上は前年並み(-0.8%)に復帰、客単価+10%で高単価化定着。客数-10%が継続課題</div>
+  <div class="msg-bar">💡 売上+71%・客単価+63%は明確な高単価化シフト。一方客数は前年並みで、組単価¥29,883の上振れは単発要素を含む</div>
   <div class="classification-bar"><ul>
     <li>集計対象: 当週（2026-W23）と前年同週（2025-W23）の3指標比較</li>
-    <li>客数減を客単価増で打ち返した「単価依存」の回復構造</li>
+    <li>客数微増を客単価大幅増で押し上げた「高単価化＋単発大口」の合成構造</li>
   </ul></div>
   <div class="slide-body">
     <div class="gauge-row">
-      <div class="gauge-card"><div class="g-label">売上</div><div class="g-values"><span class="g-this">¥496,610</span><span class="g-prev">前年 ¥500,460</span></div><div class="g-pct neg">▼ -0.8%</div></div>
-      <div class="gauge-card"><div class="g-label">客数</div><div class="g-values"><span class="g-this">98人</span><span class="g-prev">前年 109人</span></div><div class="g-pct neg">▼ -10.1%</div></div>
-      <div class="gauge-card"><div class="g-label">客単価</div><div class="g-values"><span class="g-this">¥5,067</span><span class="g-prev">前年 ¥4,591</span></div><div class="g-pct pos">▲ +10.4%</div></div>
+      <div class="gauge-card"><div class="g-label">売上</div><div class="g-values"><span class="g-this">¥806,830</span><span class="g-prev">前年 ¥471,960</span></div><div class="g-pct pos">▲ +71.0%</div></div>
+      <div class="gauge-card"><div class="g-label">客数</div><div class="g-values"><span class="g-this">107人</span><span class="g-prev">前年 102人</span></div><div class="g-pct pos">▲ +4.9%</div></div>
+      <div class="gauge-card"><div class="g-label">客単価</div><div class="g-values"><span class="g-this">¥7,540</span><span class="g-prev">前年 ¥4,627</span></div><div class="g-pct pos">▲ +63.0%</div></div>
     </div>
     <div style="margin-top:14px;">
       <ul class="bullet-list">
-        <li><div class="icon">📊</div><div class="text">売上ほぼ横ばい(-0.8%)・客単価+10.4%で<strong>高単価化が前年比でも明確</strong></div></li>
-        <li><div class="icon">💡</div><div class="text">客数-10%は集客側の課題、客単価伸長と組み合わせれば前年超えが視野</div></li>
+        <li><div class="icon">📊</div><div class="text">売上+71%・客単価+63%で<strong>高単価化シフトが前年比でも明確</strong>。コース系プラン定着＋単発大口の合成効果</div></li>
+        <li><div class="icon">💡</div><div class="text">客数+5%は前年並み — 集客力ベースは横這い、単価で売上を押し上げる構造</div></li>
       </ul>
     </div>
   </div>
@@ -239,10 +240,10 @@ body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN'
 <!-- SLIDE 7: Day-of-Week Overview -->
 <div class="slide" id="slide-7">
   <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>曜日別概況</h2><span class="pn">7 / 31</span><div class="progress-bar" style="width:20.0%"></div></div>
-  <div class="msg-bar">✅ 土曜+¥46K・日曜+¥0Kがプラス、水曜-¥139Kが最大不調。火/木営業0日</div>
+  <div class="msg-bar">✅ 日+¥276K・金+¥40K・土+¥51Kの3曜日がプラス。火-¥151K・木-¥33Kで平日2日が継続不調</div>
   <div class="classification-bar"><ul>
     <li>集計対象: 2026-W23 の曜日別売上（業務日基準）vs 過去4週平均（W19-W22）</li>
-    <li>業務日基準: 深夜0-5:59は前日扱い ／ 火・木はW23営業日0日（4週平均は該当曜日の営業日のみ算出）</li>
+    <li>業務日基準: 深夜0-5:59は前日扱い ／ 月・水はW23営業日0日 ／ 火・木はW19-W22も部分的休業のため4週平均は営業日のみで算出</li>
   </ul></div>
   <div class="slide-body">
     <div id="chart-s7" style="width:100%;height:470px;"></div>
@@ -250,265 +251,264 @@ body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN'
   <div class="footer-cite">出典: エアレジ会計明細 ／ 集計対象: 2026-W23 の業務日（朝6時境界）</div>
 </div>
 
-<!-- SLIDE 8: Wed Basic Numbers -->
+<!-- SLIDE 8: Sun Basic Numbers -->
 <div class="slide" id="slide-8">
-  <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>水曜日（6/3）不調の分析：基本数字</h2><span class="pn">8 / 31</span><div class="progress-bar" style="width:23.3%"></div></div>
-  <div class="msg-bar">⚠️ 水曜売上¥94,100は4週平均の40%。会計2件のみで通常客の来店ゼロ</div>
+  <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>日曜日（6/7）好調の分析：基本数字</h2><span class="pn">8 / 31</span><div class="progress-bar" style="width:23.3%"></div></div>
+  <div class="msg-bar">✅ 日曜売上¥360,000は4週平均比+328%。20名×¥18,000の単発CLP団体で週全体の44.6%を獲得</div>
   <div class="classification-bar"><ul>
-    <li>集計対象: 2026-06-03（水）の業務日データ vs 過去4週の水曜平均</li>
+    <li>集計対象: 2026-06-07（日）の業務日データ vs 過去4週の日曜平均（W19-W22）</li>
   </ul></div>
   <div class="slide-body">
     <div class="flex-row">
       <div class="col-2-3"><div id="chart-s8" style="width:100%;height:420px;"></div></div>
       <div class="col-1-3" style="padding-top:10px;">
         <ul class="bullet-list">
-          <li><div class="icon">🚨</div><div class="text">売上4週平均比<strong>40.3%</strong> — 週内全曜日で最低</div></li>
-          <li><div class="icon">📉</div><div class="text">客数12人（4週平均18.8人の64%）— 会計2件のみ</div></li>
-          <li><div class="icon">⚠️</div><div class="text">客単価¥7,841（4週平均¥12,449の63%）も低調</div></li>
+          <li><div class="icon">🏆</div><div class="text">売上4週平均比<strong>428.0%</strong> — 週内最大プラス</div></li>
+          <li><div class="icon">👥</div><div class="text">客数20人（4週平均25.25人の79%）— 1組のみ</div></li>
+          <li><div class="icon">💴</div><div class="text">客単価¥18,000は4週平均¥3,550の<strong>5.07倍</strong></div></li>
+          <li><div class="icon">⚠️</div><div class="text"><strong>会計1件のみ</strong> — 単発大型予約による特異値</div></li>
         </ul>
       </div>
     </div>
   </div>
-  <div class="footer-cite">出典: エアレジ会計明細 ／ 集計対象: 2026-06-03 の業務日</div>
+  <div class="footer-cite">出典: エアレジ会計明細 ／ 集計対象: 2026-06-07 の業務日</div>
 </div>
 
-<!-- SLIDE 9: Wed Group Size -->
+<!-- SLIDE 9: Sun Group Size -->
 <div class="slide" id="slide-9">
-  <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>水曜日 不調の分析：グループ構成</h2><span class="pn">9 / 31</span><div class="progress-bar" style="width:26.7%"></div></div>
-  <div class="msg-bar">⚠️ 11名団体×1組と1名×1組のみで会計数2件。通常客層（2-4名）が完全消失</div>
+  <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>日曜日 好調の分析：グループ構成</h2><span class="pn">9 / 31</span><div class="progress-bar" style="width:26.7%"></div></div>
+  <div class="msg-bar">✅ 20名団体1件で売上100%占有。通常客来店ゼロの特異構造 — 来週以降の再現性は不確実</div>
   <div class="classification-bar"><ul>
-    <li>集計対象: 2026-06-03（水）の会計データ（会計レベル）</li>
+    <li>集計対象: 2026-06-07（日）の会計データ（会計レベル）</li>
   </ul></div>
   <div class="slide-body">
     <div class="flex-row">
       <div class="col-2-3"><div id="chart-s9" style="width:100%;height:420px;"></div></div>
       <div class="col-1-3" style="padding-top:10px;">
         <ul class="bullet-list">
-          <li><div class="icon">🚨</div><div class="text"><strong>2-4名グループゼロ</strong>で中核客層が消失</div></li>
-          <li><div class="icon">📊</div><div class="text">11名団体（CLPコース）<strong>¥91,300・97%</strong>が売上の柱</div></li>
-          <li><div class="icon">⚠️</div><div class="text">1名客×1組のみ。通常営業ベースの来店ゼロ</div></li>
+          <li><div class="icon">🎯</div><div class="text">20名団体1件で<strong>客数20人・¥360,000（100%）</strong>を獲得</div></li>
+          <li><div class="icon">🚨</div><div class="text"><strong>1-4名グループ来店ゼロ</strong> — 通常客層が完全不在</div></li>
+          <li><div class="icon">⚠️</div><div class="text">単発要素 — 来週以降の基準値化は危険</div></li>
         </ul>
       </div>
     </div>
   </div>
-  <div class="footer-cite">出典: エアレジ会計明細 ／ 集計対象: 2026-06-03 の業務日</div>
+  <div class="footer-cite">出典: エアレジ会計明細 ／ 集計対象: 2026-06-07 の業務日</div>
 </div>
 
-<!-- SLIDE 10: Wed Time Slot -->
+<!-- SLIDE 10: Sun Time Slot -->
 <div class="slide" id="slide-10">
-  <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>水曜日 不調の分析：時間帯別売上</h2><span class="pn">10 / 31</span><div class="progress-bar" style="width:30.0%"></div></div>
-  <div class="msg-bar">⚠️ 6時台のCLP団体精算で売上集中、22-26時の通常営業帯で会計ゼロ</div>
+  <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>日曜日 好調の分析：時間帯別売上</h2><span class="pn">10 / 31</span><div class="progress-bar" style="width:30.0%"></div></div>
+  <div class="msg-bar">✅ 23時台に20名×¥360,000の1ピーク。深夜帯延長・通常客の取り込みは発生せず</div>
   <div class="classification-bar"><ul>
-    <li>集計対象: 2026-06-03 の settlement_time（会計完了時刻）別売上</li>
-    <li>BFAは18時開店・26時頃閉店のため、6時台の会計は前晩ディナーの精算</li>
+    <li>集計対象: 2026-06-07 の入店時刻別売上</li>
+    <li>大型団体は23時着席で1件着地。他時間帯の通常営業会計は発生していない</li>
   </ul></div>
   <div class="slide-body">
     <div class="flex-row">
       <div class="col-2-3"><div id="chart-s10" style="width:100%;height:420px;"></div></div>
       <div class="col-1-3" style="padding-top:10px;">
         <ul class="bullet-list">
-          <li><div class="icon">📍</div><div class="text">6時台（閉店精算）に11名団体<strong>¥91,300</strong>が集中</div></li>
-          <li><div class="icon">⏰</div><div class="text">22-26時の通常営業帯で<strong>会計発生ゼロ</strong></div></li>
-          <li><div class="icon">⚠️</div><div class="text">深夜帯（26-29時）取り込みもゼロ</div></li>
+          <li><div class="icon">📍</div><div class="text">23時台に20名団体<strong>¥360,000</strong>が単独で発生</div></li>
+          <li><div class="icon">⏰</div><div class="text">18-22時の通常営業帯で<strong>会計発生ゼロ</strong></div></li>
+          <li><div class="icon">⚠️</div><div class="text">深夜延長帯（25-29時）の取り込みもゼロ</div></li>
         </ul>
       </div>
     </div>
   </div>
-  <div class="footer-cite">出典: エアレジ会計明細 ／ 集計対象: 2026-06-03 の業務日</div>
+  <div class="footer-cite">出典: エアレジ会計明細 ／ 集計対象: 2026-06-07 の業務日</div>
 </div>
 
-<!-- SLIDE 11: Wed Product Mix -->
+<!-- SLIDE 11: Sun Product Mix -->
 <div class="slide" id="slide-11">
-  <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>水曜日 不調の分析：商品別売上</h2><span class="pn">11 / 31</span><div class="progress-bar" style="width:33.3%"></div></div>
-  <div class="msg-bar">⚠️ CLPコース1件で売上89%占有。通常メニュー注文がほぼ発生していない異例構成</div>
+  <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>日曜日 好調の分析：商品別売上</h2><span class="pn">11 / 31</span><div class="progress-bar" style="width:33.3%"></div></div>
+  <div class="msg-bar">✅ 全額が「CLPコース_その他 @¥18,000 × 20名」。CLPメンバーシップの大型団体導線が機能</div>
   <div class="classification-bar"><ul>
-    <li>集計対象: 2026-06-03 のカテゴリ別売上TOP5</li>
+    <li>集計対象: 2026-06-07 のカテゴリ／商品</li>
   </ul></div>
   <div class="slide-body">
     <table class="dt" style="margin-top:6px;">
-      <thead><tr><th>カテゴリ</th><th class="num">売上</th><th class="num">構成比</th></tr></thead>
+      <thead><tr><th>カテゴリ / 商品</th><th class="num">売上</th><th class="num">構成比</th></tr></thead>
       <tbody>
-        <tr class="highlight-row"><td>未設定（CLPコース）</td><td class="num">¥77,000</td><td class="num">89.1%</td></tr>
-        <tr><td>その他</td><td class="num">¥6,600</td><td class="num">7.6%</td></tr>
-        <tr><td>🥤 ソフトドリンク</td><td class="num">¥1,600</td><td class="num">1.9%</td></tr>
-        <tr><td>🥗 COLD APPETIZERS</td><td class="num">¥1,200</td><td class="num">1.4%</td></tr>
+        <tr class="highlight-row"><td>🥂 コース&セット / CLPコース_その他</td><td class="num">¥360,000</td><td class="num">100.0%</td></tr>
       </tbody>
     </table>
-    <div style="margin-top:8px;">
+    <div style="margin-top:12px;">
       <ul class="bullet-list">
-        <li><div class="icon">🍸</div><div class="text">高単価商品: CLPコース_7000円飲み放題付（3時間制）×1（¥77,000）のみ</div></li>
-        <li><div class="icon">⚠️</div><div class="text">カクテル系の注文が皆無 — メニュー指名による通常客来店なし</div></li>
+        <li><div class="icon">🥂</div><div class="text">CLPコース_その他 @¥18,000 × 20名 = <strong>¥360,000（週全体の44.6%）</strong></div></li>
+        <li><div class="icon">🍸</div><div class="text">カクテル・ウイスキー等のサイドオーダーは記録なし — コース料金のみで完結</div></li>
+        <li><div class="icon">💡</div><div class="text">CLPメンバーシップの<strong>法人/グループ利用導線</strong>が機能している示唆</div></li>
       </ul>
     </div>
   </div>
-  <div class="footer-cite">出典: エアレジ会計明細 ／ 集計対象: 2026-06-03 の業務日</div>
+  <div class="footer-cite">出典: エアレジ会計明細 ／ 集計対象: 2026-06-07 の業務日</div>
 </div>
 
-<!-- SLIDE 12: Wed Summary -->
+<!-- SLIDE 12: Sun Summary -->
 <div class="slide" id="slide-12">
-  <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>水曜日 不調の分析：まとめ</h2><span class="pn">12 / 31</span><div class="progress-bar" style="width:36.7%"></div></div>
-  <div class="msg-bar">⚠️ 水曜不振の主因は「通常客来店ゼロ」「CLP団体集中」「深夜帯消失」の3点</div>
+  <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>日曜日 好調の分析：まとめ</h2><span class="pn">12 / 31</span><div class="progress-bar" style="width:36.7%"></div></div>
+  <div class="msg-bar">✅ 日曜成功の要因は「CLPの法人/グループ利用導線」「20名規模対応」「¥18,000高単価コースの選択」の3点 — 再現性確保が課題</div>
   <div class="classification-bar"><ul>
-    <li>集計対象: 2026-06-03（水）の総合考察</li>
+    <li>集計対象: 2026-06-07（日）の総合考察</li>
   </ul></div>
   <div class="slide-body">
-    <div class="section-title">不調の主要因（3点）</div>
+    <div class="section-title">好調の主要因（3点）</div>
     <ul class="bullet-list">
-      <li><div class="icon">🚨</div><div class="text"><strong>来店2組のみ</strong> — CLP団体11名と単発1名で2-4名通常客ゼロ</div></li>
-      <li><div class="icon">⏰</div><div class="text"><strong>22-26時の通常営業帯で会計発生なし</strong>、平日水曜の集客力低下が継続（W22 4件→W23 2件）</div></li>
-      <li><div class="icon">🍸</div><div class="text"><strong>カクテル指名注文ゼロ</strong> — 売上の97%がCLPコース1件に集中</div></li>
+      <li><div class="icon">🏆</div><div class="text"><strong>CLPメンバーシップ経由の20名団体予約</strong> — CLPコース_その他 ¥18,000 を全員選択</div></li>
+      <li><div class="icon">🪑</div><div class="text"><strong>23時着席の大型団体を受け入れる体制</strong> — バー業態としては異例規模を捌いた</div></li>
+      <li><div class="icon">💴</div><div class="text">売上¥360,000 = 当週全体の<strong>44.6%</strong>、客単価¥18,000 = 通常客の3〜5倍</div></li>
     </ul>
-    <div class="section-title" style="margin-top:14px;">来週に向けた課題</div>
+    <div class="section-title" style="margin-top:14px;">来週に向けた論点</div>
     <ul class="bullet-list">
-      <li><div class="icon">📋</div><div class="text">水曜の予約獲得（CLP社員/法人向け平日プラン継続訴求）</div></li>
-      <li><div class="icon">📱</div><div class="text">22時以降の遅め予約導線・SNS訴求の強化</div></li>
-      <li><div class="icon">👤</div><div class="text">2-4名グループ取り込み策（友人連れ・カップル来店促進）</div></li>
+      <li><div class="icon">⚠️</div><div class="text"><strong>単発要素</strong>なので来週以降の予算策定の基準にしない</div></li>
+      <li><div class="icon">📋</div><div class="text">CLP団体パイプラインの本格化（紹介経由・SNS訴求）が次の主要論点</div></li>
     </ul>
   </div>
-  <div class="footer-cite">出典: エアレジ会計明細 ／ 集計対象: 2026-06-03 の業務日</div>
+  <div class="footer-cite">出典: エアレジ会計明細 ／ 集計対象: 2026-06-07 の業務日</div>
 </div>
 
-<!-- SLIDE 13: Sat Basic Numbers -->
+<!-- SLIDE 13: Tue Basic Numbers -->
 <div class="slide" id="slide-13">
-  <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>土曜日（6/6）好調の分析：基本数字</h2><span class="pn">13 / 31</span><div class="progress-bar" style="width:40.0%"></div></div>
-  <div class="msg-bar">✅ 土曜売上¥181,930は4週平均比+34%。客数45人は4週平均の1.94倍</div>
+  <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>火曜日（6/2）不調の分析：基本数字</h2><span class="pn">13 / 31</span><div class="progress-bar" style="width:40.0%"></div></div>
+  <div class="msg-bar">⚠️ 火曜売上¥94,100は4週平均の38%。会計2件（11名団体+1名）のみで通常客来店ゼロ</div>
   <div class="classification-bar"><ul>
-    <li>集計対象: 2026-06-06（土）の業務日データ vs 過去4週の土曜平均</li>
+    <li>集計対象: 2026-06-02（火）の業務日データ vs 過去4週の火曜平均</li>
   </ul></div>
   <div class="slide-body">
     <div class="flex-row">
       <div class="col-2-3"><div id="chart-s13" style="width:100%;height:420px;"></div></div>
       <div class="col-1-3" style="padding-top:10px;">
         <ul class="bullet-list">
-          <li><div class="icon">🏆</div><div class="text">売上4週平均比<strong>133.6%</strong> — 週内最大プラス</div></li>
-          <li><div class="icon">👥</div><div class="text">客数45人（4週平均23.2人の<strong>193.5%</strong>）— 集客力突出</div></li>
-          <li><div class="icon">💴</div><div class="text">客単価¥4,043は4週平均の69%だが、客数増で十分カバー</div></li>
+          <li><div class="icon">🚨</div><div class="text">売上4週平均比<strong>38.4%</strong> — 週内最大マイナス</div></li>
+          <li><div class="icon">📉</div><div class="text">客数12人（4週平均21.25人の56.5%）— 会計2件のみ</div></li>
+          <li><div class="icon">⚠️</div><div class="text">客単価¥7,842は4週平均¥8,864比88.5%でほぼ同水準だが、客数不足で売上落ち込み</div></li>
         </ul>
       </div>
     </div>
   </div>
-  <div class="footer-cite">出典: エアレジ会計明細 ／ 集計対象: 2026-06-06 の業務日</div>
+  <div class="footer-cite">出典: エアレジ会計明細 ／ 集計対象: 2026-06-02 の業務日</div>
 </div>
 
-<!-- SLIDE 14: Sat Group Size -->
+<!-- SLIDE 14: Tue Group Size -->
 <div class="slide" id="slide-14">
-  <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>土曜日 好調の分析：グループ構成</h2><span class="pn">14 / 31</span><div class="progress-bar" style="width:43.3%"></div></div>
-  <div class="msg-bar">✅ 5-8名グループ5件で28人（62%）を取り込み、1-4名も均等に来店。多層的構造</div>
+  <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>火曜日 不調の分析：グループ構成</h2><span class="pn">14 / 31</span><div class="progress-bar" style="width:43.3%"></div></div>
+  <div class="msg-bar">⚠️ 11名団体×1組と1名客×1組のみ。2-4名帯の通常客来店ゼロが平日不調の根因</div>
   <div class="classification-bar"><ul>
-    <li>集計対象: 2026-06-06（土）の会計データ</li>
+    <li>集計対象: 2026-06-02（火）の会計データ</li>
   </ul></div>
   <div class="slide-body">
     <div class="flex-row">
       <div class="col-2-3"><div id="chart-s14" style="width:100%;height:420px;"></div></div>
       <div class="col-1-3" style="padding-top:10px;">
         <ul class="bullet-list">
-          <li><div class="icon">🎯</div><div class="text">5-8名グループ5件で<strong>客数28人・¥114,900（63%）</strong>を獲得</div></li>
-          <li><div class="icon">👥</div><div class="text">2名×3組・3-4名×3組も均等に獲得</div></li>
-          <li><div class="icon">🪑</div><div class="text">1名客1組も取り込み、客層が多層</div></li>
+          <li><div class="icon">🚨</div><div class="text"><strong>2-4名グループゼロ</strong>で中核客層が完全消失</div></li>
+          <li><div class="icon">📊</div><div class="text">11名団体（CLPコース）<strong>¥91,300・97%</strong>が売上の柱</div></li>
+          <li><div class="icon">⚠️</div><div class="text">1名客×1組のみ。通常営業ベースの来店ゼロ</div></li>
         </ul>
       </div>
     </div>
   </div>
-  <div class="footer-cite">出典: エアレジ会計明細 ／ 集計対象: 2026-06-06 の業務日</div>
+  <div class="footer-cite">出典: エアレジ会計明細 ／ 集計対象: 2026-06-02 の業務日</div>
 </div>
 
-<!-- SLIDE 15: Sat Time Slot -->
+<!-- SLIDE 15: Tue Time Slot -->
 <div class="slide" id="slide-15">
-  <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>土曜日 好調の分析：時間帯別売上</h2><span class="pn">15 / 31</span><div class="progress-bar" style="width:46.7%"></div></div>
-  <div class="msg-bar">✅ 閉店帯6-10時に10組、深夜帯26-29時に2組と幅広い時刻で会計発生</div>
+  <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>火曜日 不調の分析：時間帯別売上</h2><span class="pn">15 / 31</span><div class="progress-bar" style="width:46.7%"></div></div>
+  <div class="msg-bar">⚠️ 21時に11名団体ピーク、23時に単発1名のみ。深夜帯セカンドピーク消失</div>
   <div class="classification-bar"><ul>
-    <li>集計対象: 2026-06-06 の settlement_time（会計完了時刻）別売上</li>
-    <li>閉店帯6-10時=前晩ディナー精算、26-29時帯=深夜延長営業からの会計</li>
+    <li>集計対象: 2026-06-02 の入店時刻別売上</li>
+    <li>21時に団体到着、23時に1名客 — 通常帯のリピーター層が薄い</li>
   </ul></div>
   <div class="slide-body">
     <div class="flex-row">
       <div class="col-2-3"><div id="chart-s15" style="width:100%;height:420px;"></div></div>
       <div class="col-1-3" style="padding-top:10px;">
         <ul class="bullet-list">
-          <li><div class="icon">⏰</div><div class="text">8時台<strong>¥78,500</strong>（6組）— 前晩ディナー精算ピーク</div></li>
-          <li><div class="icon">🌙</div><div class="text">29時台<strong>¥28,000</strong>（5名グループ）— 深夜延長営業の主役</div></li>
-          <li><div class="icon">🎯</div><div class="text">6時台から29時台まで幅広く分散</div></li>
+          <li><div class="icon">📍</div><div class="text">21時台<strong>¥91,300</strong>（11名団体）— CLPコース精算</div></li>
+          <li><div class="icon">🌙</div><div class="text">23時台<strong>¥2,800</strong>（1名）— 単発のみ</div></li>
+          <li><div class="icon">⚠️</div><div class="text">22時台・24時以降の<strong>通常営業帯で会計発生ゼロ</strong></div></li>
         </ul>
       </div>
     </div>
   </div>
-  <div class="footer-cite">出典: エアレジ会計明細 ／ 集計対象: 2026-06-06 の業務日</div>
+  <div class="footer-cite">出典: エアレジ会計明細 ／ 集計対象: 2026-06-02 の業務日</div>
 </div>
 
-<!-- SLIDE 16: Sat Product Mix -->
+<!-- SLIDE 16: Tue Product Mix -->
 <div class="slide" id="slide-16">
-  <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>土曜日 好調の分析：商品別売上</h2><span class="pn">16 / 31</span><div class="progress-bar" style="width:50.0%"></div></div>
-  <div class="msg-bar">✅ コース系（未設定+コース&セット）36%＋カクテル系（NEW CLASSIC+JAPANESE）19%</div>
+  <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>火曜日 不調の分析：商品別売上</h2><span class="pn">16 / 31</span><div class="progress-bar" style="width:50.0%"></div></div>
+  <div class="msg-bar">⚠️ 売上の97%が11名団体のCLPコース。通常メニュー注文ほぼ発生せず</div>
   <div class="classification-bar"><ul>
-    <li>集計対象: 2026-06-06 のカテゴリ別売上TOP5</li>
+    <li>集計対象: 2026-06-02 のカテゴリTOP（小計ベース）</li>
   </ul></div>
   <div class="slide-body">
     <table class="dt" style="margin-top:6px;">
       <thead><tr><th>カテゴリ</th><th class="num">売上</th><th class="num">構成比</th></tr></thead>
       <tbody>
-        <tr class="highlight-row"><td>未設定（コース系）</td><td class="num">¥42,000</td><td class="num">22.9%</td></tr>
-        <tr><td>🥂 コース&セット</td><td class="num">¥25,000</td><td class="num">13.6%</td></tr>
-        <tr><td>その他</td><td class="num">¥21,700</td><td class="num">11.8%</td></tr>
-        <tr><td>🍸 NEW CLASSIC COCKTAIL</td><td class="num">¥18,200</td><td class="num">9.9%</td></tr>
-        <tr><td>🍶 JAPANESE COCKTAIL</td><td class="num">¥17,100</td><td class="num">9.3%</td></tr>
+        <tr class="highlight-row"><td>未設定（CLPコース_7000円飲み放題付）</td><td class="num">¥7,000*</td><td class="num">67.3%</td></tr>
+        <tr><td>🥤 ソフトドリンク</td><td class="num">¥1,600</td><td class="num">15.4%</td></tr>
+        <tr><td>🥗 COLD APPETIZERS</td><td class="num">¥1,200</td><td class="num">11.5%</td></tr>
+        <tr><td>その他</td><td class="num">¥600</td><td class="num">5.8%</td></tr>
       </tbody>
     </table>
     <div style="margin-top:8px;">
       <ul class="bullet-list">
-        <li><div class="icon">🍸</div><div class="text">高単価商品: 7000円飲み放題付（3時間制）×複数、本わさびジンソニック等</div></li>
+        <li><div class="icon">🍸</div><div class="text">カクテル系の注文が皆無 — メニュー指名による通常客来店なし</div></li>
+        <li><div class="icon">📝</div><div class="text">* 会計合計¥91,300のうち、明細小計表示の制約により構成比はサイドオーダーベース表示。残¥80,900は11名分CLPコース料金</div></li>
       </ul>
     </div>
   </div>
-  <div class="footer-cite">出典: エアレジ会計明細 ／ 集計対象: 2026-06-06 の業務日</div>
+  <div class="footer-cite">出典: エアレジ会計明細 ／ 集計対象: 2026-06-02 の業務日</div>
 </div>
 
-<!-- SLIDE 17: Sat Summary -->
+<!-- SLIDE 17: Tue Summary -->
 <div class="slide" id="slide-17">
-  <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>土曜日 好調の分析：まとめ</h2><span class="pn">17 / 31</span><div class="progress-bar" style="width:53.3%"></div></div>
-  <div class="msg-bar">✅ 「5-8名グループ取り込み」「時間帯の幅広さ」「コース+カクテル多彩」の3点が成功要因</div>
+  <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>火曜日 不調の分析：まとめ</h2><span class="pn">17 / 31</span><div class="progress-bar" style="width:53.3%"></div></div>
+  <div class="msg-bar">⚠️ 火曜不調の主因は「通常客来店ゼロ」「CLP団体1件への集中」「深夜帯セカンドピーク消失」の3点</div>
   <div class="classification-bar"><ul>
-    <li>集計対象: 2026-06-06（土）の総合考察</li>
+    <li>集計対象: 2026-06-02（火）の総合考察</li>
   </ul></div>
   <div class="slide-body">
-    <div class="section-title">好調の主要因（3点）</div>
+    <div class="section-title">不調の主要因（3点）</div>
     <ul class="bullet-list">
-      <li><div class="icon">🎯</div><div class="text">5-8名グループ5件で<strong>客数28人＝62%を獲得</strong>（4週平均との大きな差別化点）</div></li>
-      <li><div class="icon">⏰</div><div class="text">閉店帯（6-10時）10件＋<strong>深夜帯（26-29時）2件と時間帯が広範</strong></div></li>
-      <li><div class="icon">🍸</div><div class="text">コース系で売上の3分の1を支えつつ、<strong>カクテルで多彩な注文</strong>を確保</div></li>
+      <li><div class="icon">🚨</div><div class="text"><strong>来店組数2組のみ</strong> — CLP団体11名と1名客の極端な2件構造（W22水曜と同型）</div></li>
+      <li><div class="icon">⏰</div><div class="text">23時以降の通常営業帯で<strong>会計発生1件のみ</strong> — 平日火曜の集客力低下が継続</div></li>
+      <li><div class="icon">🍸</div><div class="text">メニュー指名のカクテル注文がほぼゼロ — 売上の97%がCLPコース内訳に集中</div></li>
     </ul>
-    <div class="section-title" style="margin-top:14px;">成功パターンの再現性</div>
+    <div class="section-title" style="margin-top:14px;">来週に向けた課題</div>
     <ul class="bullet-list">
-      <li><div class="icon">👥</div><div class="text">5-8名グループ取り込み導線を金曜・日曜へ横展開</div></li>
-      <li><div class="icon">📱</div><div class="text">深夜帯（22-29時）のSNS訴求で他曜日のセカンドピーク創出</div></li>
+      <li><div class="icon">📋</div><div class="text">火曜の予約獲得（CLP社員/法人向け平日プラン継続訴求）</div></li>
+      <li><div class="icon">📱</div><div class="text">22時以降の遅め予約導線・SNS訴求の強化</div></li>
+      <li><div class="icon">👤</div><div class="text">2-4名グループ取り込み策（友人連れ・カップル来店促進）</div></li>
     </ul>
   </div>
-  <div class="footer-cite">出典: エアレジ会計明細 ／ 集計対象: 2026-06-06 の業務日</div>
+  <div class="footer-cite">出典: エアレジ会計明細 ／ 集計対象: 2026-06-02 の業務日</div>
 </div>
 
 <!-- SLIDE 18: Day-of-Week Wrap-up -->
 <div class="slide" id="slide-18">
   <div class="slide-header"><h2><span class="section-tag">曜日別分析</span>曜日別評価まとめ</h2><span class="pn">18 / 31</span><div class="progress-bar" style="width:56.7%"></div></div>
-  <div class="msg-bar">💡 水曜のテコ入れ最優先。土曜の中型団体取り込みを平日に横展開できれば底上げ可能</div>
+  <div class="msg-bar">💡 日曜の20名団体¥360K + 金曜45人で売上回復だが、組数27組は5週最低。火・木・月・水の平日4日テコ入れが構造課題</div>
   <div class="classification-bar"><ul>
     <li>集計対象: 2026-W23 全曜日の総括</li>
   </ul></div>
   <div class="slide-body">
-    <div class="section-title">不調（水）vs 好調（土）の対比</div>
+    <div class="section-title">好調（日）vs 不調（火）の対比</div>
     <table class="compare-table" style="margin-top:6px;">
-      <thead><tr><th>項目</th><th style="background:#EF4444;">水曜（不調）</th><th style="background:#22C55E;">土曜（好調）</th></tr></thead>
+      <thead><tr><th>項目</th><th style="background:#22C55E;">日曜（好調）</th><th style="background:#EF4444;">火曜（不調）</th></tr></thead>
       <tbody>
-        <tr><td>売上</td><td>¥94,100（4週平均比40%）</td><td>¥181,930（4週平均比134%）</td></tr>
-        <tr><td>客数 / 会計数</td><td>12人 / 2件</td><td>45人 / 12件</td></tr>
-        <tr><td>客単価</td><td>¥7,841</td><td>¥4,043</td></tr>
-        <tr><td>グループ構成</td><td>11名団体×1＋1名×1</td><td>1名×1＋2名×3＋3-4名×3＋5-8名×5</td></tr>
-        <tr><td>時間帯</td><td>6時台と8時台のみ</td><td>6-10時＋26-29時で広範</td></tr>
-        <tr><td>商品ミックス</td><td>CLPコース89%突出</td><td>コース系36%＋カクテル系19%</td></tr>
+        <tr><td>売上</td><td>¥360,000（4週平均比428%）</td><td>¥94,100（4週平均比38%）</td></tr>
+        <tr><td>客数 / 会計数</td><td>20人 / 1件</td><td>12人 / 2件</td></tr>
+        <tr><td>客単価</td><td>¥18,000</td><td>¥7,842</td></tr>
+        <tr><td>グループ構成</td><td>20名団体×1のみ</td><td>11名団体×1＋1名×1</td></tr>
+        <tr><td>時間帯</td><td>23時台のみ</td><td>21時台と23時台</td></tr>
+        <tr><td>商品ミックス</td><td>CLPコース_その他100%</td><td>CLPコース97%＋カクテル系ほぼ無</td></tr>
       </tbody>
     </table>
     <div style="margin-top:8px;">
       <ul class="bullet-list">
-        <li><div class="icon">📊</div><div class="text">7曜日中2曜日（土・日）が4週平均超過、3曜日（月・水・金）が下回り、火・木は営業日0日</div></li>
-        <li><div class="icon">📋</div><div class="text"><strong>水曜のテコ入れ＋火/木の運用方針整理</strong>が今週の構造的課題</div></li>
+        <li><div class="icon">📊</div><div class="text">7曜日中3曜日（金・土・日）が4週平均超過、2曜日（火・木）が下回り、月・水は営業日0日</div></li>
+        <li><div class="icon">📋</div><div class="text"><strong>27組のうち最大2組（CLP関連）で売上54%</strong> — 通常客リピーター層の拡大が構造課題</div></li>
       </ul>
     </div>
   </div>
@@ -518,19 +518,20 @@ body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN'
 <!-- SLIDE 19: Category Breakdown -->
 <div class="slide" id="slide-19">
   <div class="slide-header"><h2><span class="section-tag">商品・カテゴリ分析</span>カテゴリ別売上構成比</h2><span class="pn">19 / 31</span><div class="progress-bar" style="width:60.0%"></div></div>
-  <div class="msg-bar">⚠️ 「未設定」33%＋「その他」11%＝44%が未分類。コース系独立化が分析精度UPの鍵</div>
+  <div class="msg-bar">⚠️ コース&セット49.9%＋未設定20.1%＝70%がコース系。日曜20名CLPコース¥360Kの単発効果で構成比が大きく偏った</div>
   <div class="classification-bar"><ul>
     <li>集計対象: 2026-W23 のカテゴリ別売上（業務日基準・全カテゴリ）</li>
-    <li>未設定＋その他で44% — W22の22.7%から悪化（CLPコース・7000円コースが未分類）</li>
+    <li>コース&セット49.9% — CLPコース_その他¥360K（日曜20名）が大半。W22の8.1%から急増</li>
   </ul></div>
   <div class="slide-body">
     <div class="flex-row">
       <div class="col-2-3"><div id="chart-s19" style="width:100%;height:430px;"></div></div>
       <div class="col-1-3" style="padding-top:10px;">
         <ul class="bullet-list">
-          <li><div class="icon">🥂</div><div class="text">コース系合算<strong>約41%</strong>（未設定+コース&セット）で売上を底支え</div></li>
-          <li><div class="icon">🍸</div><div class="text">カクテル系合計<strong>約24%</strong>でバー本来の構造を維持</div></li>
-          <li><div class="icon">⚠️</div><div class="text">未設定+その他<strong>44%</strong> — POS分類整備が最優先課題</div></li>
+          <li><div class="icon">🥂</div><div class="text">コース&セット<strong>49.9%</strong> — 日曜20名のCLPコース¥360Kが大半</div></li>
+          <li><div class="icon">📊</div><div class="text">未設定<strong>20.1%</strong> — CLPコース_7000円・5000円コース他</div></li>
+          <li><div class="icon">🍸</div><div class="text">カクテル系合計<strong>約14%</strong>（NEW CLASSIC+JAPANESE+ジャパニーズ等）</div></li>
+          <li><div class="icon">⚠️</div><div class="text">未設定+その他<strong>26%</strong> — POS分類整備が継続課題</div></li>
         </ul>
       </div>
     </div>
@@ -541,24 +542,25 @@ body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN'
 <!-- SLIDE 20: Hot Category Detail -->
 <div class="slide" id="slide-20">
   <div class="slide-header"><h2><span class="section-tag">商品・カテゴリ分析</span>好調カテゴリの深掘り</h2><span class="pn">20 / 31</span><div class="progress-bar" style="width:63.3%"></div></div>
-  <div class="msg-bar">✅ コース系41%＋カクテル系24%で売上の3分の2。高単価×多彩注文の両立</div>
+  <div class="msg-bar">✅ CLP関連2組（日・火）で売上¥437K(54%)。コース系で売上の半分超を獲得、カクテル系で15%</div>
   <div class="classification-bar"><ul>
-    <li>集計対象: 2026-W23 の主要カテゴリ</li>
+    <li>集計対象: 2026-W23 の構成比上位の主要カテゴリ</li>
   </ul></div>
   <div class="slide-body">
     <table class="dt" style="margin-top:6px;">
       <thead><tr><th>カテゴリ</th><th class="num">売上</th><th class="num">構成比</th><th class="num">販売数</th><th>備考</th></tr></thead>
       <tbody>
-        <tr class="highlight-row"><td>未設定（CLP/7000円コース含）</td><td class="num">¥161,000</td><td class="num">32.8%</td><td class="num">30</td><td>コース内訳が未紐付け</td></tr>
-        <tr><td>🥂 コース&セット</td><td class="num">¥40,000</td><td class="num">8.1%</td><td class="num">8</td><td>5000円コース×8組</td></tr>
-        <tr><td>🍸 NEW CLASSIC COCKTAIL</td><td class="num">¥34,900</td><td class="num">7.1%</td><td class="num">23</td><td>カクテル軸の主役</td></tr>
-        <tr><td>🍶 ジャパニーズカクテル</td><td class="num">¥28,800</td><td class="num">5.9%</td><td class="num">16</td><td>本わさびジンソニック中心</td></tr>
-        <tr><td>🥃 ジャパニーズウイスキー</td><td class="num">¥23,600</td><td class="num">4.8%</td><td class="num">13</td><td>白州×6など高単価帯</td></tr>
+        <tr class="highlight-row"><td>🥂 コース&セット</td><td class="num">¥400,000</td><td class="num">49.9%</td><td class="num">28</td><td>日曜20名CLPコース_その他¥360Kが中心</td></tr>
+        <tr><td>未設定（CLP/7000円コース等）</td><td class="num">¥161,000</td><td class="num">20.1%</td><td class="num">28</td><td>CLPコース_7000円・5000円コース他</td></tr>
+        <tr><td>その他</td><td class="num">¥47,500</td><td class="num">5.9%</td><td class="num">88</td><td>tablecharge等小額POS分類</td></tr>
+        <tr><td>🍶 ジャパニーズカクテル</td><td class="num">¥28,800</td><td class="num">3.6%</td><td class="num">16</td><td>本わさびジンソニック中心</td></tr>
+        <tr><td>🍸 NEW CLASSIC COCKTAIL</td><td class="num">¥28,700</td><td class="num">3.6%</td><td class="num">19</td><td>カクテル軸の主役</td></tr>
       </tbody>
     </table>
     <div style="margin-top:12px;">
       <ul class="bullet-list">
-        <li><div class="icon">🥂</div><div class="text">コース系（未設定+コース&セット）合算 <strong>¥201,000・40.9%</strong> — 売上の中核</div></li>
+        <li><div class="icon">🥂</div><div class="text">コース系（コース&セット+未設定）合算 <strong>¥561,000・70.0%</strong> — 売上の主軸</div></li>
+        <li><div class="icon">🍸</div><div class="text">カクテル系（NEW CLASSIC+JAPANESE+ジャパニーズ）<strong>約15%</strong> — バー本来の構造を維持</div></li>
       </ul>
     </div>
   </div>
@@ -568,7 +570,7 @@ body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN'
 <!-- SLIDE 21: Top 15 Products -->
 <div class="slide" id="slide-21">
   <div class="slide-header"><h2><span class="section-tag">商品・カテゴリ分析</span>商品別売上 上位15</h2><span class="pn">21 / 31</span><div class="progress-bar" style="width:66.7%"></div></div>
-  <div class="msg-bar">✅ 7000円コース＋CLPコース合算¥161K（売上32%）で2本柱定着、本わさびジンソニック急浮上</div>
+  <div class="msg-bar">✅ CLPコース_その他¥360K(44.9%)が圧倒。7000円コース＋CLPコース計¥521K(65%)で2本柱が機能</div>
   <div class="classification-bar"><ul>
     <li>集計対象: 2026-W23 の商品別売上ランキング</li>
     <li>4週平均比は対象商品の過去4週同期間平均との比較</li>
@@ -582,43 +584,45 @@ body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN'
 <!-- SLIDE 22: Composition Change -->
 <div class="slide" id="slide-22">
   <div class="slide-header"><h2><span class="section-tag">商品・カテゴリ分析</span>商品構成比の変化（前週比）</h2><span class="pn">22 / 31</span><div class="progress-bar" style="width:70.0%"></div></div>
-  <div class="msg-bar">💡 7000円コース+5.7pt・アードベック+2.2pt・ハウスハイボール+2.1pt増。森のジントニック-6.3pt縮小</div>
+  <div class="msg-bar">⚠️ CLPコース_その他¥360K(0→44.9%)が新規トップ独走。森のジントニック-7.9pt・tablecharge-5.0ptは分母増の副作用</div>
   <div class="classification-bar"><ul>
     <li>集計対象: 2026-W23 vs 2026-W22 の商品構成比変化</li>
+    <li>実態: CLPコース_その他¥360K（前週0）が新規トップ独走のため、TOP5は既存細部商品のシャッフルが中心</li>
   </ul></div>
   <div class="slide-body">
     <div class="flex-row" style="gap:24px;">
       <div style="flex:1;">
-        <div class="section-title" style="color:#22C55E;">📈 構成比増加</div>
+        <div class="section-title" style="color:#22C55E;">📈 構成比増加TOP5</div>
         <table class="dt" style="margin-top:6px;font-size:15px;">
           <thead><tr><th>商品名</th><th class="num">変化</th></tr></thead>
           <tbody>
-            <tr class="highlight-row"><td>🥂 7000円飲み放題付（3時間制）</td><td class="num" style="color:#22C55E;">+5.70pt</td></tr>
-            <tr><td>🥃 アードベック 10年</td><td class="num" style="color:#22C55E;">+2.23pt</td></tr>
-            <tr><td>🥃 ハウスハイボール</td><td class="num" style="color:#22C55E;">+2.06pt</td></tr>
-            <tr><td>🥂 5000円飲み放題付（2時間制）</td><td class="num" style="color:#22C55E;">+1.16pt</td></tr>
-            <tr><td>🍹 トロピカルヴェール</td><td class="num" style="color:#22C55E;">+0.39pt</td></tr>
+            <tr><td>丸氷</td><td class="num" style="color:#22C55E;">+0.09pt</td></tr>
+            <tr><td>🍸 撫子ネグローニ</td><td class="num" style="color:#22C55E;">+0.09pt</td></tr>
+            <tr><td>No charge</td><td class="num" style="color:#94A3B8;">+0.00pt</td></tr>
+            <tr><td>ドリンク</td><td class="num" style="color:#EF4444;">-0.04pt</td></tr>
+            <tr><td>キャラメルバナナ</td><td class="num" style="color:#EF4444;">-0.12pt</td></tr>
           </tbody>
         </table>
+        <div style="margin-top:6px;font-size:13px;color:#64748B;">※実態は<strong>CLPコース_その他¥360K（前週0）が新規トップ独走</strong>。既存商品はシャッフル</div>
       </div>
       <div style="flex:1;">
-        <div class="section-title" style="color:#EF4444;">📉 構成比減少</div>
+        <div class="section-title" style="color:#EF4444;">📉 構成比減少TOP5</div>
         <table class="dt" style="margin-top:6px;font-size:15px;">
           <thead><tr><th>商品名</th><th class="num">変化</th></tr></thead>
           <tbody>
-            <tr class="highlight-row"><td>🌿 森のジントニック</td><td class="num" style="color:#EF4444;">-6.29pt</td></tr>
-            <tr><td>🍸 ゆずマティーニ</td><td class="num" style="color:#EF4444;">-1.94pt</td></tr>
-            <tr><td>🍸 ティラミスロブロイ</td><td class="num" style="color:#EF4444;">-1.57pt</td></tr>
-            <tr><td>🍸 キャラメルナッツキャデラック</td><td class="num" style="color:#EF4444;">-1.48pt</td></tr>
-            <tr><td>🍺 ガージェリー</td><td class="num" style="color:#EF4444;">-1.40pt</td></tr>
+            <tr class="highlight-row"><td>🌿 森のジントニック</td><td class="num" style="color:#EF4444;">-7.89pt</td></tr>
+            <tr><td>tablecharge</td><td class="num" style="color:#EF4444;">-5.00pt</td></tr>
+            <tr><td>🍺 ガージェリー</td><td class="num" style="color:#EF4444;">-3.66pt</td></tr>
+            <tr><td>🍸 ティラミスロブロイ</td><td class="num" style="color:#EF4444;">-2.49pt</td></tr>
+            <tr><td>🥂 5000円飲み放題付（2時間制）</td><td class="num" style="color:#EF4444;">-1.80pt</td></tr>
           </tbody>
         </table>
       </div>
     </div>
     <div style="margin-top:10px;">
       <ul class="bullet-list" style="font-size:15px;">
-        <li><div class="icon">✅</div><div class="text">7000円コース系の<strong>上位プラン誘導が継続定着</strong>（W22で躍進した7000円コースがさらに+5.7pt）</div></li>
-        <li><div class="icon">⚠️</div><div class="text">森のジントニック・ゆずマティーニ等の<strong>前週主力カクテルが同時にシュリンク</strong> — 新メニュー代替か季節性かの確認必要</div></li>
+        <li><div class="icon">⚠️</div><div class="text">上位商品はいずれも構成比減 — CLPコース_その他¥360Kに売上が振れた結果、<strong>分母増で他商品の比率が低下</strong></div></li>
+        <li><div class="icon">📋</div><div class="text">森のジントニック実数5杯（前週は出数多）— 季節性／指名度の確認継続</div></li>
       </ul>
     </div>
   </div>
@@ -628,29 +632,33 @@ body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN'
 <!-- SLIDE 23: Product Summary -->
 <div class="slide" id="slide-23">
   <div class="slide-header"><h2><span class="section-tag">商品・カテゴリ分析</span>商品分析まとめ</h2><span class="pn">23 / 31</span><div class="progress-bar" style="width:73.3%"></div></div>
-  <div class="msg-bar">✅ コース系2本柱の定着と新カクテル「本わさびジンソニック」急浮上が客単価戦略の中核</div>
+  <div class="msg-bar">✅ CLPコース2商品(¥437K)＋7000円コース(¥84K)が3本柱。本わさびジンソニックの定着が次の商品戦略の軸</div>
   <div class="classification-bar"><ul>
     <li>集計対象: 2026-W23 の商品戦略総括</li>
   </ul></div>
   <div class="slide-body">
-    <div class="section-title">商品戦略の2本柱</div>
+    <div class="section-title">商品戦略の3本柱</div>
     <div class="flex-row" style="margin-top:6px;gap:14px;">
-      <div class="pillar-card" style="flex:1;border-top:4px solid #3B82F6;">
-        <h4>🥂 高単価コース2本柱</h4>
-        <p>7000円飲み放題付 ¥84,000＋CLPコース_7000円 ¥77,000＝<strong>¥161,000（売上32.4%）</strong>。4週平均比+118%で定着</p>
-        <div style="margin-top:6px;padding:6px;background:#EFF6FF;border-radius:6px;font-size:14px;"><strong>現状:</strong> 客単価¥5,067を底支え、上位プラン誘導が進む</div>
-      </div>
       <div class="pillar-card" style="flex:1;border-top:4px solid #F97316;">
-        <h4>🌿 新カクテル「本わさびジンソニック」</h4>
-        <p>出数16・売上¥28,800で4週平均比 +1500%。新カクテル定着の好兆候、季節商品ローテーション継続</p>
-        <div style="margin-top:6px;padding:6px;background:#FFF7ED;border-radius:6px;font-size:14px;"><strong>現状:</strong> ジャパニーズカクテル構成比5.9%の主力</div>
+        <h4>🥂 CLPコース2商品（団体導線）</h4>
+        <p>CLPコース_その他 ¥360,000＋CLPコース_7000円 ¥77,000＝<strong>¥437,000（売上54.2%）</strong></p>
+        <div style="margin-top:6px;padding:6px;background:#FFF7ED;border-radius:6px;font-size:14px;"><strong>現状:</strong> 日曜20名×火曜11名の2組で半数超を獲得</div>
+      </div>
+      <div class="pillar-card" style="flex:1;border-top:4px solid #3B82F6;">
+        <h4>🥂 7000円コース（高単価プラン）</h4>
+        <p>7000円飲み放題付（3時間制）<strong>¥84,000（10.5%）</strong>。4週平均比+118%で定着</p>
+        <div style="margin-top:6px;padding:6px;background:#EFF6FF;border-radius:6px;font-size:14px;"><strong>現状:</strong> 上位プラン誘導が定着、客単価底上げ</div>
+      </div>
+      <div class="pillar-card" style="flex:1;border-top:4px solid #2D6B4F;">
+        <h4>🌿 本わさびジンソニック</h4>
+        <p>出数16・売上¥28,800で4週平均比 <strong>+1500%</strong>。看板カクテルとして定着の兆し</p>
+        <div style="margin-top:6px;padding:6px;background:#EFF6F0;border-radius:6px;font-size:14px;"><strong>現状:</strong> 次の新カクテル投入計画化</div>
       </div>
     </div>
-    <div class="section-title" style="margin-top:12px;">来週の方向性</div>
+    <div class="section-title" style="margin-top:10px;">来週の方向性</div>
     <ul class="bullet-list">
-      <li><div class="icon">📱</div><div class="text">本わさびジンソニックの卓上POP＆SNS訴求を継続、定番化を判断</div></li>
-      <li><div class="icon">🥂</div><div class="text">7000円コース／CLPコースの選択率を週次トラッキング</div></li>
-      <li><div class="icon">⚠️</div><div class="text">森のジントニック等の前週主力カクテル離脱要因の確認（接客アンケート）</div></li>
+      <li><div class="icon">📱</div><div class="text">本わさびジンソニックの卓上POP＆SNS訴求を継続、後継カクテル投入を計画</div></li>
+      <li><div class="icon">📋</div><div class="text">CLPコース_その他の<strong>再現性確保とパイプライン化</strong> — 単発依存からの脱却</div></li>
     </ul>
   </div>
   <div class="footer-cite">出典: エアレジ会計明細 ／ 集計対象: 2026-W23 の業務日</div>
@@ -660,7 +668,7 @@ body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN'
 <!-- SLIDE 24: 客層分析①：インバウンド比率 -->
 <div class="slide" id="slide-24">
   <div class="slide-header"><h2><span class="section-tag">客層分析</span>🌏 客層分析①：インバウンド比率</h2><span class="pn">24 / 31</span><div class="progress-bar" style="width:76.7%"></div></div>
-  <div class="msg-bar">⚠️ rawdata.csvにメモ欄カラムが含まれず抽出不可。Dashboard側にメモ欄追加を依頼中</div>
+  <div class="msg-bar">⚠️ rawdata.csvにメモ欄カラムが含まれず抽出不可。Dashboard rawdata の改修待ち</div>
   <div class="classification-bar"><ul>
     <li>集計対象: 2026-W23 の業務日（朝6時境界）／抽出キー: 会計ヘッダー『メモ』に『海外』を部分一致（§B-3 BFA-1）</li>
     <li>表示条件: 週終了日 2026-06-07 ≥ 2026-04 → 表示対象（§B-7）／補足: dashboard prod の rawdata.csv にメモ欄カラム未含有のため数値未取得</li>
@@ -690,7 +698,7 @@ body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN'
       <ul class="bullet-list">
         <li><div class="icon">⚠️</div><div class="text">Dashboard prod の rawdata.csv に『メモ』カラムが含まれず、本週は数値非提示</div></li>
         <li><div class="icon">📋</div><div class="text">対応策: <strong>Dashboard scripts/_bfa_export_prod_to_airregi.mjs にメモ欄カラムを追加</strong>するか、AirRegi直接DLを併用する仕組みを構築</div></li>
-        <li><div class="icon">💡</div><div class="text">参考: W22は AirRegi DL データで売上比率13.1%（13人/6組）— インバウンドは継続的な客層として注視</div></li>
+        <li><div class="icon">💡</div><div class="text">次回イテレーションまでに運用ルール確立を目指す（旧バグ版と同じ扱い）</div></li>
       </ul>
     </div>
   </div>
@@ -700,7 +708,7 @@ body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN'
 <!-- SLIDE 25: 客層分析②：CLP社員（単発利用）比率 -->
 <div class="slide" id="slide-25">
   <div class="slide-header"><h2><span class="section-tag">客層分析</span>👤 客層分析②：CLP社員（単発利用）比率</h2><span class="pn">25 / 31</span><div class="progress-bar" style="width:80.0%"></div></div>
-  <div class="msg-bar">✅ CLP社員1組11名で売上¥77K（15.5%）。水曜の主要売上源として安定化</div>
+  <div class="msg-bar">✅ CLP関連2組で売上¥437K(54.2%)・客数31人(29%)。日曜20名・火曜11名の2大予約が当週KPIを牽引</div>
   <div class="classification-bar"><ul>
     <li>集計対象: 2026-W23 の業務日／抽出キー: 明細行『メニュー名』に『CLP』を部分一致（§B-3 BFA-2）</li>
     <li>注: BFA-5（コース&セット）／ BFA-6（その他CLPコース）と重複する会計を含む（二重計上前提）</li>
@@ -711,26 +719,26 @@ body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN'
       <div style="flex:1;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
         <div class="kpi-card" style="border-top:4px solid #C9A961;">
           <span class="kpi-label">💰 売上比率</span>
-          <span class="kpi-value" style="color:#C9A961;">15.5%</span>
-          <span class="kpi-sub">¥77,000 / ¥496,610</span>
+          <span class="kpi-value" style="color:#C9A961;">54.2%</span>
+          <span class="kpi-sub">¥437,000 / ¥806,830</span>
         </div>
         <div class="kpi-card" style="border-top:4px solid #C9A961;">
           <span class="kpi-label">👥 客数比率</span>
-          <span class="kpi-value" style="color:#C9A961;">11.2%</span>
-          <span class="kpi-sub">11人 / 98人</span>
+          <span class="kpi-value" style="color:#C9A961;">29.0%</span>
+          <span class="kpi-sub">31人 / 107人</span>
         </div>
         <div class="kpi-card" style="border-top:4px solid #C9A961;">
           <span class="kpi-label">🧾 組数比率</span>
-          <span class="kpi-value" style="color:#C9A961;">2.9%</span>
-          <span class="kpi-sub">1組 / 34組</span>
+          <span class="kpi-value" style="color:#C9A961;">7.4%</span>
+          <span class="kpi-sub">2組 / 27組</span>
         </div>
       </div>
     </div>
     <div style="margin-top:14px;">
       <ul class="bullet-list">
-        <li><div class="icon">✅</div><div class="text">6/3（水）の<strong>11名団体がCLPコース_7000円飲み放題付（3時間制）を利用</strong>、水曜売上の97%を占有</div></li>
-        <li><div class="icon">📅</div><div class="text">W21・W22に続きCLP単発利用が継続発生、平日水曜の固定需要として安定化の兆し</div></li>
-        <li><div class="icon">💡</div><div class="text">次の課題: 同団体の<strong>複数回利用化（リピート）</strong>促進、CLP社員ルートでの他平日（火・木）需要創出</div></li>
+        <li><div class="icon">✅</div><div class="text">6/7（日）<strong>20名団体がCLPコース_その他 ¥360,000</strong> ＋ 6/2（火）11名団体がCLPコース_7000円飲み放題付 ¥77,000</div></li>
+        <li><div class="icon">📈</div><div class="text">売上の半分超がCLP関連という比率は<strong>異例水準</strong>。CLPメンバーシップの法人/グループ利用導線が機能</div></li>
+        <li><div class="icon">💡</div><div class="text">次の論点: <strong>再現性確保（パイプライン化）</strong> — 単発依存からの脱却、紹介経由・SNS訴求での継続受注</div></li>
       </ul>
     </div>
   </div>
@@ -740,7 +748,7 @@ body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN'
 <!-- SLIDE 26: 客層分析③：イベント比率 -->
 <div class="slide" id="slide-26">
   <div class="slide-header"><h2><span class="section-tag">客層分析</span>🎉 客層分析③：イベント比率</h2><span class="pn">26 / 31</span><div class="progress-bar" style="width:83.3%"></div></div>
-  <div class="msg-bar">⚠️ 今週もイベント開催なし（カテゴリ『イベント』0件）— 法人案件・貸切利用の取り込みが継続課題</div>
+  <div class="msg-bar">⚠️ 今週もイベント開催なし（カテゴリ『イベント』0件）。法人案件・貸切利用の取り込みが継続課題</div>
   <div class="classification-bar"><ul>
     <li>集計対象: 2026-W23 の業務日／抽出キー: 明細行『カテゴリ』が『イベント』に完全一致（§B-3 BFA-3）</li>
   </ul></div>
@@ -751,25 +759,25 @@ body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN'
         <div class="kpi-card" style="border-top:4px solid #2D6B4F;">
           <span class="kpi-label">💰 売上比率</span>
           <span class="kpi-value" style="color:#2D6B4F;">0.0%</span>
-          <span class="kpi-sub">¥0 / ¥496,610</span>
+          <span class="kpi-sub">¥0 / ¥806,830</span>
         </div>
         <div class="kpi-card" style="border-top:4px solid #2D6B4F;">
           <span class="kpi-label">👥 客数比率</span>
           <span class="kpi-value" style="color:#2D6B4F;">0.0%</span>
-          <span class="kpi-sub">0人 / 98人</span>
+          <span class="kpi-sub">0人 / 107人</span>
         </div>
         <div class="kpi-card" style="border-top:4px solid #2D6B4F;">
           <span class="kpi-label">🧾 組数比率</span>
           <span class="kpi-value" style="color:#2D6B4F;">0.0%</span>
-          <span class="kpi-sub">0組 / 34組</span>
+          <span class="kpi-sub">0組 / 27組</span>
         </div>
       </div>
     </div>
     <div style="margin-top:14px;">
       <ul class="bullet-list">
-        <li><div class="icon">⚠️</div><div class="text">カテゴリ『イベント』の注文<strong>0件</strong> — W22に続き2週連続でイベントゼロ</div></li>
-        <li><div class="icon">🥂</div><div class="text">参考: 2026-04月報ではイベント比率14.2%（¥430K/109人/3件）— 6月後半に向けた法人営業の再点検必要</div></li>
-        <li><div class="icon">💡</div><div class="text">6月後半以降の貸切・コース予約状況を週次モニタリングし、イベントカテゴリ入力徹底を周知</div></li>
+        <li><div class="icon">⚠️</div><div class="text">カテゴリ『イベント』の注文<strong>0件</strong> — 6月前半は前月から引き続きイベントゼロ</div></li>
+        <li><div class="icon">🥂</div><div class="text">日曜の20名CLP団体は「イベント」カテゴリではなく「コース&セット」で記録 — <strong>分類運用上の論点</strong></div></li>
+        <li><div class="icon">💡</div><div class="text">月後半に向けた法人営業・貸切プラン再点検、イベントカテゴリ入力徹底を周知</div></li>
       </ul>
     </div>
   </div>
@@ -779,30 +787,30 @@ body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN'
 <!-- SLIDE 27: Strengths -->
 <div class="slide" id="slide-27">
   <div class="slide-header"><h2><span class="section-tag">今週の総括</span>今週の総括：強み</h2><span class="pn">27 / 31</span><div class="progress-bar" style="width:86.7%"></div></div>
-  <div class="msg-bar">✅ 売上前週比+15.7%／前年比-0.8%回復、土曜集客力、客単価+10%が3大ハイライト</div>
+  <div class="msg-bar">✅ 売上前週比+82%／前年比+71%、客単価+63%の高単価化、CLP団体2組で売上54%が3大ハイライト</div>
   <div class="classification-bar"><ul>
     <li>集計対象: 2026-W23 の3つの強み</li>
   </ul></div>
   <div class="slide-body">
     <div class="success-item">
-      <h4>📈 売上¥496,610が前年同週水準（¥500K）にほぼ復帰</h4>
-      <p>前週比+15.7%・前年同週比-0.8%、4指標全項目で前週比プラスに転換</p>
+      <h4>🏆 CLP団体2組で売上¥437,000（54.2%） — 当週の最大成果</h4>
+      <p>日曜20名×¥18,000（¥360K）＋ 火曜11名×CLPコース（¥77K）。メンバーシップの法人/グループ導線が機能</p>
     </div>
     <div class="success-item">
-      <h4>🏆 土曜売上¥181,930（4週平均比+34%、客数45人）</h4>
-      <p>5-8名グループ5件で28人＝62%を獲得、4週平均の1.94倍の集客力</p>
+      <h4>📈 売上 ¥806,830 がW21特需を除けばW18以来の高水準</h4>
+      <p>前週比+82.4%・前年同週(¥471,960)比+71.0%、4週平均比+17.2%でベース水準を大きく超過</p>
     </div>
     <div class="success-item">
-      <h4>💴 客単価¥5,067（前年比+10.4%）</h4>
-      <p>7000円コース＋CLPコース＋本わさびジンソニックの高単価化が定着</p>
+      <h4>💴 客単価 ¥7,540（前年比+63%）— 高単価化が定着</h4>
+      <p>7000円コース＋CLPコース＋本わさびジンソニックで高単価化が定着、組単価¥29,883（W22比+190%）</p>
     </div>
     <div class="success-item">
-      <h4>🥂 高単価コース2本柱が定着 ¥161,000（売上32%）</h4>
-      <p>7000円コース（4週平均比+118%）＋CLPコース継続。客単価底支えの主軸</p>
+      <h4>🥂 7000円コース ¥84,000（4週平均比+118%）が継続定着</h4>
+      <p>上位プラン誘導が進む。CLPコース_7000円 ¥77,000と合わせコース系3本柱を形成</p>
     </div>
     <div class="success-item">
-      <h4>🌿 新カクテル「本わさびジンソニック」急定着（4週平均比+1500%）</h4>
-      <p>出数16・売上¥28,800で構成比5.9%。新カクテル投入の好結果</p>
+      <h4>🌿 本わさびジンソニック 16杯（4週平均比+1500%）</h4>
+      <p>出数16・売上¥28,800で構成比3.6%。看板カクテルとして定着の兆し、後継カクテル投入計画化</p>
     </div>
   </div>
   <div class="footer-cite">出典: エアレジ会計明細 ／ 集計対象: 2026-W23 の業務日</div>
@@ -811,30 +819,30 @@ body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN'
 <!-- SLIDE 28: Challenges -->
 <div class="slide" id="slide-28">
   <div class="slide-header"><h2><span class="section-tag">今週の総括</span>今週の総括：課題</h2><span class="pn">28 / 31</span><div class="progress-bar" style="width:90.0%"></div></div>
-  <div class="msg-bar">⚠️ 水曜の継続不調、火/木営業0日、未分類カテゴリ44%が3大課題</div>
+  <div class="msg-bar">⚠️ 組数27組(5週最低)が示す通常客の薄さ、火・木の平日不調、月・水営業0日、未設定+コース&セット70%のPOS分類問題</div>
   <div class="classification-bar"><ul>
     <li>集計対象: 2026-W23 の3つの課題</li>
   </ul></div>
   <div class="slide-body">
     <div class="challenge-item">
-      <h4>🚨 水曜（6/3）売上差 -¥139K — 4週平均の40%</h4>
-      <p>CLP団体1件と単発1名のみ、会計数2件（W22 4件からさらに縮小）。通常客来店ゼロ</p>
+      <h4>🚨 組数27組は直近5週で最低（4週平均45.75比-41%）</h4>
+      <p>単発客・2-4名グループの来店が極端に少ない構造。最大2組（CLP関連）で売上54%占有 — 通常客リピーター層の拡大が必要</p>
     </div>
     <div class="challenge-item">
-      <h4>⚠️ 火・木の営業日0日 — 運用方針整理が必要</h4>
-      <p>W22も同様に低調、定休化 or 平日テコ入れの主戦場化のどちらかの方針が未確定</p>
+      <h4>⚠️ 火曜（11名団体+1名）／木曜（4組のみ）の平日2日が継続不調</h4>
+      <p>火曜売上¥94,100は4週平均の38%。木曜売上¥29,700は4週平均の47%。平日2日のテコ入れが構造課題</p>
     </div>
     <div class="challenge-item">
-      <h4>📋 「未設定」「その他」カテゴリ44%（W22 22.7%から悪化）</h4>
-      <p>CLPコース・7000円コースが未紐付け。コース系独立カテゴリ化が分析精度UPの最優先課題</p>
+      <h4>📋 月・水営業日0日 — 運用方針整理が未確定</h4>
+      <p>W22から継続。定休 or テコ入れの主戦場化のどちらかの方針が経営判断未確定</p>
     </div>
     <div class="challenge-item">
-      <h4>📉 日曜客数の急減トレンド（W21 99人→W22 23人→W23 16人）</h4>
-      <p>客単価で売上は維持しているが、客数面のリピーター動向確認が必要</p>
+      <h4>📊 「未設定」「コース&セット」計70.0%（W22の41%から悪化）</h4>
+      <p>POS分類整備の優先課題が再浮上。CLPコース内訳の独立カテゴリ化が分析精度UPの鍵</p>
     </div>
     <div class="challenge-item">
-      <h4>📣 口コミ新規投稿 3週連続0件</h4>
-      <p>食べログ・Google ビジネスプロフィールへの導線が機能していない</p>
+      <h4>📣 口コミ新規投稿 9ヶ月以上停滞</h4>
+      <p>最新口コミ投稿日は2025-09-24。食べログ・Google ビジネスプロフィールへの導線が機能していない</p>
     </div>
   </div>
   <div class="footer-cite">出典: エアレジ会計明細 ／ 集計対象: 2026-W23 の業務日</div>
@@ -843,7 +851,7 @@ body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN'
 <!-- SLIDE 29: Actions 1 - Menu & Marketing -->
 <div class="slide" id="slide-29">
   <div class="slide-header"><h2><span class="section-tag">施策一覧</span>施策一覧①：メニュー・集客</h2><span class="pn">29 / 31</span><div class="progress-bar" style="width:93.3%"></div></div>
-  <div class="msg-bar">💡 高単価コース定着の流れを継続しつつ、水曜・新規層への集客チャネル拡大</div>
+  <div class="msg-bar">💡 CLP団体パイプラインの本格化＋平日テコ入れ＋本わさびジンソニック後継カクテル投入が次の3軸</div>
   <div class="classification-bar"><ul>
     <li>集計対象: メニュー戦略と集客戦略の短期施策</li>
   </ul></div>
@@ -854,11 +862,11 @@ body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN'
         <table class="action-table">
           <thead><tr><th>#</th><th>施策内容</th><th>狙い</th></tr></thead>
           <tbody>
-            <tr><td>1</td><td>7000円コース／CLPコースの選択率を週次トラッキング</td><td>プラン誘導の歩留まり可視化</td></tr>
-            <tr><td>2</td><td>本わさびジンソニックの卓上POP＆SNS訴求</td><td>看板カクテルの定着</td></tr>
-            <tr><td>3</td><td>アードベック・白州など高単価ウイスキーのペアリング提案標準化</td><td>客単価底上げ</td></tr>
-            <tr><td>4</td><td>季節カクテル次回投入計画（本わさびジンソニック後継）</td><td>商品ローテーション</td></tr>
-            <tr><td>5</td><td>森のジントニック離脱要因の確認（接客アンケート）</td><td>主力カクテルの再活性化</td></tr>
+            <tr class="highlight-row"><td>1</td><td><strong>CLPコース_その他（¥18,000/人）の再現性確保とパイプライン化</strong></td><td>単発依存から脱却</td></tr>
+            <tr><td>2</td><td>7000円／5000円コースの週次選択率トラッキング</td><td>プラン誘導歩留まり可視化</td></tr>
+            <tr><td>3</td><td>本わさびジンソニックの卓上POP＆SNS訴求継続</td><td>看板カクテルの定着</td></tr>
+            <tr><td>4</td><td>アードベック・白州など高単価ウイスキーのペアリング提案標準化</td><td>客単価底上げ</td></tr>
+            <tr><td>5</td><td>次期新カクテル投入計画（本わさびジンソニック後継）</td><td>商品ローテーション</td></tr>
           </tbody>
         </table>
       </div>
@@ -867,11 +875,11 @@ body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN'
         <table class="action-table">
           <thead><tr><th>#</th><th>施策内容</th><th>狙い</th></tr></thead>
           <tbody>
-            <tr class="highlight-row"><td>1</td><td><strong>平日水曜の予約獲得DM配信（CLP社員＋リピーター）</strong></td><td>水曜の集客回復（最優先）</td></tr>
-            <tr><td>2</td><td>土曜の5-8名グループ取り込み導線を金・日へ横展開</td><td>中型団体獲得</td></tr>
-            <tr><td>3</td><td>22-29時セカンドピーク取り込みのSNS訴求</td><td>深夜帯客数増</td></tr>
-            <tr><td>4</td><td>火・木の運用方針確定（定休 or テコ入れ）</td><td>機会損失の整理</td></tr>
-            <tr><td>5</td><td>日曜客数減トレンドの要因確認</td><td>リピーター動向把握</td></tr>
+            <tr class="highlight-row"><td>6</td><td><strong>平日火・木の予約獲得DM配信（CLP社員＋リピーター向け）</strong></td><td>平日集客回復</td></tr>
+            <tr><td>7</td><td>日曜20名団体の予約パイプライン化（紹介経由・SNS訴求）</td><td>大型団体の継続受注</td></tr>
+            <tr><td>8</td><td>金曜45人の集客力(4週平均比+93%)を週次定例化</td><td>金曜の利益化</td></tr>
+            <tr><td>9</td><td>月・水の運用方針確定（定休 or テコ入れ）</td><td>機会損失の整理</td></tr>
+            <tr><td>10</td><td>2-4名グループ向け看板訴求（組数底上げ）</td><td>通常客リピーター層拡大</td></tr>
           </tbody>
         </table>
       </div>
@@ -883,7 +891,7 @@ body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN'
 <!-- SLIDE 30: Actions 2 - Customer & Operations -->
 <div class="slide" id="slide-30">
   <div class="slide-header"><h2><span class="section-tag">施策一覧</span>施策一覧②：顧客・運営</h2><span class="pn">30 / 31</span><div class="progress-bar" style="width:96.7%"></div></div>
-  <div class="msg-bar">💡 POS分類整備（最優先）＋口コミ獲得＋シフト最適化で運営品質と分析精度を底上げ</div>
+  <div class="msg-bar">💡 POS分類整備（最優先）＋口コミ獲得（9ヶ月停滞）＋CLP団体オペレーション標準化で品質と分析精度を底上げ</div>
   <div class="classification-bar"><ul>
     <li>集計対象: 顧客接点と運営オペレーションの短期施策</li>
   </ul></div>
@@ -894,11 +902,11 @@ body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN'
         <table class="action-table">
           <thead><tr><th>#</th><th>施策内容</th><th>狙い</th></tr></thead>
           <tbody>
-            <tr class="highlight-row"><td>1</td><td><strong>会計時の口コミ投稿QR訴求（食べログ＋Google）</strong></td><td>口コミ獲得（3週連続0件脱却）</td></tr>
-            <tr><td>2</td><td>CLP社員リピート訴求（6/3団体への翌週フォロー）</td><td>LTV向上</td></tr>
-            <tr><td>3</td><td>1名客向けカウンタープロモ</td><td>1名客取り込み</td></tr>
-            <tr><td>4</td><td>高単価ウイスキー注文者へのサンキューレター</td><td>高単価層リテンション</td></tr>
-            <tr><td>5</td><td>新規来店者向けバーシードリンク提案</td><td>初回満足度UP</td></tr>
+            <tr class="highlight-row"><td>11</td><td><strong>会計時の口コミ投稿QR訴求（食べログ＋Google）</strong></td><td>口コミ獲得（9ヶ月停滞脱却）</td></tr>
+            <tr><td>12</td><td>CLP社員リピート訴求（日曜20名・火曜11名団体への翌週フォロー）</td><td>LTV向上</td></tr>
+            <tr><td>13</td><td>1名客向けカウンタープロモ</td><td>1名客取り込み</td></tr>
+            <tr><td>14</td><td>高単価ウイスキー注文者へのサンキューレター</td><td>高単価層リテンション</td></tr>
+            <tr><td>15</td><td>新規来店者向けシードリンク提案</td><td>初回満足度UP</td></tr>
           </tbody>
         </table>
       </div>
@@ -907,11 +915,11 @@ body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN'
         <table class="action-table">
           <thead><tr><th>#</th><th>施策内容</th><th>狙い</th></tr></thead>
           <tbody>
-            <tr class="highlight-row"><td>1</td><td><strong>「未設定」「その他」リスト化＆コース系独立カテゴリ化</strong></td><td>POS分析品質UP（最優先）</td></tr>
-            <tr><td>2</td><td>火・木営業判断の経営合意</td><td>コスト管理</td></tr>
-            <tr><td>3</td><td>水曜・土曜の早期予約状況の日次共有</td><td>集客テコ入れ判断</td></tr>
-            <tr><td>4</td><td>22-26時セカンドピーク向けの追加注文促進トーク標準化</td><td>深夜帯売上+</td></tr>
-            <tr><td>5</td><td>主要カクテルのレシピ・接客ピッチ統一</td><td>提供品質均質化</td></tr>
+            <tr class="highlight-row"><td>16</td><td><strong>「未設定」「コース&セット」内訳のPOS分類整備（最優先・CLPコース独立カテゴリ化）</strong></td><td>POS分析品質UP</td></tr>
+            <tr><td>17</td><td>月・火・水・木の営業判断の経営合意</td><td>コスト管理</td></tr>
+            <tr><td>18</td><td>大型団体（20名規模）受入オペレーション標準化（座席・厨房・接客）</td><td>CLP団体満足度・LTV</td></tr>
+            <tr><td>19</td><td>22-26時セカンドピーク向けの追加注文促進トーク標準化</td><td>深夜帯売上+</td></tr>
+            <tr><td>20</td><td>主要カクテルのレシピ・接客ピッチ統一</td><td>提供品質均質化</td></tr>
           </tbody>
         </table>
       </div>
@@ -923,7 +931,7 @@ body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN'
 <!-- SLIDE 31: Actions 3 - Staff Development -->
 <div class="slide" id="slide-31">
   <div class="slide-header"><h2><span class="section-tag">施策一覧</span>施策一覧③：スタッフ育成</h2><span class="pn">31 / 31</span><div class="progress-bar" style="width:100.0%"></div></div>
-  <div class="msg-bar">💡 高単価コース・看板カクテルの提案力強化と新規層向け接客スキル底上げ</div>
+  <div class="msg-bar">💡 CLPコース・看板カクテルの提案力と大型団体（20名規模）対応スキルの両面強化</div>
   <div class="classification-bar"><ul>
     <li>集計対象: スタッフ育成・組織強化の中期施策</li>
   </ul></div>
@@ -931,39 +939,39 @@ body{background:#E2E8F0;font-family:'Helvetica Neue','Hiragino Kaku Gothic ProN'
     <table class="action-table" style="margin-top:4px;font-size:13px;">
       <thead><tr><th style="width:30px;">#</th><th>施策内容</th><th style="width:200px;">狙い</th></tr></thead>
       <tbody>
-        <tr><td>1</td><td>7000円/5000円コース／CLPコースの違い説明スクリプト整備</td><td>プラン誘導</td></tr>
-        <tr><td>2</td><td>本わさびジンソニック等の看板カクテル提案ロープレ</td><td>指名注文率UP</td></tr>
-        <tr><td>3</td><td>アードベック・白州等の高単価ウイスキー知識研修</td><td>客単価提案力</td></tr>
-        <tr><td>4</td><td>1名客への声かけマニュアル徹底</td><td>1名客満足度</td></tr>
-        <tr><td>5</td><td>22-29時セカンドピークの追加注文トーク実演研修</td><td>深夜帯売上+</td></tr>
-        <tr><td>6</td><td>接客アンケート（離脱要因のヒアリング）</td><td>改善ループ</td></tr>
-        <tr><td>7</td><td>口コミ依頼の自然な伝え方トレーニング</td><td>口コミ獲得</td></tr>
-        <tr><td>8</td><td>季節カクテルブック共有（次回投入予定品含む）</td><td>提案バリエーション</td></tr>
-        <tr><td>9</td><td>CLP団体客向け接客フロー標準化（11名規模対応）</td><td>大型団体満足度</td></tr>
-        <tr><td>10</td><td>POS入力品質向上トレーニング（カテゴリ正確化＝最優先）</td><td>分析品質UP</td></tr>
+        <tr><td>21</td><td>CLPコース内訳の説明スクリプト整備</td><td>プラン誘導</td></tr>
+        <tr><td>22</td><td>7000円/5000円コース・CLPコースの違い説明</td><td>客単価向上</td></tr>
+        <tr><td>23</td><td>本わさびジンソニック等の看板カクテル提案ロープレ</td><td>指名注文率UP</td></tr>
+        <tr><td>24</td><td>アードベック・白州等の高単価ウイスキー知識研修</td><td>客単価提案力</td></tr>
+        <tr><td>25</td><td>1名客への声かけマニュアル徹底</td><td>1名客満足度</td></tr>
+        <tr><td>26</td><td>22-26時セカンドピークの追加注文トーク実演研修</td><td>深夜帯売上+</td></tr>
+        <tr><td>27</td><td>接客アンケート（離脱要因のヒアリング）</td><td>改善ループ</td></tr>
+        <tr class="highlight-row"><td>28</td><td><strong>口コミ依頼の自然な伝え方トレーニング</strong></td><td>口コミ獲得（9ヶ月停滞脱却）</td></tr>
+        <tr><td>29</td><td>大型団体（20名規模）接客フロー標準化</td><td>CLP団体満足度</td></tr>
+        <tr class="highlight-row"><td>30</td><td><strong>POS入力品質向上トレーニング（CLPコース内訳明確化＝最優先）</strong></td><td>分析品質UP</td></tr>
       </tbody>
     </table>
   </div>
   <div class="footer-cite">出典: エアレジ会計明細 ／ 集計対象: 2026-W23 の業務日</div>
 </div>
 
-<!-- CHARTS (Plotly.js) -->
+<!-- CHARTS (Plotly.js + D3.js) -->
 <script>
 const C = {
   blue: '#3B82F6', gray: '#94A3B8', green: '#22C55E', red: '#EF4444',
   orange: '#F97316', navy: '#1E3A5F', text: '#334155', heading: '#1E293B',
-  bgLight: '#F8FAFC', orangeBg: '#FFF7ED'
+  bgLight: '#F8FAFC', orangeBg: '#FFF7ED', gold: '#C9A961', clpDark: '#2D6B4F'
 };
 
 // SLIDE 3: Revenue Trend
 (function(){
   var weeks = ['W19','W20','W21','W22','W23'];
-  var sales = [262720,469590,1580820,429300,496610];
+  var sales = [232720,568820,1509590,442280,806830];
   var trace = {
     x: weeks, y: sales, type: 'scatter', mode: 'lines+markers+text',
     line: {color: C.blue, width: 3},
     marker: {size: [10,10,10,10,16], color: [C.blue,C.blue,C.blue,C.blue,C.green]},
-    text: ['','','','','¥496,610'],
+    text: ['','','','','¥806,830'],
     textposition: 'top center',
     textfont: {size: 17, color: C.green}
   };
@@ -972,8 +980,8 @@ const C = {
     xaxis:{tickfont:{size:16}},
     yaxis:{tickfont:{size:14},tickformat:',',title:{text:'売上（円）',font:{size:13}}},
     annotations:[
-      {x:'W23',y:496610,text:'▲ +15.7% (前週比)',showarrow:true,arrowhead:2,arrowcolor:C.green,ax:-80,ay:-40,font:{size:15,color:C.green,weight:800},bgcolor:'#F0FDF4',bordercolor:C.green,borderwidth:1.5,borderpad:4},
-      {x:'W21',y:1580820,text:'特需週',showarrow:false,ax:0,ay:-25,yshift:-10,font:{size:13,color:C.orange,weight:800}}
+      {x:'W23',y:806830,text:'▲ +82.4% (前週比)',showarrow:true,arrowhead:2,arrowcolor:C.green,ax:-80,ay:-40,font:{size:15,color:C.green,weight:800},bgcolor:'#F0FDF4',bordercolor:C.green,borderwidth:1.5,borderpad:4},
+      {x:'W21',y:1509590,text:'特需週',showarrow:false,ax:0,ay:-25,yshift:-10,font:{size:13,color:C.orange,weight:800}}
     ],
     showlegend:false,plot_bgcolor:'#fff',paper_bgcolor:'#fff'
   };
@@ -983,12 +991,12 @@ const C = {
 // SLIDE 4: Customer Count Trend
 (function(){
   var weeks = ['W19','W20','W21','W22','W23'];
-  var counts = [71,96,236,94,98];
+  var counts = [67,119,223,92,107];
   var trace = {
     x: weeks, y: counts, type: 'scatter', mode: 'lines+markers+text',
     line: {color: C.blue, width: 3},
     marker: {size: [10,10,10,10,16], color: [C.blue,C.blue,C.blue,C.blue,C.green]},
-    text: ['','','','','98人'],
+    text: ['','','','','107人'],
     textposition: 'top center',
     textfont: {size: 17, color: C.green}
   };
@@ -997,7 +1005,7 @@ const C = {
     xaxis:{tickfont:{size:16}},
     yaxis:{tickfont:{size:14},title:{text:'客数（人）',font:{size:13}}},
     annotations:[
-      {x:'W23',y:98,text:'▲ +4.3% (前週比)',showarrow:true,arrowhead:2,arrowcolor:C.green,ax:-80,ay:-40,font:{size:15,color:C.green,weight:800},bgcolor:'#F0FDF4',bordercolor:C.green,borderwidth:1.5,borderpad:4}
+      {x:'W23',y:107,text:'▲ +16.3% (前週比)',showarrow:true,arrowhead:2,arrowcolor:C.green,ax:-80,ay:-40,font:{size:15,color:C.green,weight:800},bgcolor:'#F0FDF4',bordercolor:C.green,borderwidth:1.5,borderpad:4}
     ],
     showlegend:false,plot_bgcolor:'#fff',paper_bgcolor:'#fff'
   };
@@ -1007,12 +1015,12 @@ const C = {
 // SLIDE 5: Spend Trend
 (function(){
   var weeks = ['W19','W20','W21','W22','W23'];
-  var spend = [3700,4892,6698,4567,5067];
+  var spend = [3473,4780,6769,4807,7540];
   var trace = {
     x: weeks, y: spend, type: 'scatter', mode: 'lines+markers+text',
     line: {color: C.blue, width: 3},
     marker: {size: [10,10,10,10,16], color: [C.blue,C.blue,C.blue,C.blue,C.green]},
-    text: ['','','','','¥5,067'],
+    text: ['','','','','¥7,540'],
     textposition: 'top center',
     textfont: {size: 17, color: C.green}
   };
@@ -1021,48 +1029,116 @@ const C = {
     xaxis:{tickfont:{size:16}},
     yaxis:{tickfont:{size:14},tickformat:',',title:{text:'客単価（円）',font:{size:13}}},
     annotations:[
-      {x:'W23',y:5067,text:'▲ +11.0% (前週比)',showarrow:true,arrowhead:2,arrowcolor:C.green,ax:-80,ay:-40,font:{size:15,color:C.green,weight:800},bgcolor:'#F0FDF4',bordercolor:C.green,borderwidth:1.5,borderpad:4}
+      {x:'W23',y:7540,text:'▲ +56.9% (前週比)',showarrow:true,arrowhead:2,arrowcolor:C.green,ax:-80,ay:-40,font:{size:15,color:C.green,weight:800},bgcolor:'#F0FDF4',bordercolor:C.green,borderwidth:1.5,borderpad:4}
     ],
     showlegend:false,plot_bgcolor:'#fff',paper_bgcolor:'#fff'
   };
   Plotly.newPlot('chart-s5',[trace],layout,{displayModeBar:false,responsive:true});
 })();
 
-// SLIDE 7: Day-of-Week Sales
+// SLIDE 7: Day-of-Week Sales (火・木・金・土・日, 月・水は営業日0)
 (function(){
   var days = ['月','火','水','木','金','土','日'];
-  var thisW = [49780,null,94100,null,53100,181930,117700];
-  var avg4 = [57108,66760,233435,6875,67930,136160,117340];
+  var thisW = [null,94100,null,29700,175830,147200,360000];
+  var avg4  = [null,245135,null,63063,135503,96475,84118];
   var colors = thisW.map(function(v,i){
-    if(i===2) return C.red;  // 水
-    if(i===5) return C.green; // 土
+    if(i===1) return C.red;   // 火
     if(i===6) return C.green; // 日
-    if(v===null) return C.gray; // 火・木
+    if(v===null) return C.gray;
     return C.blue;
   });
   var t1 = {x:days,y:thisW,name:'W23（当週）',type:'bar',marker:{color:colors},
     text:thisW.map(function(v){return v===null?'営業日0':'¥'+v.toLocaleString();}),textposition:'outside',textfont:{size:13}};
   var t2 = {x:days,y:avg4,name:'4週平均',type:'bar',marker:{color:C.gray,opacity:0.5},
-    text:avg4.map(function(v){return '¥'+v.toLocaleString();}),textposition:'outside',textfont:{size:12,color:C.gray}};
+    text:avg4.map(function(v){return v===null?'—':'¥'+v.toLocaleString();}),textposition:'outside',textfont:{size:12,color:C.gray}};
   var layout = {
     margin:{t:30,r:20,b:50,l:70},barmode:'group',
     xaxis:{tickfont:{size:16}},
     yaxis:{tickfont:{size:14},tickformat:','},
     legend:{font:{size:15},orientation:'h',y:1.05,x:0.5,xanchor:'center'},
     annotations:[
-      {x:'水',y:233435,text:'⚠️ -¥139K',showarrow:true,arrowhead:0,ax:0,ay:-30,font:{size:14,color:C.red,weight:800},bgcolor:'#FEF2F2',bordercolor:C.red,borderwidth:1.5,borderpad:3},
-      {x:'土',y:181930,text:'★ +¥46K',showarrow:true,arrowhead:0,ax:-40,ay:-30,font:{size:14,color:C.green,weight:800},bgcolor:'#F0FDF4',bordercolor:C.green,borderwidth:1.5,borderpad:3}
+      {x:'日',y:360000,text:'★ +¥276K',showarrow:true,arrowhead:0,ax:-40,ay:-30,font:{size:14,color:C.green,weight:800},bgcolor:'#F0FDF4',bordercolor:C.green,borderwidth:1.5,borderpad:3},
+      {x:'火',y:245135,text:'⚠️ -¥151K',showarrow:true,arrowhead:0,ax:0,ay:-30,font:{size:14,color:C.red,weight:800},bgcolor:'#FEF2F2',bordercolor:C.red,borderwidth:1.5,borderpad:3}
     ],
     showlegend:true,plot_bgcolor:'#fff',paper_bgcolor:'#fff'
   };
   Plotly.newPlot('chart-s7',[t1,t2],layout,{displayModeBar:false,responsive:true});
 })();
 
-// SLIDE 8: Wed Ratio Bar
+// SLIDE 8: Sun Ratio Bar (好調)
 (function(){
   var labels = ['客単価','客数','売上'];
-  var ratios = [63.0, 64.0, 40.3];
-  var actuals = ['¥7,841 / ¥12,449','12人 / 18.8人','¥94,100 / ¥233,435'];
+  var ratios = [507.1, 79.2, 428.0];
+  var actuals = ['¥18,000 / ¥3,550','20人 / 25.25人','¥360,000 / ¥84,118'];
+  var barColors = ratios.map(function(r){return r<80?C.red:r>120?C.green:C.blue;});
+  var trace = {
+    y:labels,x:ratios,type:'bar',orientation:'h',
+    marker:{color:barColors,line:{color:barColors.map(function(){return C.green;}),width:2.5}},
+    text:ratios.map(function(r,i){return r.toFixed(1)+'%  ('+actuals[i]+')';}),textposition:'outside',textfont:{size:15},
+    hoverinfo:'text'
+  };
+  var layout = {
+    margin:{t:20,r:280,b:40,l:100},
+    xaxis:{range:[0,600],tickfont:{size:14},title:{text:'4週平均比（%）',font:{size:13}},
+      tickvals:[0,100,200,300,400,500],ticktext:['0%','100%','200%','300%','400%','500%']},
+    yaxis:{tickfont:{size:16}},
+    shapes:[{type:'line',x0:100,x1:100,y0:-0.5,y1:2.5,line:{color:C.navy,width:2.5,dash:'solid'}}],
+    annotations:[
+      {x:100,y:2.8,text:'100%=4週平均',showarrow:false,font:{size:13,color:C.navy}},
+      {x:428.0,y:'売上',text:'🏆 4.28倍',showarrow:false,xanchor:'left',font:{size:13,color:C.green,weight:800},bgcolor:'#F0FDF4',bordercolor:C.green,borderwidth:1.5,borderpad:3}
+    ],
+    showlegend:false,plot_bgcolor:'#fff',paper_bgcolor:'#fff'
+  };
+  Plotly.newPlot('chart-s8',[trace],layout,{displayModeBar:false,responsive:true});
+})();
+
+// SLIDE 9: Sun Group Size
+(function(){
+  var labels = ['5名以上（20名）','3-4名','2名','1名'];
+  var bills = [1,0,0,0];
+  var guests = [20,0,0,0];
+  var t1 = {y:labels,x:bills,name:'会計数',type:'bar',orientation:'h',marker:{color:C.blue},
+    text:bills.map(function(v){return v+'件';}),textposition:'outside',textfont:{size:15}};
+  var t2 = {y:labels,x:guests,name:'客数',type:'bar',orientation:'h',marker:{color:C.orange,line:{width:guests.map(function(v,i){return i===0?3:0;}),color:guests.map(function(v,i){return i===0?C.navy:'transparent';})}},
+    text:guests.map(function(v){return v+'人';}),textposition:'outside',textfont:{size:15}};
+  var layout = {
+    margin:{t:20,r:80,b:40,l:140},barmode:'group',
+    xaxis:{tickfont:{size:14},title:{text:'件数・人数',font:{size:13}}},
+    yaxis:{tickfont:{size:16}},
+    legend:{font:{size:15},orientation:'h',y:1.08,x:0.5,xanchor:'center'},
+    annotations:[{x:20,y:'5名以上（20名）',text:'20名団体×1組（100%）',showarrow:true,ax:60,ay:0,font:{size:13,color:C.orange,weight:800},bgcolor:C.orangeBg,bordercolor:C.orange,borderwidth:1.5,borderpad:3}],
+    showlegend:true,plot_bgcolor:'#fff',paper_bgcolor:'#fff'
+  };
+  Plotly.newPlot('chart-s9',[t1,t2],layout,{displayModeBar:false,responsive:true});
+})();
+
+// SLIDE 10: Sun Time Slot
+(function(){
+  var slots = ['18-20時','20-22時','22時台','23時台','24-26時','26-29時'];
+  var sales = [0,0,0,360000,0,0];
+  var barColors = sales.map(function(v){return v===0?C.gray:C.green;});
+  var t1 = {x:slots,y:sales,type:'bar',marker:{color:barColors,line:{width:sales.map(function(v){return v===360000?3:0;}),color:sales.map(function(v){return v===360000?C.navy:'transparent';})}},
+    text:sales.map(function(v){return v===0?'¥0':'¥'+v.toLocaleString();}),textposition:'outside',textfont:{size:15}};
+  var layout = {
+    margin:{t:30,r:30,b:50,l:80},
+    xaxis:{tickfont:{size:15}},
+    yaxis:{tickfont:{size:14},tickformat:',',title:{text:'売上（円）',font:{size:13}}},
+    annotations:[
+      {x:'23時台',y:360000,text:'🏆 ピーク ¥360,000（20名団体）',showarrow:true,ax:0,ay:-30,font:{size:14,color:C.green,weight:800},bgcolor:'#F0FDF4',bordercolor:C.green,borderwidth:1.5,borderpad:3},
+      {x:'18-20時',y:0,yshift:30,text:'来店ゼロ',showarrow:false,font:{size:12,color:C.gray,weight:700}},
+      {x:'20-22時',y:0,yshift:30,text:'来店ゼロ',showarrow:false,font:{size:12,color:C.gray,weight:700}},
+      {x:'24-26時',y:0,yshift:30,text:'来店ゼロ',showarrow:false,font:{size:12,color:C.gray,weight:700}}
+    ],
+    showlegend:false,plot_bgcolor:'#fff',paper_bgcolor:'#fff'
+  };
+  Plotly.newPlot('chart-s10',[t1],layout,{displayModeBar:false,responsive:true});
+})();
+
+// SLIDE 13: Tue Ratio Bar (不調)
+(function(){
+  var labels = ['客単価','客数','売上'];
+  var ratios = [88.5, 56.5, 38.4];
+  var actuals = ['¥7,842 / ¥8,864','12人 / 21.25人','¥94,100 / ¥245,135'];
   var barColors = ratios.map(function(r){return r<80?C.red:r>120?C.green:C.blue;});
   var trace = {
     y:labels,x:ratios,type:'bar',orientation:'h',
@@ -1078,16 +1154,16 @@ const C = {
     shapes:[{type:'line',x0:100,x1:100,y0:-0.5,y1:2.5,line:{color:C.navy,width:2.5,dash:'solid'}}],
     annotations:[
       {x:100,y:2.8,text:'100%=4週平均',showarrow:false,font:{size:13,color:C.navy}},
-      {x:40.3,y:'売上',text:'▼ 要改善',showarrow:false,xanchor:'left',xshift:80,font:{size:13,color:C.red,weight:800},bgcolor:'#FEF2F2',bordercolor:C.red,borderwidth:1.5,borderpad:3}
+      {x:38.4,y:'売上',text:'▼ 要改善',showarrow:false,xanchor:'left',xshift:80,font:{size:13,color:C.red,weight:800},bgcolor:'#FEF2F2',bordercolor:C.red,borderwidth:1.5,borderpad:3}
     ],
     showlegend:false,plot_bgcolor:'#fff',paper_bgcolor:'#fff'
   };
-  Plotly.newPlot('chart-s8',[trace],layout,{displayModeBar:false,responsive:true});
+  Plotly.newPlot('chart-s13',[trace],layout,{displayModeBar:false,responsive:true});
 })();
 
-// SLIDE 9: Wed Group Size
+// SLIDE 14: Tue Group Size
 (function(){
-  var labels = ['5名以上','3-4名','2名','1名'];
+  var labels = ['5名以上（11名）','3-4名','2名','1名'];
   var bills = [1,0,0,1];
   var guests = [11,0,0,1];
   var t1 = {y:labels,x:bills,name:'会計数',type:'bar',orientation:'h',marker:{color:C.blue},
@@ -1095,20 +1171,20 @@ const C = {
   var t2 = {y:labels,x:guests,name:'客数',type:'bar',orientation:'h',marker:{color:C.orange},
     text:guests.map(function(v){return v+'人';}),textposition:'outside',textfont:{size:15}};
   var layout = {
-    margin:{t:20,r:80,b:40,l:100},barmode:'group',
+    margin:{t:20,r:80,b:40,l:140},barmode:'group',
     xaxis:{tickfont:{size:14},title:{text:'件数・人数',font:{size:13}}},
     yaxis:{tickfont:{size:16}},
     legend:{font:{size:15},orientation:'h',y:1.08,x:0.5,xanchor:'center'},
     annotations:[{x:0,y:'2名',text:'2-4名グループゼロ',showarrow:false,xanchor:'left',xshift:60,font:{size:14,color:C.red,weight:800},bgcolor:'#FEF2F2',bordercolor:C.red,borderwidth:1.5,borderpad:3}],
     showlegend:true,plot_bgcolor:'#fff',paper_bgcolor:'#fff'
   };
-  Plotly.newPlot('chart-s9',[t1,t2],layout,{displayModeBar:false,responsive:true});
+  Plotly.newPlot('chart-s14',[t1,t2],layout,{displayModeBar:false,responsive:true});
 })();
 
-// SLIDE 10: Wed Time Slot
+// SLIDE 15: Tue Time Slot
 (function(){
-  var slots = ['18-20時','20-22時','22-24時','24-26時','6-10時(精算)'];
-  var sales = [0,0,0,0,94100];
+  var slots = ['18-20時','20時台','21時台','22時台','23時台','24-29時'];
+  var sales = [0,0,91300,0,2800,0];
   var barColors = sales.map(function(v){return v===0?C.gray:C.red;});
   var t1 = {x:slots,y:sales,type:'bar',marker:{color:barColors},
     text:sales.map(function(v){return v===0?'¥0':'¥'+v.toLocaleString();}),textposition:'outside',textfont:{size:15}};
@@ -1117,75 +1193,10 @@ const C = {
     xaxis:{tickfont:{size:15}},
     yaxis:{tickfont:{size:14},tickformat:',',title:{text:'売上（円）',font:{size:13}}},
     annotations:[
-      {x:'18-20時',y:0,yshift:30,text:'⚠️ 来店ゼロ',showarrow:false,font:{size:13,color:C.red,weight:800},bgcolor:'#FEF2F2',bordercolor:C.red,borderwidth:1.5,borderpad:3},
-      {x:'20-22時',y:0,yshift:30,text:'⚠️ 来店ゼロ',showarrow:false,font:{size:13,color:C.red,weight:800},bgcolor:'#FEF2F2',bordercolor:C.red,borderwidth:1.5,borderpad:3},
-      {x:'22-24時',y:0,yshift:30,text:'⚠️ 来店ゼロ',showarrow:false,font:{size:13,color:C.red,weight:800},bgcolor:'#FEF2F2',bordercolor:C.red,borderwidth:1.5,borderpad:3},
-      {x:'24-26時',y:0,yshift:30,text:'⚠️ 来店ゼロ',showarrow:false,font:{size:13,color:C.red,weight:800},bgcolor:'#FEF2F2',bordercolor:C.red,borderwidth:1.5,borderpad:3}
+      {x:'21時台',y:91300,text:'CLP団体11名',showarrow:true,ax:0,ay:-30,font:{size:14,color:C.red,weight:800},bgcolor:'#FEF2F2',bordercolor:C.red,borderwidth:1.5,borderpad:3},
+      {x:'22時台',y:0,yshift:30,text:'⚠️ 来店ゼロ',showarrow:false,font:{size:12,color:C.red,weight:700}},
+      {x:'24-29時',y:0,yshift:30,text:'⚠️ 来店ゼロ',showarrow:false,font:{size:12,color:C.red,weight:700}}
     ],
-    showlegend:false,plot_bgcolor:'#fff',paper_bgcolor:'#fff'
-  };
-  Plotly.newPlot('chart-s10',[t1],layout,{displayModeBar:false,responsive:true});
-})();
-
-// SLIDE 13: Sat Ratio Bar
-(function(){
-  var labels = ['客単価','客数','売上'];
-  var ratios = [69.0, 193.5, 133.6];
-  var actuals = ['¥4,043 / ¥5,856','45人 / 23.2人','¥181,930 / ¥136,160'];
-  var barColors = ratios.map(function(r){return r<80?C.red:r>120?C.green:C.blue;});
-  var trace = {
-    y:labels,x:ratios,type:'bar',orientation:'h',
-    marker:{color:barColors,line:{color:barColors.map(function(){return C.green;}),width:2.5}},
-    text:ratios.map(function(r,i){return r.toFixed(1)+'%  ('+actuals[i]+')';}),textposition:'outside',textfont:{size:15},
-    hoverinfo:'text'
-  };
-  var layout = {
-    margin:{t:20,r:280,b:40,l:100},
-    xaxis:{range:[0,230],tickfont:{size:14},title:{text:'4週平均比（%）',font:{size:13}},
-      tickvals:[0,50,100,150,200],ticktext:['0%','50%','100%','150%','200%']},
-    yaxis:{tickfont:{size:16}},
-    shapes:[{type:'line',x0:100,x1:100,y0:-0.5,y1:2.5,line:{color:C.navy,width:2.5,dash:'solid'}}],
-    annotations:[
-      {x:100,y:2.8,text:'100%=4週平均',showarrow:false,font:{size:13,color:C.navy}},
-      {x:193.5,y:'客数',text:'★ 1.94倍',showarrow:false,xanchor:'left',font:{size:13,color:C.green,weight:800},bgcolor:'#F0FDF4',bordercolor:C.green,borderwidth:1.5,borderpad:3}
-    ],
-    showlegend:false,plot_bgcolor:'#fff',paper_bgcolor:'#fff'
-  };
-  Plotly.newPlot('chart-s13',[trace],layout,{displayModeBar:false,responsive:true});
-})();
-
-// SLIDE 14: Sat Group Size
-(function(){
-  var labels = ['5-8名','3-4名','2名','1名'];
-  var bills = [5,3,3,1];
-  var guests = [28,10,6,1];
-  var t1 = {y:labels,x:bills,name:'会計数',type:'bar',orientation:'h',marker:{color:C.blue},
-    text:bills.map(function(v){return v+'件';}),textposition:'outside',textfont:{size:15}};
-  var t2 = {y:labels,x:guests,name:'客数',type:'bar',orientation:'h',marker:{color:C.orange,line:{width:guests.map(function(v,i){return i===0?3:0;}),color:guests.map(function(v,i){return i===0?C.navy:'transparent';})}},
-    text:guests.map(function(v){return v+'人';}),textposition:'outside',textfont:{size:15}};
-  var layout = {
-    margin:{t:20,r:80,b:40,l:100},barmode:'group',
-    xaxis:{tickfont:{size:14},title:{text:'件数・人数',font:{size:13}}},
-    yaxis:{tickfont:{size:16}},
-    legend:{font:{size:15},orientation:'h',y:1.08,x:0.5,xanchor:'center'},
-    annotations:[{x:28,y:'5-8名',text:'5-8名×5組（28人/62%）',showarrow:true,ax:60,ay:0,font:{size:13,color:C.orange,weight:800},bgcolor:C.orangeBg,bordercolor:C.orange,borderwidth:1.5,borderpad:3}],
-    showlegend:true,plot_bgcolor:'#fff',paper_bgcolor:'#fff'
-  };
-  Plotly.newPlot('chart-s14',[t1,t2],layout,{displayModeBar:false,responsive:true});
-})();
-
-// SLIDE 15: Sat Time Slot
-(function(){
-  var slots = ['6時台','7時台','8時台','10時台','26時台','29時台'];
-  var sales = [52100,5900,78500,15930,1500,28000];
-  var barColors = sales.map(function(v){return v===78500?C.green:C.blue;});
-  var t1 = {x:slots,y:sales,type:'bar',marker:{color:barColors,line:{width:sales.map(function(v){return v===78500?3:0;}),color:sales.map(function(v){return v===78500?C.navy:'transparent';})}},
-    text:sales.map(function(v){return '¥'+v.toLocaleString();}),textposition:'outside',textfont:{size:15}};
-  var layout = {
-    margin:{t:30,r:30,b:50,l:80},
-    xaxis:{tickfont:{size:15}},
-    yaxis:{tickfont:{size:14},tickformat:',',title:{text:'売上（円） / settlement_time',font:{size:13}}},
-    annotations:[{x:'8時台',y:78500,text:'ピーク ¥78,500',showarrow:true,ax:0,ay:-30,font:{size:14,color:C.green,weight:800},bgcolor:'#F0FDF4',bordercolor:C.green,borderwidth:1.5,borderpad:3}],
     showlegend:false,plot_bgcolor:'#fff',paper_bgcolor:'#fff'
   };
   Plotly.newPlot('chart-s15',[t1],layout,{displayModeBar:false,responsive:true});
@@ -1193,26 +1204,58 @@ const C = {
 
 // SLIDE 19: Category Donut
 (function(){
-  var labels = ['未設定','その他','コース&セット','NEW CLASSIC COCKTAIL','ジャパニーズカクテル','JAPANESE COCKTAIL','その他カテゴリ合計'];
-  var values = [161000,54100,40000,34900,28800,24700,153110];
-  var colors = ['#94A3B8','#94A3B8','#F97316','#3B82F6','#60A5FA','#A5B4FC','#CBD5E1'];
+  var labels = ['コース&セット','未設定','その他','ジャパニーズカクテル','NEW CLASSIC COCKTAIL','JAPANESE COCKTAIL','その他カテゴリ合計'];
+  var values = [400000,161000,47500,28800,28700,24700,116130];
+  var colors = ['#F97316','#94A3B8','#94A3B8','#60A5FA','#3B82F6','#A5B4FC','#CBD5E1'];
   var trace = {
     labels:labels,values:values,type:'pie',hole:0.5,
     marker:{colors:colors},
     textinfo:'label+percent',textposition:'outside',
     textfont:{size:13},
-    pull:[0.05,0,0.04,0,0,0,0],
+    pull:[0.06,0.04,0,0,0,0,0],
     sort:false
   };
   var layout = {
     margin:{t:20,r:20,b:20,l:20},
     showlegend:false,
-    annotations:[{text:'合計<br>¥496,610',showarrow:false,font:{size:18,color:C.heading,weight:800},x:0.5,y:0.5}],
+    annotations:[{text:'合計<br>¥806,830',showarrow:false,font:{size:18,color:C.heading,weight:800},x:0.5,y:0.5}],
     plot_bgcolor:'#fff',paper_bgcolor:'#fff'
   };
   Plotly.newPlot('chart-s19',[trace],layout,{displayModeBar:false,responsive:true});
 })();
 
+// SLIDE 21: Top 15 Products
+(function(){
+  var products = [
+    'ローズガーデン','トロピカルヴェール','森のジントニック',
+    '撫子ネグローニ','焙煎ファッションド','ワカモレチップス',
+    '白州','ハウスハイボール','アードベック 10年',
+    '本わさびジンソニック','5000円飲み放題付（2時間制）','tablecharge',
+    'CLPコース_7000円飲み放題付（3時間制）','7000円飲み放題付（3時間制）','CLPコース_その他'
+  ];
+  var sales = [6000,7500,7500,7600,7600,8400,10800,12000,12800,28800,40000,43800,77000,84000,360000];
+  var pcts  = ['0.7%','0.9%','0.9%','1.0%','1.0%','1.0%','1.3%','1.5%','1.6%','3.6%','5.0%','5.5%','9.6%','10.5%','44.9%'];
+  var barColors = sales.map(function(v,i){
+    if(i===14) return C.orange;          // CLPコース_その他 (TOP1)
+    if(i>=12) return C.orange;           // CLP/7000円コース
+    if(i>=9) return C.blue;
+    return '#93C5FD';
+  });
+  var trace = {
+    y:products,x:sales,type:'bar',orientation:'h',
+    marker:{color:barColors,line:{width:sales.map(function(v,i){return i===14?3:0;}),color:sales.map(function(v,i){return i===14?C.navy:'transparent';})}},
+    text:sales.map(function(v,i){return '¥'+v.toLocaleString()+' ('+pcts[i]+')';}),
+    textposition:'outside',textfont:{size:12}
+  };
+  var layout = {
+    margin:{t:10,r:220,b:40,l:280},
+    xaxis:{tickfont:{size:13},tickformat:',',title:{text:'売上（円）',font:{size:13}}},
+    yaxis:{tickfont:{size:13},automargin:true},
+    annotations:[{x:360000,y:'CLPコース_その他',text:'🏆 1位 / 4週平均比+94%（日曜20名団体）',showarrow:false,xanchor:'left',xshift:10,font:{size:13,color:C.orange,weight:800}}],
+    showlegend:false,plot_bgcolor:'#fff',paper_bgcolor:'#fff'
+  };
+  Plotly.newPlot('chart-s21',[trace],layout,{displayModeBar:false,responsive:true});
+})();
 
 // SLIDE 24: Inbound Donut (placeholder - data unavailable)
 (function(){
@@ -1233,21 +1276,21 @@ const C = {
   Plotly.newPlot('chart-s24',[trace],layout,{displayModeBar:false,responsive:true});
 })();
 
-// SLIDE 25: CLP Donut
+// SLIDE 25: CLP Donut (D3-style via Plotly with exploded CLP slice)
 (function(){
   var trace = {
     labels:['CLP関連','それ以外'],
-    values:[77000, 419610],
+    values:[437000, 369830],
     type:'pie', hole:0.55,
     marker:{colors:['#C9A961','#E2E8F0']},
     textinfo:'none',
-    pull:[0, 0.04],
+    pull:[0.08, 0],
     sort:false
   };
   var layout = {
     margin:{t:10,r:10,b:10,l:10},
     showlegend:false,
-    annotations:[{text:'<b>15.5%</b><br><span style="font-size:11px">売上比率</span>',showarrow:false,font:{size:26,color:'#C9A961'},x:0.5,y:0.5}],
+    annotations:[{text:'<b>54.2%</b><br><span style="font-size:11px">売上比率</span>',showarrow:false,font:{size:26,color:'#C9A961'},x:0.5,y:0.5}],
     plot_bgcolor:'#fff',paper_bgcolor:'#fff'
   };
   Plotly.newPlot('chart-s25',[trace],layout,{displayModeBar:false,responsive:true});
@@ -1257,7 +1300,7 @@ const C = {
 (function(){
   var trace = {
     labels:['イベント','通常営業'],
-    values:[0.0001, 496610],
+    values:[0.0001, 806830],
     type:'pie', hole:0.55,
     marker:{colors:['#2D6B4F','#E2E8F0']},
     textinfo:'none',
@@ -1270,32 +1313,6 @@ const C = {
     plot_bgcolor:'#fff',paper_bgcolor:'#fff'
   };
   Plotly.newPlot('chart-s26',[trace],layout,{displayModeBar:false,responsive:true});
-})();
-
-// SLIDE 21: Top 15 Products
-(function(){
-  var products = ['作','ローズガーデン','焙煎ファッションド','撫子ネグローニ','トロピカルヴェール','白州','ワカモレチップス','森のジントニック','アードベック 10年','ハウスハイボール','本わさびジンソニック','5000円飲み放題付（2時間制）','tablecharge','CLPコース_7000円飲み放題付（3時間制）','7000円飲み放題付（3時間制）'];
-  var sales = [6800,7500,7600,7600,10500,10800,10800,12000,12800,15600,28800,40000,50400,77000,84000];
-  var pcts = ['1.4%','1.5%','1.6%','1.6%','2.1%','2.2%','2.2%','2.4%','2.6%','3.2%','5.9%','8.1%','10.3%','15.7%','17.1%'];
-  var barColors = sales.map(function(v,i){
-    if(i>=13) return C.orange;
-    if(i>=10) return C.blue;
-    return '#93C5FD';
-  });
-  var trace = {
-    y:products,x:sales,type:'bar',orientation:'h',
-    marker:{color:barColors,line:{width:sales.map(function(v,i){return i===14?3:0;}),color:sales.map(function(v,i){return i===14?C.navy:'transparent';})}},
-    text:sales.map(function(v,i){return '¥'+v.toLocaleString()+' ('+pcts[i]+')';}),
-    textposition:'outside',textfont:{size:12}
-  };
-  var layout = {
-    margin:{t:10,r:200,b:40,l:280},
-    xaxis:{tickfont:{size:13},tickformat:',',title:{text:'売上（円）',font:{size:13}}},
-    yaxis:{tickfont:{size:13},automargin:true},
-    annotations:[{x:84000,y:'7000円飲み放題付（3時間制）',text:'🏆 1位 / 4週平均比+118%',showarrow:false,xanchor:'left',xshift:170,font:{size:13,color:C.orange,weight:800}}],
-    showlegend:false,plot_bgcolor:'#fff',paper_bgcolor:'#fff'
-  };
-  Plotly.newPlot('chart-s21',[trace],layout,{displayModeBar:false,responsive:true});
 })();
 </script>
 

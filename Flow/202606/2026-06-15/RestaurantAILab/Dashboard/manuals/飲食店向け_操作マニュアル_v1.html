@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>シェフズルーム ダッシュボード 操作マニュアル v1</title>
+<style>
+  @page { size: A4; margin: 16mm 14mm 18mm 14mm; }
+  body { font-family: -apple-system, "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif; color: #1a1a1a; line-height: 1.6; font-size: 10.5pt; }
+  h1 { font-size: 22pt; margin: 0 0 16pt; border-bottom: 2px solid #e60012; padding-bottom: 6pt; page-break-after: avoid; }
+  h2 { font-size: 16pt; margin: 20pt 0 8pt; border-left: 5px solid #e60012; padding-left: 10pt; page-break-after: avoid; }
+  h3 { font-size: 13pt; margin: 14pt 0 6pt; color: #333; page-break-after: avoid; }
+  h4 { font-size: 11.5pt; margin: 10pt 0 4pt; color: #444; page-break-after: avoid; }
+  p { margin: 0 0 8pt; }
+  ul, ol { margin: 0 0 8pt; padding-left: 20pt; }
+  li { margin-bottom: 3pt; }
+  table { border-collapse: collapse; width: 100%; margin: 8pt 0 12pt; font-size: 9.5pt; page-break-inside: avoid; }
+  th, td { border: 1px solid #ccc; padding: 4pt 6pt; text-align: left; vertical-align: top; }
+  th { background: #f5f5f5; font-weight: 600; }
+  code { background: #f3f3f3; padding: 1pt 4pt; border-radius: 3pt; font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 9pt; }
+  pre { background: #f7f7f7; padding: 8pt; border-radius: 4pt; overflow-x: auto; font-size: 9pt; page-break-inside: avoid; }
+  pre code { background: transparent; padding: 0; }
+  blockquote { border-left: 4px solid #ddd; margin: 8pt 0; padding: 4pt 12pt; color: #555; background: #fafafa; }
+  img { max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 4pt; margin: 6pt 0; page-break-inside: avoid; display: block; }
+  hr { border: 0; border-top: 1px dashed #ccc; margin: 16pt 0; }
+  a { color: #1a73e8; text-decoration: none; }
+</style>
+</head>
+<body>
+<h1>シェフズルーム ダッシュボード 操作マニュアル</h1>
+<p><strong>対象</strong>: 店舗オーナー / 店長 / 店舗スタッフ
+<strong>バージョン</strong>: v1（2026-06-15）
+<strong>提供</strong>: シェフズルーム × RestaurantAILab</p>
+<hr>
+<h2>目次</h2>
+<ol>
+<li>はじめに</li>
+<li>ログインと基本操作</li>
+<li>売上CSVアップロード</li>
+<li>売上ダッシュボードの見方</li>
+<li>PL管理（日次入力）</li>
+<li>月次目標の設定</li>
+<li>月次推移（PLトレンド）の見方</li>
+<li>PL設定</li>
+<li>日報</li>
+<li>週報・月報</li>
+<li>困ったときに</li>
+</ol>
+<hr>
+<h2>1. はじめに</h2>
+<h3>このマニュアルについて</h3>
+<p>このマニュアルは「シェフズルーム ダッシュボード」を実際に店舗で使うときの操作手順をまとめたものです。
+スクリーンショットの <strong>赤い枠</strong> が「クリック／入力する場所」、<strong>赤いラベル</strong> が手順番号を示します。</p>
+<h3>対応する端末</h3>
+<ul>
+<li><strong>PC（推奨）</strong>: 売上CSVアップロード、ダッシュボード閲覧、PL設定など全機能</li>
+<li><strong>スマートフォン</strong>: 日次の売上・経費入力、日報入力など日々の入力作業</li>
+</ul>
+<h3>用語ミニ解説</h3>
+<table>
+<thead>
+<tr>
+<th>用語</th>
+<th>意味</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>店舗コード</td>
+<td>お店ごとに発行された英数字のID（例: <code>your-store-001</code>）</td>
+</tr>
+<tr>
+<td>営業日付</td>
+<td>「業務上の今日」を指す日付。深夜営業のお店は <strong>営業日切り替え時刻</strong>（例: AM5時）まで前日扱い</td>
+</tr>
+<tr>
+<td>カテゴリ</td>
+<td>売上・経費の分類（売上＝ランチ／ディナー／コース 等、経費＝食材費／人件費／光熱費 等）</td>
+</tr>
+<tr>
+<td>経費の種別</td>
+<td><strong>定常</strong>（毎月決まって発生する家賃・人件費など）／<strong>例外</strong>（単発のスポット支出）</td>
+</tr>
+<tr>
+<td>着地予想</td>
+<td>「このペースで進むと月末いくらになるか」をリアルタイムに算出した予想値</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>2. ログインと基本操作</h2>
+<h3>2.1 ログイン画面</h3>
+<p>ブラウザで配布されたURL（例: <code>https://dashboard.example.com/login</code>）を開くと、ログイン画面が表示されます。</p>
+<p><img src="screenshots/01_login_02_annotated.png" alt="ログイン画面（説明あり）"></p>
+<p><strong>操作手順</strong></p>
+<ol>
+<li><strong>店舗コード</strong>を入力する</li>
+<li><strong>パスワード</strong>を入力する</li>
+<li>**「ログイン」**ボタンをクリック</li>
+</ol>
+<blockquote>
+<p>💡 <strong>デモを試したい場合</strong> は「🎭 デモを試す」ボタンを押すと、デモ店舗（やまと屋）に入れます。本物のデータには影響しません。</p>
+</blockquote>
+<h3>2.2 ホーム画面（アプリ一覧）</h3>
+<p>ログインに成功すると、3つのアプリのカードが並んだホーム画面に遷移します。</p>
+<p><img src="screenshots/02_home_02_app_launcher_annotated.png" alt="アプリ一覧（説明あり）"></p>
+<table>
+<thead>
+<tr>
+<th>カード</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>① 売上ダッシュボード</td>
+<td>POSのCSVから売上・客数・メニュー別売上を分析</td>
+</tr>
+<tr>
+<td>② PL管理</td>
+<td>日次の売上・経費入力／月次目標／月次推移</td>
+</tr>
+<tr>
+<td>③ 週報・月報確認</td>
+<td>配信された週次・月次レポートの閲覧</td>
+</tr>
+</tbody></table>
+<h3>2.3 グループアカウントで複数店舗にアクセスする</h3>
+<p>複数店舗を1つのアカウントで管理する <strong>グループアカウント</strong> でログインした場合、ログイン直後に「店舗選択画面」が表示され、どの店舗を操作するか選んでから上記アプリ一覧へ進みます。</p>
+<h3>2.4 ログアウト</h3>
+<p>画面右上の「ログアウト」ボタンをクリックすると、セッションを終了して再びログイン画面に戻ります。</p>
+<blockquote>
+<p>セッションは <strong>7日間</strong> 有効。共有PCで使う場合は作業後に必ずログアウトしてください。</p>
+</blockquote>
+<hr>
+<h2>3. 売上CSVアップロード</h2>
+<h3>3.1 アップロード画面の開き方</h3>
+<p>ホーム画面 →「売上ダッシュボード」→ 月一覧画面 →「売上データをアップロード」ボタン、または直接 <code>/store/{店舗コード}/upload</code> を開きます。</p>
+<p><img src="screenshots/05_upload_01_screen.png" alt="アップロード画面"></p>
+<h3>3.2 アップロード手順</h3>
+<ol>
+<li><strong>CSVファイルを選ぶ</strong>: 画面上の点線エリアにファイルをドラッグ＆ドロップする、もしくはエリアをクリックしてファイルを選択</li>
+<li><strong>プレビュー確認</strong>: ファイルの最初の数行と判定されたフォーマットが表示されます</li>
+<li><strong>アップロード実行</strong>: 「アップロード」ボタンを押す</li>
+<li><strong>完了表示</strong>: 「○件のデータを取り込みました」と表示されたら成功</li>
+</ol>
+<h3>3.3 対応する CSV フォーマット（自動判定）</h3>
+<p>ダッシュボードは <strong>6種類のCSV形式</strong> に自動対応します。アップロード時にヘッダー列を見て、形式を勝手に判別します。</p>
+<table>
+<thead>
+<tr>
+<th>POS</th>
+<th>フォーマット</th>
+<th>ファイル数</th>
+<th>備考</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ぽっくんPa</td>
+<td>完全版（H./D. 列）</td>
+<td>1</td>
+<td>伝票ヘッダー + 明細</td>
+</tr>
+<tr>
+<td>ぽっくんPa</td>
+<td>ヘッダーのみ（H. 列）</td>
+<td>1</td>
+<td>売上集計のみ</td>
+</tr>
+<tr>
+<td>ぽっくんPa</td>
+<td>旧型（汎用）</td>
+<td>1</td>
+<td>来店日／合計／カテゴリ／メニュー等</td>
+</tr>
+<tr>
+<td>Airレジ</td>
+<td>標準</td>
+<td>1</td>
+<td>取引No／会計日／会計時間</td>
+</tr>
+<tr>
+<td>スマレジ</td>
+<td>標準</td>
+<td>1</td>
+<td>取引ID／取引日時／販売単価</td>
+</tr>
+<tr>
+<td>Dinii</td>
+<td>注文＋取引（2ファイル）</td>
+<td><strong>2</strong></td>
+<td><code>orders.csv</code> と <code>transactions.csv</code> の <strong>両方</strong> をアップロード</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>📌 <strong>Dinii の場合</strong>: 2ファイル必須。orders（注文明細）と transactions（会計）を会計IDで自動結合します。</p>
+</blockquote>
+<h3>3.4 複数月の一括アップロード</h3>
+<p>CSVに複数月のデータが混在していても自動で月ごとに分割して取り込みます。1月分ずつ分割する作業は不要です。</p>
+<h3>3.5 よくあるエラーと対処</h3>
+<table>
+<thead>
+<tr>
+<th>エラーコード</th>
+<th>内容</th>
+<th>対処</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ERR-001</td>
+<td>CSVファイルを選択してください</td>
+<td><code>.csv</code> 形式のファイルか確認</td>
+</tr>
+<tr>
+<td>ERR-002</td>
+<td>ファイルサイズが10MBを超えています</td>
+<td>月ごとに分割するか、不要な列を削除</td>
+</tr>
+<tr>
+<td>ERR-003</td>
+<td>必須列が見つかりません</td>
+<td>文字コードや列名が改変されていないか確認</td>
+</tr>
+<tr>
+<td>ERR-004</td>
+<td>データ形式が不正です</td>
+<td>日付列に文字列が混在していないか確認</td>
+</tr>
+<tr>
+<td>ERR-005</td>
+<td>アップロードに失敗しました</td>
+<td>通信状況を確認の上、もう一度実行</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>4. 売上ダッシュボードの見方</h2>
+<p>ホーム → 「売上ダッシュボード」を開くと、まずアップロード済みの月一覧が表示されます。</p>
+<p><img src="screenshots/03_sales_01_month_list.png" alt="月一覧"></p>
+<p><strong>月のカードをクリック</strong> すると、その月の分析画面に入ります。画面上部に <strong>9つのタブ</strong> が並びます。</p>
+<h3>4.1 ホームタブ（売上サマリー＋日別推移）</h3>
+<p><img src="screenshots/04_dashboard_01_home.png" alt="ホームタブ"></p>
+<ul>
+<li><strong>サマリーカード</strong>: 総売上 / 総来店数 / 平均客単価 / 総客数</li>
+<li><strong>日別推移グラフ</strong>: 折れ線グラフで日ごとの売上を可視化</li>
+<li><strong>日別テーブル</strong>: 日付・曜日・売上・来店数・客単価・客数</li>
+</ul>
+<blockquote>
+<p>💡 <strong>来店数</strong>は「会計IDの数」、<strong>客数</strong>は「会計IDで重複除外した人数の合計」です。</p>
+</blockquote>
+<h3>4.2 曜日・時間帯分析タブ</h3>
+<p><img src="screenshots/04_dashboard_02_weekly.png" alt="曜日・時間帯分析"></p>
+<ul>
+<li><strong>ヒートマップ</strong>: 縦軸＝時間帯（0〜23時）、横軸＝曜日（月〜日）</li>
+<li><strong>指標切替</strong>: 売上／来店数／客単価</li>
+<li><strong>週フィルター</strong>: 月全体 / 第1〜6週で絞り込み</li>
+<li><strong>勤怠オーバーレイ</strong>（勤怠データがある場合）: 各セルに当番スタッフ数を重ねて表示</li>
+</ul>
+<p>「忙しい時間にスタッフが足りているか」を一目で確認できます。</p>
+<h3>4.3 メニュー分析タブ（ABC分析）</h3>
+<p><img src="screenshots/04_dashboard_03_menu.png" alt="メニュー分析"></p>
+<p>メニュー（商品）を売上構成比でA/B/Cにランク付け:</p>
+<ul>
+<li><strong>A</strong> … 売上累計70%まで（看板商品）</li>
+<li><strong>B</strong> … 70〜90%（準主力）</li>
+<li><strong>C</strong> … 90〜100%（裾野）</li>
+</ul>
+<p>カテゴリ別の構成比も同じ画面で確認できます。</p>
+<h3>4.4 商品詳細タブ（クロスセル分析）</h3>
+<p><img src="screenshots/04_dashboard_04_product.png" alt="商品詳細"></p>
+<p>「Aを頼んだお客様はBも頼みやすい」というセット組み合わせを発見します。</p>
+<ul>
+<li><strong>カテゴリ×カテゴリ ヒートマップ</strong>: 同時購入率の高い組み合わせ</li>
+<li><strong>商品ペア Top 20</strong>: 一緒に注文されやすい商品ペアの一覧</li>
+</ul>
+<h3>4.5 月次推移タブ</h3>
+<p><img src="screenshots/04_dashboard_05_trends.png" alt="月次推移"></p>
+<p>複数月の売上・客数・客単価・人件費を並べて推移を確認できます。</p>
+<h3>4.6 全体サマリータブ</h3>
+<p><img src="screenshots/04_dashboard_06_summary.png" alt="全体サマリー"></p>
+<p>コース・アラカルトを含めた総合的な売上サマリーです。</p>
+<h3>4.7 客数分析タブ</h3>
+<p><img src="screenshots/04_dashboard_07_customer.png" alt="客数分析"></p>
+<p>客数の詳細（人数別・曜日別など）を可視化します。</p>
+<h3>4.8 客単価分析タブ</h3>
+<p><img src="screenshots/04_dashboard_08_unitprice.png" alt="客単価分析"></p>
+<p>客単価の分布や時期ごとの変動を確認できます。</p>
+<h3>4.9 設定タブ（客単価除外カテゴリ）</h3>
+<p><img src="screenshots/04_dashboard_09_settings.png" alt="ダッシュボード設定"></p>
+<p><strong>客単価計算から除外するカテゴリ</strong> を選択できます。</p>
+<blockquote>
+<p>例: お土産・物販・デリバリーを除外することで、店内体験の本来の客単価が見えるようになります。設定はその月だけでなく <strong>すべてのタブ・全期間に自動反映</strong> されます。</p>
+</blockquote>
+<hr>
+<h2>5. PL管理（日次入力）</h2>
+<h3>5.1 PLダッシュボードの見方</h3>
+<p>ホーム →「PL管理」を開くと、まずPLダッシュボードが表示されます。</p>
+<p><img src="screenshots/06_pl_01_dashboard.png" alt="PLダッシュボード"></p>
+<table>
+<thead>
+<tr>
+<th>表示項目</th>
+<th>計算式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>累計売上</td>
+<td>当月の日次売上の合計</td>
+</tr>
+<tr>
+<td>着地予想売上</td>
+<td>（累計売上 ÷ 経過営業日）× 当月の営業日数</td>
+</tr>
+<tr>
+<td>累計経費</td>
+<td>当月の日次経費の合計</td>
+</tr>
+<tr>
+<td>着地予想経費</td>
+<td>定常経費を線形補外＋例外経費は実額</td>
+</tr>
+<tr>
+<td>着地予想利益</td>
+<td>着地予想売上 − 着地予想経費</td>
+</tr>
+<tr>
+<td>FL率</td>
+<td>（食材費＋人件費）÷ 売上（FLコスト目標との比較も表示）</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>💡 <strong>着地予想は「営業日カレンダー」に基づく</strong>。定休日・例外休日を正しく設定しておくと予想精度が上がります（→ 8.4 営業日設定）。</p>
+</blockquote>
+<h3>5.2 日次売上の入力</h3>
+<p>PL管理 →「日次入力」タブ、または URL <code>/store/{店舗コード}/pl/daily</code> を開きます。</p>
+<p><img src="screenshots/06_pl_02_daily.png" alt="PL日次入力"></p>
+<p><strong>操作手順</strong></p>
+<ol>
+<li>画面上部の <strong>日付ピッカー</strong> で対象日を選ぶ</li>
+<li><strong>売上カテゴリ別の入力欄</strong> に金額（税込）を入力</li>
+<li>自動保存または「保存」ボタンで確定</li>
+</ol>
+<blockquote>
+<p>⚠️ 売上控除ルールが設定されたカテゴリは <strong>入力ロック</strong>（自動算出のため）。控除ルールを変更したい場合は 8.5 へ。</p>
+</blockquote>
+<h3>5.3 日次経費の入力</h3>
+<p>同じ画面の経費セクションで:</p>
+<ol>
+<li>経費カテゴリを選ぶ（食材費／人件費／光熱費 など）</li>
+<li><strong>取引先</strong>（あれば）を選ぶ</li>
+<li>金額を入力</li>
+<li><strong>種別</strong> を選ぶ:<ul>
+<li><strong>定常</strong>: 毎月発生する固定的な支出 → 着地予想に線形補外される</li>
+<li><strong>例外</strong>: 単発の支出 → 着地予想に補外されない</li>
+</ul>
+</li>
+<li><strong>メモ</strong>（任意）に補足を入力</li>
+</ol>
+<p>同じ日・同じカテゴリでも複数の取引先で複数行入力できます。</p>
+<hr>
+<h2>6. 月次目標の設定</h2>
+<p>PL管理 →「月次目標」タブ、または <code>/store/{店舗コード}/pl/monthly</code>。</p>
+<p><img src="screenshots/06_pl_03_monthly_target.png" alt="月次目標"></p>
+<p><strong>設定できる項目</strong></p>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>売上目標（合計）</td>
+<td>月全体の売上目標</td>
+</tr>
+<tr>
+<td>カテゴリ別売上目標</td>
+<td>ランチ・ディナー等のカテゴリごとの目標</td>
+</tr>
+<tr>
+<td>カテゴリ別経費予算</td>
+<td>食材費・人件費等の予算</td>
+</tr>
+<tr>
+<td>利益目標</td>
+<td>月末の利益目標</td>
+</tr>
+<tr>
+<td>FL目標比率（%）</td>
+<td>（食材費＋人件費）÷売上 の目標</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>入力した目標値は <strong>PLダッシュボードの達成率／達成見込み%</strong> に反映されます。</p>
+</blockquote>
+<hr>
+<h2>7. 月次推移（PLトレンド）の見方</h2>
+<p>PL管理 →「月次推移」タブ、または <code>/store/{店舗コード}/pl/trends</code>。</p>
+<p><img src="screenshots/06_pl_04_trends.png" alt="PL月次推移"></p>
+<ul>
+<li><strong>期間切替</strong>: 3ヶ月 / 6ヶ月 / 12ヶ月 / 全期間</li>
+<li><strong>グラフ</strong>: 売上・経費・利益・FL率の月次推移</li>
+<li><strong>経費テーブル</strong>: 費目 → 取引先 → 日次明細の3階層でドリルダウン可能</li>
+</ul>
+<p>「どの費目で予算超過しているか」「どの取引先がコスト押し上げ要因か」を遡って確認できます。</p>
+<hr>
+<h2>8. PL設定</h2>
+<p>PL管理 →「設定」タブ、または <code>/store/{店舗コード}/pl/settings</code>。</p>
+<p><img src="screenshots/06_pl_06_settings.png" alt="PL設定画面"></p>
+<p>設定は8つのカードに整理されています。</p>
+<h3>8.1 売上カテゴリ管理</h3>
+<p>ランチ・ディナー・コース・アラカルトなど、店舗ごとの売上カテゴリを管理します。</p>
+<ul>
+<li><strong>追加</strong>: 「＋追加」ボタン → 名前・表示色を入力</li>
+<li><strong>編集</strong>: 行をクリックして名前変更</li>
+<li><strong>並び替え</strong>: ドラッグ＆ドロップで順序変更</li>
+<li><strong>削除（論理削除）</strong>: 「削除」ボタン。過去のデータは残ります</li>
+</ul>
+<blockquote>
+<p>カテゴリ名は店舗内で重複不可です。</p>
+</blockquote>
+<h3>8.2 経費カテゴリ管理（経費グループ＋経費カテゴリ）</h3>
+<p>経費は <strong>グループ</strong>（原価／販管費 等）と <strong>カテゴリ</strong>（食材費／人件費 等）の2階層で管理します。</p>
+<ul>
+<li>経費グループの追加・並び替え</li>
+<li>経費カテゴリの追加・並び替え・所属グループ変更</li>
+<li><strong>FLコスト対象フラグ</strong>: ON にするとFL率の分子に含まれます</li>
+</ul>
+<h3>8.3 取引先（仕入先）管理</h3>
+<p>経費の取引先を登録すると、日次経費入力でプルダウン候補に出てきます。</p>
+<ul>
+<li>取引先の追加・編集・並び替え</li>
+<li><strong>取引先 × 経費カテゴリ</strong> の紐付け（その取引先がどの経費カテゴリで使えるか）</li>
+</ul>
+<h3>8.4 営業日設定</h3>
+<table>
+<thead>
+<tr>
+<th>設定</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>定休日</td>
+<td>月曜・火曜などの曜日単位</td>
+</tr>
+<tr>
+<td>例外休日</td>
+<td>「2026-07-15 は臨時休業」のような個別日付</td>
+</tr>
+<tr>
+<td>営業日切り替え時刻</td>
+<td>深夜営業対応。例: AM5時 → 深夜0〜5時は前日扱い</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>営業日カレンダーは <strong>PLダッシュボードの着地予想</strong> に直接効いてきます。正確に設定してください。</p>
+</blockquote>
+<h3>8.5 売上控除・費用振替ルール</h3>
+<p>「税込売上の○%を経費に自動振替したい」「フードデリバリー手数料を売上から自動控除したい」などのルールを設定できます。</p>
+<ul>
+<li><strong>対象売上カテゴリ</strong>: どの売上から控除するか</li>
+<li><strong>控除割合</strong>: 0% &lt; ratio ≦ 100%（税込売上に対する%）</li>
+<li><strong>振替先経費カテゴリ</strong>（任意）: 控除分をどの経費として計上するか。空欄なら単純控除</li>
+<li><strong>有効期間</strong>: 開始日（必須）／終了日（無期限可）</li>
+</ul>
+<p>ルールが効いているカテゴリは <strong>日次入力画面で入力ロック</strong> され、自動で控除・振替が反映されます。</p>
+<h3>8.6 日報メンバー・質問・サマリープロンプト</h3>
+<p>日報機能を使う場合の設定（→ 9章参照）</p>
+<ul>
+<li><strong>メンバー</strong>: 責任者・スタッフを登録</li>
+<li><strong>質問</strong>: メンバーごとの質問テンプレート（最大2問）と深掘り観点</li>
+<li><strong>サマリープロンプト</strong>: 質問まとめ／日次まとめ／LINE一言アドバイス のAIプロンプト</li>
+</ul>
+<blockquote>
+<p>各プロンプトは「店舗個別 → 全体設定 → ハードコードデフォルト」の順で優先されます。</p>
+</blockquote>
+<hr>
+<h2>9. 日報</h2>
+<h3>9.1 店員日報の入力</h3>
+<p>スマートフォンで <code>/daily-report/{店舗コード}</code> を開きます。</p>
+<p><img src="screenshots/08_dailyreport_01_login.png" alt="日報ログイン"></p>
+<p><strong>操作手順</strong></p>
+<ol>
+<li>店舗パスワードを入力 →「認証」</li>
+<li><strong>メンバー（自分の名前）</strong> をプルダウンから選択</li>
+</ol>
+<p><img src="screenshots/08_dailyreport_02_member_select.png" alt="メンバー選択"></p>
+<ol start="3">
+<li><strong>質問</strong> に対する回答を入力</li>
+</ol>
+<p><img src="screenshots/08_dailyreport_03_question.png" alt="質問入力"></p>
+<ol start="4">
+<li>回答を送信すると、<strong>AIが深掘り質問</strong>（最大2回）を返してきます。簡潔に答えてOK</li>
+<li>すべての質問が終わったら「日報を送信」</li>
+</ol>
+<blockquote>
+<p>💡 <strong>質問内容はメンバーによって違います</strong>（責任者・外国人スタッフ・一般スタッフでテンプレートが分かれています）。</p>
+</blockquote>
+<h3>9.2 店長日報の入力</h3>
+<p>店長／店舗責任者が締めとして1日のまとめを入力します。送信時に以下が自動で動きます:</p>
+<ol>
+<li><strong>AIによる店舗まとめ生成</strong>: 全スタッフの日報を要約</li>
+<li><strong>LINEへの通知</strong>（設定がONの場合）</li>
+</ol>
+<h3>9.3 日報一覧の確認</h3>
+<p>ダッシュボード側の PL管理 →「日報」タブで、過去の店舗まとめ日報・個人日報を閲覧できます。</p>
+<p><img src="screenshots/06_pl_05_daily_reports.png" alt="日報一覧"></p>
+<h3>9.4 LINE通知の中身</h3>
+<p>「店長日報を送信」または手動の締め操作で、登録されたLINEグループに以下が送信されます:</p>
+<ul>
+<li>本日の売上速報</li>
+<li>今月の見込み（着地予想売上）</li>
+<li>月次目標の達成見込み%</li>
+<li>AI一言アドバイス（40文字以内）</li>
+<li>日報のまとめ</li>
+</ul>
+<blockquote>
+<p>LINE連携が無効の店舗にも、配信内容はダッシュボード画面で確認できます。</p>
+</blockquote>
+<hr>
+<h2>10. 週報・月報</h2>
+<p>ホーム →「週報・月報確認」を開くと、配信された資料の一覧が表示されます。</p>
+<p><img src="screenshots/07_reports_01_weekly_list.png" alt="週報・月報一覧"></p>
+<h3>10.1 一覧画面</h3>
+<ul>
+<li>週報と月報が時系列で混在表示（最新が上）</li>
+<li>年でグルーピングされて折りたためる</li>
+</ul>
+<h3>10.2 レポートの閲覧</h3>
+<p>カードをクリックすると、専用ビューアでレポートが開きます。HTMLレポートが画面内に展開されるので、スクロールしながら読めます。</p>
+<h3>10.3 印刷／PDF保存</h3>
+<p>レポート画面右上の <strong>「印刷」</strong> ボタン → ブラウザの印刷ダイアログ → <strong>「PDFとして保存」</strong> を選ぶと、印刷用CSSが適用されたPDFが手元に保存できます。</p>
+<blockquote>
+<p>経営会議の資料としてそのまま配布できる体裁になっています。</p>
+</blockquote>
+<hr>
+<h2>11. 困ったときに</h2>
+<h3>11.1 ログインできない</h3>
+<ul>
+<li><strong>「店舗コードまたはパスワードが違います」</strong> が出る場合、店舗コードがコピペ時に空白が混ざっていないか確認</li>
+<li>7日間アクセスしないとセッションが切れます → 再ログインしてください</li>
+<li>どうしても入れない場合は管理者に問い合わせ</li>
+</ul>
+<h3>11.2 アップロードしたのにダッシュボードに数字が出ない</h3>
+<ul>
+<li>月一覧で「該当月」が表示されていますか？ ない場合は取込失敗</li>
+<li>アップロード画面でエラーが出ていないか確認</li>
+<li>Diniiの場合は <strong>2ファイルとも</strong> アップロードしましたか？</li>
+</ul>
+<h3>11.3 客単価が想定と違う</h3>
+<ul>
+<li>設定タブ → 客単価除外カテゴリで、お土産・物販・デリバリー等が除外されているか確認</li>
+</ul>
+<h3>11.4 PL着地予想が大きくブレる</h3>
+<ul>
+<li>営業日設定（定休日・例外休日）が今月の実態と合っているか確認</li>
+<li>経費の「定常／例外」種別の付け方が正しいか確認（一時的なスポット経費は <strong>例外</strong> に）</li>
+</ul>
+<h3>11.5 LINE通知が来ない</h3>
+<ul>
+<li>PL設定 → フィーチャーフラグ で <code>lineNotification</code> がONか</li>
+<li>LINE連携設定でグループIDが登録されているか</li>
+<li>上記OKでも届かない場合は、LINEグループからアプリのBotが退出していないか確認</li>
+</ul>
+<h3>11.6 日報送信ができない</h3>
+<ul>
+<li>全質問に回答しているか確認（未回答だと「送信」ボタンが非活性のまま）</li>
+<li>通信状況を確認の上、もう一度メンバー選択からやり直し</li>
+</ul>
+<h3>11.7 主なエラーコード早見表</h3>
+<table>
+<thead>
+<tr>
+<th>コード</th>
+<th>意味</th>
+<th>主な対処</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ERR-001〜005</td>
+<td>CSVアップロード関連</td>
+<td>ファイル形式・サイズ・列名を確認</td>
+</tr>
+<tr>
+<td>ERR-AUTH-001/002</td>
+<td>未認証・セッション切れ</td>
+<td>再ログイン</td>
+</tr>
+<tr>
+<td>ERR-AUTH-003/007</td>
+<td>権限不足</td>
+<td>アクセス可能な店舗か確認</td>
+</tr>
+<tr>
+<td>ERR-PL-001</td>
+<td>カテゴリ重複</td>
+<td>同名カテゴリを2つ作らないように</td>
+</tr>
+<tr>
+<td>ERR-PL-DAILY-SALES</td>
+<td>日次売上保存失敗</td>
+<td>金額が数値か確認</td>
+</tr>
+<tr>
+<td>ERR-DEDUCT-001〜005</td>
+<td>売上控除ルールエラー</td>
+<td>控除割合（0〜100）・対象カテゴリを確認</td>
+</tr>
+</tbody></table>
+<h3>11.8 お問い合わせ先</h3>
+<p>シェフズルーム担当: <strong>竹谷さん</strong>
+（このマニュアルで解決しないご質問は竹谷さん経由で開発元へ）</p>
+<hr>
+<p><strong>マニュアル末尾</strong>
+本マニュアルは v1（2026-06-15）時点の仕様に基づいています。機能追加・変更があった場合は最新版を配布します。</p>
+
+</body>
+</html>

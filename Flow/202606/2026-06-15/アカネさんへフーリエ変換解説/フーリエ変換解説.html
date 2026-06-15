@@ -26,6 +26,9 @@ window.MathJax = {
   --accent-light: #e8f0fa;
   --highlight: #b45309;
   --highlight-light: #fef3c7;
+  --column-bg: #f7f4ec;
+  --column-border: #c9bfa6;
+  --column-accent: #7c5e1f;
   --border: #e5e5e5;
   --code-bg: #f5f5f5;
   --wave-1: #2c5d8f;
@@ -143,6 +146,37 @@ p { margin: 1rem 0; }
   border-radius: 0 6px 6px 0;
 }
 
+.column-box {
+  background: var(--column-bg);
+  border: 1px dashed var(--column-border);
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  margin: 2rem 0;
+}
+
+.column-box .column-label {
+  display: inline-block;
+  background: var(--column-accent);
+  color: white;
+  font-size: 0.72rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 12px;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+}
+
+.column-box h3 {
+  margin: 0.4rem 0 1rem;
+  font-size: 1.1rem;
+  color: var(--column-accent);
+}
+
+.column-box .column-tag {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-left: 0.6rem;
+}
+
 .demo {
   background: white;
   border: 1px solid var(--border);
@@ -171,6 +205,29 @@ p { margin: 1rem 0; }
   background: #fafafa;
   border-radius: 6px;
   display: block;
+}
+
+.demo-split {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 0.75rem;
+  align-items: stretch;
+}
+
+.demo-split .panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.demo-split .panel-label {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-bottom: 0.3rem;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 720px) {
+  .demo-split { grid-template-columns: 1fr; }
 }
 
 .controls {
@@ -295,6 +352,10 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
   letter-spacing: 0.04em;
 }
 
+.tag.col {
+  background: var(--column-accent);
+}
+
 .kicker {
   font-size: 0.85rem;
   color: var(--accent);
@@ -317,8 +378,9 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
   <ol>
     <li><a href="#part0">なぜフーリエ級数を考えると嬉しいのか</a></li>
     <li><a href="#part1">フーリエ級数 — 周期関数を波に分解する</a></li>
-    <li><a href="#part2">フーリエ変換 — 周期じゃない関数への拡張</a></li>
-    <li><a href="#part3">応用① 画像のノイズ除去</a></li>
+    <li><a href="#part15">コラム: 三角関数の微積分と複素表示</a></li>
+    <li><a href="#part2">フーリエ変換 — 周期関数以外への拡張</a></li>
+    <li><a href="#part3">応用① 信号のノイズ除去</a></li>
     <li><a href="#part4">応用② 天動説と周転円 — 千年前のフーリエ級数</a></li>
   </ol>
 </nav>
@@ -333,27 +395,43 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     まず、なぜこんな道具を勉強する価値があるのかから始めます。
   </p>
 
-  <h3>1つの音は「混ざった波」だ</h3>
+  <h3>1 つの音は「混ざった波」だ</h3>
   <p>
-    ピアノで「ド」「ミ」「ソ」を同時に弾いたときの音の波形は、ぐにゃっと複雑な形をしています。でも、それは <strong>3 つのきれいな波（正弦波）の足し算</strong> にすぎません。
+    ピアノで「ド」「ミ」「ソ」を同時に弾いたときの音の波形は、ぐにゃっと複雑な形をしています。でもそれは、<strong>3 つのきれいな波（正弦波）の足し算</strong>にすぎません。
+  </p>
+
+  <p>
+    下の図の左が、3 本の正弦波と、それを足した結果（黒）。右はその「中身」を表した <strong>周波数空間</strong>の棒グラフです。横軸が周波数（波の細かさ）、縦軸がその波の強さ。
   </p>
 
   <div class="demo">
-    <h4>3つの正弦波 → 重ねると複雑な波形になる</h4>
-    <canvas id="canvasMixed" width="800" height="280"></canvas>
+    <h4>3 つの正弦波 → 重ねると複雑な波形になる</h4>
+    <div class="demo-split">
+      <div class="panel">
+        <div class="panel-label">時間空間（波の形）</div>
+        <canvas id="canvasMixed" width="520" height="280"></canvas>
+      </div>
+      <div class="panel">
+        <div class="panel-label">周波数空間（中身の内訳）</div>
+        <canvas id="canvasMixedSpec" width="340" height="280"></canvas>
+      </div>
+    </div>
     <div class="legend">
-      <span class="item"><span class="swatch" style="background:var(--wave-1)"></span>低い音 ($\sin(t)$)</span>
-      <span class="item"><span class="swatch" style="background:var(--wave-2)"></span>中の音 ($0.7\sin(2t)$)</span>
-      <span class="item"><span class="swatch" style="background:var(--wave-3)"></span>高い音 ($0.4\sin(3t)$)</span>
+      <span class="item"><span class="swatch" style="background:var(--wave-1)"></span>$\sin(t)$　（強さ 1.0）</span>
+      <span class="item"><span class="swatch" style="background:var(--wave-2)"></span>$0.7\sin(2t)$</span>
+      <span class="item"><span class="swatch" style="background:var(--wave-3)"></span>$0.4\sin(3t)$</span>
       <span class="item"><span class="swatch" style="background:var(--wave-sum); height:4px"></span>合成（観測される波形）</span>
     </div>
-    <p class="caption">3 本の単純な正弦波を足すだけで、こんなに複雑な波形になります。逆に言えば、複雑な波形を見ても、もとの 3 本に「分解」できれば中身がわかります。</p>
+    <p class="caption">
+      左の波形は <strong>3 本の波の足し算の結果</strong>、右の棒グラフは <strong>その内訳</strong>。
+      「観測されるのは左の波形」だが、「中身を知りたいときには右の棒グラフが欲しい」 — これがフーリエの考え方の出発点です。
+    </p>
   </div>
 
   <h3>「分ける」とできるようになること</h3>
   <table>
     <tr><th>領域</th><th>「分けると」できるようになること</th></tr>
-    <tr><td>音声</td><td>ノイズだけ消す / ボーカルだけ抽出 / イコライザ で低音強化</td></tr>
+    <tr><td>音声</td><td>ノイズだけ消す / ボーカルだけ抽出 / イコライザで低音強化</td></tr>
     <tr><td>画像</td><td>ぼかし・くっきり化・ノイズ除去 / JPEG 圧縮</td></tr>
     <tr><td>物理</td><td>振動・電磁波・量子力学・地震波の解析</td></tr>
     <tr><td>医療</td><td>MRI / CT 画像の再構成</td></tr>
@@ -361,7 +439,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 
   <div class="callout">
     <strong>この資料のゴール:</strong> 「どんな関数も、正弦波の重ね合わせとして書き直せる」という考え方と、それがなぜ便利か、現実のどこに使われているかが分かる状態にすること。<br>
-    数式の細部は覚えなくて大丈夫です。<strong>気持ち</strong>と <strong>3 つの応用例</strong> が腑に落ちれば十分。
+    数式の細部は覚えなくて大丈夫です。<strong>気持ち</strong>と <strong>3 つの応用例</strong>が腑に落ちれば十分。
   </div>
 </section>
 
@@ -372,28 +450,9 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 <section id="part1">
   <h2><span class="tag">Part 1</span>フーリエ級数 — 周期関数を波に分解する</h2>
 
-  <h3>気持ち: 関数オーケストラ</h3>
+  <h3>フーリエ級数とは</h3>
   <p>
-    関数を <strong>オーケストラの演奏</strong> に例えてみます。複雑な音色（関数）は、いろんな楽器の音（正弦波）が同時に鳴った結果として聞こえています。
-  </p>
-
-  <ul>
-    <li><strong>モード番号 $n = 1, 2, 3, \ldots$</strong> 　=「楽器の音程」（どの高さの音か）</li>
-    <li><strong>係数 $a_n, b_n$</strong> 　=「その音の音量」（どれくらい強く鳴っているか）</li>
-  </ul>
-
-  <p>
-    フーリエ級数展開とは、<strong>演奏全体（関数）を聴いて、各楽器の音量を書き出す譜面起こし</strong>のことです。
-  </p>
-
-  <div class="note">
-    👀 ここがいちばん混同しやすいところです。<br>
-    「<strong>音程 $n$</strong>」と「<strong>音量 $a_n, b_n$</strong>」は別物。これさえ分けて考えれば、フーリエ級数の式は怖くありません。
-  </div>
-
-  <h3>周期関数とは</h3>
-  <p>
-    まずフーリエ級数の対象は <strong>周期関数</strong>（同じパターンを繰り返す関数）です。周期を $T$ と書くと、基本となる周波数は
+    フーリエ級数は、<strong>周期関数（同じパターンを繰り返す関数）</strong>を「正弦波の足し算」で書き直す道具です。周期を $T$ とすると、基本となる周波数は
   </p>
 
   $$
@@ -401,21 +460,50 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
   $$
 
   <p>
-    で定まります。これがオーケストラの「基準音（ド）」にあたります。あとはその整数倍 $2\omega_0, 3\omega_0, \ldots$ が「レ」「ミ」…と続いていきます。
+    で、これを使って関数を次のように書きます:
   </p>
 
-  <h3>正弦波の重ね合わせを目で見る</h3>
-  <p>
-    たとえば <strong>矩形波（カクカクの波）</strong> を、正弦波だけで作れるでしょうか？
-  </p>
+  $$
+  f(x) = a_0 + \sum_{n=1}^{\infty}\Big(a_n\cos(n\omega_0 x) + b_n\sin(n\omega_0 x)\Big)
+  $$
 
   <p>
-    答え: 作れます。下のデモで、足す波の本数 $N$ を増やしてみてください。本数が増えるほど、丸かった波がだんだん矩形に近づいていきます。
+    $n = 1, 2, 3, \ldots$ が「<strong>何番目の波か</strong>」を表す番号で、$a_n, b_n$ がそれぞれの波の <strong>強さ</strong> です。「周期 $T$ の関数は、$T$ の整数分の 1 の波長を持つ正弦波の重ね合わせで書ける」 — これがフーリエ級数のすべてです。
+  </p>
+
+  <h3>問い: こんな波も正弦波の足し算で書けるか？</h3>
+  <p>
+    たとえば、次のような<strong>カクカクした矩形波</strong>。これを <strong>$\sin$ の足し算</strong>だけで作れるでしょうか？
   </p>
 
   <div class="demo">
-    <h4>矩形波を正弦波の重ね合わせで近似する</h4>
-    <canvas id="canvasSquare" width="800" height="320"></canvas>
+    <h4>問題: この矩形波を正弦波だけで書けるか</h4>
+    <canvas id="canvasSquareTarget" width="800" height="220"></canvas>
+    <p class="caption">
+      ぱっと見、まったく形の違う $\sin$ を足してこの段差ができるとは思えません。さて。
+    </p>
+  </div>
+
+  <h3>答え: できます</h3>
+  <p>
+    下のデモで、足す正弦波の本数 $N$ を増やしてみてください。<strong>$N$ を増やすほど、丸かった波がだんだん矩形に寄っていきます</strong>。
+  </p>
+  <p>
+    左は時間空間で見た波の様子。右は周波数空間で、「どの波数の正弦波をどれだけ強く使っているか」の棒グラフです。Part 0 の3つの正弦波の例と同じ見方です。
+  </p>
+
+  <div class="demo">
+    <h4>矩形波 = 正弦波の重ね合わせ</h4>
+    <div class="demo-split">
+      <div class="panel">
+        <div class="panel-label">時間空間（波の形）</div>
+        <canvas id="canvasSquare" width="520" height="320"></canvas>
+      </div>
+      <div class="panel">
+        <div class="panel-label">周波数空間（使っている波の強さ）</div>
+        <canvas id="canvasSquareSpec" width="340" height="320"></canvas>
+      </div>
+    </div>
     <div class="controls">
       <label>足す正弦波の本数 $N$:
         <input type="range" id="rangeN" min="1" max="50" value="1">
@@ -427,39 +515,133 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
       </label>
     </div>
     <p class="caption">
-      使っているのは「奇数番のモードだけの $\sin$」の足し算：
-      $\displaystyle \tfrac{4}{\pi}\sum_{k=1}^{N} \tfrac{1}{2k-1}\sin\big((2k-1)\,t\big)$。
-      段差のところに残るピョコっとしたツノが <strong>ギブス現象</strong> です。
+      使っているのは奇数番のモードだけの $\sin$:
+      $\displaystyle f_N(t) = \tfrac{4}{\pi}\sum_{k=1}^{N} \tfrac{1}{2k-1}\sin\big((2k-1)\,t\big)$。
+      右の棒グラフを見ると、矩形波が「<strong>奇数倍の周波数だけ</strong>を、強さ $\tfrac{4}{\pi(2k-1)}$ ずつ使って作られている」ことが見えます。段差の所のツノは <strong>ギブス現象</strong>。
     </p>
   </div>
 
-  <h3>計算手続き — 「音量」はどう取り出すか</h3>
   <p>
-    関数 $f(x)$ が周期 $T$ の周期関数のとき、フーリエ級数展開は
+    重要な観察: 周波数空間の棒グラフは <strong>離散的（飛び飛び）</strong> です。フーリエ級数の場合、使える正弦波が「基本周波数 $\omega_0$ の整数倍」しかないからです。
   </p>
 
-  $$
-  f(x) \;=\; a_0 \;+\; \sum_{n=1}^{\infty}\Big(a_n\cos(n\omega_0 x) \;+\; b_n\sin(n\omega_0 x)\Big)
-  $$
+  <div class="note">
+    👀 ここで <strong>周波数空間の棒グラフ</strong> の見方を覚えておいてください。
+    あとでこの棒が「だんだん詰まって、最後には連続的になる」というのが、フーリエ変換への入り口になります。
+  </div>
 
-  <p>
-    と書けます。「音量」にあたる係数 $a_n, b_n$ は次の積分で取り出します:
-  </p>
+  <!-- column: orthogonality -->
+  <div class="column-box">
+    <span class="column-label">COLUMN — 計算テクニック</span>
+    <h3>強さ $a_n, b_n$ はどうやって取り出すか<span class="column-tag">概念的にはスキップしてOK</span></h3>
+    <p>
+      関数 $f(x)$ が与えられたとき、各正弦波の強さ $a_n, b_n$ は次の積分で出てきます:
+    </p>
 
-  $$
-  a_n = \frac{2}{T}\int_0^T f(x)\,\cos(n\omega_0 x)\,dx,\qquad
-  b_n = \frac{2}{T}\int_0^T f(x)\,\sin(n\omega_0 x)\,dx
-  $$
+    $$
+    a_n = \frac{2}{T}\int_0^T f(x)\cos(n\omega_0 x)\, dx,\qquad
+    b_n = \frac{2}{T}\int_0^T f(x)\sin(n\omega_0 x)\, dx
+    $$
 
-  <p>
-    気持ちは <strong>「聴きたい楽器と同じリズムで手を叩きながら1周期分聴くと、その楽器の音量だけが浮き上がる」</strong> です。これは三角関数の <em>直交性</em> という性質から来ています。
-  </p>
+    <p>
+      なぜこんな積分でうまく取り出せるかというと、三角関数には <strong>直交性</strong> と呼ばれる次の性質があるからです:
+    </p>
 
-  <h4>細かい注意（一度聞いて忘れて大丈夫）</h4>
-  <ul>
-    <li>「微分可能じゃないとダメ」ではありません。実用に出てくる関数はほぼ全部展開できます。</li>
-    <li>不連続な段差のところでは、級数は <strong>段差の中点</strong> を通ります（ギブス現象の絵で見たツノが、いくら本数を増やしても消えないのはこのためです）。</li>
-  </ul>
+    $$
+    \int_0^T \sin(n\omega_0 x)\sin(m\omega_0 x)\, dx
+      = \begin{cases} T/2 & (n = m) \\ 0 & (n \neq m) \end{cases}
+    $$
+
+    <p>
+      つまり「同じ周波数の波どうしを掛けて積分すれば残るけど、違う周波数だと <strong>1 周期で平均ゼロ</strong>になって消える」。これによって、調べたい周波数の $\sin$ を掛けて積分するだけで、欲しい強さだけが「ふるい分け」られる、というしくみです。
+    </p>
+    <p>
+      これは <strong>計算手続きのテクニック</strong>であり、フーリエ級数の概念そのものではありません。「概念は『正弦波の重ね合わせで関数を書ける』こと、テクニックは『直交性を使って各成分を取り出すこと』」と分けて覚えるのが楽です。
+    </p>
+  </div>
+</section>
+
+
+<!-- ============================================================ -->
+<!-- Part 1.5: Column on trig calculus & complex representation -->
+<!-- ============================================================ -->
+<section id="part15">
+  <h2><span class="tag col">Part 1.5</span>コラム: 三角関数の微積分と複素表示</h2>
+
+  <div class="column-box">
+    <span class="column-label">COLUMN — 道具の準備</span>
+    <h3>なぜ Part 2 でいきなり $e^{i\omega t}$ が出てくるのか</h3>
+
+    <p>
+      フーリエ級数は $\sin, \cos$ で書きました。ところがこの後のフーリエ変換では、いきなり指数関数 $e^{-i\omega t}$ が出てきます。これは <strong>別の道具を使い始めた</strong>わけではなく、$\sin, \cos$ を <strong>「書き換えて、扱いやすくしただけ」</strong>です。
+    </p>
+
+    <h4>三角関数の微分はサイクルする</h4>
+    <p>
+      $\sin, \cos$ は、微分するとお互いに行ったり来たりします:
+    </p>
+
+    $$
+    \tfrac{d}{dt}\sin(\omega t) = \omega\cos(\omega t),\qquad
+    \tfrac{d}{dt}\cos(\omega t) = -\omega\sin(\omega t)
+    $$
+
+    <p>
+      これは便利ですが、毎回「$\sin$ が $\cos$ になり、$\cos$ が $-\sin$ になる」と頭の中でひっくり返すのが面倒です。
+    </p>
+
+    <h4>オイラーの公式で 2 つをまとめる</h4>
+    <p>
+      ここで出てくるのが <strong>オイラーの公式</strong>:
+    </p>
+
+    $$
+    e^{i\theta} = \cos\theta + i\sin\theta
+    $$
+
+    <p>
+      この式は「$\cos$ と $\sin$ を、複素数（実部と虚部）にまとめた表記」です。$e^{i\theta}$ という1つの式の <strong>実部が $\cos\theta$</strong>、<strong>虚部が $\sin\theta$</strong> になっています。
+    </p>
+
+    <h4>複素指数なら、微分はただの掛け算</h4>
+    <p>
+      $e^{i\omega t}$ を $t$ で微分すると:
+    </p>
+
+    $$
+    \tfrac{d}{dt} e^{i\omega t} = i\omega\, e^{i\omega t}
+    $$
+
+    <p>
+      <strong>微分してもただ $i\omega$ が前に出るだけ</strong>。 $\sin$ と $\cos$ の間を行き来する必要がなくなります。フーリエ変換の式で $e^{-i\omega t}$ が出てくるのは、ここで微分や積分が圧倒的に楽になるからです。
+    </p>
+
+    <h4>フーリエ級数も実は複素指数で書き直せる</h4>
+    <p>
+      オイラーの公式を逆に使うと:
+    </p>
+
+    $$
+    \cos\theta = \frac{e^{i\theta} + e^{-i\theta}}{2},\qquad
+    \sin\theta = \frac{e^{i\theta} - e^{-i\theta}}{2i}
+    $$
+
+    <p>
+      これを Part 1 のフーリエ級数の式に代入してまとめると、こうなります:
+    </p>
+
+    $$
+    f(x) = \sum_{n=-\infty}^{\infty} c_n\, e^{i n \omega_0 x}
+    $$
+
+    <p>
+      これは Part 1 の $a_n\cos + b_n\sin$ の式と <strong>完全に同じもの</strong> を、複素指数で書き直しただけです。Part 2 のフーリエ変換は、この複素指数版の自然な延長になっています。
+    </p>
+
+    <div class="callout">
+      まとめ: 複素指数 $e^{i\omega t}$ は、$\cos$ と $\sin$ を1つにまとめた書き方。微分・積分が掛け算・割り算になるので、計算が劇的に楽になる。<strong>概念は同じで、書き方を変えただけ</strong>。
+    </div>
+  </div>
 </section>
 
 
@@ -467,24 +649,34 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 <!-- Part 2 -->
 <!-- ============================================================ -->
 <section id="part2">
-  <h2><span class="tag">Part 2</span>フーリエ変換 — 周期じゃない関数への拡張</h2>
+  <h2><span class="tag">Part 2</span>フーリエ変換 — 周期関数以外への拡張</h2>
 
-  <h3>動機: 現実の音は無限ループじゃない</h3>
+  <h3>動機: 周期関数以外の関数にも適用したい</h3>
   <p>
-    ピアノで「ド」を 1 回だけ鳴らした音、ドアが「バタン」と閉まる音 — どれも周期関数ではありません。でも、こういう音にも「どの周波数がどれくらい含まれているか」は知りたい。
+    Part 1 のフーリエ級数は、扱えるのが <strong>周期関数だけ</strong>でした。しかし現実の世界には、<strong>周期的とは限らない関数</strong>もたくさんあります。たとえば 1 個だけポンと立ったパルス、ゆっくり広がっていくガウス分布、減衰しながら振動する波形、など。
+  </p>
+  <p>
+    こういう関数にも、同じように <strong>「中身を周波数空間で見る」</strong>ことができたら嬉しい。それがフーリエ変換の動機です。
   </p>
 
   <h3>周期 $T$ を $\infty$ に飛ばすジャンプ</h3>
   <p>
-    フーリエ級数の周期 $T$ をどんどん大きくしていくと:
+    周期関数でない関数を「無理やり周期関数とみなす」ことから始めます。<strong>周期 $T$ をとても大きく取れば</strong>、1 周期の間に起きることはほぼ「1 回ぽっきりの出来事」になります。極端な話 $T \to \infty$ にすれば、周期関数でない関数も含めて扱えるようになる。
   </p>
-  <ul>
-    <li>音程の間隔 $\omega_0 = 2\pi/T$ が <strong>どんどん 0 に近づく</strong></li>
-    <li>飛び飛び（離散）だったスペクトルが <strong>連続</strong>になる</li>
-  </ul>
+  <p>
+    このとき、周波数空間で何が起きるか。Part 1 では棒グラフが「飛び飛び」でした。その間隔は基本周波数 $\omega_0 = 2\pi/T$ です。だから:
+  </p>
+
+  $$
+  T \;\nearrow\; \;\;\Longrightarrow\;\; \omega_0 = \frac{2\pi}{T} \;\searrow\;
+  $$
+
+  <p>
+    つまり、周期を大きくするほど、棒と棒の間隔がどんどん詰まっていく。最後には、棒が連続的に並んで <strong>滑らかな曲線</strong>になります。これがフーリエ変換 $F(\omega)$ の正体です。
+  </p>
 
   <div class="demo">
-    <h4>周期 $T$ を大きくすると、スペクトルが詰まっていく</h4>
+    <h4>周期 $T$ を伸ばすと、棒グラフが詰まって連続になる</h4>
     <canvas id="canvasSpectrum" width="800" height="280"></canvas>
     <div class="controls">
       <label>周期 $T$:
@@ -493,53 +685,56 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
       </label>
       <button id="animT">$T$ を自動で伸ばす</button>
     </div>
-    <p class="caption">縦の線 1 本 1 本がフーリエ係数（音量）。$T$ を大きくするほど線の間隔 $\omega_0=2\pi/T$ が狭くなり、最後には「連続スペクトル」になります。これがフーリエ変換の正体です。</p>
-  </div>
-
-  <div class="callout">
-    フーリエ級数 と フーリエ変換 の本当の差は「離散か連続か」ではなく、対象が <strong>周期関数か非周期関数か</strong>です。<strong>周期 $T \to \infty$ の極限</strong> として、フーリエ級数がフーリエ変換に化けます。
+    <p class="caption">
+      青の縦棒 1 本 1 本がフーリエ係数（強さ）。$T$ を大きくするほど線の間隔 $\omega_0$ が狭くなり、最後に背景の薄い曲線（連続スペクトル）に合流します。これが「離散 → 連続」の橋渡しです。
+    </p>
   </div>
 
   <h3>フーリエ変換の式</h3>
-
-  $$
-  F(\omega) \;=\; \int_{-\infty}^{\infty} f(t)\, e^{-i\omega t}\, dt
-  $$
-
   <p>
-    ここに出てくる $e^{-i\omega t}$ は、オイラーの公式によって
+    こうして得られる連続版のスペクトルが、フーリエ変換 $F(\omega)$ です:
   </p>
 
   $$
-  e^{-i\omega t} = \cos(\omega t) - i\sin(\omega t)
+  F(\omega) = \int_{-\infty}^{\infty} f(t)\, e^{-i\omega t}\, dt
   $$
 
   <p>
-    と書けます。つまり「$\cos$ と $\sin$ をひとつにまとめた書き方」にすぎません。実数の世界に戻したかったら、最後に実部・虚部を取れば OK です。
-  </p>
-
-  <h3>なぜ指数関数を使うのか</h3>
-  <p>
-    複素指数 $e^{i\omega t}$ には、こういう性質があります:
-  </p>
-
-  $$
-  \frac{d}{dt}\, e^{i\omega t} = i\omega\, e^{i\omega t}
-  $$
-
-  <p>
-    つまり <strong>微分しても、係数 $i\omega$ が前に出るだけ</strong>。これにより、難しい <strong>微分方程式が、ただの代数方程式（掛け算と足し算）に置き換わります</strong>。物理や工学でフーリエ変換が標準装備になっている本当の理由はここにあります。
+    ここに出てきた $e^{-i\omega t}$ は、Part 1.5 で説明したとおり「$\cos$ と $\sin$ を 1 つにまとめた表記」です。中身は今までと変わっていません。
   </p>
 
   <h3>逆変換 — 行きと帰りが対称</h3>
+  <p>
+    そして $F(\omega)$ から元の $f(t)$ を取り戻す式（逆変換）も、ほとんど同じ形:
+  </p>
 
   $$
-  f(t) \;=\; \frac{1}{2\pi}\int_{-\infty}^{\infty} F(\omega)\, e^{+i\omega t}\, d\omega
+  f(t) = \frac{1}{2\pi}\int_{-\infty}^{\infty} F(\omega)\, e^{+i\omega t}\, d\omega
   $$
 
   <p>
-    符号と係数を除けば順変換と <strong>ほぼ同じ形</strong>です。だから「周波数空間で加工してから時間空間に戻す」という往復がしやすい。これがフーリエ変換が実用上、扱いやすい変換だと言われる理由のひとつです。
+    符号と前の係数を除けば、順変換とまったく同じ形です。だから「周波数空間で加工してから時間空間に戻す」往復がとてもしやすい。これが応用上、フーリエ変換が扱いやすい変換だと言われる大きな理由です。
   </p>
+
+  <!-- column: why exponential -->
+  <div class="column-box">
+    <span class="column-label">COLUMN — なぜ指数関数を使うのか</span>
+    <h3>$e^{-i\omega t}$ は飾りじゃない<span class="column-tag">概念には影響しない</span></h3>
+    <p>
+      Part 1.5 で見たとおり、複素指数 $e^{i\omega t}$ は <strong>微分しても $i\omega$ が前に出るだけ</strong>という性質を持っています:
+    </p>
+
+    $$
+    \frac{d}{dt}e^{i\omega t} = i\omega\, e^{i\omega t}
+    $$
+
+    <p>
+      これによって、微分方程式（時間で微分が入ってくる難しい方程式）が、フーリエ変換を通すと <strong>$i\omega$ を掛け算するだけの式</strong>に化けます。物理・工学でフーリエ変換が標準装備になっている本当の理由はここです。
+    </p>
+    <p>
+      ただし、これは <strong>計算上の利点</strong>であって、「正弦波の重ね合わせで関数を書く」というフーリエ変換の <strong>概念そのもの</strong>とは別の話です。コンセプトを掴むときは、$e^{-i\omega t}$ を「$\cos(\omega t) - i\sin(\omega t)$ をひとまとめにしたもの」と読み替えても問題ありません。
+    </p>
+  </div>
 </section>
 
 
@@ -547,51 +742,64 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 <!-- Part 3 -->
 <!-- ============================================================ -->
 <section id="part3">
-  <h2><span class="tag">Part 3</span>応用① 画像のノイズ除去</h2>
+  <h2><span class="tag">Part 3</span>応用① 信号のノイズ除去</h2>
 
   <p>
-    フーリエ変換の使い道として、一番イメージしやすいのが <strong>ノイズ除去</strong>です。理屈は信号でも画像でも同じなので、ここでは 1 次元の信号で見ていきます。
+    フーリエ変換のいちばん分かりやすい応用が、<strong>信号のノイズ除去</strong>です。
   </p>
 
-  <h3>ノイズはたいてい「細かい波」</h3>
+  <h3>「細かさ」と「周波数」は同じこと</h3>
+  <p>
+    フーリエ級数の図で、$N$ を増やすほど波が <strong>細かいギザギザ</strong>になっていったのを思い出してください。これは偶然ではなく、関数の <strong>細かさは高い周波数成分</strong> として表れるからです。
+  </p>
+
   <ul>
-    <li>本来の音声・画像 → <strong>ゆったりした波</strong>（低い周波数）</li>
-    <li>ノイズ → <strong>細かい波</strong>（高い周波数）</li>
+    <li><strong>滑らかでなだらかな部分</strong> ← 低い周波数（ゆったりした正弦波）で作られる</li>
+    <li><strong>細かいギザギザ・段差</strong> ← 高い周波数（細かい正弦波）が必要</li>
   </ul>
 
   <p>
-    なら手順はかんたん:
+    だから:
+  </p>
+  <ul>
+    <li>細かいギザギザ（=ノイズ）を表現するには、<strong>高い周波数の正弦波が必要</strong></li>
+    <li>逆に、<strong>高い周波数を取り除けば</strong>、なだらかな部分だけが残る</li>
+  </ul>
+
+  <p>
+    これが、フーリエ変換でノイズ除去ができる仕組みです。実際の手順はとてもシンプル:
   </p>
 
   <ol>
-    <li>信号をフーリエ変換 → 周波数空間に持ち込む</li>
-    <li><strong>高い周波数の成分を弱める or 切る</strong>（ローパスフィルタ）</li>
+    <li>ノイズ入り信号をフーリエ変換 → 周波数空間に持ち込む</li>
+    <li>高い周波数の成分を 0 にする（<strong>ローパスフィルタ</strong>）</li>
     <li>逆フーリエ変換で時間空間に戻す</li>
   </ol>
 
   <div class="demo">
-    <h4>ノイズ入り信号 → 高周波をカット → きれいな信号</h4>
+    <h4>ノイズ入り信号 → 高周波をカット → 滑らかな信号</h4>
     <canvas id="canvasDenoise" width="800" height="380"></canvas>
     <div class="controls">
-      <label>カットする周波数の下限（ローパス）:
+      <label>残す周波数の上限（ローパスのしきい値）:
         <input type="range" id="rangeCutoff" min="1" max="60" value="6">
         <span class="value" id="valCutoff">6</span>
       </label>
       <button id="reroll">ノイズを作り直す</button>
     </div>
     <p class="caption">
-      上: ノイズ入りの観測信号（黒）と、本来の信号（青）。<br>
-      中: 周波数スペクトル。低周波（左）に本物の山、高周波（右）に薄く広がっているのがノイズ。<br>
-      下: しきい値より高い周波数を 0 にして逆変換した結果（赤）。元の青波とよく一致します。
+      上 : ノイズ入りの観測信号（黒）と、本来の信号（青の点線）。<br>
+      中 : 周波数スペクトル。低周波（左）に本物の山、高周波（右）に薄く広がっているのがノイズ。オレンジの線より右を 0 にする。<br>
+      下 : 高周波を切ってから逆変換した結果（赤）。元の青の点線とよく一致します。<br>
+      しきい値を小さくしすぎると、本来必要な部分まで削ってしまい、滑らかすぎる（=細部が消えた）信号になります。
     </p>
   </div>
 
-  <p>
-    2 次元の画像でも考え方はまったく同じで、画像を 2 次元フーリエ変換すると <strong>波数空間（$k$-空間）</strong>と呼ばれる空間に行きます。中心が低い波数、外側が高い波数。外側を弱めれば滑らかになり、内側を弱めればエッジ強調になります。
-  </p>
+  <div class="callout">
+    フーリエ変換で「細かさ」と「周波数」がイコールでつながるので、<strong>「細かさを編集 = 周波数を編集」</strong> という発想が使えるようになる。これは信号でも、画像（2 次元のフーリエ変換）でも、まったく同じ理屈で動きます。
+  </div>
 
   <p>
-    同じ仕組みが、スマホのカメラのノイズリダクション、JPEG 画像圧縮、MRI / CT / 電子顕微鏡の像再構成など、いろんなところで動いています。
+    同じ仕組みが、スマホの音声ノイズリダクション、JPEG 画像圧縮、MRI / CT / 電子顕微鏡の像再構成など、いろんなところで使われています。
   </p>
 </section>
 
@@ -603,7 +811,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
   <h2><span class="tag">Part 4</span>応用② 天動説と周転円 — 千年前のフーリエ級数</h2>
 
   <p class="lead">
-    最後は、フーリエ級数が「正式に発見されるよりはるか前」、紀元 2 世紀の天文学にすでに姿を現していた、というお話です。
+    最後は、フーリエ級数が「正式に発見されるはるか前」、紀元 2 世紀の天文学にすでに姿を現していた、という話です。
   </p>
 
   <h3>前提知識: 天動説の主張</h3>
@@ -617,7 +825,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 
   <h3>天動説の中で出てきた課題</h3>
   <p>
-    ところが実際に夜空の惑星を観測すると、上のシンプルなモデル（地球を中心とする 1 つの円運動）では <strong>位置がどうしても合わない</strong>。とくに火星や木星は、ときどき逆向きに進んでいるように見えます（<strong>逆行</strong>）。
+    ところが、実際に夜空の惑星を観測すると、上のシンプルなモデル（地球を中心とする 1 つの円運動）では <strong>位置がどうしても合わない</strong>。とくに火星や木星は、ときどき逆向きに進んでいるように見えます（<strong>逆行</strong>）。
   </p>
 
   <h3>考えられた説明: 周転円（エピサイクル）</h3>
@@ -628,7 +836,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     <li>惑星はまず、地球を中心とする大きな円（<strong>導円 / deferent</strong>）の上の 1 点を回る</li>
     <li>その 1 点を中心として、さらに小さな円（<strong>周転円</strong>）の上を回る</li>
     <li>誤差が残るなら、その周転円の上に <strong>もう一個</strong> 小さな円を載せる</li>
-    <li>そうやって円を階層化していくと、<strong>観測との誤差がどんどん小さくなる</strong></li>
+    <li>こうやって円を階層化していくと、<strong>観測との誤差がどんどん小さくなる</strong></li>
   </ul>
 
   <div class="demo">
@@ -657,52 +865,52 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
   $$
 
   <p>
-    複素数でひとつにまとめれば、円運動は
+    Part 1.5 で見たオイラーの公式を使えば、円運動はひとことで
   </p>
 
   $$
-  z(t) = R\,e^{i\omega t}
+  z(t) = R\, e^{i\omega t}
   $$
 
   <p>
-    と書けて、これがまさに「フーリエ変換に出てきたあれ」です。すると、周転円を重ねるという操作は
+    と書けて、周転円を $N$ 個重ねるという操作は
   </p>
 
   $$
-  z(t) \;=\; \sum_{n} R_n\, e^{i\omega_n t}
+  z(t) = \sum_{n} R_n\, e^{i\omega_n t}
   $$
 
   <p>
-    という <strong>「複素フーリエ級数そのもの」</strong> になっています。
+    という形になります。これは Part 1.5 で出てきた <strong>「フーリエ級数を複素指数で書いた式」そのもの</strong>です。
   </p>
 
   <div class="callout">
-    <strong>つまり、プトレマイオスたちがやっていたのは、知らないうちに <em>「惑星の軌道をフーリエ級数で近似する」</em> という作業だった、ということです。</strong><br>
-    だから周転円の数を増やすと誤差が小さくなったのは、ある意味当然のことでした。フーリエ級数は、十分な項を取れば任意の周期軌道を近似できるからです。
+    <strong>つまり、プトレマイオスたちがやっていたのは、知らないうちに <em>「惑星の軌道をフーリエ級数で近似する」</em> という作業でした。</strong><br>
+    だから周転円の数を増やせば誤差が小さくなったのは、ある種当然のことです。フーリエ級数は十分な項を取れば、任意の周期軌道を近似できるからです。
   </div>
 
   <h3>そして、太陽中心 + 楕円軌道へ</h3>
   <p>
-    その後、コペルニクスが <strong>太陽を中心</strong>に置き、ケプラーが <strong>軌道は楕円</strong>であることを示しました。これによって、何重もの周転円を積み上げなくても、観測とぴたりと一致するモデルが出来上がりました。これが現代まで続く地動説の基本形です。
+    その後、コペルニクスが <strong>太陽を中心</strong>に置き、ケプラーが <strong>軌道は楕円</strong>であることを示しました。これにより、何重もの周転円を積み上げなくても、観測とぴたりと一致するモデルが出来上がりました。これが現代まで続く地動説の基本形です。
   </p>
 
   <p>
-    興味深いのは、楕円軌道もフーリエ級数で書けば、たった少数の円の重ね合わせで表せる、ということです。<strong>周転円モデルは物理としては間違いでしたが、近似の方法としては正しかった</strong>のです。
+    興味深いのは、楕円軌道もフーリエ級数で書けば <strong>たった少数の円の重ね合わせ</strong>で表せる、ということです。<strong>周転円モデルは物理的には間違っていたが、近似の方法としては正しかった</strong>のです。
   </p>
 
   <div class="note">
-    教科書では「地動説に置き換わったから周転円は捨てられた」と学びます。しかしその数学的な発想 — 「円運動（正弦波）を重ねて複雑な動きを表現する」 — は、1500 年の時を超えて、画像処理・音声処理・量子力学の中で生き続けています。それが、いま私たちが学んだフーリエ級数・フーリエ変換です。
+    教科書では「地動説に置き換わって周転円は捨てられた」と学びます。しかし、その数学的な発想 — <strong>「円運動（正弦波）を重ねて複雑な動きを表現する」</strong> — は 1500 年の時を超えて、画像処理・音声処理・量子力学のなかで生き続けています。それが、今回学んだフーリエ級数・フーリエ変換です。
   </div>
 </section>
 
 <footer>
-  この資料は田中（工学修士・電子顕微鏡） から アカネさん（ワールドネイバーズ五穀寺 同居人）への解説資料です。<br>
+  この資料は田中（工学修士・電子顕微鏡）から アカネさん（ワールドネイバーズ五穀寺 同居人）への解説資料です。<br>
   2026-06-15 作成 / アニメーションは Canvas + MathJax で実装。
 </footer>
 
 
 <!-- ============================================================ -->
-<!-- Scripts: animations -->
+<!-- Scripts -->
 <!-- ============================================================ -->
 <script>
 (function () {
@@ -721,43 +929,38 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     return { ctx, w: rect.width, h: rect.height };
   }
 
-  function axes(ctx, w, h, xLabel, yLabel) {
-    ctx.strokeStyle = '#cccccc';
+  function axis(ctx, w, h) {
+    ctx.strokeStyle = '#dddddd';
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(0, h / 2);
     ctx.lineTo(w, h / 2);
     ctx.stroke();
-
-    ctx.fillStyle = '#888';
-    ctx.font = '12px sans-serif';
-    if (xLabel) ctx.fillText(xLabel, w - 24, h / 2 - 6);
-    if (yLabel) ctx.fillText(yLabel, 6, 12);
   }
 
   // ----------------------------------------------------------------
-  // Part 0: mixed waves
+  // Part 0: mixed waves + spectrum
   // ----------------------------------------------------------------
-  function drawMixed() {
+  const mixedComponents = [
+    { fn: t => Math.sin(t), color: 'rgba(44,93,143,0.6)', mag: 1.0, label: 'n=1' },
+    { fn: t => 0.7 * Math.sin(2 * t), color: 'rgba(180,83,9,0.6)', mag: 0.7, label: 'n=2' },
+    { fn: t => 0.4 * Math.sin(3 * t), color: 'rgba(22,101,52,0.6)', mag: 0.4, label: 'n=3' }
+  ];
+
+  function drawMixedTime() {
     const canvas = document.getElementById('canvasMixed');
     if (!canvas) return;
     const { ctx, w, h } = setupHiDPICanvas(canvas);
     ctx.clearRect(0, 0, w, h);
-    axes(ctx, w, h, 't', 'amp');
+    axis(ctx, w, h);
 
     const samples = 600;
     const tMin = 0, tMax = 4 * Math.PI;
     const scaleY = h * 0.18;
 
-    const components = [
-      { fn: t => Math.sin(t), color: 'rgba(44,93,143,0.55)', width: 1.5 },
-      { fn: t => 0.7 * Math.sin(2 * t), color: 'rgba(180,83,9,0.55)', width: 1.5 },
-      { fn: t => 0.4 * Math.sin(3 * t), color: 'rgba(22,101,52,0.55)', width: 1.5 }
-    ];
-
-    components.forEach(c => {
+    mixedComponents.forEach(c => {
       ctx.strokeStyle = c.color;
-      ctx.lineWidth = c.width;
+      ctx.lineWidth = 1.5;
       ctx.beginPath();
       for (let i = 0; i < samples; i++) {
         const t = tMin + (i / (samples - 1)) * (tMax - tMin);
@@ -768,35 +971,117 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
       ctx.stroke();
     });
 
-    // sum
     ctx.strokeStyle = '#1a1a1a';
     ctx.lineWidth = 2.2;
     ctx.beginPath();
     for (let i = 0; i < samples; i++) {
       const t = tMin + (i / (samples - 1)) * (tMax - tMin);
       const x = (i / (samples - 1)) * w;
-      const y = h / 2 - (components[0].fn(t) + components[1].fn(t) + components[2].fn(t)) * scaleY;
+      const y = h / 2 - (mixedComponents[0].fn(t) + mixedComponents[1].fn(t) + mixedComponents[2].fn(t)) * scaleY;
       if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
     }
     ctx.stroke();
+
+    ctx.fillStyle = '#888';
+    ctx.font = '11px sans-serif';
+    ctx.fillText('t', w - 12, h / 2 - 4);
+  }
+
+  function drawMixedSpec() {
+    const canvas = document.getElementById('canvasMixedSpec');
+    if (!canvas) return;
+    const { ctx, w, h } = setupHiDPICanvas(canvas);
+    ctx.clearRect(0, 0, w, h);
+
+    const padL = 36, padR = 18, padT = 22, padB = 36;
+    const innerW = w - padL - padR;
+    const innerH = h - padT - padB;
+
+    // baseline
+    ctx.strokeStyle = '#bbb';
+    ctx.beginPath();
+    ctx.moveTo(padL, padT + innerH);
+    ctx.lineTo(padL + innerW, padT + innerH);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(padL, padT);
+    ctx.lineTo(padL, padT + innerH);
+    ctx.stroke();
+
+    // labels
+    ctx.fillStyle = '#666';
+    ctx.font = '11px sans-serif';
+    ctx.fillText('強さ', 4, padT + 8);
+    ctx.fillText('波数 n', padL + innerW - 38, padT + innerH + 18);
+
+    const maxN = 6;
+    const maxMag = 1.0;
+    const barW = innerW / maxN * 0.4;
+
+    for (let n = 1; n <= maxN; n++) {
+      const c = mixedComponents.find((m, i) => (i + 1) === n);
+      const mag = c ? c.mag : 0;
+      const cx = padL + ((n - 0.5) / maxN) * innerW;
+      const height = (mag / maxMag) * innerH;
+
+      ctx.fillStyle = c ? c.color.replace('0.6', '0.85') : '#e0e0e0';
+      ctx.fillRect(cx - barW / 2, padT + innerH - height, barW, height);
+
+      ctx.fillStyle = '#555';
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('n=' + n, cx, padT + innerH + 16);
+      if (mag > 0) {
+        ctx.fillStyle = '#333';
+        ctx.fillText(mag.toFixed(1), cx, padT + innerH - height - 4);
+      }
+      ctx.textAlign = 'start';
+    }
   }
 
   // ----------------------------------------------------------------
-  // Part 1: square wave Fourier approximation
+  // Part 1 target square wave (the "problem" panel)
   // ----------------------------------------------------------------
-  function drawSquare() {
+  function drawSquareTarget() {
+    const canvas = document.getElementById('canvasSquareTarget');
+    if (!canvas) return;
+    const { ctx, w, h } = setupHiDPICanvas(canvas);
+    ctx.clearRect(0, 0, w, h);
+    axis(ctx, w, h);
+
+    const amp = h * 0.34;
+    const period = w / 2;
+    ctx.strokeStyle = '#1a1a1a';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    for (let x = 0; x <= w; x += 1) {
+      const phase = (x % period) / period;
+      const y = h / 2 - (phase < 0.5 ? amp : -amp);
+      if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    ctx.fillStyle = '#888';
+    ctx.font = '12px sans-serif';
+    ctx.fillText('?', w / 2 - 4, 24);
+    ctx.fillText('t', w - 12, h / 2 - 4);
+  }
+
+  // ----------------------------------------------------------------
+  // Part 1: square wave Fourier approximation (time + spectrum)
+  // ----------------------------------------------------------------
+  function drawSquareTime() {
     const canvas = document.getElementById('canvasSquare');
     if (!canvas) return;
     const { ctx, w, h } = setupHiDPICanvas(canvas);
     ctx.clearRect(0, 0, w, h);
+    axis(ctx, w, h);
 
     const N = parseInt(document.getElementById('rangeN').value, 10);
     const showComp = document.getElementById('showComponents').checked;
     document.getElementById('valN').textContent = N;
 
-    axes(ctx, w, h, 't', '');
-
-    // draw target square wave (dashed)
+    // dashed target
     ctx.strokeStyle = '#cccccc';
     ctx.setLineDash([4, 4]);
     ctx.lineWidth = 1.5;
@@ -812,16 +1097,15 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     ctx.setLineDash([]);
 
     const samples = 1000;
-    const tMin = 0, tMax = 4 * Math.PI; // 2 periods
+    const tMin = 0, tMax = 4 * Math.PI;
     const scaleY = h * 0.28;
 
-    // individual components
     if (showComp) {
       ctx.lineWidth = 1;
       for (let k = 1; k <= N; k++) {
         const n = 2 * k - 1;
         const hue = (k * 47) % 360;
-        ctx.strokeStyle = `hsla(${hue}, 60%, 50%, 0.25)`;
+        ctx.strokeStyle = `hsla(${hue}, 60%, 50%, 0.28)`;
         ctx.beginPath();
         for (let i = 0; i < samples; i++) {
           const t = tMin + (i / (samples - 1)) * (tMax - tMin);
@@ -834,7 +1118,6 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
       }
     }
 
-    // sum
     ctx.strokeStyle = '#b45309';
     ctx.lineWidth = 2.5;
     ctx.beginPath();
@@ -851,16 +1134,84 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     }
     ctx.stroke();
 
-    // label
     ctx.fillStyle = '#444';
     ctx.font = '13px sans-serif';
     ctx.fillText(`正弦波 ${N} 本の和`, 12, 22);
     ctx.fillStyle = '#999';
-    ctx.fillText('目標：矩形波（点線）', 12, 40);
+    ctx.font = '12px sans-serif';
+    ctx.fillText('点線: 目標の矩形波', 12, 40);
   }
 
-  document.getElementById('rangeN').addEventListener('input', drawSquare);
-  document.getElementById('showComponents').addEventListener('change', drawSquare);
+  function drawSquareSpec() {
+    const canvas = document.getElementById('canvasSquareSpec');
+    if (!canvas) return;
+    const { ctx, w, h } = setupHiDPICanvas(canvas);
+    ctx.clearRect(0, 0, w, h);
+
+    const N = parseInt(document.getElementById('rangeN').value, 10);
+
+    const padL = 36, padR = 18, padT = 22, padB = 36;
+    const innerW = w - padL - padR;
+    const innerH = h - padT - padB;
+
+    ctx.strokeStyle = '#bbb';
+    ctx.beginPath();
+    ctx.moveTo(padL, padT + innerH);
+    ctx.lineTo(padL + innerW, padT + innerH);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(padL, padT);
+    ctx.lineTo(padL, padT + innerH);
+    ctx.stroke();
+
+    ctx.fillStyle = '#666';
+    ctx.font = '11px sans-serif';
+    ctx.fillText('強さ', 4, padT + 8);
+    ctx.fillText('波数 n', padL + innerW - 38, padT + innerH + 18);
+
+    const maxN = 19;
+    const maxMag = 4 / Math.PI;
+    const barW = (innerW / maxN) * 0.5;
+
+    for (let n = 1; n <= maxN; n++) {
+      const cx = padL + ((n - 0.5) / maxN) * innerW;
+      const isOdd = (n % 2 === 1);
+      const k = (n + 1) / 2;
+      const usedHere = isOdd && k <= N;
+      const mag = isOdd ? (4 / Math.PI) / n : 0;
+      if (!isOdd) {
+        ctx.fillStyle = '#e6e6e6';
+      } else if (usedHere) {
+        const hue = (k * 47) % 360;
+        ctx.fillStyle = `hsla(${hue}, 60%, 50%, 0.9)`;
+      } else {
+        ctx.fillStyle = '#dcdcdc';
+      }
+      const height = (mag / maxMag) * innerH;
+      ctx.fillRect(cx - barW / 2, padT + innerH - height, barW, Math.max(1, height));
+
+      if (n <= 11) {
+        ctx.fillStyle = '#666';
+        ctx.font = '10px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(String(n), cx, padT + innerH + 14);
+        ctx.textAlign = 'start';
+      }
+    }
+
+    ctx.fillStyle = '#444';
+    ctx.font = '12px sans-serif';
+    ctx.fillText(`使用中の本数: ${N}`, padL, padT - 6);
+    ctx.fillStyle = '#999';
+    ctx.font = '11px sans-serif';
+    ctx.fillText('色付き=使用中、薄灰=未使用', padL, h - 6);
+  }
+
+  document.getElementById('rangeN').addEventListener('input', () => {
+    drawSquareTime();
+    drawSquareSpec();
+  });
+  document.getElementById('showComponents').addEventListener('change', drawSquareTime);
 
   // ----------------------------------------------------------------
   // Part 2: spectrum compaction as T grows
@@ -875,7 +1226,6 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     const T = parseFloat(document.getElementById('rangeT').value);
     document.getElementById('valT').textContent = T.toFixed(1);
 
-    // baseline
     const baseY = h - 30;
     ctx.strokeStyle = '#bbb';
     ctx.beginPath();
@@ -888,15 +1238,12 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     ctx.fillText('ω', w - 22, baseY - 5);
     ctx.fillText('|F(ω)|', 24, 18);
 
-    // envelope (the underlying continuous spectrum, e.g. sinc-like)
     const omegaMax = 8;
     function envelope(omega) {
-      // Gaussian-ish envelope so it's clean and bounded
       return Math.exp(-Math.pow(omega - 3, 2) / 2.0) * 1.0
            + Math.exp(-Math.pow(omega + 1.5, 2) / 1.5) * 0.7;
     }
 
-    // draw envelope
     ctx.strokeStyle = 'rgba(44,93,143,0.18)';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
@@ -909,7 +1256,6 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     }
     ctx.stroke();
 
-    // discrete lines: omega = n * 2π / T
     const omega0 = 2 * Math.PI / T;
     ctx.strokeStyle = '#2c5d8f';
     ctx.lineWidth = 2;
@@ -921,20 +1267,18 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
       ctx.moveTo(x, baseY);
       ctx.lineTo(x, baseY - amp * (h - 60));
       ctx.stroke();
-
-      // little dot at top
       ctx.fillStyle = '#2c5d8f';
       ctx.beginPath();
       ctx.arc(x, baseY - amp * (h - 60), 3, 0, Math.PI * 2);
       ctx.fill();
     }
 
-    // labels
     ctx.fillStyle = '#444';
     ctx.font = '13px sans-serif';
-    ctx.fillText(`T = ${T.toFixed(1)}　→　ω₀ = 2π/T ≈ ${omega0.toFixed(2)}`, 12, 28);
+    ctx.fillText(`周期 T = ${T.toFixed(1)}　→　棒の間隔 ω₀ = 2π/T ≈ ${omega0.toFixed(2)}`, 12, 28);
     ctx.fillStyle = '#777';
-    ctx.fillText(`T が大きくなるほど線の間隔 ω₀ が狭くなり、連続スペクトル（薄い青の曲線）に近づきます。`, 12, h - 8);
+    ctx.font = '12px sans-serif';
+    ctx.fillText(`T を大きくするほど棒の間隔 ω₀ が狭くなり、薄い青の曲線に近づく（連続スペクトル＝フーリエ変換）。`, 12, h - 8);
   }
 
   document.getElementById('rangeT').addEventListener('input', () => {
@@ -986,16 +1330,13 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     const N = 256;
     const rng = mulberry32(denoiseSeed);
 
-    // build clean signal
     const clean = new Array(N);
     for (let i = 0; i < N; i++) {
       const x = (i / N) * 2 * Math.PI;
       clean[i] = Math.sin(x) + 0.5 * Math.sin(2 * x + 0.5);
     }
-    // noisy
     const noisy = clean.map(v => v + (rng() - 0.5) * 1.2);
 
-    // naive DFT
     const real = new Array(N).fill(0);
     const imag = new Array(N).fill(0);
     for (let k = 0; k < N; k++) {
@@ -1008,20 +1349,16 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
       real[k] = re / N;
       imag[k] = im / N;
     }
-    // magnitudes
     const mag = real.map((r, k) => Math.hypot(r, imag[k]));
 
-    // low-pass
     const real2 = real.slice();
     const imag2 = imag.slice();
     for (let k = 0; k < N; k++) {
-      // keep low frequencies on both sides (k < cutoff or k > N-cutoff)
       if (!(k < cutoff || k > N - cutoff)) {
         real2[k] = 0;
         imag2[k] = 0;
       }
     }
-    // inverse DFT
     const restored = new Array(N).fill(0);
     for (let n = 0; n < N; n++) {
       let val = 0;
@@ -1032,7 +1369,6 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
       restored[n] = val;
     }
 
-    // layout: three panels stacked
     const panelH = (h - 30) / 3;
     const padTop = 5;
 
@@ -1057,11 +1393,9 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
       }
     }
 
-    // panel 0: noisy + clean
-    drawSignal(clean, 'rgba(44,93,143,0.7)', 0, 1.5, true, '上 : 観測信号（黒）と本来の信号（青点線）');
+    drawSignal(clean, 'rgba(44,93,143,0.7)', 0, 1.5, true, '上 : 観測信号（黒）と本来の信号（青の点線）');
     drawSignal(noisy, '#1a1a1a', 0, 1, false, null);
 
-    // panel 1: spectrum
     const panel = 1;
     const baseY = padTop + panel * panelH + panelH - 10;
     ctx.strokeStyle = '#bbb';
@@ -1069,7 +1403,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     ctx.moveTo(0, baseY); ctx.lineTo(w, baseY); ctx.stroke();
     ctx.fillStyle = '#444';
     ctx.font = '12px sans-serif';
-    ctx.fillText('中 : 周波数スペクトル（ローパスのしきい値の右側を切る）', 8, padTop + panel * panelH + 14);
+    ctx.fillText('中 : 周波数スペクトル（しきい値の右側を 0 にする）', 8, padTop + panel * panelH + 14);
 
     const Nshow = N / 2;
     const maxMag = Math.max(...mag.slice(0, Nshow));
@@ -1085,7 +1419,6 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
       ctx.lineTo(x, baseY - v);
       ctx.stroke();
     }
-    // cutoff line
     const cutX = (cutoff / Nshow) * w;
     ctx.strokeStyle = '#b45309';
     ctx.setLineDash([6, 4]);
@@ -1097,8 +1430,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     ctx.fillStyle = '#b45309';
     ctx.fillText('しきい値 →', cutX + 4, padTop + panel * panelH + 30);
 
-    // panel 2: restored + clean
-    drawSignal(clean, 'rgba(44,93,143,0.7)', 2, 1.5, true, '下 : 復元した信号（赤）と本来の信号（青点線）');
+    drawSignal(clean, 'rgba(44,93,143,0.7)', 2, 1.5, true, '下 : 復元した信号（赤）と本来の信号（青の点線）');
     drawSignal(restored, '#b45309', 2, 2, false, null);
   }
 
@@ -1111,20 +1443,9 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
   // ----------------------------------------------------------------
   // Part 4: Epicycles
   // ----------------------------------------------------------------
-  // Approximating an offset / non-circular orbit using rotating vectors.
-  // We define an "observed orbit" as a closed curve (e.g. flower-like
-  // shape with retrograde loops) and approximate it using N epicycles.
-  //
-  // Target curve in complex form (sum of a few frequencies). Then we
-  // truncate to N terms to show approximation getting better.
-
-  // Define target as a fixed combination of frequencies (so it's a closed
-  // curve that genuinely needs multiple terms).
-  // We'll use frequencies and complex coefficients for the GROUND TRUTH,
-  // and reveal first N of them in the animation.
   const epiCoefs = [
-    { n: 1,  re: 130, im: 0 },     // big main circle
-    { n: -2, re: 35, im: 20 },    // first epicycle, retrograde
+    { n: 1,  re: 130, im: 0 },
+    { n: -2, re: 35, im: 20 },
     { n: 3,  re: 22, im: -15 },
     { n: -4, re: 14, im: 8 },
     { n: 5,  re: 9,  im: -6 },
@@ -1172,7 +1493,6 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     const cx = w / 2;
     const cy = h / 2;
 
-    // draw target (dashed gray)
     ctx.strokeStyle = '#ccc';
     ctx.setLineDash([3, 3]);
     ctx.lineWidth = 1.5;
@@ -1186,7 +1506,6 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // draw epicycles up to N
     let curX = cx, curY = cy;
     ctx.lineWidth = 1;
     for (let i = 0; i < N; i++) {
@@ -1195,13 +1514,11 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
       const phi = Math.atan2(c.im, c.re);
       const angle = c.n * epiT + phi;
 
-      // circle outline
       ctx.strokeStyle = 'rgba(44,93,143,0.18)';
       ctx.beginPath();
       ctx.arc(curX, curY, r, 0, Math.PI * 2);
       ctx.stroke();
 
-      // radius line
       const nx = curX + r * Math.cos(angle);
       const ny = curY + r * Math.sin(angle);
       ctx.strokeStyle = 'rgba(44,93,143,0.55)';
@@ -1210,7 +1527,6 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
       ctx.lineTo(nx, ny);
       ctx.stroke();
 
-      // center dot
       ctx.fillStyle = '#2c5d8f';
       ctx.beginPath();
       ctx.arc(curX, curY, 2, 0, Math.PI * 2);
@@ -1219,19 +1535,16 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
       curX = nx; curY = ny;
     }
 
-    // tip
     ctx.fillStyle = '#b45309';
     ctx.beginPath();
     ctx.arc(curX, curY, 4, 0, Math.PI * 2);
     ctx.fill();
 
-    // record trail
     if (!epiPaused) {
       epiTrail.push({ x: curX, y: curY });
       if (epiTrail.length > 1400) epiTrail.shift();
     }
 
-    // draw trail
     ctx.strokeStyle = '#b45309';
     ctx.lineWidth = 2;
     ctx.beginPath();
@@ -1240,7 +1553,6 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     });
     ctx.stroke();
 
-    // earth marker
     ctx.fillStyle = '#444';
     ctx.beginPath();
     ctx.arc(cx, cy, 4, 0, Math.PI * 2);
@@ -1249,7 +1561,6 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     ctx.font = '12px sans-serif';
     ctx.fillText('地球', cx + 8, cy - 6);
 
-    // labels
     ctx.fillStyle = '#333';
     ctx.font = '13px sans-serif';
     ctx.fillText(`周転円の数 N = ${N}`, 12, 22);
@@ -1263,37 +1574,31 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     epiAnimId = requestAnimationFrame(epiAnimate);
   }
 
-  document.getElementById('rangeEpi').addEventListener('input', () => {
-    epiTrail = [];
-  });
+  document.getElementById('rangeEpi').addEventListener('input', () => { epiTrail = []; });
   document.getElementById('epiPause').addEventListener('click', e => {
     epiPaused = !epiPaused;
     e.target.textContent = epiPaused ? '再開' : '一時停止';
   });
-  document.getElementById('epiReset').addEventListener('click', () => {
-    epiT = 0;
-    epiTrail = [];
-  });
+  document.getElementById('epiReset').addEventListener('click', () => { epiT = 0; epiTrail = []; });
 
   // ----------------------------------------------------------------
-  // Initial draws
+  // Init
   // ----------------------------------------------------------------
-  function initAll() {
-    drawMixed();
-    drawSquare();
+  function drawAllStatic() {
+    drawMixedTime();
+    drawMixedSpec();
+    drawSquareTarget();
+    drawSquareTime();
+    drawSquareSpec();
     drawSpectrum();
     drawDenoise();
-    epiAnimate();
   }
 
-  window.addEventListener('load', initAll);
-  window.addEventListener('resize', () => {
-    drawMixed();
-    drawSquare();
-    drawSpectrum();
-    drawDenoise();
-    // epicycle redraws every frame via RAF
+  window.addEventListener('load', () => {
+    drawAllStatic();
+    epiAnimate();
   });
+  window.addEventListener('resize', drawAllStatic);
 })();
 </script>
 

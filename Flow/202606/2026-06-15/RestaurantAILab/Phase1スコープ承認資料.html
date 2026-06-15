@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>マーケダッシュボード Phase 1 スコープ承認資料</title>
+<style>
+  :root {
+    --bg: #f7f8fa;
+    --surface: #ffffff;
+    --ink: #1a202c;
+    --ink-soft: #4a5568;
+    --ink-mute: #718096;
+    --border: #e2e8f0;
+    --border-strong: #cbd5e0;
+    --accent: #2c5282;
+    --accent-soft: #ebf4ff;
+    --accent-ink: #1a365d;
+    --ok: #2f855a;
+    --ok-soft: #f0fff4;
+    --warn: #b7791f;
+    --warn-soft: #fffaf0;
+    --ng: #c53030;
+    --ng-soft: #fff5f5;
+    --later: #6b46c1;
+    --later-soft: #faf5ff;
+    --neutral: #718096;
+    --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+    --shadow-lg: 0 10px 25px rgba(0,0,0,0.06), 0 4px 6px rgba(0,0,0,0.04);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
+    font-size: 15px;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 40px 28px 80px;
+  }
+
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, var(--accent) 0%, #1a365d 100%);
+    color: #fff;
+    padding: 40px 36px;
+    border-radius: 14px;
+    box-shadow: var(--shadow-lg);
+    margin-bottom: 32px;
+  }
+  .hero-eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 12px;
+    font-weight: 600;
+    opacity: 0.85;
+    margin-bottom: 12px;
+  }
+  .hero h1 {
+    font-size: 28px;
+    margin: 0 0 12px;
+    line-height: 1.4;
+    font-weight: 700;
+  }
+  .hero p {
+    margin: 0;
+    opacity: 0.92;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.18);
+  }
+  .hero-meta-item {
+    font-size: 13px;
+  }
+  .hero-meta-item span:first-child {
+    display: block;
+    opacity: 0.7;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+  }
+  .hero-meta-item strong {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  /* Section */
+  section {
+    margin-bottom: 36px;
+  }
+  .section-title {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 18px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--accent);
+  }
+  .section-title h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent-ink);
+  }
+  .section-title .num {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 14px;
+    background: var(--accent-soft);
+    padding: 4px 10px;
+    border-radius: 6px;
+    line-height: 1;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 28px;
+    box-shadow: var(--shadow);
+  }
+
+  /* Approval ask block */
+  .ask {
+    background: var(--accent-soft);
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin-bottom: 20px;
+  }
+  .ask-label {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+  }
+  .ask-body {
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* Goal block */
+  .goal-quote {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--accent-ink);
+    background: var(--accent-soft);
+    border-radius: 10px;
+    padding: 20px 24px;
+    border-left: 4px solid var(--accent);
+    line-height: 1.6;
+  }
+  .goal-quote .quote-mark {
+    color: var(--accent);
+    font-size: 24px;
+    opacity: 0.7;
+    margin-right: 4px;
+  }
+
+  /* Timeline */
+  .timeline {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 8px;
+  }
+  .tl-step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    position: relative;
+  }
+  .tl-step.now { border: 2px solid var(--accent); background: var(--accent-soft); }
+  .tl-date {
+    font-size: 12px;
+    color: var(--ink-mute);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+  .tl-title {
+    font-weight: 700;
+    color: var(--ink);
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+  .tl-desc {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    line-height: 1.55;
+  }
+  .tl-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+
+  /* Persona table */
+  .personas {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 4px;
+  }
+  .personas td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .personas tr:last-child td { border-bottom: 0; }
+  .personas td:first-child {
+    width: 180px;
+    color: var(--accent-ink);
+    font-weight: 700;
+    background: var(--accent-soft);
+    border-right: 1px solid var(--border);
+  }
+  .personas td b { color: var(--accent-ink); }
+
+  /* KPI Matrix */
+  .matrix-wrap {
+    overflow-x: auto;
+    margin-top: 8px;
+  }
+  table.matrix {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    background: var(--surface);
+  }
+  table.matrix th,
+  table.matrix td {
+    border: 1px solid var(--border);
+    padding: 10px 12px;
+    text-align: left;
+  }
+  table.matrix th {
+    background: #f1f5f9;
+    color: var(--ink);
+    font-weight: 700;
+    font-size: 12.5px;
+    white-space: nowrap;
+  }
+  table.matrix th.media { text-align: center; width: 90px; }
+  table.matrix td.kpi { font-size: 13px; }
+  table.matrix td.cell {
+    text-align: center;
+    font-size: 15px;
+    font-weight: 600;
+    width: 90px;
+  }
+  table.matrix tr.cat td {
+    background: #edf2f7;
+    font-weight: 700;
+    color: var(--accent-ink);
+    font-size: 12.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-top: 2px solid var(--accent);
+  }
+  table.matrix small { color: var(--ink-mute); font-size: 11px; }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin: 18px 0 14px;
+    padding: 14px 18px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .legend-item { display: inline-flex; align-items: center; gap: 6px; }
+  .legend-item .badge { font-size: 14px; }
+
+  .b-ok { color: var(--ok); }
+  .b-warn { color: var(--warn); }
+  .b-ng { color: var(--ng); }
+  .b-later { color: var(--later); }
+  .b-na { color: var(--ink-mute); }
+
+  /* Callouts */
+  .callout {
+    background: var(--warn-soft);
+    border-left: 4px solid var(--warn);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-top: 18px;
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+  .callout-title {
+    color: var(--warn);
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+  }
+  .callout ul { margin: 6px 0 0; padding-left: 20px; }
+  .callout li { margin-bottom: 4px; }
+
+  /* Two-column grid */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  @media (max-width: 720px) {
+    .grid-2 { grid-template-columns: 1fr; }
+    .timeline { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* Out of scope list */
+  .later-card {
+    background: var(--later-soft);
+    border: 1px solid #e9d8fd;
+    border-radius: 10px;
+    padding: 18px 22px;
+  }
+  .later-card h3 {
+    margin: 0 0 10px;
+    font-size: 14px;
+    color: var(--later);
+    font-weight: 700;
+  }
+  .later-card ul {
+    margin: 0;
+    padding-left: 20px;
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    line-height: 1.8;
+  }
+
+  /* Approval list */
+  .approval-list {
+    background: var(--surface);
+    border: 2px solid var(--accent);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+  .approval-list h3 {
+    margin: 0 0 14px;
+    font-size: 15px;
+    color: var(--accent-ink);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .approval-list ul { list-style: none; padding: 0; margin: 0; }
+  .approval-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--border);
+    font-size: 14.5px;
+  }
+  .approval-list li:last-child { border-bottom: 0; }
+  .approval-list .ch {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--accent);
+    border-radius: 4px;
+    margin-top: 1px;
+  }
+  .approval-list .lbl { color: var(--ink); }
+  .approval-list .lbl small {
+    display: block;
+    color: var(--ink-mute);
+    font-size: 12.5px;
+    margin-top: 2px;
+    line-height: 1.55;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    color: var(--ink-mute);
+    font-size: 12px;
+    margin-top: 50px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* Helpers */
+  .text-mute { color: var(--ink-mute); }
+  ul.clean { padding-left: 20px; }
+  ul.clean li { margin-bottom: 6px; }
+
+  h3.media-name {
+    margin: 18px 0 6px;
+    font-size: 14px;
+    color: var(--accent-ink);
+    font-weight: 700;
+  }
+  .can-do {
+    background: var(--ok-soft);
+    border-left: 3px solid var(--ok);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-top: 8px;
+    line-height: 1.7;
+  }
+  .can-do b { color: var(--ok); }
+
+  @media print {
+    body { background: #fff; }
+    .page { padding: 0; }
+    .hero { background: var(--accent) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    section { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="hero-eyebrow">For: 竹矢さま — Approval Requested</div>
+    <h1>マーケダッシュボード Phase 1 スコープ承認のお願い</h1>
+    <p>外注コンサル（CMO／CFOプラン）運用を開始するためのダッシュボード拡張について、Phase 1 のスコープと完成時の状態をまとめました。ご確認のうえ、進めて問題なければ承認をお願いします。</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><span>作成</span><strong>田中（RAL 開発）</strong></div>
+      <div class="hero-meta-item"><span>作成日</span><strong>2026-06-15</strong></div>
+      <div class="hero-meta-item"><span>開発完了予定</span><strong>2026-06-24</strong></div>
+      <div class="hero-meta-item"><span>リリース予定</span><strong>2026年7月初旬</strong></div>
+    </div>
+  </header>
+
+  <!-- 0. Approval ask -->
+  <section>
+    <div class="ask">
+      <div class="ask-label">⏰ ご承認いただきたいこと</div>
+      <div class="ask-body">
+        <strong>このドキュメントに記載した Phase 1 のスコープで開発を進め、6/24 に完了 → 1週間の調整期間を経て 7月初旬にリリース</strong>する方針について、ご確認ください。<br>
+        Phase 1 でやらないこと（Phase 2 以降）は §5 にまとめています。あわせて確認をお願いします。
+      </div>
+    </div>
+  </section>
+
+  <!-- 1. Goal -->
+  <section>
+    <div class="section-title">
+      <span class="num">1</span>
+      <h2>Phase 1 のゴール</h2>
+    </div>
+    <div class="goal-quote">
+      <span class="quote-mark">“</span>外注コンサルが、媒体の ID／PW を渡されずに、毎月クライアントとのミーティングを進行できる<span class="quote-mark">”</span>
+    </div>
+    <p style="margin: 14px 0 0; font-size: 14px; color: var(--ink-soft);">
+      → 媒体側ログイン情報・支払情報を外注に渡さずに、月次の集客KPIをダッシュボードで共有できるようにする、というのが Phase 1 で完成させる状態です。
+    </p>
+  </section>
+
+  <!-- 2. Schedule -->
+  <section>
+    <div class="section-title">
+      <span class="num">2</span>
+      <h2>リリーススケジュール</h2>
+    </div>
+    <div class="timeline">
+      <div class="tl-step now">
+        <div class="tl-badge">NOW</div>
+        <div class="tl-date">6/15 - 6/24</div>
+        <div class="tl-title">開発期間</div>
+        <div class="tl-desc">本書のスコープで実装。アップロード基盤・コンサル権限・媒体横断ビュー</div>
+      </div>
+      <div class="tl-step">
+        <div class="tl-date">6/25 - 6/30</div>
+        <div class="tl-title">調整・検証</div>
+        <div class="tl-desc">サンプル CSV による取込検証・UI 微調整・運用ドキュメント整備</div>
+      </div>
+      <div class="tl-step">
+        <div class="tl-date">7月 初旬</div>
+        <div class="tl-title">本番リリース</div>
+        <div class="tl-desc">対象店舗（麻布しき／BFA 等）でコンサル運用開始</div>
+      </div>
+      <div class="tl-step">
+        <div class="tl-date">7月以降</div>
+        <div class="tl-title">Phase 2 検討</div>
+        <div class="tl-desc">スライド出力・マーケパネル準拠・GBP/Instagram 等</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Phase 1 で何ができるか -->
+  <section>
+    <div class="section-title">
+      <span class="num">3</span>
+      <h2>Phase 1 完了時にできるようになること</h2>
+    </div>
+    <div class="card">
+      <table class="personas">
+        <tr>
+          <td>外注コンサル</td>
+          <td>
+            自分の担当店舗のログインで、契約媒体の <b>月次主要 KPI</b>（PV／予約数／クチコミ／プラン別予約 等）をひとつの画面で確認できる。<br>
+            媒体の ID・パスワード・支払情報は <b>一切見えない</b>。<br>
+            月1回のミーティングで「先月の数字はこうでした、来月はこの打ち手を提案します」が即座に語れる。
+          </td>
+        </tr>
+        <tr>
+          <td>店舗（クライアント）</td>
+          <td>
+            自店舗ユーザーでログインしたとき、ダッシュボードに <b>マーケタブ</b> が追加され、契約媒体の数字を自分でも確認できる。
+          </td>
+        </tr>
+        <tr>
+          <td>Chef's Room ／ RAL</td>
+          <td>
+            店舗ごとに「契約している媒体」を ON／OFF できる。<br>
+            新店舗を追加する手順がドキュメント化されている。<br>
+            媒体ログイン情報は社内で集中管理し、外注に渡さない運用ルールが整備されている。
+          </td>
+        </tr>
+        <tr>
+          <td>データ運用担当</td>
+          <td>
+            月1回、各媒体の月次 CSV（一部は PDF／Excel）をアップロード画面に流すだけで取り込み完了。失敗したら履歴から再アップで回復可能。
+          </td>
+        </tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- 4. KPI Matrix -->
+  <section>
+    <div class="section-title">
+      <span class="num">4</span>
+      <h2>Phase 1 でカバーする媒体 × KPI</h2>
+    </div>
+    <p style="margin: 0 0 12px; font-size: 14px; color: var(--ink-soft);">
+      予約系5媒体について、どの媒体でどの KPI が取れるかを Web リサーチで裏取りした結果です。「❓ 要確認」はサンプル CSV／管理画面で実物確認が必要な項目です。
+    </p>
+
+    <div class="legend">
+      <div class="legend-item"><span class="badge b-ok">✅</span> Phase 1 で取得</div>
+      <div class="legend-item"><span class="badge b-warn">❓</span> 要確認（サンプル CSV で確定）</div>
+      <div class="legend-item"><span class="badge b-ng">❌</span> 取れない／提供されない</div>
+      <div class="legend-item"><span class="badge b-later">🟡</span> Phase 2 で取得</div>
+      <div class="legend-item"><span class="badge b-na">─</span> 対象外（該当概念なし）</div>
+    </div>
+
+    <div class="matrix-wrap">
+      <table class="matrix">
+        <thead>
+          <tr>
+            <th>KPI</th>
+            <th class="media">食べログ</th>
+            <th class="media">食べログ<br>ノート</th>
+            <th class="media">ホット<br>ペッパー</th>
+            <th class="media">一休</th>
+            <th class="media">オズモール</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="cat"><td colspan="6">集客面</td></tr>
+          <tr>
+            <td class="kpi">月次PV数</td>
+            <td class="cell b-ok">✅</td>
+            <td class="cell b-na">─</td>
+            <td class="cell b-ok">✅</td>
+            <td class="cell b-warn">❓</td>
+            <td class="cell b-warn">❓</td>
+          </tr>
+          <tr>
+            <td class="kpi">月次予約数（合計）</td>
+            <td class="cell b-ok">✅</td>
+            <td class="cell b-ok">✅</td>
+            <td class="cell b-ok">✅</td>
+            <td class="cell b-ok">✅</td>
+            <td class="cell b-ok">✅</td>
+          </tr>
+          <tr>
+            <td class="kpi">予約経路内訳（電話／ネット／媒体内）</td>
+            <td class="cell b-ok">✅<small>※1</small></td>
+            <td class="cell b-warn">❓</td>
+            <td class="cell b-ok">✅<small>※2</small></td>
+            <td class="cell b-warn">❓</td>
+            <td class="cell b-ng">❌</td>
+          </tr>
+          <tr>
+            <td class="kpi">流入経路（特集枠／検索／クチコミ）</td>
+            <td class="cell b-ng">❌</td>
+            <td class="cell b-na">─</td>
+            <td class="cell b-ok">✅<small>※2</small></td>
+            <td class="cell b-warn">❓</td>
+            <td class="cell b-ok">✅<small>特集枠のみ</small></td>
+          </tr>
+          <tr>
+            <td class="kpi">ページ別タップ数<br><small>（メニュー／写真／地図／電話／予約）</small></td>
+            <td class="cell b-ok">✅<small>※3</small></td>
+            <td class="cell b-na">─</td>
+            <td class="cell b-warn">❓</td>
+            <td class="cell b-warn">❓</td>
+            <td class="cell b-warn">❓</td>
+          </tr>
+
+          <tr class="cat"><td colspan="6">露出・順位面</td></tr>
+          <tr>
+            <td class="kpi">エリア内ランキング・自店ポジション</td>
+            <td class="cell b-ok">✅</td>
+            <td class="cell b-na">─</td>
+            <td class="cell b-ng">❌</td>
+            <td class="cell b-ng">❌</td>
+            <td class="cell b-ng">❌</td>
+          </tr>
+          <tr>
+            <td class="kpi">周辺店舗の表示シェア</td>
+            <td class="cell b-later">🟡</td>
+            <td class="cell b-na">─</td>
+            <td class="cell b-ng">❌</td>
+            <td class="cell b-ng">❌</td>
+            <td class="cell b-ng">❌</td>
+          </tr>
+
+          <tr class="cat"><td colspan="6">評価・口コミ面</td></tr>
+          <tr>
+            <td class="kpi">クチコミ／レビュー件数</td>
+            <td class="cell b-ok">✅</td>
+            <td class="cell b-na">─</td>
+            <td class="cell b-ok">✅</td>
+            <td class="cell b-warn">❓</td>
+            <td class="cell b-ok">✅</td>
+          </tr>
+          <tr>
+            <td class="kpi">クチコミ／レビュー平均点</td>
+            <td class="cell b-ok">✅</td>
+            <td class="cell b-na">─</td>
+            <td class="cell b-ok">✅</td>
+            <td class="cell b-warn">❓</td>
+            <td class="cell b-ok">✅</td>
+          </tr>
+          <tr>
+            <td class="kpi">お気に入り登録数</td>
+            <td class="cell b-ng">❌</td>
+            <td class="cell b-na">─</td>
+            <td class="cell b-warn">❓</td>
+            <td class="cell b-warn">❓</td>
+            <td class="cell b-warn">❓</td>
+          </tr>
+
+          <tr class="cat"><td colspan="6">予約品質・運用面</td></tr>
+          <tr>
+            <td class="kpi">フラット来店件数（予約なし来店）</td>
+            <td class="cell b-na">─</td>
+            <td class="cell b-ok">✅</td>
+            <td class="cell b-na">─</td>
+            <td class="cell b-na">─</td>
+            <td class="cell b-na">─</td>
+          </tr>
+          <tr>
+            <td class="kpi">予約 vs フラット 比率</td>
+            <td class="cell b-na">─</td>
+            <td class="cell b-ok">✅</td>
+            <td class="cell b-na">─</td>
+            <td class="cell b-na">─</td>
+            <td class="cell b-na">─</td>
+          </tr>
+          <tr>
+            <td class="kpi">キャンセル件数・キャンセル率</td>
+            <td class="cell b-na">─</td>
+            <td class="cell b-ok">✅</td>
+            <td class="cell b-warn">❓</td>
+            <td class="cell b-warn">❓</td>
+            <td class="cell b-warn">❓</td>
+          </tr>
+          <tr>
+            <td class="kpi">席の回転率（卓稼働率）</td>
+            <td class="cell b-na">─</td>
+            <td class="cell b-ok">✅</td>
+            <td class="cell b-na">─</td>
+            <td class="cell b-na">─</td>
+            <td class="cell b-na">─</td>
+          </tr>
+
+          <tr class="cat"><td colspan="6">プラン・単価・在庫面</td></tr>
+          <tr>
+            <td class="kpi">プラン／コース別 予約数</td>
+            <td class="cell b-ng">❌</td>
+            <td class="cell b-ok">✅</td>
+            <td class="cell b-warn">❓</td>
+            <td class="cell b-ok">✅</td>
+            <td class="cell b-warn">❓</td>
+          </tr>
+          <tr>
+            <td class="kpi">平均客単価（予約単位）</td>
+            <td class="cell b-warn">❓</td>
+            <td class="cell b-warn">❓</td>
+            <td class="cell b-warn">❓</td>
+            <td class="cell b-ok">✅</td>
+            <td class="cell b-warn">❓</td>
+          </tr>
+
+          <tr class="cat"><td colspan="6">媒体固有指標</td></tr>
+          <tr>
+            <td class="kpi">特集枠経由の予約数</td>
+            <td class="cell b-na">─</td>
+            <td class="cell b-na">─</td>
+            <td class="cell b-warn">❓</td>
+            <td class="cell b-warn">❓</td>
+            <td class="cell b-ok">✅</td>
+          </tr>
+          <tr>
+            <td class="kpi">来店分析（同ジャンル他店比較）</td>
+            <td class="cell b-ok">✅</td>
+            <td class="cell b-na">─</td>
+            <td class="cell b-ng">❌</td>
+            <td class="cell b-ng">❌</td>
+            <td class="cell b-ng">❌</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="font-size: 12.5px; color: var(--ink-mute); margin: 12px 0 0;">
+      ※1 食べログ「来店指標」: 050番号契約 + PR／集客サービス契約が前提<br>
+      ※2 ホットペッパー「マンスリークライアントレポート」（営業経由 PDF／Excel）由来<br>
+      ※3 食べログ「ページ別レポート」+ 電話番号クリック数 + 地図印刷PV
+    </p>
+
+    <div class="callout">
+      <div class="callout-title">⚠️ 取り込みに関する前提条件（運用開始前に要確認）</div>
+      <ul>
+        <li><b>食べログの 050 番号 + PR／集客サービス契約</b> が、現在の全クライアントで成立しているか（成立していない店舗は予約経路内訳が取れない＝コンサルの分析深度に差が出る）</li>
+        <li><b>ホットペッパーのマンスリークライアントレポート</b> を毎月確実に受領できる体制があるか（営業担当との関係性が運用の前提になる）</li>
+        <li><b>一休・オズモールはサンプル CSV／管理画面スクショ</b> が現状ないため ❓ が多い。リリース前にサンプル提供をお願いしたい</li>
+      </ul>
+    </div>
+
+    <h3 class="media-name">媒体ごとの「Phase 1 完了時にできる打ち手の例」</h3>
+    <div class="grid-2">
+      <div>
+        <h3 class="media-name">食べログ</h3>
+        <div class="can-do"><b>例：</b>「写真タップ数が下がっています → 外観写真の追加を提案」「ランキング順位が落ちています → メニュー文言の見直しを提案」</div>
+      </div>
+      <div>
+        <h3 class="media-name">食べログノート</h3>
+        <div class="can-do"><b>例：</b>「フラット来店が多い → 看板強化を提案」「予約が多すぎる → 席の回転計画を見直し提案」</div>
+      </div>
+      <div>
+        <h3 class="media-name">ホットペッパー</h3>
+        <div class="can-do"><b>例：</b>「クチコミ件数が少ない → 来店時の声かけ強化を提案」</div>
+      </div>
+      <div>
+        <h3 class="media-name">一休</h3>
+        <div class="can-do"><b>例：</b>「特定プランの予約が伸びている → 同タイプの追加プラン作成を提案」</div>
+      </div>
+      <div>
+        <h3 class="media-name">オズモール</h3>
+        <div class="can-do"><b>例：</b>「特集枠の効果が弱い → 次月の特集出稿を見直し提案」</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Phase 2以降 -->
+  <section>
+    <div class="section-title">
+      <span class="num">5</span>
+      <h2>Phase 1 ではやらないこと（Phase 2 以降で検討）</h2>
+    </div>
+    <p style="margin: 0 0 14px; font-size: 14px; color: var(--ink-soft);">
+      以下は意図的に Phase 1 から外しています。リリース後の運用が回り始めたら Phase 2 として段階的に追加していきます。
+    </p>
+    <div class="grid-2">
+      <div class="later-card">
+        <h3>📊 アウトプット強化</h3>
+        <ul>
+          <li>スライド形式の月次レポート自動出力（HTML／PPTX）</li>
+          <li>PDF 出力</li>
+          <li>マーケパネル準拠の順番で数字を並べ、弱い指標と打ち手案を自動ハイライト</li>
+        </ul>
+      </div>
+      <div class="later-card">
+        <h3>🔍 媒体の追加</h3>
+        <ul>
+          <li>Google ビジネスプロフィール（検索キーワード／表示数／クリック／周辺シェア）</li>
+          <li>Instagram（投稿別エンゲージメント、フォロワー推移）</li>
+          <li>食べログの近隣店舗比較（口コミ件数・平均点）</li>
+        </ul>
+      </div>
+      <div class="later-card">
+        <h3>🤖 取り込み自動化</h3>
+        <ul>
+          <li>CSV ダウンロードの自動化（Playwright 等で代行）</li>
+          <li>媒体規約レビュー（特に食べログのスクレイピング可否）</li>
+          <li>2要素認証の運用整理</li>
+        </ul>
+      </div>
+      <div class="later-card">
+        <h3>🔐 監査・運用</h3>
+        <ul>
+          <li>コンサルのアクセスログ／ダウンロード履歴の追跡</li>
+          <li>情報漏洩リスクの早期検知の仕組み</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout" style="background: #f7fafc; border-left-color: var(--neutral); margin-top: 22px;">
+      <div class="callout-title" style="color: var(--neutral);">📌 スコープ外（参考）</div>
+      <ul>
+        <li>Google マップ口コミ全件取得（既存PoCあり、将来統合検討）</li>
+        <li>エリア内の他クライアント店舗の横断ビュー（クライアントが7割超えたら検討）</li>
+        <li>エリア人口・通行人数の連動（外部API選定が前提）</li>
+        <li>SNS分析SaaS連携（Instagram 内製の判断が固まった後）</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 6. Approval list -->
+  <section>
+    <div class="section-title">
+      <span class="num">6</span>
+      <h2>ご確認・ご判断いただきたいこと</h2>
+    </div>
+    <div class="approval-list">
+      <h3>承認チェックリスト</h3>
+      <ul>
+        <li>
+          <span class="ch"></span>
+          <span class="lbl"><b>Phase 1 スコープ全体で承認</b><small>§3 の「できるようになること」と §4 のマトリックスで運用開始 OK か</small></span>
+        </li>
+        <li>
+          <span class="ch"></span>
+          <span class="lbl"><b>スケジュール（6/24 開発完了 → 7月初旬リリース）で承認</b><small>遅らせたい / 早めたい場合はその意思決定</small></span>
+        </li>
+        <li>
+          <span class="ch"></span>
+          <span class="lbl"><b>サンプル提供のアクション</b><small>一休・オズモールの管理画面 CSV / スクショを ●月●日までに提供できるか（❓ 解消の前提）</small></span>
+        </li>
+        <li>
+          <span class="ch"></span>
+          <span class="lbl"><b>食べログ 050 番号 + PR／集客契約の状況確認</b><small>現クライアントで成立しているか、成立していない店舗があれば申し送り</small></span>
+        </li>
+        <li>
+          <span class="ch"></span>
+          <span class="lbl"><b>ホットペッパーのマンスリーレポート受領体制</b><small>営業担当から毎月確実に受け取れる体制があるか</small></span>
+        </li>
+        <li>
+          <span class="ch"></span>
+          <span class="lbl"><b>月次データ入力の担い手</b><small>Phase 1 では人手運用（社内）で開始 → Phase 2 で Playwright 自動化に置き換え、で OK か</small></span>
+        </li>
+        <li>
+          <span class="ch"></span>
+          <span class="lbl"><b>初期対象店舗</b><small>麻布しき旗の台・本店／BFA から開始で OK か</small></span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <div class="footer">
+    Restaurant AI Lab / Chef's Room — マーケダッシュボード Phase 1<br>
+    本書は <code>aipm_v0/Flow/202606/2026-06-15/RestaurantAILab/Phase1スコープ承認資料.html</code> に保存されています。<br>
+    詳細仕様は <code>ダッシュボード追加要件一覧_竹矢さんヒアリング_v3.md</code> を参照。
+  </div>
+
+</div>
+</body>
+</html>

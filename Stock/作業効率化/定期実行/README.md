@@ -1,12 +1,28 @@
-# 定期実行（Cronタスク管理）
+# 定期実行（Cron / Cockpit autorun / launchd 常駐サービス）
 
 ## 背景
 - 1日のレポート作成など、毎日/毎週/毎月の定型処理を手作業で行うと漏れや遅延が発生しやすい
 - AI（主にCursor CLI）を活用して、定期タスクを自動実行・監視できる運用基盤を整える必要がある
+- ユーザーの環境では Cron 以外にも Cockpit autorun と macOS launchd を併用しており、用途別の使い分けを一元管理する
 
 ## 目的
-- Cronを使った定期実行タスクの作成・管理を、AIOSプロジェクトとして一元管理する
+- 定期実行・常駐サービスの作成・管理を、AIOSプロジェクトとして一元管理する
 - タスク定義、実行ログ、失敗時リカバリ手順を標準化し、運用コストを下げる
+
+## 実行基盤の選択肢
+
+| 基盤 | 向いている用途 | 主な特徴 | 代表ジョブ |
+|---|---|---|---|
+| Cron (crontab) | 1日数回のレポート生成等、単発で終わるバッチ | シンプル、PCスリープ中は走らない | 日次Gmail返信要否レポート |
+| Cockpit autorun (`./cockpit autorun`) | AIエージェントを定期的にスポーン、対話を伴う処理 | Cockpit UI から状態確認・応答が可能。`waiting_confirmation` が溜まりやすい | （現在はなし。旧Markserv実行は launchd へ移行） |
+| macOS launchd (`~/Library/LaunchAgents/*.plist`) | 24時間動き続けるべき常駐サービス（HTTPサーバ等） | `KeepAlive` で自動再起動。`StartCalendarInterval` で時刻指定実行も可 | Markserv 3ポート常駐（aipm-flow / markdowns-1 / dashboard-docs） |
+
+### どれを選ぶか
+- **常駐で動かしっぱなしにしたい / 落ちたら勝手に復活してほしい** → launchd
+- **エージェント的な作業を定期発火させたい（成果物が会話履歴として残る、応答可能）** → Cockpit autorun
+- **完全に自己完結したバッチを毎朝/毎週などに走らせたい** → Cron
+
+> Cockpit autorun で常駐サービス（Markserv等）を回そうとすると、毎発火ごとに既存プロセスを kill→再起動する形になり、ページ遷移が不安定になる事例があった（2026-06-15）。常駐は launchd に倒す方針。
 
 ## ゴール（完了条件）
 - Cronで動く定期実行ジョブの雛形（実行スクリプト + スケジュール + ログ）が運用可能
@@ -66,6 +82,19 @@
 | `ジョブ一覧/` | ジョブごとの目的・入力・出力・実行タイミングを説明するMarkdown |
 | `logs/` | Cronや手動実行のログ保存先 |
 | `テンプレート/` | 新しいジョブ説明書を作るための雛形 |
+
+## launchd 常駐サービスのルール
+
+- plist は `~/Library/LaunchAgents/jp.<サービス名>.plist` に置く（Labelもファイル名と同一）
+- 必ず `KeepAlive` の `Crashed=true` で異常終了時のみ自動復活させる（`SuccessfulExit=false`）
+- `ThrottleInterval` は最低 10 秒（再起動ループ防止）
+- ログは `~/Library/Logs/<サービス名>/*.log` に保存
+- 起動・停止コマンド:
+  - 起動: `launchctl load ~/Library/LaunchAgents/<label>.plist`
+  - 停止: `launchctl unload ~/Library/LaunchAgents/<label>.plist`
+  - 再起動: `launchctl kickstart -k gui/$UID/<label>`
+  - 状態: `launchctl list | grep <label>`
+- 動的に対象を切り替えたい場合（月次でフォルダを切り替える等）は、別 plist で更新スクリプトを `StartCalendarInterval` 起動し、内部で `launchctl kickstart -k` する
 
 ## 関係者
 

@@ -88,3 +88,68 @@ files:
       - 実行結果
       - 日次レポート
       - 2026-04-27
+  - path: "ジョブ一覧/Markserv常駐_3ポート.md"
+    summary: "Markserv を 3 ポート（8810 aipm-flow / 8811 markdowns-1 / 8812 dashboard-docs）launchd で常駐させるサービス定義。8810 は今月+先月の Flow を symlink で動的切り替え"
+    keywords:
+      - markserv
+      - launchd
+      - LaunchAgent
+      - 常駐サービス
+      - Flow
+      - symlink
+      - 動的切り替え
+      - 8810
+      - 8811
+      - 8812
+      - KeepAlive
+  - path: "~/Library/LaunchAgents/jp.markserv.aipm-flow.plist"
+    summary: "port 8810 で aipm_v0/Flow（今月+先月の symlink）を serve する launchd plist"
+    keywords:
+      - launchd
+      - markserv
+      - 8810
+      - aipm-flow
+      - LaunchAgent
+  - path: "~/Library/LaunchAgents/jp.markserv.markdowns-1.plist"
+    summary: "port 8811 で RestaurantAILab/Markdowns-1 を serve する launchd plist"
+    keywords:
+      - launchd
+      - markserv
+      - 8811
+      - markdowns-1
+      - LaunchAgent
+  - path: "~/Library/LaunchAgents/jp.markserv.dashboard-docs.plist"
+    summary: "port 8812 で RestaurantAILab/Dashboard/docs を serve する launchd plist"
+    keywords:
+      - launchd
+      - markserv
+      - 8812
+      - dashboard-docs
+      - LaunchAgent
+  - path: "~/Library/LaunchAgents/jp.markserv.aipm-flow.refresh.plist"
+    summary: "毎日 00:05 と起動時に refresh-markserv-flow.sh を実行し、8810 が serve する Flow の symlink を今月+先月に動的更新する launchd plist"
+    keywords:
+      - launchd
+      - refresh
+      - symlink
+      - 月次切り替え
+      - StartCalendarInterval
+  - path: "~/aipm_v0/Stock/作業効率化/シェルスクリプト/refresh-markserv-flow.sh"
+    summary: "今月+先月の Flow ディレクトリへの symlink を ~/aipm_v0/.markserv-flow-current/ に張り直し、変化があれば 8810 markserv を kickstart"
+    keywords:
+      - shell
+      - symlink
+      - 動的更新
+      - Flow
+      - 今月
+      - 先月
+      - markserv
+  - path: "~/aipm_v0/Stock/作業効率化/シェルスクリプト/start-markserv.sh"
+    summary: "旧 Cockpit autorun 用の markserv 起動スクリプト。2026-06-15 以降は launchd へ移行したため未使用（参考用に残置）"
+    keywords:
+      - shell
+      - 旧
+      - cockpit
+      - autorun
+      - markserv
+      - 廃止

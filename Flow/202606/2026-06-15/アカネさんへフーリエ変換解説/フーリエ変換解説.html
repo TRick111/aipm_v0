@@ -1000,6 +1000,11 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     'rgba(180,83,9,0.9)',
     'rgba(22,101,52,0.9)'
   ];
+  const mixedColorsFaded = [
+    'rgba(44,93,143,0.22)',
+    'rgba(180,83,9,0.22)',
+    'rgba(22,101,52,0.22)'
+  ];
 
   function getMixedAmps() {
     return [
@@ -1044,56 +1049,63 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     }
 
     // --- Layer 2 (top): composite wave (thick, bold, with halo) ---
-    const anyChecked = showFlags[0] || showFlags[1] || showFlags[2];
+    const checkedCount = showFlags.filter(Boolean).length;
+    const anyChecked = checkedCount > 0;
     const useFlags = anyChecked ? showFlags : [true, true, true];
+    // Don't draw composite when exactly 1 wave is visible — it would be redundant
+    const showComposite = (checkedCount !== 1);
 
-    // halo (white outline so the composite stands out over the colored sines)
-    ctx.strokeStyle = 'rgba(255,255,255,0.9)';
-    ctx.lineWidth = 6;
-    ctx.lineJoin = 'round';
-    ctx.lineCap = 'round';
-    ctx.beginPath();
-    for (let i = 0; i < samples; i++) {
-      const t = tMin + (i / (samples - 1)) * (tMax - tMin);
-      const x = (i / (samples - 1)) * w;
-      let sum = 0;
-      for (let n = 1; n <= 3; n++) {
-        if (useFlags[n - 1]) sum += amps[n - 1] * Math.sin(n * t);
+    if (showComposite) {
+      // halo (white outline so the composite stands out over the colored sines)
+      ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+      ctx.lineWidth = 6;
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      for (let i = 0; i < samples; i++) {
+        const t = tMin + (i / (samples - 1)) * (tMax - tMin);
+        const x = (i / (samples - 1)) * w;
+        let sum = 0;
+        for (let n = 1; n <= 3; n++) {
+          if (useFlags[n - 1]) sum += amps[n - 1] * Math.sin(n * t);
+        }
+        const y = h / 2 - sum * scaleY;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
       }
-      const y = h / 2 - sum * scaleY;
-      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-    }
-    ctx.stroke();
+      ctx.stroke();
 
-    // main composite stroke
-    ctx.strokeStyle = '#1a1a1a';
-    ctx.lineWidth = 3.4;
-    ctx.beginPath();
-    for (let i = 0; i < samples; i++) {
-      const t = tMin + (i / (samples - 1)) * (tMax - tMin);
-      const x = (i / (samples - 1)) * w;
-      let sum = 0;
-      for (let n = 1; n <= 3; n++) {
-        if (useFlags[n - 1]) sum += amps[n - 1] * Math.sin(n * t);
+      // main composite stroke
+      ctx.strokeStyle = '#1a1a1a';
+      ctx.lineWidth = 3.4;
+      ctx.beginPath();
+      for (let i = 0; i < samples; i++) {
+        const t = tMin + (i / (samples - 1)) * (tMax - tMin);
+        const x = (i / (samples - 1)) * w;
+        let sum = 0;
+        for (let n = 1; n <= 3; n++) {
+          if (useFlags[n - 1]) sum += amps[n - 1] * Math.sin(n * t);
+        }
+        const y = h / 2 - sum * scaleY;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
       }
-      const y = h / 2 - sum * scaleY;
-      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      ctx.stroke();
     }
-    ctx.stroke();
 
     ctx.fillStyle = '#888';
     ctx.font = '11px sans-serif';
     ctx.fillText('t', w - 12, h / 2 - 4);
 
-    if (anyChecked) {
+    ctx.font = '11px sans-serif';
+    if (!anyChecked) {
       ctx.fillStyle = '#666';
-      ctx.font = '11px sans-serif';
-      const used = [1,2,3].filter(n => showFlags[n-1]).map(n => 'sin(' + (n>1?n:'') + 't)').join(' + ');
-      ctx.fillText('合成 = ' + used, 12, h - 8);
+      ctx.fillText('合成 = 3 つすべての和（チェックを入れると、入れた分だけの和になります）', 12, h - 8);
+    } else if (checkedCount === 1) {
+      ctx.fillStyle = '#999';
+      ctx.fillText('選択中の波が 1 本のみ — 合成波は表示していません', 12, h - 8);
     } else {
       ctx.fillStyle = '#666';
-      ctx.font = '11px sans-serif';
-      ctx.fillText('合成 = 3 つすべての和（チェックを入れると、入れた分だけの和になります）', 12, h - 8);
+      const used = [1,2,3].filter(n => showFlags[n-1]).map(n => 'sin(' + (n>1?n:'') + 't)').join(' + ');
+      ctx.fillText('合成 = ' + used, 12, h - 8);
     }
   }
 
@@ -1104,6 +1116,13 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     ctx.clearRect(0, 0, w, h);
 
     const amps = getMixedAmps();
+    const showFlags = [
+      document.getElementById('showA1').checked,
+      document.getElementById('showA2').checked,
+      document.getElementById('showA3').checked
+    ];
+    const anyChecked = showFlags.some(Boolean);
+
     const padL = 40, padR = 18, padT = 22, padB = 36;
     const innerW = w - padL - padR;
     const innerH = h - padT - padB;
@@ -1132,7 +1151,20 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
       const cx = padL + ((n - 0.5) / maxN) * innerW;
       const height = (mag / maxMag) * innerH;
 
-      ctx.fillStyle = (n <= 3) ? mixedColorsSolid[n - 1] : '#e0e0e0';
+      // determine bar color: solid if checked (or if none-checked fallback mode), faded if unchecked
+      let barFill;
+      let isFaded = false;
+      if (n > 3) {
+        barFill = '#e0e0e0';
+      } else if (!anyChecked) {
+        barFill = mixedColorsSolid[n - 1];
+      } else if (showFlags[n - 1]) {
+        barFill = mixedColorsSolid[n - 1];
+      } else {
+        barFill = mixedColorsFaded[n - 1];
+        isFaded = true;
+      }
+      ctx.fillStyle = barFill;
       if (height > 0) {
         ctx.fillRect(cx - barW / 2, padT + innerH - height, barW, height);
       } else {
@@ -1145,7 +1177,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
       ctx.textAlign = 'center';
       ctx.fillText('n=' + n, cx, padT + innerH + 16);
       if (mag > 0.02) {
-        ctx.fillStyle = '#333';
+        ctx.fillStyle = isFaded ? '#bbb' : '#333';
         ctx.fillText(mag.toFixed(2), cx, padT + innerH - height - 4);
       }
       ctx.textAlign = 'start';

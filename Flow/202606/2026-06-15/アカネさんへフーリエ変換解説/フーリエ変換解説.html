@@ -1039,6 +1039,9 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
       ctx.stroke();
     }
 
+    const anyChecked = showFlags[0] || showFlags[1] || showFlags[2];
+    const useFlags = anyChecked ? showFlags : [true, true, true];
+
     ctx.strokeStyle = '#1a1a1a';
     ctx.lineWidth = 2.2;
     ctx.beginPath();
@@ -1047,7 +1050,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
       const x = (i / (samples - 1)) * w;
       let sum = 0;
       for (let n = 1; n <= 3; n++) {
-        sum += amps[n - 1] * Math.sin(n * t);
+        if (useFlags[n - 1]) sum += amps[n - 1] * Math.sin(n * t);
       }
       const y = h / 2 - sum * scaleY;
       if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
@@ -1057,6 +1060,17 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     ctx.fillStyle = '#888';
     ctx.font = '11px sans-serif';
     ctx.fillText('t', w - 12, h / 2 - 4);
+
+    if (anyChecked) {
+      ctx.fillStyle = '#666';
+      ctx.font = '11px sans-serif';
+      const used = [1,2,3].filter(n => showFlags[n-1]).map(n => 'sin(' + (n>1?n:'') + 't)').join(' + ');
+      ctx.fillText('合成 = ' + used, 12, h - 8);
+    } else {
+      ctx.fillStyle = '#666';
+      ctx.font = '11px sans-serif';
+      ctx.fillText('合成 = 3 つすべての和（チェックを入れると、入れた分だけの和になります）', 12, h - 8);
+    }
   }
 
   function drawMixedSpec() {
@@ -1328,67 +1342,104 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     if (!canvas) return;
     const { ctx, w, h } = setupHiDPICanvas(canvas);
     ctx.clearRect(0, 0, w, h);
-    axis(ctx, w, h);
 
     const T = parseFloat(document.getElementById('rangeFTIntroT').value);
     document.getElementById('valFTIntroT').textContent = T.toFixed(1);
 
-    // visible window: [-tWin/2, tWin/2]
     const tWin = 24;
     const xOfT = (t) => w / 2 + (t / tWin) * w;
-    const amp = h * 0.32;
 
-    // draw pulses centered at k*T for k in range
-    const kMax = Math.ceil(tWin / (2 * T)) + 1;
-    ctx.fillStyle = 'rgba(44,93,143,0.35)';
-    ctx.strokeStyle = '#2c5d8f';
-    ctx.lineWidth = 1.8;
+    const baselineY = h * 0.62;
+    const pulseTopY = h * 0.22;
 
+    // baseline reference (thin gray)
+    ctx.strokeStyle = '#dddddd';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, baselineY);
+    ctx.lineTo(w, baselineY);
+    ctx.stroke();
+
+    // build pulse edges within window (+ a margin)
+    const kMax = Math.ceil(tWin / (2 * T)) + 2;
+    const edges = [];
     for (let k = -kMax; k <= kMax; k++) {
       const center = k * T;
-      if (center - FT_TAU / 2 > tWin / 2 || center + FT_TAU / 2 < -tWin / 2) continue;
-      const xL = xOfT(center - FT_TAU / 2);
-      const xR = xOfT(center + FT_TAU / 2);
-      const yTop = h / 2 - amp;
-      const yBot = h / 2;
-      ctx.fillRect(xL, yTop, xR - xL, yBot - yTop);
-      ctx.strokeRect(xL, yTop, xR - xL, yBot - yTop);
+      edges.push({ t: center - FT_TAU / 2, type: 'up' });
+      edges.push({ t: center + FT_TAU / 2, type: 'down' });
+    }
+    edges.sort((a, b) => a.t - b.t);
+
+    const tStart = -tWin / 2;
+    const tEnd = tWin / 2;
+
+    // determine whether left edge starts inside a pulse
+    let startInside = false;
+    for (let k = -kMax; k <= kMax; k++) {
+      if (Math.abs(tStart - k * T) <= FT_TAU / 2) { startInside = true; break; }
     }
 
+    // fill area under curve (soft tint)
+    ctx.fillStyle = 'rgba(44,93,143,0.13)';
+    ctx.beginPath();
+    ctx.moveTo(0, baselineY);
+    let cy = startInside ? pulseTopY : baselineY;
+    ctx.lineTo(0, cy);
+    for (const e of edges) {
+      if (e.t < tStart || e.t > tEnd) continue;
+      const x = xOfT(e.t);
+      ctx.lineTo(x, cy);
+      cy = (e.type === 'up') ? pulseTopY : baselineY;
+      ctx.lineTo(x, cy);
+    }
+    ctx.lineTo(w, cy);
+    ctx.lineTo(w, baselineY);
+    ctx.closePath();
+    ctx.fill();
+
+    // square waveform stroke
+    ctx.strokeStyle = '#2c5d8f';
+    ctx.lineWidth = 2.4;
+    ctx.beginPath();
+    cy = startInside ? pulseTopY : baselineY;
+    ctx.moveTo(0, cy);
+    for (const e of edges) {
+      if (e.t < tStart || e.t > tEnd) continue;
+      const x = xOfT(e.t);
+      ctx.lineTo(x, cy);
+      cy = (e.type === 'up') ? pulseTopY : baselineY;
+      ctx.lineTo(x, cy);
+    }
+    ctx.lineTo(w, cy);
+    ctx.stroke();
+
+    // header label
     ctx.fillStyle = '#444';
     ctx.font = '13px sans-serif';
     ctx.fillText(`周期 T = ${T.toFixed(1)}　パルス幅 τ = ${FT_TAU.toFixed(1)}（固定）`, 12, 22);
+
+    // axis labels
     ctx.fillStyle = '#888';
     ctx.font = '11px sans-serif';
-    ctx.fillText('t', w - 12, h / 2 - 4);
+    ctx.fillText('t', w - 12, baselineY - 4);
+    ctx.fillText('0', 4, baselineY + 12);
 
-    // T markers
-    ctx.strokeStyle = 'rgba(180,83,9,0.45)';
-    ctx.setLineDash([2, 3]);
-    for (let k = -kMax; k <= kMax; k++) {
-      const x = xOfT(k * T);
-      if (x < 0 || x > w) continue;
-      ctx.beginPath();
-      ctx.moveTo(x, h - 22);
-      ctx.lineTo(x, h - 6);
-      ctx.stroke();
-    }
-    ctx.setLineDash([]);
-    // T bracket between 0 and T
+    // T bracket between two adjacent pulse centers
     const x0 = xOfT(0);
     const x1 = xOfT(T);
     if (x1 - x0 > 30 && x1 < w) {
       ctx.strokeStyle = '#b45309';
-      ctx.lineWidth = 1.2;
-      const yB = h - 14;
+      ctx.lineWidth = 1.4;
+      const yB = baselineY + 22;
       ctx.beginPath();
-      ctx.moveTo(x0, yB);
-      ctx.lineTo(x1, yB);
+      ctx.moveTo(x0, yB); ctx.lineTo(x1, yB);
+      ctx.moveTo(x0, yB - 4); ctx.lineTo(x0, yB + 4);
+      ctx.moveTo(x1, yB - 4); ctx.lineTo(x1, yB + 4);
       ctx.stroke();
       ctx.fillStyle = '#b45309';
-      ctx.font = '11px sans-serif';
+      ctx.font = '12px sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('T', (x0 + x1) / 2, yB - 3);
+      ctx.fillText('T', (x0 + x1) / 2, yB + 15);
       ctx.textAlign = 'start';
     }
   }

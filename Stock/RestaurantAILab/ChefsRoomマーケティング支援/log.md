@@ -19,3 +19,7 @@
 | 2026-02-01 | create | `2.execute/1.scripts/flow_runner/*` | Flow上で完結実行するためのスクリプト一式 | |
 | 2026-02-01 | edit | `ProjectIndex.yaml` | 確定反映ファイルを追記 | |
 | 2026-02-01 | edit | `README.md` | ネクストアクションを更新 | |
+| 2026-06-08 | create | `skills/takeya-instagram-reel/SKILL.md` | スプレッドシート→台本生成→書き戻しの一連を Anthropic Skill 形式でパッケージ化 | 竹矢さんが自分で実行できるようにするため |
+| 2026-06-08 | create | `skills/takeya-instagram-reel/scripts/extract_input.py` | 対象シートから input CSV を抽出 | スキル同梱の参照実装 |
+| 2026-06-08 | create | `skills/takeya-instagram-reel/scripts/writeback.py` | output CSV からスプレッドシート batchUpdate ボディを生成 | スキル同梱の参照実装 |
+| 2026-06-08 | edit | `ProjectIndex.yaml` | skill 関連ファイルを追記 | |

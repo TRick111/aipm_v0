@@ -248,7 +248,7 @@ p { margin: 1rem 0; }
   gap: 0.5rem;
 }
 
-.controls input[type="range"] { width: 180px; }
+.controls input[type="range"] { width: 160px; }
 
 .controls .value {
   font-family: 'SF Mono', Menlo, monospace;
@@ -401,11 +401,11 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
   </p>
 
   <p>
-    下の図の左が、3 本の正弦波と、それを足した結果（黒）。右はその「中身」を表した <strong>周波数空間</strong>の棒グラフです。横軸が周波数（波の細かさ）、縦軸がその波の強さ。
+    下の図の左が、3 本の正弦波と、それを足した結果（黒）。右はその「中身」を表した <strong>周波数空間</strong>の棒グラフです。横軸が周波数（波の細かさ）、縦軸がその波の強さ。<strong>下のスライダで各正弦波の強さを変えてみてください</strong>。左の波形と右の棒グラフが連動して動きます。
   </p>
 
   <div class="demo">
-    <h4>3 つの正弦波 → 重ねると複雑な波形になる</h4>
+    <h4>3 つの正弦波を足してみる（強さを動かせます）</h4>
     <div class="demo-split">
       <div class="panel">
         <div class="panel-label">時間空間（波の形）</div>
@@ -416,15 +416,46 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
         <canvas id="canvasMixedSpec" width="340" height="280"></canvas>
       </div>
     </div>
+    <div class="controls">
+      <label>
+        <input type="checkbox" id="showA1">
+        <span style="color:var(--wave-1); font-weight:600;">$\sin(t)$</span> を表示
+      </label>
+      <label>$\sin(t)$ の強さ:
+        <input type="range" id="rangeA1" min="0" max="1.5" step="0.05" value="1.0">
+        <span class="value" id="valA1">1.00</span>
+      </label>
+    </div>
+    <div class="controls">
+      <label>
+        <input type="checkbox" id="showA2">
+        <span style="color:var(--wave-2); font-weight:600;">$\sin(2t)$</span> を表示
+      </label>
+      <label>$\sin(2t)$ の強さ:
+        <input type="range" id="rangeA2" min="0" max="1.5" step="0.05" value="0.7">
+        <span class="value" id="valA2">0.70</span>
+      </label>
+    </div>
+    <div class="controls">
+      <label>
+        <input type="checkbox" id="showA3">
+        <span style="color:var(--wave-3); font-weight:600;">$\sin(3t)$</span> を表示
+      </label>
+      <label>$\sin(3t)$ の強さ:
+        <input type="range" id="rangeA3" min="0" max="1.5" step="0.05" value="0.4">
+        <span class="value" id="valA3">0.40</span>
+      </label>
+      <button id="mixedReset">標準値に戻す</button>
+    </div>
     <div class="legend">
-      <span class="item"><span class="swatch" style="background:var(--wave-1)"></span>$\sin(t)$　（強さ 1.0）</span>
-      <span class="item"><span class="swatch" style="background:var(--wave-2)"></span>$0.7\sin(2t)$</span>
-      <span class="item"><span class="swatch" style="background:var(--wave-3)"></span>$0.4\sin(3t)$</span>
+      <span class="item"><span class="swatch" style="background:var(--wave-1)"></span>$\sin(t)$</span>
+      <span class="item"><span class="swatch" style="background:var(--wave-2)"></span>$\sin(2t)$</span>
+      <span class="item"><span class="swatch" style="background:var(--wave-3)"></span>$\sin(3t)$</span>
       <span class="item"><span class="swatch" style="background:var(--wave-sum); height:4px"></span>合成（観測される波形）</span>
     </div>
     <p class="caption">
-      左の波形は <strong>3 本の波の足し算の結果</strong>、右の棒グラフは <strong>その内訳</strong>。
-      「観測されるのは左の波形」だが、「中身を知りたいときには右の棒グラフが欲しい」 — これがフーリエの考え方の出発点です。
+      「観測されるのは左の波形」だけど、「中身を知りたいときには右の棒グラフが欲しい」 — これがフーリエの考え方の出発点です。
+      たとえばどれか 1 つだけ強さを 0 にすると、棒が 1 本消え、合成の波形もシンプルになります。
     </p>
   </div>
 
@@ -489,7 +520,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     下のデモで、足す正弦波の本数 $N$ を増やしてみてください。<strong>$N$ を増やすほど、丸かった波がだんだん矩形に寄っていきます</strong>。
   </p>
   <p>
-    左は時間空間で見た波の様子。右は周波数空間で、「どの波数の正弦波をどれだけ強く使っているか」の棒グラフです。Part 0 の3つの正弦波の例と同じ見方です。
+    左は時間空間で見た波の様子。右は周波数空間で、「どの波数の正弦波をどれだけ強く使っているか」の棒グラフです。Part 0 の 3 つの正弦波の例と同じ見方です。
   </p>
 
   <div class="demo">
@@ -526,8 +557,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
   </p>
 
   <div class="note">
-    👀 ここで <strong>周波数空間の棒グラフ</strong> の見方を覚えておいてください。
-    あとでこの棒が「だんだん詰まって、最後には連続的になる」というのが、フーリエ変換への入り口になります。
+    👀 ここで <strong>周波数空間の棒グラフ</strong> の見方を覚えておいてください。あとでこの棒が「だんだん詰まって、最後には連続的になる」というのが、フーリエ変換への入り口になります。
   </div>
 
   <!-- column: orthogonality -->
@@ -600,7 +630,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     $$
 
     <p>
-      この式は「$\cos$ と $\sin$ を、複素数（実部と虚部）にまとめた表記」です。$e^{i\theta}$ という1つの式の <strong>実部が $\cos\theta$</strong>、<strong>虚部が $\sin\theta$</strong> になっています。
+      この式は「$\cos$ と $\sin$ を、複素数（実部と虚部）にまとめた表記」です。$e^{i\theta}$ という 1 つの式の <strong>実部が $\cos\theta$</strong>、<strong>虚部が $\sin\theta$</strong> になっています。
     </p>
 
     <h4>複素指数なら、微分はただの掛け算</h4>
@@ -613,7 +643,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     $$
 
     <p>
-      <strong>微分してもただ $i\omega$ が前に出るだけ</strong>。 $\sin$ と $\cos$ の間を行き来する必要がなくなります。フーリエ変換の式で $e^{-i\omega t}$ が出てくるのは、ここで微分や積分が圧倒的に楽になるからです。
+      <strong>微分してもただ $i\omega$ が前に出るだけ</strong>。$\sin$ と $\cos$ の間を行き来する必要がなくなります。フーリエ変換の式で $e^{-i\omega t}$ が出てくるのは、ここで微分や積分が圧倒的に楽になるからです。
     </p>
 
     <h4>フーリエ級数も実は複素指数で書き直せる</h4>
@@ -639,7 +669,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     </p>
 
     <div class="callout">
-      まとめ: 複素指数 $e^{i\omega t}$ は、$\cos$ と $\sin$ を1つにまとめた書き方。微分・積分が掛け算・割り算になるので、計算が劇的に楽になる。<strong>概念は同じで、書き方を変えただけ</strong>。
+      まとめ: 複素指数 $e^{i\omega t}$ は、$\cos$ と $\sin$ を 1 つにまとめた書き方。微分・積分が掛け算・割り算になるので、計算が劇的に楽になる。<strong>概念は同じで、書き方を変えただけ</strong>。
     </div>
   </div>
 </section>
@@ -659,40 +689,51 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     こういう関数にも、同じように <strong>「中身を周波数空間で見る」</strong>ことができたら嬉しい。それがフーリエ変換の動機です。
   </p>
 
-  <h3>周期 $T$ を $\infty$ に飛ばすジャンプ</h3>
+  <h3>まず手を動かしてみる: 矩形波の周期を広げる</h3>
   <p>
-    周期関数でない関数を「無理やり周期関数とみなす」ことから始めます。<strong>周期 $T$ をとても大きく取れば</strong>、1 周期の間に起きることはほぼ「1 回ぽっきりの出来事」になります。極端な話 $T \to \infty$ にすれば、周期関数でない関数も含めて扱えるようになる。
-  </p>
-  <p>
-    このとき、周波数空間で何が起きるか。Part 1 では棒グラフが「飛び飛び」でした。その間隔は基本周波数 $\omega_0 = 2\pi/T$ です。だから:
-  </p>
-
-  $$
-  T \;\nearrow\; \;\;\Longrightarrow\;\; \omega_0 = \frac{2\pi}{T} \;\searrow\;
-  $$
-
-  <p>
-    つまり、周期を大きくするほど、棒と棒の間隔がどんどん詰まっていく。最後には、棒が連続的に並んで <strong>滑らかな曲線</strong>になります。これがフーリエ変換 $F(\omega)$ の正体です。
+    数式を出す前に、ひとつ実験をしてみます。下のデモは <strong>等間隔に並んだ矩形パルスの列</strong>です。<strong>パルスの幅 $\tau$ は固定したまま、周期 $T$ だけを広げていく</strong>と、周波数空間の棒グラフがどう変わるかを見てください。
   </p>
 
   <div class="demo">
-    <h4>周期 $T$ を伸ばすと、棒グラフが詰まって連続になる</h4>
-    <canvas id="canvasSpectrum" width="800" height="280"></canvas>
+    <h4>矩形波の周期 $T$ を広げると、スペクトルの間隔が狭まる</h4>
+    <div class="demo-split">
+      <div class="panel">
+        <div class="panel-label">時間空間（矩形パルスの列、周期 $T$）</div>
+        <canvas id="canvasFTIntroTime" width="520" height="280"></canvas>
+      </div>
+      <div class="panel">
+        <div class="panel-label">周波数空間（棒グラフ + 包絡線）</div>
+        <canvas id="canvasFTIntroSpec" width="340" height="280"></canvas>
+      </div>
+    </div>
     <div class="controls">
       <label>周期 $T$:
-        <input type="range" id="rangeT" min="1" max="20" step="0.1" value="2">
-        <span class="value" id="valT">2.0</span>
+        <input type="range" id="rangeFTIntroT" min="2" max="20" step="0.1" value="3">
+        <span class="value" id="valFTIntroT">3.0</span>
       </label>
-      <button id="animT">$T$ を自動で伸ばす</button>
+      <button id="ftIntroAnim">自動で広げる</button>
+      <button id="ftIntroReset">標準値に戻す</button>
     </div>
     <p class="caption">
-      青の縦棒 1 本 1 本がフーリエ係数（強さ）。$T$ を大きくするほど線の間隔 $\omega_0$ が狭くなり、最後に背景の薄い曲線（連続スペクトル）に合流します。これが「離散 → 連続」の橋渡しです。
+      左 — $T$ を大きくするとパルス同士の間が空いていきます。極限 $T \to \infty$ ではパルスが 1 個だけになります。<br>
+      右 — 棒の間隔 $\omega_0 = 2\pi/T$ が狭まり、薄く描いてある「包絡線」を細かく刻むようになります。最終的には棒が連続的に並んで、薄い曲線そのものになります。
     </p>
   </div>
 
+  <h3>観察できたこと</h3>
+  <ul>
+    <li><strong>$T$ が大きくなるほど、周波数空間の棒の間隔 $\omega_0 = 2\pi/T$ が狭くなる</strong></li>
+    <li>棒の頭は <strong>常にひとつの曲線（包絡線）</strong>の上に乗っている — つまり「本当の中身」はこの曲線として既に存在している</li>
+    <li>極限 $T \to \infty$ で棒は連続的にびっしり並び、最後には<strong>包絡線そのもの</strong>になる</li>
+  </ul>
+
+  <p>
+    この最後の <strong>連続的なスペクトル（包絡線）</strong>が、フーリエ変換 $F(\omega)$ です。Part 1 の棒グラフの「行き着く先」が、フーリエ変換だと思ってください。
+  </p>
+
   <h3>フーリエ変換の式</h3>
   <p>
-    こうして得られる連続版のスペクトルが、フーリエ変換 $F(\omega)$ です:
+    こうして得られる連続版のスペクトルは、次のひとつの積分で書けます:
   </p>
 
   $$
@@ -938,14 +979,32 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     ctx.stroke();
   }
 
+  function sinc(x) {
+    if (Math.abs(x) < 1e-9) return 1;
+    return Math.sin(x) / x;
+  }
+
   // ----------------------------------------------------------------
-  // Part 0: mixed waves + spectrum
+  // Part 0: mixed waves (interactive)
   // ----------------------------------------------------------------
-  const mixedComponents = [
-    { fn: t => Math.sin(t), color: 'rgba(44,93,143,0.6)', mag: 1.0, label: 'n=1' },
-    { fn: t => 0.7 * Math.sin(2 * t), color: 'rgba(180,83,9,0.6)', mag: 0.7, label: 'n=2' },
-    { fn: t => 0.4 * Math.sin(3 * t), color: 'rgba(22,101,52,0.6)', mag: 0.4, label: 'n=3' }
+  const mixedColors = [
+    'rgba(44,93,143,0.7)',   // n=1
+    'rgba(180,83,9,0.7)',    // n=2
+    'rgba(22,101,52,0.7)'    // n=3
   ];
+  const mixedColorsSolid = [
+    'rgba(44,93,143,0.9)',
+    'rgba(180,83,9,0.9)',
+    'rgba(22,101,52,0.9)'
+  ];
+
+  function getMixedAmps() {
+    return [
+      parseFloat(document.getElementById('rangeA1').value),
+      parseFloat(document.getElementById('rangeA2').value),
+      parseFloat(document.getElementById('rangeA3').value)
+    ];
+  }
 
   function drawMixedTime() {
     const canvas = document.getElementById('canvasMixed');
@@ -954,22 +1013,31 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     ctx.clearRect(0, 0, w, h);
     axis(ctx, w, h);
 
+    const amps = getMixedAmps();
     const samples = 600;
     const tMin = 0, tMax = 4 * Math.PI;
-    const scaleY = h * 0.18;
+    const scaleY = h * 0.16;
 
-    mixedComponents.forEach(c => {
-      ctx.strokeStyle = c.color;
+    const showFlags = [
+      document.getElementById('showA1').checked,
+      document.getElementById('showA2').checked,
+      document.getElementById('showA3').checked
+    ];
+
+    for (let n = 1; n <= 3; n++) {
+      if (!showFlags[n - 1]) continue;
+      const a = amps[n - 1];
+      ctx.strokeStyle = mixedColors[n - 1];
       ctx.lineWidth = 1.5;
       ctx.beginPath();
       for (let i = 0; i < samples; i++) {
         const t = tMin + (i / (samples - 1)) * (tMax - tMin);
         const x = (i / (samples - 1)) * w;
-        const y = h / 2 - c.fn(t) * scaleY;
+        const y = h / 2 - a * Math.sin(n * t) * scaleY;
         if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
       }
       ctx.stroke();
-    });
+    }
 
     ctx.strokeStyle = '#1a1a1a';
     ctx.lineWidth = 2.2;
@@ -977,7 +1045,11 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     for (let i = 0; i < samples; i++) {
       const t = tMin + (i / (samples - 1)) * (tMax - tMin);
       const x = (i / (samples - 1)) * w;
-      const y = h / 2 - (mixedComponents[0].fn(t) + mixedComponents[1].fn(t) + mixedComponents[2].fn(t)) * scaleY;
+      let sum = 0;
+      for (let n = 1; n <= 3; n++) {
+        sum += amps[n - 1] * Math.sin(n * t);
+      }
+      const y = h / 2 - sum * scaleY;
       if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
     }
     ctx.stroke();
@@ -993,11 +1065,11 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     const { ctx, w, h } = setupHiDPICanvas(canvas);
     ctx.clearRect(0, 0, w, h);
 
-    const padL = 36, padR = 18, padT = 22, padB = 36;
+    const amps = getMixedAmps();
+    const padL = 40, padR = 18, padT = 22, padB = 36;
     const innerW = w - padL - padR;
     const innerH = h - padT - padB;
 
-    // baseline
     ctx.strokeStyle = '#bbb';
     ctx.beginPath();
     ctx.moveTo(padL, padT + innerH);
@@ -1008,36 +1080,68 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     ctx.lineTo(padL, padT + innerH);
     ctx.stroke();
 
-    // labels
     ctx.fillStyle = '#666';
     ctx.font = '11px sans-serif';
     ctx.fillText('強さ', 4, padT + 8);
     ctx.fillText('波数 n', padL + innerW - 38, padT + innerH + 18);
 
     const maxN = 6;
-    const maxMag = 1.0;
+    const maxMag = 1.5;
     const barW = innerW / maxN * 0.4;
 
     for (let n = 1; n <= maxN; n++) {
-      const c = mixedComponents.find((m, i) => (i + 1) === n);
-      const mag = c ? c.mag : 0;
+      const mag = (n <= 3) ? amps[n - 1] : 0;
       const cx = padL + ((n - 0.5) / maxN) * innerW;
       const height = (mag / maxMag) * innerH;
 
-      ctx.fillStyle = c ? c.color.replace('0.6', '0.85') : '#e0e0e0';
-      ctx.fillRect(cx - barW / 2, padT + innerH - height, barW, height);
+      ctx.fillStyle = (n <= 3) ? mixedColorsSolid[n - 1] : '#e0e0e0';
+      if (height > 0) {
+        ctx.fillRect(cx - barW / 2, padT + innerH - height, barW, height);
+      } else {
+        ctx.fillStyle = '#e8e8e8';
+        ctx.fillRect(cx - barW / 2, padT + innerH - 1, barW, 1);
+      }
 
       ctx.fillStyle = '#555';
       ctx.font = '11px sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText('n=' + n, cx, padT + innerH + 16);
-      if (mag > 0) {
+      if (mag > 0.02) {
         ctx.fillStyle = '#333';
-        ctx.fillText(mag.toFixed(1), cx, padT + innerH - height - 4);
+        ctx.fillText(mag.toFixed(2), cx, padT + innerH - height - 4);
       }
       ctx.textAlign = 'start';
     }
   }
+
+  function updateMixedLabels() {
+    document.getElementById('valA1').textContent = parseFloat(document.getElementById('rangeA1').value).toFixed(2);
+    document.getElementById('valA2').textContent = parseFloat(document.getElementById('rangeA2').value).toFixed(2);
+    document.getElementById('valA3').textContent = parseFloat(document.getElementById('rangeA3').value).toFixed(2);
+  }
+
+  function redrawMixed() {
+    updateMixedLabels();
+    drawMixedTime();
+    drawMixedSpec();
+  }
+
+  ['rangeA1', 'rangeA2', 'rangeA3'].forEach(id => {
+    document.getElementById(id).addEventListener('input', redrawMixed);
+  });
+  ['showA1', 'showA2', 'showA3'].forEach(id => {
+    document.getElementById(id).addEventListener('change', redrawMixed);
+  });
+
+  document.getElementById('mixedReset').addEventListener('click', () => {
+    document.getElementById('rangeA1').value = 1.0;
+    document.getElementById('rangeA2').value = 0.7;
+    document.getElementById('rangeA3').value = 0.4;
+    document.getElementById('showA1').checked = false;
+    document.getElementById('showA2').checked = false;
+    document.getElementById('showA3').checked = false;
+    redrawMixed();
+  });
 
   // ----------------------------------------------------------------
   // Part 1 target square wave (the "problem" panel)
@@ -1081,7 +1185,6 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     const showComp = document.getElementById('showComponents').checked;
     document.getElementById('valN').textContent = N;
 
-    // dashed target
     ctx.strokeStyle = '#cccccc';
     ctx.setLineDash([4, 4]);
     ctx.lineWidth = 1.5;
@@ -1214,95 +1317,196 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
   document.getElementById('showComponents').addEventListener('change', drawSquareTime);
 
   // ----------------------------------------------------------------
-  // Part 2: spectrum compaction as T grows
+  // Part 2: pulse-train + spectrum, T sweep
   // ----------------------------------------------------------------
-  let spectrumAnimId = null;
-  function drawSpectrum() {
-    const canvas = document.getElementById('canvasSpectrum');
+  const FT_TAU = 1.0; // fixed pulse width
+
+  let ftIntroAnimId = null;
+
+  function drawFTIntroTime() {
+    const canvas = document.getElementById('canvasFTIntroTime');
+    if (!canvas) return;
+    const { ctx, w, h } = setupHiDPICanvas(canvas);
+    ctx.clearRect(0, 0, w, h);
+    axis(ctx, w, h);
+
+    const T = parseFloat(document.getElementById('rangeFTIntroT').value);
+    document.getElementById('valFTIntroT').textContent = T.toFixed(1);
+
+    // visible window: [-tWin/2, tWin/2]
+    const tWin = 24;
+    const xOfT = (t) => w / 2 + (t / tWin) * w;
+    const amp = h * 0.32;
+
+    // draw pulses centered at k*T for k in range
+    const kMax = Math.ceil(tWin / (2 * T)) + 1;
+    ctx.fillStyle = 'rgba(44,93,143,0.35)';
+    ctx.strokeStyle = '#2c5d8f';
+    ctx.lineWidth = 1.8;
+
+    for (let k = -kMax; k <= kMax; k++) {
+      const center = k * T;
+      if (center - FT_TAU / 2 > tWin / 2 || center + FT_TAU / 2 < -tWin / 2) continue;
+      const xL = xOfT(center - FT_TAU / 2);
+      const xR = xOfT(center + FT_TAU / 2);
+      const yTop = h / 2 - amp;
+      const yBot = h / 2;
+      ctx.fillRect(xL, yTop, xR - xL, yBot - yTop);
+      ctx.strokeRect(xL, yTop, xR - xL, yBot - yTop);
+    }
+
+    ctx.fillStyle = '#444';
+    ctx.font = '13px sans-serif';
+    ctx.fillText(`周期 T = ${T.toFixed(1)}　パルス幅 τ = ${FT_TAU.toFixed(1)}（固定）`, 12, 22);
+    ctx.fillStyle = '#888';
+    ctx.font = '11px sans-serif';
+    ctx.fillText('t', w - 12, h / 2 - 4);
+
+    // T markers
+    ctx.strokeStyle = 'rgba(180,83,9,0.45)';
+    ctx.setLineDash([2, 3]);
+    for (let k = -kMax; k <= kMax; k++) {
+      const x = xOfT(k * T);
+      if (x < 0 || x > w) continue;
+      ctx.beginPath();
+      ctx.moveTo(x, h - 22);
+      ctx.lineTo(x, h - 6);
+      ctx.stroke();
+    }
+    ctx.setLineDash([]);
+    // T bracket between 0 and T
+    const x0 = xOfT(0);
+    const x1 = xOfT(T);
+    if (x1 - x0 > 30 && x1 < w) {
+      ctx.strokeStyle = '#b45309';
+      ctx.lineWidth = 1.2;
+      const yB = h - 14;
+      ctx.beginPath();
+      ctx.moveTo(x0, yB);
+      ctx.lineTo(x1, yB);
+      ctx.stroke();
+      ctx.fillStyle = '#b45309';
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('T', (x0 + x1) / 2, yB - 3);
+      ctx.textAlign = 'start';
+    }
+  }
+
+  function drawFTIntroSpec() {
+    const canvas = document.getElementById('canvasFTIntroSpec');
     if (!canvas) return;
     const { ctx, w, h } = setupHiDPICanvas(canvas);
     ctx.clearRect(0, 0, w, h);
 
-    const T = parseFloat(document.getElementById('rangeT').value);
-    document.getElementById('valT').textContent = T.toFixed(1);
+    const T = parseFloat(document.getElementById('rangeFTIntroT').value);
 
-    const baseY = h - 30;
+    const padL = 36, padR = 18, padT = 22, padB = 36;
+    const innerW = w - padL - padR;
+    const innerH = h - padT - padB;
+
     ctx.strokeStyle = '#bbb';
     ctx.beginPath();
-    ctx.moveTo(20, baseY);
-    ctx.lineTo(w - 20, baseY);
+    ctx.moveTo(padL, padT + innerH);
+    ctx.lineTo(padL + innerW, padT + innerH);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(padL, padT);
+    ctx.lineTo(padL, padT + innerH);
     ctx.stroke();
 
-    ctx.fillStyle = '#888';
-    ctx.font = '12px sans-serif';
-    ctx.fillText('ω', w - 22, baseY - 5);
-    ctx.fillText('|F(ω)|', 24, 18);
+    ctx.fillStyle = '#666';
+    ctx.font = '11px sans-serif';
+    ctx.fillText('強さ', 4, padT + 8);
+    ctx.fillText('ω', padL + innerW - 14, padT + innerH + 18);
 
-    const omegaMax = 8;
-    function envelope(omega) {
-      return Math.exp(-Math.pow(omega - 3, 2) / 2.0) * 1.0
-           + Math.exp(-Math.pow(omega + 1.5, 2) / 1.5) * 0.7;
-    }
+    // envelope: tau * |sinc(omega * tau / 2)|
+    const omegaMax = 4 * Math.PI; // show a few sinc lobes
+    const xOfOmega = (omega) => padL + (omega / omegaMax) * innerW;
+    const yOfMag = (m) => padT + innerH - Math.min(1, m / FT_TAU) * innerH * 0.92;
 
-    ctx.strokeStyle = 'rgba(44,93,143,0.18)';
+    // envelope curve
+    ctx.strokeStyle = 'rgba(44,93,143,0.25)';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
-    const x0 = 20, x1 = w - 20;
     for (let i = 0; i <= 400; i++) {
       const omega = (i / 400) * omegaMax;
-      const x = x0 + (omega / omegaMax) * (x1 - x0);
-      const y = baseY - envelope(omega) * (h - 60);
+      const m = FT_TAU * Math.abs(sinc(omega * FT_TAU / 2));
+      const x = xOfOmega(omega);
+      const y = yOfMag(m);
       if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
     }
     ctx.stroke();
 
+    // discrete bars at n * omega0
     const omega0 = 2 * Math.PI / T;
     ctx.strokeStyle = '#2c5d8f';
     ctx.lineWidth = 2;
     for (let n = 0; n * omega0 <= omegaMax; n++) {
       const omega = n * omega0;
-      const x = x0 + (omega / omegaMax) * (x1 - x0);
-      const amp = envelope(omega);
+      const m = FT_TAU * Math.abs(sinc(omega * FT_TAU / 2));
+      const x = xOfOmega(omega);
+      const y = yOfMag(m);
       ctx.beginPath();
-      ctx.moveTo(x, baseY);
-      ctx.lineTo(x, baseY - amp * (h - 60));
+      ctx.moveTo(x, padT + innerH);
+      ctx.lineTo(x, y);
       ctx.stroke();
       ctx.fillStyle = '#2c5d8f';
       ctx.beginPath();
-      ctx.arc(x, baseY - amp * (h - 60), 3, 0, Math.PI * 2);
+      ctx.arc(x, y, 2.5, 0, Math.PI * 2);
       ctx.fill();
     }
 
     ctx.fillStyle = '#444';
-    ctx.font = '13px sans-serif';
-    ctx.fillText(`周期 T = ${T.toFixed(1)}　→　棒の間隔 ω₀ = 2π/T ≈ ${omega0.toFixed(2)}`, 12, 28);
-    ctx.fillStyle = '#777';
     ctx.font = '12px sans-serif';
-    ctx.fillText(`T を大きくするほど棒の間隔 ω₀ が狭くなり、薄い青の曲線に近づく（連続スペクトル＝フーリエ変換）。`, 12, h - 8);
+    ctx.fillText(`棒の間隔 ω₀ = 2π/T ≈ ${omega0.toFixed(2)}`, padL, padT - 6);
+    ctx.fillStyle = '#888';
+    ctx.font = '11px sans-serif';
+    ctx.fillText('薄い曲線: 包絡線 (連続スペクトル)', padL, h - 6);
   }
 
-  document.getElementById('rangeT').addEventListener('input', () => {
-    if (spectrumAnimId) cancelAnimationFrame(spectrumAnimId);
-    spectrumAnimId = null;
-    drawSpectrum();
+  function drawFTIntro() {
+    drawFTIntroTime();
+    drawFTIntroSpec();
+  }
+
+  document.getElementById('rangeFTIntroT').addEventListener('input', () => {
+    if (ftIntroAnimId) { cancelAnimationFrame(ftIntroAnimId); ftIntroAnimId = null;
+      document.getElementById('ftIntroAnim').textContent = '自動で広げる';
+    }
+    drawFTIntro();
   });
 
-  document.getElementById('animT').addEventListener('click', () => {
-    if (spectrumAnimId) {
-      cancelAnimationFrame(spectrumAnimId);
-      spectrumAnimId = null;
+  document.getElementById('ftIntroAnim').addEventListener('click', (e) => {
+    if (ftIntroAnimId) {
+      cancelAnimationFrame(ftIntroAnimId);
+      ftIntroAnimId = null;
+      e.target.textContent = '自動で広げる';
       return;
     }
-    const range = document.getElementById('rangeT');
+    e.target.textContent = '止める';
+    const range = document.getElementById('rangeFTIntroT');
     let t = parseFloat(range.value);
+    let dir = 1;
     function step() {
-      t += 0.08;
-      if (t > 20) t = 1;
+      t += 0.05 * dir;
+      if (t >= 20) { t = 20; dir = -1; }
+      if (t <= 2) { t = 2; dir = 1; }
       range.value = t;
-      drawSpectrum();
-      spectrumAnimId = requestAnimationFrame(step);
+      drawFTIntro();
+      ftIntroAnimId = requestAnimationFrame(step);
     }
-    spectrumAnimId = requestAnimationFrame(step);
+    ftIntroAnimId = requestAnimationFrame(step);
+  });
+
+  document.getElementById('ftIntroReset').addEventListener('click', () => {
+    if (ftIntroAnimId) {
+      cancelAnimationFrame(ftIntroAnimId);
+      ftIntroAnimId = null;
+      document.getElementById('ftIntroAnim').textContent = '自動で広げる';
+    }
+    document.getElementById('rangeFTIntroT').value = 3;
+    drawFTIntro();
   });
 
   // ----------------------------------------------------------------
@@ -1585,12 +1789,11 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
   // Init
   // ----------------------------------------------------------------
   function drawAllStatic() {
-    drawMixedTime();
-    drawMixedSpec();
+    redrawMixed();
     drawSquareTarget();
     drawSquareTime();
     drawSquareSpec();
-    drawSpectrum();
+    drawFTIntro();
     drawDenoise();
   }
 

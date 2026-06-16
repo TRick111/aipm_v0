@@ -909,16 +909,25 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
   $$
 
   <div class="demo">
-    <h4>単位円上をぐるぐる動く点 → 射影は正弦波になる</h4>
+    <h4>円周上を動く点 → 射影は正弦波になる</h4>
     <canvas id="canvasUnitCircle" width="800" height="520"></canvas>
     <div class="controls">
+      <label>
+        <input type="checkbox" id="unitEpi1">
+        エピサイクル 1（半径小・3 倍速）を追加
+      </label>
+      <label>
+        <input type="checkbox" id="unitEpi2">
+        エピサイクル 2（さらに小・5 倍速）を追加
+      </label>
       <button id="unitPause">一時停止</button>
       <button id="unitReset">最初から</button>
     </div>
     <p class="caption">
       左の円の上を黒い点が一定速度で回ります。点から <strong>横（青の点線）に伸ばした影 → 高さ $y$</strong> が、右の青いグラフ $\sin(\omega t)$ を描いていきます。
       同じく点から <strong>下（オレンジの点線）に伸ばした影 → 横位置 $x$</strong> が、下のオレンジのグラフ $\cos(\omega t)$ を描いていきます。
-      つまり「円運動」と「正弦波」は同じものを別の角度から眺めただけです。
+      つまり「円運動」と「正弦波」は同じものを別の角度から眺めただけです。<br>
+      エピサイクルを追加すると、点の軌跡はくるくるした曲線になり、射影のグラフは <strong>複数の正弦波の和</strong> に変わります。これがまさに Part 4 の周転円モデルと同じ仕組みです。
     </p>
   </div>
 
@@ -1988,56 +1997,131 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     const { ctx, w, h } = setupHiDPICanvas(canvas);
     ctx.clearRect(0, 0, w, h);
 
-    const cx = 170, cy = 180, R = 115;
+    const cx = 170, cy = 180, R = 110;
+    const r2 = 22, r3 = 12;
+    const w2 = 3, w3 = 5;
+
+    const epi1On = document.getElementById('unitEpi1').checked;
+    const epi2On = document.getElementById('unitEpi2').checked;
+
     const sinX0 = 320, sinX1 = w - 30;
-    const sinYC = cy, sinAmp = R;
+    const sinYC = cy;
     const cosX = cx;
-    const cosY0 = 340, cosY1 = h - 30;
-    const cosAmp = R;
+    const cosY0 = 350, cosY1 = h - 30;
     const tWin = 6 * Math.PI;
     const t = unitT;
+
+    // helpers: tip x/y in canvas-units (relative to circle center)
+    function tipDx(tt) {
+      let v = R * Math.cos(tt);
+      if (epi1On) v += r2 * Math.cos(w2 * tt);
+      if (epi2On) v += r3 * Math.cos(w3 * tt);
+      return v;
+    }
+    function tipDy(tt) {
+      // standard math: y = sin → canvas: y goes down, but we use "sinYC - value" so positive is up
+      let v = R * Math.sin(tt);
+      if (epi1On) v += r2 * Math.sin(w2 * tt);
+      if (epi2On) v += r3 * Math.sin(w3 * tt);
+      return v;
+    }
 
     // axes through circle
     ctx.strokeStyle = '#e2e2e2';
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.moveTo(cx - R - 25, cy); ctx.lineTo(cx + R + 25, cy);
-    ctx.moveTo(cx, cy - R - 25); ctx.lineTo(cx, cy + R + 25);
+    ctx.moveTo(cx - R - 35, cy); ctx.lineTo(cx + R + 35, cy);
+    ctx.moveTo(cx, cy - R - 35); ctx.lineTo(cx, cy + R + 35);
     ctx.stroke();
     ctx.fillStyle = '#888';
     ctx.font = '11px sans-serif';
-    ctx.fillText('x', cx + R + 18, cy - 4);
-    ctx.fillText('y', cx + 6, cy - R - 18);
+    ctx.fillText('x', cx + R + 28, cy - 4);
+    ctx.fillText('y', cx + 6, cy - R - 28);
 
-    // circle outline
+    // main circle outline
     ctx.strokeStyle = '#888';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
     ctx.arc(cx, cy, R, 0, Math.PI * 2);
     ctx.stroke();
 
-    // current point
-    const px = cx + R * Math.cos(t);
-    const py = cy - R * Math.sin(t);
+    // main arm endpoint
+    const mEndX = cx + R * Math.cos(t);
+    const mEndY = cy - R * Math.sin(t);
 
-    // radius line
+    // main arm
     ctx.strokeStyle = '#444';
     ctx.lineWidth = 1.8;
     ctx.beginPath();
-    ctx.moveTo(cx, cy); ctx.lineTo(px, py);
+    ctx.moveTo(cx, cy); ctx.lineTo(mEndX, mEndY);
     ctx.stroke();
+
+    // joint dot
+    ctx.fillStyle = epi1On ? '#888' : '#1a1a1a';
+    ctx.beginPath();
+    ctx.arc(mEndX, mEndY, epi1On ? 3.5 : 6, 0, Math.PI * 2);
+    ctx.fill();
+
+    // current tip start: same as main end
+    let tipX = mEndX, tipY = mEndY;
+
+    // epicycle 1
+    let e1EndX = mEndX, e1EndY = mEndY;
+    if (epi1On) {
+      ctx.strokeStyle = 'rgba(122,79,156,0.55)';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.arc(mEndX, mEndY, r2, 0, Math.PI * 2);
+      ctx.stroke();
+
+      e1EndX = mEndX + r2 * Math.cos(w2 * t);
+      e1EndY = mEndY - r2 * Math.sin(w2 * t);
+
+      ctx.strokeStyle = '#7a4f9c';
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.moveTo(mEndX, mEndY); ctx.lineTo(e1EndX, e1EndY);
+      ctx.stroke();
+
+      ctx.fillStyle = epi2On ? '#7a4f9c' : '#7a4f9c';
+      ctx.beginPath();
+      ctx.arc(e1EndX, e1EndY, epi2On ? 3 : 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      tipX = e1EndX; tipY = e1EndY;
+    }
+
+    // epicycle 2
+    if (epi2On) {
+      ctx.strokeStyle = 'rgba(13,142,142,0.55)';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.arc(e1EndX, e1EndY, r3, 0, Math.PI * 2);
+      ctx.stroke();
+
+      const e2EndX = e1EndX + r3 * Math.cos(w3 * t);
+      const e2EndY = e1EndY - r3 * Math.sin(w3 * t);
+
+      ctx.strokeStyle = '#0d8e8e';
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.moveTo(e1EndX, e1EndY); ctx.lineTo(e2EndX, e2EndY);
+      ctx.stroke();
+
+      tipX = e2EndX; tipY = e2EndY;
+    }
 
     // y projection (dashed line + bold segment on y-axis)
     ctx.strokeStyle = '#2c5d8f';
     ctx.setLineDash([4, 4]);
     ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.moveTo(px, py); ctx.lineTo(cx, py);
+    ctx.moveTo(tipX, tipY); ctx.lineTo(cx, tipY);
     ctx.stroke();
     ctx.setLineDash([]);
     ctx.lineWidth = 4;
     ctx.beginPath();
-    ctx.moveTo(cx, cy); ctx.lineTo(cx, py);
+    ctx.moveTo(cx, cy); ctx.lineTo(cx, tipY);
     ctx.stroke();
 
     // x projection
@@ -2045,22 +2129,22 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     ctx.setLineDash([4, 4]);
     ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.moveTo(px, py); ctx.lineTo(px, cy);
+    ctx.moveTo(tipX, tipY); ctx.lineTo(tipX, cy);
     ctx.stroke();
     ctx.setLineDash([]);
     ctx.lineWidth = 4;
     ctx.beginPath();
-    ctx.moveTo(cx, cy); ctx.lineTo(px, cy);
+    ctx.moveTo(cx, cy); ctx.lineTo(tipX, cy);
     ctx.stroke();
 
-    // point
+    // tip
     ctx.fillStyle = '#1a1a1a';
     ctx.beginPath();
-    ctx.arc(px, py, 6, 0, Math.PI * 2);
+    ctx.arc(tipX, tipY, 6, 0, Math.PI * 2);
     ctx.fill();
     ctx.fillStyle = '#444';
     ctx.font = 'bold 12px sans-serif';
-    ctx.fillText('P(t)', px + 8, py - 8);
+    ctx.fillText('P(t)', tipX + 8, tipY - 8);
 
     // === sin plot ===
     ctx.strokeStyle = '#e2e2e2';
@@ -2070,7 +2154,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     ctx.stroke();
     ctx.strokeStyle = '#bbb';
     ctx.beginPath();
-    ctx.moveTo(sinX0, sinYC - sinAmp - 18); ctx.lineTo(sinX0, sinYC + sinAmp + 18);
+    ctx.moveTo(sinX0, sinYC - R - 35); ctx.lineTo(sinX0, sinYC + R + 35);
     ctx.stroke();
 
     const samples = 500;
@@ -2081,32 +2165,38 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
       const frac = i / samples;
       const x = sinX0 + frac * (sinX1 - sinX0);
       const tau = frac * tWin;
-      const value = Math.sin(t - tau);
-      const y = sinYC - value * sinAmp;
+      const value = tipDy(t - tau);
+      const y = sinYC - value;
       if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
     }
     ctx.stroke();
 
+    // dashed connector
     ctx.strokeStyle = 'rgba(44,93,143,0.45)';
     ctx.setLineDash([3, 4]);
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.moveTo(cx, py); ctx.lineTo(sinX0, py);
+    ctx.moveTo(cx, tipY); ctx.lineTo(sinX0, tipY);
     ctx.stroke();
     ctx.setLineDash([]);
 
     ctx.fillStyle = '#2c5d8f';
     ctx.beginPath();
-    ctx.arc(sinX0, py, 5, 0, Math.PI * 2);
+    ctx.arc(sinX0, tipY, 5, 0, Math.PI * 2);
     ctx.fill();
 
+    // sin label (dynamic)
+    let sinLabel = 'y(t) = sin(ωt)';
+    if (epi1On && !epi2On) sinLabel = 'y(t) = sin(ωt) + 0.2·sin(3ωt)';
+    else if (!epi1On && epi2On) sinLabel = 'y(t) = sin(ωt) + 0.11·sin(5ωt)';
+    else if (epi1On && epi2On) sinLabel = 'y(t) = sin(ωt) + 0.2·sin(3ωt) + 0.11·sin(5ωt)';
     ctx.fillStyle = '#2c5d8f';
-    ctx.font = 'bold 14px sans-serif';
-    ctx.fillText('y(t) = sin(ωt)', sinX0 + 14, sinYC - sinAmp - 10);
+    ctx.font = 'bold 13px sans-serif';
+    ctx.fillText(sinLabel, sinX0 + 14, sinYC - R - 18);
 
     ctx.fillStyle = '#888';
     ctx.font = '11px sans-serif';
-    ctx.fillText('t →', sinX1 - 22, sinYC + sinAmp + 22);
+    ctx.fillText('t →', sinX1 - 22, sinYC + R + 28);
 
     // === cos plot (vertical, time going down) ===
     ctx.strokeStyle = '#e2e2e2';
@@ -2116,7 +2206,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     ctx.stroke();
     ctx.strokeStyle = '#bbb';
     ctx.beginPath();
-    ctx.moveTo(cosX - cosAmp - 18, cosY0); ctx.lineTo(cosX + cosAmp + 18, cosY0);
+    ctx.moveTo(cosX - R - 30, cosY0); ctx.lineTo(cosX + R + 30, cosY0);
     ctx.stroke();
 
     ctx.strokeStyle = '#b45309';
@@ -2126,8 +2216,8 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
       const frac = i / samples;
       const y = cosY0 + frac * (cosY1 - cosY0);
       const tau = frac * tWin;
-      const value = Math.cos(t - tau);
-      const x = cosX + value * cosAmp;
+      const value = tipDx(t - tau);
+      const x = cosX + value;
       if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
     }
     ctx.stroke();
@@ -2136,23 +2226,27 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     ctx.setLineDash([3, 4]);
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.moveTo(px, cy); ctx.lineTo(px, cosY0);
+    ctx.moveTo(tipX, cy); ctx.lineTo(tipX, cosY0);
     ctx.stroke();
     ctx.setLineDash([]);
 
     ctx.fillStyle = '#b45309';
     ctx.beginPath();
-    ctx.arc(px, cosY0, 5, 0, Math.PI * 2);
+    ctx.arc(tipX, cosY0, 5, 0, Math.PI * 2);
     ctx.fill();
 
+    let cosLabel = 'x(t) = cos(ωt)';
+    if (epi1On && !epi2On) cosLabel = 'x(t) = cos(ωt) + 0.2·cos(3ωt)';
+    else if (!epi1On && epi2On) cosLabel = 'x(t) = cos(ωt) + 0.11·cos(5ωt)';
+    else if (epi1On && epi2On) cosLabel = 'x(t) = cos(ωt) + 0.2·cos(3ωt) + 0.11·cos(5ωt)';
     ctx.fillStyle = '#b45309';
-    ctx.font = 'bold 14px sans-serif';
-    ctx.fillText('x(t) = cos(ωt)', cosX + cosAmp + 20, cosY0 - 6);
+    ctx.font = 'bold 13px sans-serif';
+    ctx.fillText(cosLabel, cosX + R + 36, cosY0 - 6);
 
     ctx.save();
     ctx.fillStyle = '#888';
     ctx.font = '11px sans-serif';
-    ctx.translate(cosX - cosAmp - 24, cosY1 - 4);
+    ctx.translate(cosX - R - 36, cosY1 - 4);
     ctx.rotate(-Math.PI / 2);
     ctx.fillText('t →', 0, 0);
     ctx.restore();
@@ -2199,7 +2293,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     const cx = w / 2;
     const cy = h / 2;
     const a = Math.min(w * 0.36, 280);
-    const b = a * 0.62;
+    const b = a * 0.86;
     const e = Math.sqrt(1 - (b * b) / (a * a));
     const c = a * e;
 

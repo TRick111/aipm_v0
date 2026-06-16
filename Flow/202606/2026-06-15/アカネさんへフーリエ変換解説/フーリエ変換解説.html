@@ -1697,9 +1697,9 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     const cx = w / 2;
     const cy = h / 2;
 
-    ctx.strokeStyle = '#ccc';
-    ctx.setLineDash([3, 3]);
-    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = 'rgba(80,80,80,0.75)';
+    ctx.setLineDash([6, 4]);
+    ctx.lineWidth = 2.2;
     ctx.beginPath();
     targetSamples.forEach((p, i) => {
       const x = cx + p.x;
@@ -1768,8 +1768,43 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     ctx.fillStyle = '#333';
     ctx.font = '13px sans-serif';
     ctx.fillText(`周転円の数 N = ${N}`, 12, 22);
-    ctx.fillStyle = '#888';
-    ctx.fillText('灰色の点線 : 観測された軌道 / 赤線 : 周転円を ' + N + ' 個重ねて再現した軌跡', 12, h - 10);
+
+    // legend box (top-right)
+    const legendW = 240;
+    const legendH = 64;
+    const legendX = w - legendW - 12;
+    const legendY = 12;
+    ctx.fillStyle = 'rgba(255,255,255,0.95)';
+    ctx.strokeStyle = '#999';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.rect(legendX, legendY, legendW, legendH);
+    ctx.fill();
+    ctx.stroke();
+
+    // sample dashed line for observed
+    ctx.strokeStyle = 'rgba(80,80,80,0.85)';
+    ctx.setLineDash([6, 4]);
+    ctx.lineWidth = 2.4;
+    ctx.beginPath();
+    ctx.moveTo(legendX + 12, legendY + 22);
+    ctx.lineTo(legendX + 52, legendY + 22);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#333';
+    ctx.font = 'bold 12px sans-serif';
+    ctx.fillText('観測された軌道（目標）', legendX + 62, legendY + 26);
+
+    // sample solid line for reconstruction
+    ctx.strokeStyle = '#b45309';
+    ctx.lineWidth = 2.4;
+    ctx.beginPath();
+    ctx.moveTo(legendX + 12, legendY + 46);
+    ctx.lineTo(legendX + 52, legendY + 46);
+    ctx.stroke();
+    ctx.fillStyle = '#333';
+    ctx.font = '12px sans-serif';
+    ctx.fillText(`周転円 ${N} 個で再現した軌跡`, legendX + 62, legendY + 50);
   }
 
   function epiAnimate() {

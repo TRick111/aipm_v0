@@ -417,6 +417,10 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
       </div>
     </div>
     <div class="controls">
+      <button id="toggleAllWaves">個別波を全部表示</button>
+      <button id="mixedReset">標準値に戻す</button>
+    </div>
+    <div class="controls">
       <label>
         <input type="checkbox" id="showA1">
         <span style="color:var(--wave-1); font-weight:600;">$\sin(t)$</span> を表示
@@ -445,7 +449,6 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
         <input type="range" id="rangeA3" min="0" max="1.5" step="0.05" value="0.4">
         <span class="value" id="valA3">0.40</span>
       </label>
-      <button id="mixedReset">標準値に戻す</button>
     </div>
     <div class="legend">
       <span class="item"><span class="swatch" style="background:var(--wave-1)"></span>$\sin(t)$</span>
@@ -988,9 +991,9 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
   // Part 0: mixed waves (interactive)
   // ----------------------------------------------------------------
   const mixedColors = [
-    'rgba(44,93,143,0.7)',   // n=1
-    'rgba(180,83,9,0.7)',    // n=2
-    'rgba(22,101,52,0.7)'    // n=3
+    'rgba(44,93,143,0.55)',   // n=1
+    'rgba(180,83,9,0.55)',    // n=2
+    'rgba(22,101,52,0.55)'    // n=3
   ];
   const mixedColorsSolid = [
     'rgba(44,93,143,0.9)',
@@ -1024,11 +1027,12 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
       document.getElementById('showA3').checked
     ];
 
+    // --- Layer 1 (bottom): individual sine waves (thin, dim) ---
     for (let n = 1; n <= 3; n++) {
       if (!showFlags[n - 1]) continue;
       const a = amps[n - 1];
       ctx.strokeStyle = mixedColors[n - 1];
-      ctx.lineWidth = 1.5;
+      ctx.lineWidth = 1.2;
       ctx.beginPath();
       for (let i = 0; i < samples; i++) {
         const t = tMin + (i / (samples - 1)) * (tMax - tMin);
@@ -1039,11 +1043,31 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
       ctx.stroke();
     }
 
+    // --- Layer 2 (top): composite wave (thick, bold, with halo) ---
     const anyChecked = showFlags[0] || showFlags[1] || showFlags[2];
     const useFlags = anyChecked ? showFlags : [true, true, true];
 
+    // halo (white outline so the composite stands out over the colored sines)
+    ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+    ctx.lineWidth = 6;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    for (let i = 0; i < samples; i++) {
+      const t = tMin + (i / (samples - 1)) * (tMax - tMin);
+      const x = (i / (samples - 1)) * w;
+      let sum = 0;
+      for (let n = 1; n <= 3; n++) {
+        if (useFlags[n - 1]) sum += amps[n - 1] * Math.sin(n * t);
+      }
+      const y = h / 2 - sum * scaleY;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // main composite stroke
     ctx.strokeStyle = '#1a1a1a';
-    ctx.lineWidth = 2.2;
+    ctx.lineWidth = 3.4;
     ctx.beginPath();
     for (let i = 0; i < samples; i++) {
       const t = tMin + (i / (samples - 1)) * (tMax - tMin);
@@ -1136,15 +1160,34 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
 
   function redrawMixed() {
     updateMixedLabels();
+    if (document.getElementById('toggleAllWaves')) updateToggleAllBtn();
     drawMixedTime();
     drawMixedSpec();
+  }
+
+  function updateToggleAllBtn() {
+    const allChecked = ['showA1', 'showA2', 'showA3']
+      .every(id => document.getElementById(id).checked);
+    document.getElementById('toggleAllWaves').textContent =
+      allChecked ? '個別波を全部隠す' : '個別波を全部表示';
   }
 
   ['rangeA1', 'rangeA2', 'rangeA3'].forEach(id => {
     document.getElementById(id).addEventListener('input', redrawMixed);
   });
   ['showA1', 'showA2', 'showA3'].forEach(id => {
-    document.getElementById(id).addEventListener('change', redrawMixed);
+    document.getElementById(id).addEventListener('change', () => {
+      updateToggleAllBtn();
+      redrawMixed();
+    });
+  });
+
+  document.getElementById('toggleAllWaves').addEventListener('click', () => {
+    const ids = ['showA1', 'showA2', 'showA3'];
+    const allChecked = ids.every(id => document.getElementById(id).checked);
+    ids.forEach(id => { document.getElementById(id).checked = !allChecked; });
+    updateToggleAllBtn();
+    redrawMixed();
   });
 
   document.getElementById('mixedReset').addEventListener('click', () => {
@@ -1154,6 +1197,7 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
     document.getElementById('showA1').checked = false;
     document.getElementById('showA2').checked = false;
     document.getElementById('showA3').checked = false;
+    updateToggleAllBtn();
     redrawMixed();
   });
 

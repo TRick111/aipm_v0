@@ -908,6 +908,20 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
   x(t) = R\cos(\omega t),\qquad y(t) = R\sin(\omega t)
   $$
 
+  <div class="demo">
+    <h4>単位円上をぐるぐる動く点 → 射影は正弦波になる</h4>
+    <canvas id="canvasUnitCircle" width="800" height="520"></canvas>
+    <div class="controls">
+      <button id="unitPause">一時停止</button>
+      <button id="unitReset">最初から</button>
+    </div>
+    <p class="caption">
+      左の円の上を黒い点が一定速度で回ります。点から <strong>横（青の点線）に伸ばした影 → 高さ $y$</strong> が、右の青いグラフ $\sin(\omega t)$ を描いていきます。
+      同じく点から <strong>下（オレンジの点線）に伸ばした影 → 横位置 $x$</strong> が、下のオレンジのグラフ $\cos(\omega t)$ を描いていきます。
+      つまり「円運動」と「正弦波」は同じものを別の角度から眺めただけです。
+    </p>
+  </div>
+
   <p>
     Part 1.5 で見たオイラーの公式を使えば、円運動はひとことで
   </p>
@@ -937,6 +951,20 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
   <p>
     その後、コペルニクスが <strong>太陽を中心</strong>に置き、ケプラーが <strong>軌道は楕円</strong>であることを示しました。これにより、何重もの周転円を積み上げなくても、観測とぴたりと一致するモデルが出来上がりました。これが現代まで続く地動説の基本形です。
   </p>
+
+  <div class="demo">
+    <h4>太陽の周りを楕円軌道で回る地球</h4>
+    <canvas id="canvasEarthOrbit" width="800" height="420"></canvas>
+    <div class="controls">
+      <button id="earthPause">一時停止</button>
+      <button id="earthReset">最初から</button>
+    </div>
+    <p class="caption">
+      ケプラーの第 1 法則:「惑星は太陽を <strong>一つの焦点</strong> とする楕円軌道を描く」。<br>
+      ケプラーの第 2 法則:「面積速度は一定」 — 太陽に近いところ（近日点）では地球は速く、遠いところ（遠日点）では遅く動きます。アニメで地球のスピードが変わって見えるのはそのためです。<br>
+      （視認しやすくするため離心率はかなり強調しています。本物の地球の軌道はずっと円に近いです。）
+    </p>
+  </div>
 
   <p>
     興味深いのは、楕円軌道もフーリエ級数で書けば <strong>たった少数の円の重ね合わせ</strong>で表せる、ということです。<strong>周転円モデルは物理的には間違っていたが、近似の方法としては正しかった</strong>のです。
@@ -1948,6 +1976,379 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
   document.getElementById('epiReset').addEventListener('click', () => { epiT = 0; epiTrail = []; });
 
   // ----------------------------------------------------------------
+  // Part 4 (extra A): Unit circle ↔ sine / cosine projections
+  // ----------------------------------------------------------------
+  let unitT = 0;
+  let unitPaused = false;
+  let unitAnimId = null;
+
+  function drawUnitCircle() {
+    const canvas = document.getElementById('canvasUnitCircle');
+    if (!canvas) return;
+    const { ctx, w, h } = setupHiDPICanvas(canvas);
+    ctx.clearRect(0, 0, w, h);
+
+    const cx = 170, cy = 180, R = 115;
+    const sinX0 = 320, sinX1 = w - 30;
+    const sinYC = cy, sinAmp = R;
+    const cosX = cx;
+    const cosY0 = 340, cosY1 = h - 30;
+    const cosAmp = R;
+    const tWin = 6 * Math.PI;
+    const t = unitT;
+
+    // axes through circle
+    ctx.strokeStyle = '#e2e2e2';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(cx - R - 25, cy); ctx.lineTo(cx + R + 25, cy);
+    ctx.moveTo(cx, cy - R - 25); ctx.lineTo(cx, cy + R + 25);
+    ctx.stroke();
+    ctx.fillStyle = '#888';
+    ctx.font = '11px sans-serif';
+    ctx.fillText('x', cx + R + 18, cy - 4);
+    ctx.fillText('y', cx + 6, cy - R - 18);
+
+    // circle outline
+    ctx.strokeStyle = '#888';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(cx, cy, R, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // current point
+    const px = cx + R * Math.cos(t);
+    const py = cy - R * Math.sin(t);
+
+    // radius line
+    ctx.strokeStyle = '#444';
+    ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy); ctx.lineTo(px, py);
+    ctx.stroke();
+
+    // y projection (dashed line + bold segment on y-axis)
+    ctx.strokeStyle = '#2c5d8f';
+    ctx.setLineDash([4, 4]);
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(px, py); ctx.lineTo(cx, py);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy); ctx.lineTo(cx, py);
+    ctx.stroke();
+
+    // x projection
+    ctx.strokeStyle = '#b45309';
+    ctx.setLineDash([4, 4]);
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(px, py); ctx.lineTo(px, cy);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy); ctx.lineTo(px, cy);
+    ctx.stroke();
+
+    // point
+    ctx.fillStyle = '#1a1a1a';
+    ctx.beginPath();
+    ctx.arc(px, py, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#444';
+    ctx.font = 'bold 12px sans-serif';
+    ctx.fillText('P(t)', px + 8, py - 8);
+
+    // === sin plot ===
+    ctx.strokeStyle = '#e2e2e2';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(sinX0, sinYC); ctx.lineTo(sinX1, sinYC);
+    ctx.stroke();
+    ctx.strokeStyle = '#bbb';
+    ctx.beginPath();
+    ctx.moveTo(sinX0, sinYC - sinAmp - 18); ctx.lineTo(sinX0, sinYC + sinAmp + 18);
+    ctx.stroke();
+
+    const samples = 500;
+    ctx.strokeStyle = '#2c5d8f';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    for (let i = 0; i <= samples; i++) {
+      const frac = i / samples;
+      const x = sinX0 + frac * (sinX1 - sinX0);
+      const tau = frac * tWin;
+      const value = Math.sin(t - tau);
+      const y = sinYC - value * sinAmp;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    ctx.strokeStyle = 'rgba(44,93,143,0.45)';
+    ctx.setLineDash([3, 4]);
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(cx, py); ctx.lineTo(sinX0, py);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = '#2c5d8f';
+    ctx.beginPath();
+    ctx.arc(sinX0, py, 5, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#2c5d8f';
+    ctx.font = 'bold 14px sans-serif';
+    ctx.fillText('y(t) = sin(ωt)', sinX0 + 14, sinYC - sinAmp - 10);
+
+    ctx.fillStyle = '#888';
+    ctx.font = '11px sans-serif';
+    ctx.fillText('t →', sinX1 - 22, sinYC + sinAmp + 22);
+
+    // === cos plot (vertical, time going down) ===
+    ctx.strokeStyle = '#e2e2e2';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(cosX, cosY0); ctx.lineTo(cosX, cosY1);
+    ctx.stroke();
+    ctx.strokeStyle = '#bbb';
+    ctx.beginPath();
+    ctx.moveTo(cosX - cosAmp - 18, cosY0); ctx.lineTo(cosX + cosAmp + 18, cosY0);
+    ctx.stroke();
+
+    ctx.strokeStyle = '#b45309';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    for (let i = 0; i <= samples; i++) {
+      const frac = i / samples;
+      const y = cosY0 + frac * (cosY1 - cosY0);
+      const tau = frac * tWin;
+      const value = Math.cos(t - tau);
+      const x = cosX + value * cosAmp;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    ctx.strokeStyle = 'rgba(180,83,9,0.45)';
+    ctx.setLineDash([3, 4]);
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(px, cy); ctx.lineTo(px, cosY0);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = '#b45309';
+    ctx.beginPath();
+    ctx.arc(px, cosY0, 5, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#b45309';
+    ctx.font = 'bold 14px sans-serif';
+    ctx.fillText('x(t) = cos(ωt)', cosX + cosAmp + 20, cosY0 - 6);
+
+    ctx.save();
+    ctx.fillStyle = '#888';
+    ctx.font = '11px sans-serif';
+    ctx.translate(cosX - cosAmp - 24, cosY1 - 4);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText('t →', 0, 0);
+    ctx.restore();
+  }
+
+  function unitAnimate() {
+    if (!unitPaused) unitT += 0.018;
+    drawUnitCircle();
+    unitAnimId = requestAnimationFrame(unitAnimate);
+  }
+
+  document.getElementById('unitPause').addEventListener('click', e => {
+    unitPaused = !unitPaused;
+    e.target.textContent = unitPaused ? '再開' : '一時停止';
+  });
+  document.getElementById('unitReset').addEventListener('click', () => {
+    unitT = 0;
+  });
+
+  // ----------------------------------------------------------------
+  // Part 4 (extra B): Elliptical orbit of Earth around Sun
+  // ----------------------------------------------------------------
+  let earthM = 0;
+  let earthPaused = false;
+  let earthAnimId = null;
+  let earthTrail = [];
+
+  function solveKepler(M, e) {
+    let E = M;
+    for (let i = 0; i < 10; i++) {
+      const delta = (E - e * Math.sin(E) - M) / (1 - e * Math.cos(E));
+      E = E - delta;
+      if (Math.abs(delta) < 1e-9) break;
+    }
+    return E;
+  }
+
+  function drawEarthOrbit() {
+    const canvas = document.getElementById('canvasEarthOrbit');
+    if (!canvas) return;
+    const { ctx, w, h } = setupHiDPICanvas(canvas);
+    ctx.clearRect(0, 0, w, h);
+
+    const cx = w / 2;
+    const cy = h / 2;
+    const a = Math.min(w * 0.36, 280);
+    const b = a * 0.62;
+    const e = Math.sqrt(1 - (b * b) / (a * a));
+    const c = a * e;
+
+    const sunX = cx + c;
+    const sunY = cy;
+    const otherFX = cx - c;
+    const otherFY = cy;
+
+    // Ellipse
+    ctx.strokeStyle = 'rgba(60,60,60,0.55)';
+    ctx.setLineDash([5, 5]);
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, a, b, 0, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // major axis (faint)
+    ctx.strokeStyle = '#ececec';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(cx - a, cy); ctx.lineTo(cx + a, cy);
+    ctx.stroke();
+
+    // other focus marker
+    ctx.fillStyle = '#bbb';
+    ctx.beginPath();
+    ctx.arc(otherFX, otherFY, 3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#999';
+    ctx.font = '10px sans-serif';
+    ctx.fillText('もう一方の焦点', otherFX - 36, otherFY - 8);
+
+    // Sun glow
+    const sunR = 22;
+    const grd = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, sunR * 2.8);
+    grd.addColorStop(0, 'rgba(255,210,80,0.75)');
+    grd.addColorStop(0.4, 'rgba(255,180,40,0.35)');
+    grd.addColorStop(1, 'rgba(255,180,40,0)');
+    ctx.fillStyle = grd;
+    ctx.beginPath();
+    ctx.arc(sunX, sunY, sunR * 2.8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#f59e0b';
+    ctx.beginPath();
+    ctx.arc(sunX, sunY, sunR, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fff7d6';
+    ctx.beginPath();
+    ctx.arc(sunX - 5, sunY - 5, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#7a4a00';
+    ctx.font = 'bold 13px sans-serif';
+    ctx.fillText('太陽（焦点）', sunX - 32, sunY + sunR + 20);
+
+    // Compute Earth position via Kepler
+    const Eang = solveKepler(earthM, e);
+    const ex = cx + a * Math.cos(Eang);
+    const ey = cy - b * Math.sin(Eang);
+
+    if (!earthPaused) {
+      earthTrail.push({ x: ex, y: ey });
+      if (earthTrail.length > 600) earthTrail.shift();
+    }
+
+    // Trail
+    ctx.strokeStyle = 'rgba(44,93,143,0.45)';
+    ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    earthTrail.forEach((p, i) => {
+      if (i === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+    });
+    ctx.stroke();
+
+    // Sun-Earth distance line
+    ctx.strokeStyle = 'rgba(200,100,30,0.45)';
+    ctx.setLineDash([3, 3]);
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.moveTo(sunX, sunY); ctx.lineTo(ex, ey);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Earth
+    const eR = 10;
+    const eGrd = ctx.createRadialGradient(ex, ey, 0, ex, ey, eR * 2);
+    eGrd.addColorStop(0, 'rgba(120,180,230,0.7)');
+    eGrd.addColorStop(1, 'rgba(120,180,230,0)');
+    ctx.fillStyle = eGrd;
+    ctx.beginPath();
+    ctx.arc(ex, ey, eR * 2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#2c5d8f';
+    ctx.beginPath();
+    ctx.arc(ex, ey, eR, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#7eb3df';
+    ctx.beginPath();
+    ctx.arc(ex - 3, ey - 3, 3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#1e3a5a';
+    ctx.font = 'bold 12px sans-serif';
+    ctx.fillText('地球', ex + 14, ey - 10);
+
+    // Perihelion / Aphelion markers
+    ctx.fillStyle = '#666';
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'center';
+    // perihelion: closest to Sun = +a end (right side, near Sun)
+    ctx.fillStyle = '#b45309';
+    ctx.beginPath();
+    ctx.arc(cx + a, cy, 3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#b45309';
+    ctx.fillText('近日点（速い）', cx + a, cy + b + 24);
+    // aphelion
+    ctx.fillStyle = '#666';
+    ctx.beginPath();
+    ctx.arc(cx - a, cy, 3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillText('遠日点（遅い）', cx - a, cy + b + 24);
+    ctx.textAlign = 'start';
+
+    // legend / info
+    const dist = Math.hypot(ex - sunX, ey - sunY);
+    const distNorm = dist / a;
+    ctx.fillStyle = '#444';
+    ctx.font = '12px sans-serif';
+    ctx.fillText(`離心率 ε ≈ ${e.toFixed(2)}（強調表示）`, 14, 22);
+    ctx.fillText(`太陽 ↔ 地球 距離 ≈ ${distNorm.toFixed(2)} a`, 14, 42);
+  }
+
+  function earthAnimate() {
+    if (!earthPaused) earthM += 0.012;
+    if (earthM > 2 * Math.PI * 50) earthM -= 2 * Math.PI * 50;
+    drawEarthOrbit();
+    earthAnimId = requestAnimationFrame(earthAnimate);
+  }
+
+  document.getElementById('earthPause').addEventListener('click', e => {
+    earthPaused = !earthPaused;
+    e.target.textContent = earthPaused ? '再開' : '一時停止';
+  });
+  document.getElementById('earthReset').addEventListener('click', () => {
+    earthM = 0;
+    earthTrail = [];
+  });
+
+  // ----------------------------------------------------------------
   // Init
   // ----------------------------------------------------------------
   function drawAllStatic() {
@@ -1962,6 +2363,8 @@ mjx-container[display="true"] { margin: 1.2em 0 !important; }
   window.addEventListener('load', () => {
     drawAllStatic();
     epiAnimate();
+    unitAnimate();
+    earthAnimate();
   });
   window.addEventListener('resize', drawAllStatic);
 })();

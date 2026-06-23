@@ -11,3 +11,5 @@
 | 2026-06-23 | create | `tasks.md` | 退職関連の全カテゴリ別タスク一覧を作成 | 保険・年金・税金・雇用保険・企業型DC等を網羅 |
 | 2026-06-23 | create | `ProjectIndex.yaml` | 初期化 | - |
 | 2026-06-23 | create | `log.md` | 初期化 | - |
+| 2026-06-23 | edit | `tasks.md` | カテゴリ 0/2/6/10 を完了マーク、BL対応表を追記 | 完了済み箇所のクローズと残タスクのBL化 |
+| 2026-06-23 | create | `backlog/BL-0002〜BL-0008.yaml`, `backlog/BL-0097.yaml` | 残8カテゴリをミニタキオンBLとして登録 | mt CLI 経由でAPIに登録 |

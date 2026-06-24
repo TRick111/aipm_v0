@@ -11,12 +11,20 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 DATA_PATH = HERE / "tokyo_metro_stations.json"
+ROMAJI_PATH = HERE / "tokyo_metro_romaji.json"
 OUTPUT_PATH = HERE / "verify_puzzle_output.md"
 
 
 def load_unique_stations() -> list[dict]:
     data = json.loads(DATA_PATH.read_text(encoding="utf-8"))
-    return data["unique_stations"]
+    romaji_map = json.loads(ROMAJI_PATH.read_text(encoding="utf-8"))["map"]
+    stations = data["unique_stations"]
+    missing = [s["kanji"] for s in stations if s["kanji"] not in romaji_map]
+    if missing:
+        raise ValueError(f"ローマ字未登録の駅: {missing}")
+    for s in stations:
+        s["romaji"] = romaji_map[s["kanji"]]
+    return stations
 
 
 def char_at(s: str, pos: int) -> str | None:
@@ -59,11 +67,22 @@ def four_char_with_3rd_in(stations: list[dict], targets: set[str]) -> list[dict]
     return out
 
 
+def romaji_pos3_n_and_pos2_eq_pos5(stations: list[dict]) -> list[dict]:
+    """ローマ字3文字目が n、かつ 2文字目 == 5文字目 の駅を返す。"""
+    out = []
+    for st in stations:
+        r = st["romaji"]
+        if len(r) >= 5 and r[2] == "n" and r[1] == r[4]:
+            out.append({**st, "char2": r[1], "char3": r[2], "char5": r[4]})
+    return out
+
+
 def render_markdown(
     kanji_hits: list[dict],
     hiragana_hits: list[dict],
     five_char_list: list[dict],
     four_char_wa_ki: list[dict],
+    romaji_hits: list[dict],
 ) -> str:
     lines: list[str] = []
     lines.append("# 検証出力: 機械チェック結果\n")
@@ -107,6 +126,17 @@ def render_markdown(
         lines.append(f"合計 {len(four_char_wa_ki)} 駅")
     else:
         lines.append("該当駅なし。")
+    lines.append("")
+    lines.append("## 5. ローマ字で 3文字目=n かつ 2文字目==5文字目 の駅\n")
+    if romaji_hits:
+        lines.append("| 駅 (漢字) | ローマ字 | 2文字目 | 3文字目 | 5文字目 |")
+        lines.append("|---|---|---|---|---|")
+        for h in romaji_hits:
+            lines.append(f"| {h['kanji']} | {h['romaji']} | {h['char2']} | {h['char3']} | {h['char5']} |")
+        lines.append("")
+        lines.append(f"合計 {len(romaji_hits)} 駅")
+    else:
+        lines.append("該当駅なし。")
     return "\n".join(lines) + "\n"
 
 
@@ -116,6 +146,7 @@ def main() -> None:
     hiragana_hits = find_pos2_eq_pos5(stations, "hiragana")
     five_char_list = five_char_hiragana_stations(stations)
     four_char_wa_ki = four_char_with_3rd_in(stations, {"わ", "き"})
+    romaji_hits = romaji_pos3_n_and_pos2_eq_pos5(stations)
 
     print("=== 漢字 2文字目 == 5文字目 ===")
     for h in kanji_hits:
@@ -137,8 +168,14 @@ def main() -> None:
     if not four_char_wa_ki:
         print("  該当なし")
 
+    print(f"\n=== ローマ字 3文字目=n かつ 2文字目==5文字目 ({len(romaji_hits)}駅) ===")
+    for h in romaji_hits:
+        print(f"  {h['kanji']} {h['romaji']} : pos2={h['char2']}, pos3={h['char3']}, pos5={h['char5']}")
+    if not romaji_hits:
+        print("  該当なし")
+
     OUTPUT_PATH.write_text(
-        render_markdown(kanji_hits, hiragana_hits, five_char_list, four_char_wa_ki),
+        render_markdown(kanji_hits, hiragana_hits, five_char_list, four_char_wa_ki, romaji_hits),
         encoding="utf-8",
     )
     print(f"\nMarkdown 出力: {OUTPUT_PATH}")

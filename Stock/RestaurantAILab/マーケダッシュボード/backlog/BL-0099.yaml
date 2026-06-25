@@ -6,16 +6,20 @@ category: RestaurantAILab
 state: todo
 priority: high
 created_at: '2026-06-25T00:00:00.000Z'
-updated_at: '2026-06-25T00:00:00.000Z'
+updated_at: '2026-06-25T22:00:00.000Z'
 created_by: master-agent
 description: >-
   lib/marketing/parsers/ 配下に tabelog.ts / tabelogNote.ts / hotpepper.ts / ikkyu.ts / ozmall.ts を実装。
   各媒体の月次CSVを Shift-JIS/UTF-8 自動判定で読み込み、metrics Json に格納。
   食べログは「月間ページレポート」「来店指標」全項目を含む。食べログノートは「席稼働率」「項目別KPI」を含む。
-  ホットペッパーは「レストランボード集計分析」（マンスリーレポート由来含む）を含む。
+  ホットペッパーは「レストランボード集計分析」と管理画面（クチコミ等）のみ対象。
+  ★ マンスリークライアントレポートは取得不可（2026-06-25 PO 確定）。月次PV／予約経路内訳／流入フリーワードは対象外。
   パーサ単体テストと API /api/marketing/upload の正常系・異常系 E2E。
-  要件定義書 §5.1（M-01/03/04/09/10）、§6.1〜6.5 に対応。
+  要件定義書 §5.1（M-01/03/04/09/10）、§6.1〜6.5 に対応（§6.3 のマンスリー由来項目は除外）。
 deliverable_refs: []
 cockpit_task_ids: []
 pending_questions: []
-decisions: []
+decisions:
+  - id: d-BL-0099-1-20260625
+    at: '2026-06-25T00:00:00.000Z'
+    content: 'HP マンスリークライアントレポートは取得不可（Chef Room 確定）。HP パーサはレストランボード経由データと管理画面のみ対象'

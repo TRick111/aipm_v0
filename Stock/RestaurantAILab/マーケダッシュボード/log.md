@@ -14,3 +14,5 @@
 | 2026-06-25 | create | `docs/Phase1スコープ承認資料.html` | Flow/202606/2026-06-15 から複製 | 竹矢さん向け承認資料 |
 | 2026-06-25 | create | `docs/ヒアリング要件一覧_v3.md` | Flow/202606/2026-06-12 から複製 | 詳細要件＋媒体×KPIマトリックス（Webリサーチ済） |
 | 2026-06-25 | create | `backlog/BL-0098.yaml` 〜 `BL-0106.yaml` | Phase 1 のバックログ 9 件登録 | Phase 1 WBS |
+| 2026-06-25 | update | `README.md`, `STATUS.md` | B 案採用 + Feature ブランチ運用ルール追記 | 開発側判断 |
+| 2026-06-25 | update | `README.md`, `STATUS.md`, `backlog/BL-0099.yaml`, `BL-0100.yaml`, `BL-0105.yaml` | PO 判断 5 項目反映（全データ取得前提、HP マンスリー除外、RAL 内規約レビュー、S-03 受入） | 2026-06-25 PO 判断確定。BL-0100/0105 ブロッカー解除 |

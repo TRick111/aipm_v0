@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>マーケダッシュボード Phase 1 スコープ承認資料</title>
+<style>
+  :root {
+    --bg: #f7f8fa;
+    --surface: #ffffff;
+    --ink: #1a202c;
+    --ink-soft: #4a5568;
+    --ink-mute: #718096;
+    --border: #e2e8f0;
+    --accent: #2c5282;
+    --accent-soft: #ebf4ff;
+    --accent-ink: #1a365d;
+    --ok: #2f855a;
+    --ok-soft: #f0fff4;
+    --warn: #b7791f;
+    --warn-soft: #fffaf0;
+    --ng: #c53030;
+    --later: #6b46c1;
+    --later-soft: #faf5ff;
+    --neutral: #718096;
+    --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+    --shadow-lg: 0 10px 25px rgba(0,0,0,0.06), 0 4px 6px rgba(0,0,0,0.04);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page { max-width: 1080px; margin: 0 auto; padding: 36px 28px 80px; }
+
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, var(--accent) 0%, #1a365d 100%);
+    color: #fff; padding: 36px 36px; border-radius: 14px;
+    box-shadow: var(--shadow-lg); margin-bottom: 28px;
+  }
+  .hero-eyebrow {
+    text-transform: uppercase; letter-spacing: 0.12em;
+    font-size: 12px; font-weight: 600; opacity: 0.85; margin-bottom: 10px;
+  }
+  .hero h1 { font-size: 26px; margin: 0 0 10px; line-height: 1.4; font-weight: 700; }
+  .hero p { margin: 0; opacity: 0.92; font-size: 14.5px; }
+  .hero-meta {
+    display: flex; flex-wrap: wrap; gap: 24px;
+    margin-top: 20px; padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.18);
+  }
+  .hero-meta-item { font-size: 13px; }
+  .hero-meta-item span { display: block; opacity: 0.7; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+  .hero-meta-item strong { font-size: 15px; font-weight: 600; }
+
+  section { margin-bottom: 32px; }
+  .section-title {
+    display: flex; align-items: baseline; gap: 12px;
+    margin-bottom: 16px; padding-bottom: 8px;
+    border-bottom: 2px solid var(--accent);
+  }
+  .section-title h2 { margin: 0; font-size: 19px; font-weight: 700; color: var(--accent-ink); }
+  .section-title .num {
+    color: var(--accent); font-weight: 700; font-size: 13px;
+    background: var(--accent-soft); padding: 4px 10px; border-radius: 6px; line-height: 1;
+  }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px 26px; box-shadow: var(--shadow); }
+
+  /* Goal */
+  .goal-primary {
+    background: var(--accent-soft);
+    border-left: 4px solid var(--accent);
+    border-radius: 10px; padding: 18px 22px;
+  }
+  .goal-label {
+    color: var(--accent); font-weight: 700; font-size: 11px;
+    letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px;
+  }
+  .goal-text { font-size: 17px; font-weight: 700; color: var(--accent-ink); line-height: 1.55; }
+  .goal-secondary {
+    margin-top: 12px; padding: 14px 18px;
+    background: #f8fafc; border-radius: 8px;
+    border-left: 3px solid var(--neutral);
+    font-size: 14px; color: var(--ink-soft);
+  }
+  .goal-secondary b { color: var(--neutral); font-weight: 700; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+
+  /* Talking points */
+  .talk-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+  .talk-item {
+    background: var(--ok-soft); border-left: 3px solid var(--ok);
+    border-radius: 6px; padding: 10px 14px;
+    font-size: 13.5px; color: var(--ink-soft); line-height: 1.7;
+  }
+  .talk-item b { color: var(--ok); }
+
+  /* Diagram */
+  .diagram-wrap { display: flex; justify-content: center; padding: 16px 0 4px; }
+  .diagram-wrap svg { max-width: 100%; height: auto; }
+  .diagram-caption { text-align: center; font-size: 12px; color: var(--ink-mute); margin-top: 8px; }
+
+  /* Timeline */
+  .timeline {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 8px;
+  }
+  .tl-step {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px;
+  }
+  .tl-step.now { border: 2px solid var(--accent); background: var(--accent-soft); }
+  .tl-date { font-size: 11.5px; color: var(--ink-mute); font-weight: 600; letter-spacing: 0.05em; margin-bottom: 4px; }
+  .tl-title { font-weight: 700; color: var(--ink); font-size: 14px; margin-bottom: 4px; }
+  .tl-desc { font-size: 12.5px; color: var(--ink-soft); line-height: 1.55; }
+  .tl-badge {
+    display: inline-block; background: var(--accent); color: #fff;
+    font-size: 10px; font-weight: 700; padding: 2px 8px;
+    border-radius: 4px; letter-spacing: 0.05em; margin-bottom: 6px;
+  }
+
+  /* KPI per-media cards */
+  .media-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .media-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px 20px; box-shadow: var(--shadow);
+  }
+  .media-card.solo { grid-column: 1 / -1; }
+  .media-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  .media-icon {
+    width: 32px; height: 32px; flex-shrink: 0;
+    border-radius: 8px; display: inline-flex; align-items: center;
+    justify-content: center; color: #fff; font-weight: 700; font-size: 14px;
+  }
+  .media-name-main { font-size: 16px; font-weight: 700; color: var(--accent-ink); }
+  .media-tag { font-size: 11px; color: var(--ink-mute); margin-left: auto; }
+
+  table.kpi-tbl { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  table.kpi-tbl td { padding: 6px 8px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
+  table.kpi-tbl td:first-child { font-size: 13px; color: var(--ink); padding-right: 10px; }
+  table.kpi-tbl td:last-child { text-align: right; font-weight: 600; font-size: 14px; white-space: nowrap; width: 70px; }
+  table.kpi-tbl tr:last-child td { border-bottom: 0; }
+  table.kpi-tbl small { color: var(--ink-mute); font-size: 11px; }
+
+  .b-ok { color: var(--ok); }
+  .b-warn { color: var(--warn); }
+  .b-ng { color: var(--ng); }
+  .b-later { color: var(--later); }
+
+  .media-takeaway {
+    background: var(--ok-soft); border-left: 3px solid var(--ok);
+    border-radius: 6px; padding: 10px 12px; margin-top: 12px;
+    font-size: 12.5px; color: var(--ink-soft); line-height: 1.65;
+  }
+  .media-takeaway b { color: var(--ok); }
+
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 16px;
+    margin: 14px 0; padding: 12px 16px;
+    background: #f8fafc; border-radius: 8px;
+    border: 1px solid var(--border); font-size: 13px;
+  }
+  .legend-item { display: inline-flex; align-items: center; gap: 6px; }
+
+  /* Callouts */
+  .callout {
+    background: var(--warn-soft); border-left: 4px solid var(--warn);
+    border-radius: 8px; padding: 14px 18px; margin-top: 16px;
+    font-size: 13px; line-height: 1.7;
+  }
+  .callout-title { color: var(--warn); font-weight: 700; font-size: 12px; letter-spacing: 0.04em; margin-bottom: 4px; }
+  .callout ul { margin: 4px 0 0; padding-left: 20px; }
+  .callout li { margin-bottom: 3px; }
+
+  /* Phase 2 cards */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .later-card {
+    background: var(--later-soft); border: 1px solid #e9d8fd;
+    border-radius: 10px; padding: 14px 18px;
+  }
+  .later-card h3 { margin: 0 0 8px; font-size: 13.5px; color: var(--later); font-weight: 700; }
+  .later-card ul { margin: 0; padding-left: 18px; font-size: 13px; color: var(--ink-soft); line-height: 1.7; }
+
+  /* Approval list */
+  .approval-list {
+    background: var(--surface); border: 2px solid var(--accent);
+    border-radius: 12px; padding: 22px 26px;
+  }
+  .approval-list h3 { margin: 0 0 12px; font-size: 13.5px; color: var(--accent-ink); letter-spacing: 0.04em; text-transform: uppercase; }
+  .approval-list ul { list-style: none; padding: 0; margin: 0; }
+  .approval-list li {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 8px 0; border-bottom: 1px dashed var(--border); font-size: 14px;
+  }
+  .approval-list li:last-child { border-bottom: 0; }
+  .approval-list .ch {
+    flex-shrink: 0; width: 20px; height: 20px;
+    border: 2px solid var(--accent); border-radius: 4px; margin-top: 2px;
+  }
+  .approval-list .lbl small { display: block; color: var(--ink-mute); font-size: 12px; margin-top: 2px; }
+
+  .footer {
+    text-align: center; color: var(--ink-mute); font-size: 12px;
+    margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border);
+  }
+
+  @media (max-width: 720px) {
+    .grid-2, .media-grid, .talk-grid { grid-template-columns: 1fr; }
+    .timeline { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media print {
+    body { background: #fff; }
+    .page { padding: 0; }
+    .hero { background: var(--accent) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    section { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="hero-eyebrow">For: 竹矢さま — Approval Requested</div>
+    <h1>マーケダッシュボード Phase 1 スコープ承認のお願い</h1>
+    <p>飲食店向けマーケ媒体5つの月次KPIを一元管理する機能の Phase 1 スコープです。<strong>§6 の 2 点</strong>をご確認ください。</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><span>作成</span><strong>田中（RAL）</strong></div>
+      <div class="hero-meta-item"><span>作成日</span><strong>2026-06-15</strong></div>
+      <div class="hero-meta-item"><span>開発完了</span><strong>2026-06-24</strong></div>
+      <div class="hero-meta-item"><span>リリース</span><strong>2026年7月初旬</strong></div>
+    </div>
+  </header>
+
+  <!-- 1. Phase 1 ゴール（書き直し） -->
+  <section>
+    <div class="section-title">
+      <span class="num">1</span>
+      <h2>Phase 1 のゴール</h2>
+    </div>
+    <div class="goal-primary">
+      <div class="goal-label">★ 第一目標：システムでマーケKPIを扱えるようにする</div>
+      <div class="goal-text">
+        食べログ・食べログノート・ホットペッパー・一休・オズモールの<br>
+        <strong>月次KPI を、月1回 CSV をアップロードするだけでダッシュボードに一元管理</strong>できる状態を作る。
+      </div>
+    </div>
+    <div class="goal-secondary">
+      <b>副次効果</b><br>
+      その上で外注コンサルが、媒体の ID／PW を渡されずに、月次レポートをスライド形式でクライアントに納品できる。
+    </div>
+
+    <h3 style="font-size: 14px; margin: 22px 0 4px; color: var(--accent-ink);">📊 ミーティングで語れるようになること（例）</h3>
+    <div class="talk-grid">
+      <div class="talk-item"><b>集客：</b>「先月の食べログのPVは前月比 +12%、予約は +8 件」</div>
+      <div class="talk-item"><b>順位：</b>「食べログのエリア内ランキングが 14 位 → 9 位に上昇」</div>
+      <div class="talk-item"><b>予約品質：</b>「食べログノートのフラット来店が 32% → 来店動線改善を提案」</div>
+      <div class="talk-item"><b>プラン：</b>「一休のプラン A の予約が伸びている → 類似プラン追加を提案」</div>
+      <div class="talk-item"><b>クチコミ：</b>「ホットペッパーのクチコミ件数が 5 件 → 来店時の声かけ強化」</div>
+      <div class="talk-item"><b>編集枠：</b>「オズモール特集枠経由が 40% → 翌月の特集出稿を検討」</div>
+    </div>
+  </section>
+
+  <!-- 2. データの流れと役割（図解） -->
+  <section>
+    <div class="section-title">
+      <span class="num">2</span>
+      <h2>Phase 1 完成時のデータの流れと役割</h2>
+    </div>
+    <div class="card">
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 920 380" xmlns="http://www.w3.org/2000/svg" width="100%" style="max-width:920px;">
+          <defs>
+            <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+              <path d="M0,0 L10,5 L0,10 Z" fill="#4a5568"/>
+            </marker>
+            <marker id="arrAcc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+              <path d="M0,0 L10,5 L0,10 Z" fill="#2c5282"/>
+            </marker>
+          </defs>
+
+          <!-- 5 媒体 (left column) -->
+          <g font-family="-apple-system, sans-serif">
+            <g>
+              <rect x="20" y="20" width="160" height="36" rx="6" fill="#fff" stroke="#cbd5e0"/>
+              <text x="100" y="42" text-anchor="middle" font-size="13" fill="#1a202c">食べログ</text>
+            </g>
+            <g>
+              <rect x="20" y="66" width="160" height="36" rx="6" fill="#fff" stroke="#cbd5e0"/>
+              <text x="100" y="88" text-anchor="middle" font-size="13" fill="#1a202c">食べログノート</text>
+            </g>
+            <g>
+              <rect x="20" y="112" width="160" height="36" rx="6" fill="#fff" stroke="#cbd5e0"/>
+              <text x="100" y="134" text-anchor="middle" font-size="13" fill="#1a202c">ホットペッパー</text>
+            </g>
+            <g>
+              <rect x="20" y="158" width="160" height="36" rx="6" fill="#fff" stroke="#cbd5e0"/>
+              <text x="100" y="180" text-anchor="middle" font-size="13" fill="#1a202c">一休</text>
+            </g>
+            <g>
+              <rect x="20" y="204" width="160" height="36" rx="6" fill="#fff" stroke="#cbd5e0"/>
+              <text x="100" y="226" text-anchor="middle" font-size="13" fill="#1a202c">オズモール</text>
+            </g>
+
+            <text x="100" y="270" text-anchor="middle" font-size="11" fill="#718096">月次CSV / PDF</text>
+            <text x="100" y="284" text-anchor="middle" font-size="11" fill="#718096">アップロード</text>
+          </g>
+
+          <!-- Arrows from media to dashboard -->
+          <g stroke="#4a5568" stroke-width="1.5" fill="none" marker-end="url(#arr)">
+            <line x1="180" y1="38" x2="350" y2="155"/>
+            <line x1="180" y1="84" x2="350" y2="165"/>
+            <line x1="180" y1="130" x2="350" y2="175"/>
+            <line x1="180" y1="176" x2="350" y2="185"/>
+            <line x1="180" y1="222" x2="350" y2="195"/>
+          </g>
+
+          <!-- Dashboard -->
+          <g>
+            <rect x="350" y="120" width="220" height="120" rx="12" fill="#ebf4ff" stroke="#2c5282" stroke-width="2"/>
+            <text x="460" y="155" text-anchor="middle" font-size="14" font-weight="700" fill="#1a365d">ダッシュボード</text>
+            <text x="460" y="178" text-anchor="middle" font-size="12" fill="#2c5282">Marketing View</text>
+            <line x1="370" y1="190" x2="550" y2="190" stroke="#bee3f8"/>
+            <text x="460" y="208" text-anchor="middle" font-size="11" fill="#4a5568">• 媒体横断KPI</text>
+            <text x="460" y="225" text-anchor="middle" font-size="11" fill="#4a5568">• スライド月次レポート</text>
+          </g>
+
+          <!-- Security boundary -->
+          <g>
+            <rect x="220" y="295" width="500" height="40" rx="8" fill="#fffaf0" stroke="#b7791f" stroke-dasharray="4,3"/>
+            <text x="470" y="320" text-anchor="middle" font-size="12" font-weight="600" fill="#b7791f">🔒 媒体ID／PWは外注に渡さない（社内で集中管理）</text>
+          </g>
+
+          <!-- Arrows from dashboard to users -->
+          <g stroke="#2c5282" stroke-width="1.8" fill="none" marker-end="url(#arrAcc)">
+            <line x1="570" y1="155" x2="720" y2="55"/>
+            <line x1="570" y1="180" x2="720" y2="155"/>
+            <line x1="570" y1="205" x2="720" y2="245"/>
+          </g>
+
+          <!-- Users (right column) -->
+          <g font-family="-apple-system, sans-serif">
+            <g>
+              <rect x="720" y="20" width="180" height="74" rx="10" fill="#fff" stroke="#2c5282" stroke-width="1.5"/>
+              <text x="810" y="44" text-anchor="middle" font-size="14" font-weight="700" fill="#1a365d">外注コンサル</text>
+              <text x="810" y="64" text-anchor="middle" font-size="11" fill="#4a5568">月次MTGで分析・提案</text>
+              <text x="810" y="80" text-anchor="middle" font-size="11" fill="#4a5568">スライドで納品</text>
+            </g>
+            <g>
+              <rect x="720" y="120" width="180" height="74" rx="10" fill="#fff" stroke="#2c5282" stroke-width="1.5"/>
+              <text x="810" y="144" text-anchor="middle" font-size="14" font-weight="700" fill="#1a365d">店舗</text>
+              <text x="810" y="164" text-anchor="middle" font-size="11" fill="#4a5568">自店舗の数字を</text>
+              <text x="810" y="180" text-anchor="middle" font-size="11" fill="#4a5568">いつでも確認</text>
+            </g>
+            <g>
+              <rect x="720" y="220" width="180" height="74" rx="10" fill="#fff" stroke="#2c5282" stroke-width="1.5"/>
+              <text x="810" y="244" text-anchor="middle" font-size="14" font-weight="700" fill="#1a365d">Chef's Room</text>
+              <text x="810" y="264" text-anchor="middle" font-size="11" fill="#4a5568">媒体ON/OFF管理</text>
+              <text x="810" y="280" text-anchor="middle" font-size="11" fill="#4a5568">月次CSVアップロード</text>
+            </g>
+          </g>
+        </svg>
+      </div>
+      <div class="diagram-caption">5媒体の月次CSV → ダッシュボード → 3つの立場が必要な情報を受け取る</div>
+    </div>
+  </section>
+
+  <!-- 3. Schedule -->
+  <section>
+    <div class="section-title">
+      <span class="num">3</span>
+      <h2>スケジュール</h2>
+    </div>
+    <div class="timeline">
+      <div class="tl-step now">
+        <div class="tl-badge">NOW</div>
+        <div class="tl-date">6/15 – 6/24</div>
+        <div class="tl-title">開発</div>
+        <div class="tl-desc">媒体取込・横断KPIビュー・スライド出力・コンサル権限</div>
+      </div>
+      <div class="tl-step">
+        <div class="tl-date">6/25 – 6/30</div>
+        <div class="tl-title">調整・検証</div>
+        <div class="tl-desc">サンプルCSV検証・UI微調整・運用ドキュメント整備</div>
+      </div>
+      <div class="tl-step">
+        <div class="tl-date">7月 初旬</div>
+        <div class="tl-title">リリース</div>
+        <div class="tl-desc">麻布しき／BFA等で運用開始</div>
+      </div>
+      <div class="tl-step">
+        <div class="tl-date">7月以降</div>
+        <div class="tl-title">Phase 2 検討</div>
+        <div class="tl-desc">マーケパネル準拠／GBP・Instagram追加</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. 媒体ごとの取得 KPI -->
+  <section>
+    <div class="section-title">
+      <span class="num">4</span>
+      <h2>媒体ごとの取得 KPI</h2>
+    </div>
+    <p style="margin: 0 0 8px; font-size: 13.5px; color: var(--ink-soft);">
+      Web リサーチで裏取り済の各媒体の取得可能KPIです。❓ はサンプル CSV で実物確認が必要。
+    </p>
+
+    <div class="legend">
+      <div class="legend-item"><span class="b-ok">✅</span> Phase 1 で取得</div>
+      <div class="legend-item"><span class="b-warn">❓</span> 要サンプル確認</div>
+      <div class="legend-item"><span class="b-ng">❌</span> 取れない</div>
+      <div class="legend-item"><span class="b-later">🟡</span> Phase 2</div>
+    </div>
+
+    <div class="media-grid">
+
+      <!-- 食べログ -->
+      <div class="media-card">
+        <div class="media-head">
+          <div class="media-icon" style="background:#c53030;">食</div>
+          <div class="media-name-main">食べログ</div>
+          <div class="media-tag">アクセスレポート / 来店指標</div>
+        </div>
+        <table class="kpi-tbl">
+          <tr><td>月次PV数</td><td class="b-ok">✅</td></tr>
+          <tr><td>月次予約数（合計）</td><td class="b-ok">✅</td></tr>
+          <tr><td>予約経路内訳（電話／ネット）<br><small>※050番号+PR/集客契約が前提</small></td><td class="b-ok">✅</td></tr>
+          <tr><td>ページ別タップ数（メニュー／写真等）</td><td class="b-ok">✅</td></tr>
+          <tr><td>エリア内ランキング・自店ポジション</td><td class="b-ok">✅</td></tr>
+          <tr><td>クチコミ件数・平均点</td><td class="b-ok">✅</td></tr>
+          <tr><td>同ジャンル他店比較（アクセス数）</td><td class="b-ok">✅</td></tr>
+          <tr><td>お気に入り登録数</td><td class="b-ng">❌</td></tr>
+          <tr><td>周辺店舗の表示シェア</td><td class="b-later">🟡</td></tr>
+        </table>
+        <div class="media-takeaway"><b>語れること：</b>順位の動き、写真・メニュー閲覧の傾向、予約経路の比率</div>
+      </div>
+
+      <!-- 食べログノート -->
+      <div class="media-card">
+        <div class="media-head">
+          <div class="media-icon" style="background:#dd6b20;">N</div>
+          <div class="media-name-main">食べログノート</div>
+          <div class="media-tag">予約管理 / 分析機能</div>
+        </div>
+        <table class="kpi-tbl">
+          <tr><td>月次予約件数（合計）</td><td class="b-ok">✅</td></tr>
+          <tr><td>フラット来店件数（ウォークイン）</td><td class="b-ok">✅</td></tr>
+          <tr><td>予約 vs フラット 比率</td><td class="b-ok">✅</td></tr>
+          <tr><td>キャンセル件数・キャンセル率</td><td class="b-ok">✅</td></tr>
+          <tr><td>プラン／コース別 予約数<br><small>※CSV全件出力可</small></td><td class="b-ok">✅</td></tr>
+          <tr><td>席の回転率（卓稼働率）</td><td class="b-ok">✅</td></tr>
+          <tr><td>予約経路（電話／ネット／媒体内）</td><td class="b-warn">❓</td></tr>
+          <tr><td>平均客単価</td><td class="b-warn">❓</td></tr>
+          <tr><td>ノーショー件数</td><td class="b-warn">❓</td></tr>
+        </table>
+        <div class="media-takeaway"><b>語れること：</b>予約と実来店のギャップ、回転計画の最適化、コース別動向</div>
+      </div>
+
+      <!-- ホットペッパー -->
+      <div class="media-card">
+        <div class="media-head">
+          <div class="media-icon" style="background:#d69e2e;">H</div>
+          <div class="media-name-main">ホットペッパー</div>
+          <div class="media-tag">マンスリークライアントレポート</div>
+        </div>
+        <table class="kpi-tbl">
+          <tr><td>月次PV数</td><td class="b-ok">✅</td></tr>
+          <tr><td>月次予約数（合計）</td><td class="b-ok">✅</td></tr>
+          <tr><td>予約経路内訳（電話／ネット）</td><td class="b-ok">✅</td></tr>
+          <tr><td>流入経路（フリーワード等）</td><td class="b-ok">✅</td></tr>
+          <tr><td>クチコミ件数・平均点</td><td class="b-ok">✅</td></tr>
+          <tr><td>ページ別タップ数</td><td class="b-warn">❓</td></tr>
+          <tr><td>キャンセル件数</td><td class="b-warn">❓</td></tr>
+          <tr><td>プラン別予約数・客単価</td><td class="b-warn">❓</td></tr>
+          <tr><td>エリア内ランキング</td><td class="b-ng">❌</td></tr>
+        </table>
+        <div class="media-takeaway"><b>語れること：</b>媒体経由の集客力、検索ワード傾向、クチコミ強化のタイミング<br><small style="color:var(--warn);">※レポートは営業担当からの月次PDF/Excel受領が前提</small></div>
+      </div>
+
+      <!-- 一休 -->
+      <div class="media-card">
+        <div class="media-head">
+          <div class="media-icon" style="background:#805ad5;">休</div>
+          <div class="media-name-main">一休</div>
+          <div class="media-tag">店舗管理画面 / RESZAIKO</div>
+        </div>
+        <table class="kpi-tbl">
+          <tr><td>月次予約数（合計）</td><td class="b-ok">✅</td></tr>
+          <tr><td>プラン別 予約数</td><td class="b-ok">✅</td></tr>
+          <tr><td>平均客単価（予約単位）</td><td class="b-ok">✅</td></tr>
+          <tr><td>月次PV数</td><td class="b-warn">❓</td></tr>
+          <tr><td>予約経路（特集枠／検索／カテゴリ）</td><td class="b-warn">❓</td></tr>
+          <tr><td>在庫消化率（プラン別）</td><td class="b-warn">❓</td></tr>
+          <tr><td>クチコミ件数・平均点</td><td class="b-warn">❓</td></tr>
+          <tr><td>ポイント還元率</td><td class="b-warn">❓</td></tr>
+        </table>
+        <div class="media-takeaway"><b>語れること：</b>プラン別動向、客単価の妥当性、コース見直しの提案<br><small style="color:var(--warn);">※Web情報が薄いためサンプル CSV／管理画面確認が最優先</small></div>
+      </div>
+
+      <!-- オズモール -->
+      <div class="media-card solo">
+        <div class="media-head">
+          <div class="media-icon" style="background:#319795;">O</div>
+          <div class="media-name-main">オズモール</div>
+          <div class="media-tag">店舗管理画面 / 編集部企画</div>
+        </div>
+        <table class="kpi-tbl">
+          <tr><td>月次予約数（合計）</td><td class="b-ok">✅</td></tr>
+          <tr><td>特集枠経由の予約数</td><td class="b-ok">✅</td></tr>
+          <tr><td>レビュー件数・平均点</td><td class="b-ok">✅</td></tr>
+          <tr><td>月次PV数</td><td class="b-warn">❓</td></tr>
+          <tr><td>流入経路（特集枠以外の内訳）</td><td class="b-warn">❓</td></tr>
+          <tr><td>キャンセル件数・客単価・お気に入り</td><td class="b-warn">❓</td></tr>
+          <tr><td>予約経路内訳（電話／ネット）</td><td class="b-ng">❌</td></tr>
+        </table>
+        <div class="media-takeaway"><b>語れること：</b>編集枠の効果測定、特集出稿のROI、レビュー動向<br><small style="color:var(--warn);">※同じくサンプル CSV／管理画面確認が必要</small></div>
+      </div>
+
+    </div>
+
+    <div class="callout">
+      <div class="callout-title">⚠️ リリース前の確認事項</div>
+      <ul>
+        <li><b>食べログ：</b>050番号 + PR/集客サービス契約が現クライアント全店で成立しているか</li>
+        <li><b>ホットペッパー：</b>マンスリークライアントレポートを毎月確実に受領できる体制があるか</li>
+        <li><b>一休・オズモール：</b>サンプル CSV／管理画面スクショの提供（❓解消のため）</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 5. Phase 2以降 -->
+  <section>
+    <div class="section-title">
+      <span class="num">5</span>
+      <h2>Phase 1 ではやらないこと（Phase 2 以降）</h2>
+    </div>
+    <div class="grid-2">
+      <div class="later-card">
+        <h3>🔍 媒体の追加</h3>
+        <ul>
+          <li>Google ビジネスプロフィール（検索キーワード／表示数／クリック／周辺シェア）</li>
+          <li>Instagram（投稿別エンゲージメント、フォロワー推移）</li>
+          <li>食べログの近隣店舗比較</li>
+        </ul>
+      </div>
+      <div class="later-card">
+        <h3>📊 分析の深掘り</h3>
+        <ul>
+          <li>マーケパネル準拠の順番で数字を並べ、弱い指標と打ち手案を自動ハイライト</li>
+          <li>媒体横断のKPIアラート</li>
+        </ul>
+      </div>
+      <div class="later-card">
+        <h3>🤖 取り込み自動化</h3>
+        <ul>
+          <li>CSV ダウンロードの自動化（Playwright）</li>
+          <li>媒体規約レビュー（特に食べログ）</li>
+          <li>2要素認証の運用整理</li>
+        </ul>
+      </div>
+      <div class="later-card">
+        <h3>🔐 監査・運用</h3>
+        <ul>
+          <li>コンサルのアクセスログ／DL履歴</li>
+          <li>情報漏洩リスクの早期検知</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Approval list -->
+  <section>
+    <div class="section-title">
+      <span class="num">6</span>
+      <h2>ご確認いただきたいこと（2点）</h2>
+    </div>
+
+    <!-- Question 1 -->
+    <div class="approval-list" style="margin-bottom: 18px;">
+      <h3 style="color: var(--accent-ink); font-size: 14px;">Q1. 各媒体の KPI に過不足はないか／追加で取りたいものはないか</h3>
+      <p style="font-size: 13px; color: var(--ink-soft); margin: 0 0 14px;">
+        §4 の媒体ごとの KPI 一覧について、媒体ごとに「これで OK」または「追加で欲しい KPI」をご記入ください。
+      </p>
+      <ul>
+        <li>
+          <span class="ch"></span>
+          <span class="lbl">
+            <b>食べログ</b>（PV／予約／タップ／ランキング／クチコミ／同ジャンル比較）
+            <small>追加で取りたいKPI：_______________________________</small>
+          </span>
+        </li>
+        <li>
+          <span class="ch"></span>
+          <span class="lbl">
+            <b>食べログノート</b>（予約数／フラット来店／キャンセル／プラン別／回転率）
+            <small>追加で取りたいKPI：_______________________________</small>
+          </span>
+        </li>
+        <li>
+          <span class="ch"></span>
+          <span class="lbl">
+            <b>ホットペッパー</b>（PV／予約／経路／流入ワード／クチコミ）
+            <small>追加で取りたいKPI：_______________________________</small>
+          </span>
+        </li>
+        <li>
+          <span class="ch"></span>
+          <span class="lbl">
+            <b>一休</b>（予約数／プラン別／客単価）
+            <small>追加で取りたいKPI：_______________________________</small>
+          </span>
+        </li>
+        <li>
+          <span class="ch"></span>
+          <span class="lbl">
+            <b>オズモール</b>（予約数／特集枠／レビュー）
+            <small>追加で取りたいKPI：_______________________________</small>
+          </span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Question 2 -->
+    <div class="approval-list" style="border-color: var(--later);">
+      <h3 style="color: var(--later); font-size: 14px;">Q2. Phase 1 で除外したスコープのうち、Phase 1 に含めたいものはないか</h3>
+      <p style="font-size: 13px; color: var(--ink-soft); margin: 0 0 14px;">
+        §5 で Phase 2 以降に回した項目のうち、「これは Phase 1 で欲しい」というものがあればチェックを入れてください。
+      </p>
+      <ul>
+        <li>
+          <span class="ch" style="border-color: var(--later);"></span>
+          <span class="lbl"><b>Google ビジネスプロフィール</b><small>検索キーワード／表示数／クリック／周辺シェア</small></span>
+        </li>
+        <li>
+          <span class="ch" style="border-color: var(--later);"></span>
+          <span class="lbl"><b>Instagram</b><small>投稿別 リーチ／いいね／保存／コメント、フォロワー推移</small></span>
+        </li>
+        <li>
+          <span class="ch" style="border-color: var(--later);"></span>
+          <span class="lbl"><b>食べログの近隣店舗比較</b><small>周辺店舗の口コミ件数・平均点</small></span>
+        </li>
+        <li>
+          <span class="ch" style="border-color: var(--later);"></span>
+          <span class="lbl"><b>マーケパネル準拠の打ち手提示</b><small>弱い指標と打ち手案の自動ハイライト</small></span>
+        </li>
+        <li>
+          <span class="ch" style="border-color: var(--later);"></span>
+          <span class="lbl"><b>PDF 出力</b><small>Phase 1 は HTML スライド、PDF を Phase 2 に予定</small></span>
+        </li>
+        <li>
+          <span class="ch" style="border-color: var(--later);"></span>
+          <span class="lbl"><b>CSV ダウンロードの自動化（Playwright）</b><small>Phase 1 は人手運用、Phase 2 で自動化を予定</small></span>
+        </li>
+        <li>
+          <span class="ch" style="border-color: var(--later);"></span>
+          <span class="lbl"><b>監査・アクセスログ</b><small>コンサルの閲覧・DL履歴の追跡</small></span>
+        </li>
+        <li>
+          <span class="ch" style="border-color: var(--later);"></span>
+          <span class="lbl"><b>その他：</b><small>_____________________________________</small></span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Other info items (FYI) -->
+    <div style="margin-top: 22px; padding: 16px 20px; background: #f8fafc; border-radius: 10px; border: 1px solid var(--border);">
+      <div style="font-size: 12px; color: var(--ink-mute); font-weight: 700; letter-spacing: 0.06em; margin-bottom: 8px;">📌 申し送り事項（後追いでも OK）</div>
+      <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: var(--ink-soft); line-height: 1.8;">
+        <li>一休・オズモールの管理画面 CSV／スクショの提供時期</li>
+        <li>食べログ 050 番号 + PR／集客サービス契約の状況（クライアント全店で成立しているか）</li>
+        <li>ホットペッパーのマンスリーレポートを毎月確実に受領できる体制</li>
+        <li>初期対象店舗（麻布しき旗の台・本店／BFA から開始）の確認</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="footer">
+    Restaurant AI Lab / Chef's Room — マーケダッシュボード Phase 1<br>
+    詳細仕様：<code>ダッシュボード追加要件一覧_竹矢さんヒアリング_v3.md</code>
+  </div>
+
+</div>
+</body>
+</html>

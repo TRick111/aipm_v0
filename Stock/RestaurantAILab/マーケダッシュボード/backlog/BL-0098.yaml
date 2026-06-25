@@ -1,0 +1,19 @@
+schema_version: 2
+id: BL-0098
+title: 'マーケダッシュボード: Phase 1 基盤（Prismaスキーマ + マイグレーション + 媒体マスタseed）'
+project: マーケダッシュボード
+category: RestaurantAILab
+state: todo
+priority: high
+created_at: '2026-06-25T00:00:00.000Z'
+updated_at: '2026-06-25T00:00:00.000Z'
+created_by: master-agent
+description: >-
+  Dashboard リポジトリの prisma/schema.prisma に MarketingChannel / MarketingMonthlyReport / MarketingImportLog / MarketingCredentials を追加。
+  StoreGroup に groupType + viewScope、StoreSettings.featureFlags に marketingChannels を追加。
+  dev/staging/prod の3環境にマイグレーション実行。媒体マスタを7媒体（食べログ / 食べログノート / ホットペッパー / 一休 / オズモール / Retty / ぐるなび）でシード。
+  要件定義書 §5.2 (M-13)、§5.7 (S-01/02/03)、§5.8 (X-01)、§8 データモデル に対応。
+deliverable_refs: []
+cockpit_task_ids: []
+pending_questions: []
+decisions: []

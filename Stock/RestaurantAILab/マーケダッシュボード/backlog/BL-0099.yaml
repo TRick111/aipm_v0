@@ -1,0 +1,21 @@
+schema_version: 2
+id: BL-0099
+title: 'マーケダッシュボード: 既定5媒体のCSVパーサ実装（食べログ/食べログノート/ホットペッパー/一休/オズモール）'
+project: マーケダッシュボード
+category: RestaurantAILab
+state: todo
+priority: high
+created_at: '2026-06-25T00:00:00.000Z'
+updated_at: '2026-06-25T00:00:00.000Z'
+created_by: master-agent
+description: >-
+  lib/marketing/parsers/ 配下に tabelog.ts / tabelogNote.ts / hotpepper.ts / ikkyu.ts / ozmall.ts を実装。
+  各媒体の月次CSVを Shift-JIS/UTF-8 自動判定で読み込み、metrics Json に格納。
+  食べログは「月間ページレポート」「来店指標」全項目を含む。食べログノートは「席稼働率」「項目別KPI」を含む。
+  ホットペッパーは「レストランボード集計分析」（マンスリーレポート由来含む）を含む。
+  パーサ単体テストと API /api/marketing/upload の正常系・異常系 E2E。
+  要件定義書 §5.1（M-01/03/04/09/10）、§6.1〜6.5 に対応。
+deliverable_refs: []
+cockpit_task_ids: []
+pending_questions: []
+decisions: []

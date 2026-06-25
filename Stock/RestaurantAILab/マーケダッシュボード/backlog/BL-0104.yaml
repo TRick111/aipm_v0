@@ -1,0 +1,21 @@
+schema_version: 2
+id: BL-0104
+title: 'マーケダッシュボード: スライド出力（O-01, HTMLスライド月次レポート）'
+project: マーケダッシュボード
+category: RestaurantAILab
+state: todo
+priority: high
+created_at: '2026-06-25T00:00:00.000Z'
+updated_at: '2026-06-25T00:00:00.000Z'
+created_by: master-agent
+description: >-
+  GET /api/marketing/slides/:storeId/:month で HTML スライドを生成・ダウンロード可能に。
+  format=download で ZIP 配信（画像・CSS同梱）。
+  週報パイプライン（Stock/RestaurantAILab/週報）の D3.js HTMLスライド生成モジュールを再利用。
+  スライド構成: タイトル → 媒体横断サマリー → 媒体別ページ（契約媒体のみ）→ 補足コメント欄。
+  PDF 出力は Phase 2（O-02）扱い。
+  要件定義書 §5.6（O-01）に対応。
+deliverable_refs: []
+cockpit_task_ids: []
+pending_questions: []
+decisions: []

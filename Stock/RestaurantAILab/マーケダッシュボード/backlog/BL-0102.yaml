@@ -1,0 +1,22 @@
+schema_version: 2
+id: BL-0102
+title: 'マーケダッシュボード: 外注コンサル権限（S-01/S-02） + 媒体ログイン情報集中管理（S-03）'
+project: マーケダッシュボード
+category: RestaurantAILab
+state: todo
+priority: high
+created_at: '2026-06-25T00:00:00.000Z'
+updated_at: '2026-06-25T00:00:00.000Z'
+created_by: master-agent
+description: >-
+  既存 StoreGroup に groupType='consultant' / viewScope Json を追加し、コンサル用ロールを実装。
+  /api/marketing/** と /store/[storeId]/marketing/** に対するミドルウェアで:
+  consultant ロールは PL/売上 API (/api/pl/**, /api/data, /api/upload, /api/store-reports/**) を明示的にブロック。
+  マーケビューと月次レポートのみアクセス可能。
+  媒体ログイン情報は MarketingCredentials テーブルで暗号化保管し、UI には一切表示しない（S-03）。
+  E2E テストで「コンサルロールから ID/PW が一切閲覧できない」ことを確認。
+  要件定義書 §5.7（S-01/02/03）に対応。
+deliverable_refs: []
+cockpit_task_ids: []
+pending_questions: []
+decisions: []

@@ -91,4 +91,6 @@
 ## スクレイパー（CSV エクスポート不可ページ用）
 
 - `scripts/scrapers/README.md` — Playwright で HTML 取得 → bs4 で CSV 化する標準手順（3層: 認証 / フェッチ / パース）
-- `scripts/scrapers/tabelog/` — 食べログ 5 ページ（access_report_total / access_report_page / access_report_total_conversion / rstupreview_entry / access_ranking）の実装。初回 `python3 login_and_save_state.py` で認証セッション保存 → 以降 `./run_all.sh` で全自動取得
+- `scripts/scrapers/tabelog/` — 食べログ 5 ページ（access_report_total / access_report_page / access_report_total_conversion / rstupreview_entry / access_ranking）の実装
+- `scripts/scrapers/hotpepper/` — HPG クチコミ一覧（showReportListAllForAuth）の実装。食べログとは別ドメインのため独立 storageState
+- いずれも初回 `python3 login_and_save_state.py` で認証セッション保存 → 以降 `./run_all.sh` で全自動取得

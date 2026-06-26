@@ -34,9 +34,11 @@ last_updated: 2026-06-26
 
 **なぜ 3 層分離か**: ① 認証はセッション失効時のみ再実行する遅頻度 ② フェッチは月次実行で十分 ③ パースは HTML サンプルがあれば認証なしでも開発・テスト可能。
 
-## 食べログ 5 ページの実装状況
+## 媒体ごとの実装状況
 
-`tabelog/` 配下に実装済み。各 CSV 出力例は `tabelog/output/`。
+### 食べログ 5 ページ（`tabelog/`）
+
+各 CSV 出力例は `tabelog/output/`。
 
 | URL | パーサ | 出力CSV列 | 行数（実機サンプル） |
 |---|---|---|---|
@@ -53,6 +55,18 @@ last_updated: 2026-06-26
 - **rstupreview_entry**: 「投稿日」は UI 上存在せず、**来店月**（YYYY/MM訪問）のみ。`YYYY-MM-01` に正規化済み。評価は `c-rating-v2--val35` のような class からフォールバック抽出。
 - **access_ranking**: 自店舗が TOP100 圏外の場合、ランキング表末尾に `<tr id="my-ranking" class="outside">` の 1 行が追加される構造。順位ジャンプあり。ダッシュボードでは `is_own_shop=true` 行を別扱い推奨。
 - **access_report_total**: 最終行に「合計」行があり、日付パターン非該当でスキップ。
+
+### ホットペッパー（HPG）クチコミ 1 ページ（`hotpepper/`）
+
+| URL | パーサ | 出力CSV列 | 行数（実機サンプル） |
+|---|---|---|---|
+| `/CLP/ccm010/showReportListAllForAuth` | `parse_reviews.py` | 投稿日/総合評価/投稿者/利用シーン/最終審査日/口コミID/本文先頭 | 20（1ページ仕様） |
+
+HPG 特有の留意点:
+- **HPG は食べログとは別ドメイン**（`cms.hotpepper.jp`）→ 独立した `storageState.json` 管理。`hotpepper/login_and_save_state.py` で別途認証保存。
+- **「来店日」UI なし** → `投稿日` と `利用シーン`（ランチ/ディナー）で代替。マーケダッシュボードの月次集計は「投稿日ベース」で運用（食べログは「来店月ベース」と非対称な点に注意）。
+- HTML 構造: `<table class="style01 ...">` を 1 件単位で 20 回繰り返し。`<span id="contributionDateN">` (N=0..19) を抽出キー、本文は `<input id="reportTextN">` の value から取得。
+- 評価詳細（料理／接客／雰囲気）は一覧画面にはなく、総合★のみ。
 
 ## 標準運用フロー
 

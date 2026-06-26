@@ -110,7 +110,7 @@ last_updated: 2026-06-26
 | `ホットペッパー_アクセスレポート_日別_2026-06.xlsx` | `daily_202606_1.xlsx` | https://www.cms.hotpepper.jp/CLP/crp040/showClientReportExcel | クライアントレポート（日別アクセス） | 日別 | 2026-06-26 | **エクスポートは Excel (.xlsx) 形式・ワンクリック生成**。月（YYYYMM）を画面で指定して生成 |
 | `ホットペッパー_アクセスレポート_月別_2026-07.xlsx` | `monthly_202607_1.xlsx` | https://www.cms.hotpepper.jp/CLP/crp040/showClientReportExcel | クライアントレポート（月別サマリー） | 月別 | 2026-06-26 | 同上。発行月（掲載月号）単位。クチコミ累計／今月投稿数も含む |
 | `ホットペッパー_流入ワード_2026-06.csv` | `freeword_202606_MA.csv` | https://www.cms.hotpepper.jp/CLP/crp040/showClientReportFreeword/0/0 | 流入フリーワードランキング | 月別 | 2026-06-26 | **CSV (Shift_JIS)**。SEO 流入ワード解析の主ソース。列: `順位 / フリーワード / 流入割合 / 同中エリア`（同中エリア = 同エリア内同ワード検索件数？）。先頭1行は「貴店への流入フリーワードランキング」タイトル → パース時にスキップ必要 |
-| クチコミ一覧（評価・投稿日） | https://www.cms.hotpepper.jp/CLP/ccm010/showReportListAllForAuth | **サンプル未取得（CSV 出力可否は未確認）** | HPG 投稿クチコミの一覧画面。**評価値 と 投稿日 が取得可能** → 月別クチコミ件数集計 + 評価分布集計に使える。Excel レポートの「クチコミ投稿数（今月）」は件数のみ → このページから取れば **評価別の内訳・トレンド** まで可視化できる |
+| `ホットペッパー_クチコミ一覧.csv` | Playwright DOM 抽出 | https://www.cms.hotpepper.jp/CLP/ccm010/showReportListAllForAuth | クチコミ一覧（1ページ20件） | 投稿日ベース | 2026-06-27 | **Playwright + bs4 で取得**（`scripts/scrapers/hotpepper/`）。CSV 出力ボタンなし。列: `投稿日 / 総合評価 / 投稿者 / 利用シーン / 最終審査日 / 口コミID / 本文先頭`。HPGには「来店日」UI なし → 投稿日と利用シーン（ランチ/ディナー）で代替 |
 
 ### 日別レポートの主な列（実機サンプル確認）
 - ヘッダ部: 貴店名 / ご掲載CD / ジャンル / 掲載月号 / ご掲載エリア / ご掲載プラン / 総席数 / 弊社担当

@@ -81,6 +81,7 @@
 ## サンプルデータ / 取得元台帳
 
 - `sample_data/README.md` — 各媒体管理画面からの CSV サンプル一覧＋取得元 URL 台帳（自動エクスポート設計の一次資料）
-- `sample_data/tabelog_note/` — 食べログノート 予約一覧 / 分析CSV サンプル（2026-04, 2026-06）
-- `sample_data/tabelog/` — 食べログ 本体（アクセス数レポート等）。CSV 未取得項目は `sample_data/README.md` の「未取得・追加で取得したいレポート」を参照
+- `sample_data/tabelog_note/` — 食べログノート 予約一覧 / 分析CSV サンプル（2026-04）
+- `sample_data/tabelog/` — 食べログ 本体（アクセス数 / ページ別 / コンバージョン / クチコミ一覧）。CSV 未対応のため Playwright 取得対象
+- `sample_data/hotpepper/` — ホットペッパー クライアントレポート（日別 2026-06 / 月別 2026-07、xlsx）
 - 媒体別 CSV 列仕様: `Flow/202606/2026-06-26/マーケダッシュボード/媒体CSV調査/`

@@ -62,6 +62,18 @@ last_updated: 2026-06-26
 
 サンプル配置: `sample_data/tabelog/`
 
+実機スクレイプ結果（`scripts/scrapers/tabelog/` で取得 → ここにコピー）:
+
+| ファイル | 行数 | 列 |
+|---|---|---|
+| `access_report_total.csv` | 31 | 日付/曜日/PC/スマホ/アプリ/総合 |
+| `access_report_page.csv` | 12 | period_start/period_end/page_type/pv/share_percent/note（13ヶ月集計） |
+| `access_report_total_conversion.csv` | 13 | 年月/通話成立数/ネット予約組数/地図印刷PV/全体PV |
+| `rstupreview_entry.csv` | 20 | 来店日/総合評価/投稿者/本文先頭 |
+| `access_ranking.csv` | 101 | エリア/順位/店舗名/店舗エリア/ジャンル/アクセス数/前月比/is_own_shop |
+
+下記テーブルはスクレイプ対象URL／DOM仕様の取得元台帳。
+
 | 種別 | 取得元 URL | サンプル状況 | 備考 |
 |---|---|---|---|
 | アクセス数レポート（PC / スマホ / アプリ / 総合の日別） | https://owner.tabelog.com/owner_rst/access_report_total | **サンプル未取得（CSV 出力ボタンなしの可能性大）** | 画面に日別のチャネル別アクセス数が表示されている → 自動化時は HTML パース or Playwright で表テキスト抽出を想定 |

@@ -86,3 +86,8 @@
 - `sample_data/hotpepper/` — ホットペッパー クライアントレポート（日別 2026-06 / 月別 2026-07、xlsx）+ 流入ワード（2026-06、csv）+ クチコミ一覧（Playwright 対象）
 - `sample_data/restaurant_board/` — レストランボード 予約一覧 CSV（2026-05、全媒体予約の生データ統合ソース）
 - 媒体別 CSV 列仕様: `Flow/202606/2026-06-26/マーケダッシュボード/媒体CSV調査/`
+
+## スクレイパー（CSV エクスポート不可ページ用）
+
+- `scripts/scrapers/README.md` — Playwright で HTML 取得 → bs4 で CSV 化する標準手順（3層: 認証 / フェッチ / パース）
+- `scripts/scrapers/tabelog/` — 食べログ 5 ページ（access_report_total / access_report_page / access_report_total_conversion / rstupreview_entry / access_ranking）の実装。初回 `python3 login_and_save_state.py` で認証セッション保存 → 以降 `./run_all.sh` で全自動取得

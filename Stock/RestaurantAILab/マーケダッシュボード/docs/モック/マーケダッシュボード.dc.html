@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+@font-face{font-family:'Noto Sans JP';font-style:normal;font-weight:100 900;font-display:swap;src:url('fonts/NotoSansJP-VariableFont_wght.ttf') format('truetype-variations'),url('fonts/NotoSansJP-VariableFont_wght.ttf') format('truetype');}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{font-family:'Noto Sans JP','Hiragino Kaku Gothic ProN','Yu Gothic UI',Meiryo,system-ui,sans-serif;color:#06070A;background:#F5F6F9;-webkit-font-smoothing:antialiased;font-feature-settings:"palt" 1;letter-spacing:.01em;}
+.cdnum{font-family:'JetBrains Mono','SFMono-Regular',ui-monospace,monospace;}
+::-webkit-scrollbar{width:10px;height:10px;}
+::-webkit-scrollbar-thumb{background:#D9DCE3;border-radius:10px;border:2px solid #F5F6F9;}
+@keyframes cdskel{0%{opacity:.55;}50%{opacity:1;}100%{opacity:.55;}}
+</style>
+</helmet>
+<div style="display:flex;flex-direction:column;height:100vh;min-height:100vh;background:#F5F6F9;color:#06070A;font-size:14px;">
+
+  <!-- ===== HEADER ===== -->
+  <header style="flex:0 0 auto;height:60px;display:flex;align-items:center;gap:20px;padding:0 22px;background:rgba(255,255,255,.86);backdrop-filter:blur(12px);border-bottom:1px solid #D9DCE3;position:relative;z-index:30;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <img src="assets/logo-horizontal.png" alt="Core Driven" style="height:26px;display:block;" />
+      <span style="width:1px;height:22px;background:#D9DCE3;display:inline-block;"></span>
+      <span style="font-weight:700;font-size:15px;letter-spacing:.02em;">マーケダッシュボード</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:14px;margin-left:8px;">
+      <label style="display:flex;align-items:center;gap:7px;font-size:12px;color:#6A6F7D;">店舗
+        <select value="{{ store }}" onChange="{{ onStore }}" style="font-family:inherit;font-size:13px;font-weight:600;color:#06070A;background:#fff;border:1px solid #D9DCE3;border-radius:8px;padding:7px 10px;max-width:300px;cursor:pointer;">
+          <sc-for list="{{ stores }}" as="s" hint-placeholder-count="3"><option value="{{ s }}">{{ s }}</option></sc-for>
+        </select>
+      </label>
+      <label style="display:flex;align-items:center;gap:7px;font-size:12px;color:#6A6F7D;">期間
+        <select value="{{ period }}" onChange="{{ onPeriod }}" style="font-family:inherit;font-size:13px;font-weight:600;color:#06070A;background:#fff;border:1px solid #D9DCE3;border-radius:8px;padding:7px 10px;cursor:pointer;">
+          <sc-for list="{{ periods }}" as="p" hint-placeholder-count="4"><option value="{{ p }}">{{ p }}</option></sc-for>
+        </select>
+      </label>
+    </div>
+    <div style="margin-left:auto;text-align:right;line-height:1.4;">
+      <div style="font-size:11px;color:#9095A3;">データ取得日</div>
+      <div class="cdnum" style="font-size:12px;color:#6A6F7D;font-weight:500;">2026-06-03 03:14</div>
+    </div>
+  </header>
+
+  <div style="flex:1 1 auto;display:flex;min-height:0;">
+
+    <!-- ===== SIDEBAR ===== -->
+    <nav style="flex:0 0 218px;background:#fff;border-right:1px solid #D9DCE3;padding:18px 14px;display:flex;flex-direction:column;gap:4px;overflow-y:auto;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.16em;color:#9095A3;padding:6px 12px 10px;">MARKETING</div>
+      <sc-for list="{{ nav }}" as="n" hint-placeholder-count="5">
+        <button onClick="{{ n.go }}" style="{{ n.style }}">
+          <span style="font-size:16px;width:20px;text-align:center;">{{ n.icon }}</span>
+          <span>{{ n.label }}</span>
+        </button>
+      </sc-for>
+      <div style="height:1px;background:#ECEEF2;margin:12px 6px;"></div>
+      <button onClick="{{ goSettings }}" style="{{ settingsStyle }}">
+        <span style="font-size:16px;width:20px;text-align:center;">⚙</span><span>設定</span>
+      </button>
+      <div style="margin-top:auto;padding:12px;border-radius:12px;background:#F4FBFF;border:1px solid #E8F7FF;">
+        <div style="font-size:11px;font-weight:700;color:#0040FB;margin-bottom:8px;">状態デモ</div>
+        <label style="display:flex;align-items:center;gap:8px;font-size:11px;color:#474B57;cursor:pointer;margin-bottom:6px;">
+          <input type="checkbox" checked="{{ showError }}" onChange="{{ toggleError }}" style="accent-color:#D7263D;cursor:pointer;" />整合性エラー
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:11px;color:#474B57;cursor:pointer;">
+          <input type="checkbox" checked="{{ showGap }}" onChange="{{ toggleGap }}" style="accent-color:#D97A00;cursor:pointer;" />データ欠損
+        </label>
+      </div>
+    </nav>
+
+    <!-- ===== MAIN ===== -->
+    <main style="flex:1 1 auto;overflow-y:auto;padding:26px 30px 60px;min-width:0;">
+
+      <!-- banners -->
+      <sc-if value="{{ showError }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:flex-start;gap:10px;background:#FDECEE;border:1px solid #D7263D;border-radius:12px;padding:13px 16px;margin-bottom:16px;color:#A11020;font-size:13px;font-weight:600;">
+          <span style="font-size:16px;line-height:1.2;">⚠</span>
+          <span>データ整合性エラー: 2026-05 の媒体予約合計（58組）が POS 総組数（312組）を超えていないか確認してください。突合差分はウォークインに計上されています。</span>
+        </div>
+      </sc-if>
+      <sc-if value="{{ showGap }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:flex-start;gap:10px;background:#FDF3E3;border:1px solid #D97A00;border-radius:12px;padding:13px 16px;margin-bottom:16px;color:#8A4D00;font-size:13px;font-weight:600;">
+          <span style="font-size:16px;line-height:1.2;">⚠</span>
+          <span>HPG クライアントレポート（2026-05）が未取得です。CVR・PV は前月値が表示されています。</span>
+        </div>
+      </sc-if>
+
+      <!-- screen title -->
+      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:22px;flex-wrap:wrap;">
+        <h1 style="margin:0;font-size:26px;font-weight:900;letter-spacing:-.01em;line-height:1.2;">{{ title }}</h1>
+        <span style="font-size:12px;color:#9095A3;">{{ subtitle }}</span>
+      </div>
+
+      <!-- ===================== SCREEN 1: SUMMARY ===================== -->
+      <sc-if value="{{ isSummary }}" hint-placeholder-val="{{ true }}">
+        <div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
+            <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="8">
+              <div style="background:#fff;border:1px solid #D9DCE3;border-radius:12px;padding:18px 18px 14px;box-shadow:0 1px 2px rgba(6,7,10,.05);position:relative;">
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;">
+                  <span style="font-size:12.5px;color:#6A6F7D;font-weight:600;">{{ k.name }}</span>
+                  <span title="{{ k.tip }}" style="width:15px;height:15px;border-radius:50%;border:1px solid #B9BEC9;color:#9095A3;font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;cursor:help;">i</span>
+                </div>
+                <div style="display:flex;align-items:baseline;gap:4px;">
+                  <span class="cdnum" style="font-size:31px;font-weight:800;line-height:1;letter-spacing:-.02em;">{{ k.value }}</span>
+                  <span style="font-size:12px;color:#9095A3;font-weight:600;">{{ k.unit }}</span>
+                </div>
+                <div class="cdnum" style="margin-top:9px;font-size:12px;font-weight:700;color:{{ k.deltaColor }};">{{ k.delta }}</div>
+                <div style="margin-top:10px;height:28px;">{{ k.spark }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="background:#fff;border:1px solid #D9DCE3;border-radius:12px;padding:22px 24px;box-shadow:0 1px 2px rgba(6,7,10,.05);margin-top:22px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:6px;">
+              <h3 style="margin:0;font-size:16px;font-weight:700;">媒体別予約構成 — 12ヶ月推移</h3>
+              <div style="display:flex;gap:16px;flex-wrap:wrap;">
+                <sc-for list="{{ stackLegend }}" as="l" hint-placeholder-count="4">
+                  <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#474B57;"><span style="width:11px;height:11px;border-radius:3px;background:{{ l.color }};border:1px solid rgba(0,0,0,.06);"></span>{{ l.label }}</span>
+                </sc-for>
+              </div>
+            </div>
+            <div>{{ summaryArea }}</div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ===================== SCREEN 2: FUNNEL ===================== -->
+      <sc-if value="{{ isFunnel }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="display:flex;gap:8px;margin-bottom:16px;">{{ tabsEl }}</div>
+          <div style="font-size:12px;color:#474B57;line-height:1.7;background:#F4FBFF;border:1px solid #E8F7FF;border-radius:8px;padding:11px 14px;margin-bottom:20px;">このファネルは <b>食べログ・HPG 共通で取得できる指標（全体PV・ネット予約組数）</b> のみで構成しています。通話成立・地図印刷（食べログ）やクーポン枚数・集客人数・流入ワード（HPG）など媒体固有の指標は「媒体別」タブに表示します。</div>
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start;">
+            <!-- funnel column -->
+            <div style="display:flex;flex-direction:column;align-items:center;gap:0;">
+              <sc-for list="{{ funnel }}" as="f" hint-placeholder-count="3">
+                <div style="width:100%;max-width:420px;{{ f.wrapStyle }}">
+                  <div style="{{ f.boxStyle }}">
+                    <div style="font-size:13px;font-weight:600;color:{{ f.labelColor }};margin-bottom:4px;">{{ f.label }}</div>
+                    <div class="cdnum" style="font-size:30px;font-weight:800;letter-spacing:-.02em;color:{{ f.numColor }};">{{ f.value }}</div>
+                    <div style="font-size:11px;color:#9095A3;margin-top:2px;">{{ f.note }}</div>
+                  </div>
+                  <sc-if value="{{ f.hasStep }}" hint-placeholder-val="{{ true }}">
+                    <div style="text-align:center;padding:8px 0;color:#6A6F7D;font-size:12px;font-weight:700;">
+                      <div style="font-size:16px;line-height:1;color:#B9BEC9;">▼</div>{{ f.stepLabel }}
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+            <!-- aux column -->
+            <div style="display:flex;flex-direction:column;gap:18px;">
+              <div style="background:#fff;border:1px solid #D9DCE3;border-radius:12px;padding:20px 22px;box-shadow:0 1px 2px rgba(6,7,10,.05);">
+                <h3 style="margin:0 0 4px;font-size:15px;font-weight:700;">直近12ヶ月 PV 推移</h3>
+                <div style="font-size:12px;color:#6A6F7D;margin-bottom:6px;">平均 PV: <b class="cdnum">{{ funnelAvgPV }}</b> / 月　当月 PV: <b class="cdnum">{{ funnelCurPV }}</b> <span style="color:#0EA371;font-weight:700;">{{ funnelPVdelta }}</span></div>
+                <div>{{ funnelPVChart }}</div>
+              </div>
+              <div style="background:#fff;border:1px solid #D9DCE3;border-radius:12px;padding:20px 22px;box-shadow:0 1px 2px rgba(6,7,10,.05);">
+                <h3 style="margin:0 0 2px;font-size:15px;font-weight:700;">ネット予約組数 — 12ヶ月推移</h3>
+                <div style="font-size:11px;color:#9095A3;margin-bottom:6px;">両媒体共通で取得できる指標</div>
+                <div>{{ funnelBookChart }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ===================== SCREEN 3: MEDIA ===================== -->
+      <sc-if value="{{ isMedia }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="display:flex;gap:8px;margin-bottom:22px;">{{ tabsEl }}</div>
+          <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px;">
+            <sc-for list="{{ mediaKpis }}" as="k" hint-placeholder-count="5">
+              <div style="background:#fff;border:1px solid #D9DCE3;border-radius:12px;padding:16px 16px 14px;box-shadow:0 1px 2px rgba(6,7,10,.05);">
+                <div style="font-size:12px;color:#6A6F7D;font-weight:600;margin-bottom:8px;">{{ k.name }}</div>
+                <div class="cdnum" style="font-size:26px;font-weight:800;letter-spacing:-.02em;">{{ k.value }}</div>
+                <div style="font-size:11px;color:#9095A3;margin-top:5px;">{{ k.note }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px;">
+            <sc-for list="{{ mediaMini }}" as="m" hint-placeholder-count="3">
+              <div style="background:#fff;border:1px solid #D9DCE3;border-radius:12px;padding:18px 18px 12px;box-shadow:0 1px 2px rgba(6,7,10,.05);">
+                <div style="font-size:13px;font-weight:700;margin-bottom:8px;">{{ m.title }}</div>
+                <div>{{ m.chart }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <sc-if value="{{ isTabelog }}" hint-placeholder-val="{{ true }}">
+            <div style="background:#fff;border:1px solid #D9DCE3;border-radius:12px;padding:22px 24px;box-shadow:0 1px 2px rgba(6,7,10,.05);margin-top:20px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:6px;">
+                <h3 style="margin:0;font-size:16px;font-weight:700;">ページ種別別 PV — 12ヶ月推移</h3>
+                <div style="display:flex;gap:14px;flex-wrap:wrap;">
+                  <sc-for list="{{ pageLegend }}" as="l" hint-placeholder-count="6">
+                    <span style="display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:#474B57;"><span style="width:10px;height:10px;border-radius:2px;background:{{ l.color }};"></span>{{ l.label }}</span>
+                  </sc-for>
+                </div>
+              </div>
+              <div>{{ pageMultiline }}</div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isTabelog }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#fff;border:1px solid #D9DCE3;border-radius:12px;padding:22px 24px;box-shadow:0 1px 2px rgba(6,7,10,.05);margin-top:20px;">
+            <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
+              <h3 style="margin:0;font-size:16px;font-weight:700;">当月ページ別 PV ランキング</h3>
+              <span style="font-size:11.5px;color:#9095A3;">食べログのみ取得可能 — ページ種別別のPV内訳</span>
+            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:13px;">
+              <thead><tr style="text-align:left;color:#9095A3;font-size:11px;text-transform:uppercase;letter-spacing:.06em;">
+                <th style="padding:8px 10px;font-weight:700;">順位</th><th style="padding:8px 10px;font-weight:700;">ページ種別</th>
+                <th style="padding:8px 10px;font-weight:700;text-align:right;">PV</th><th style="padding:8px 10px;font-weight:700;text-align:right;">構成比</th><th style="padding:8px 10px;font-weight:700;text-align:right;">前月比</th>
+              </tr></thead>
+              <tbody>
+                <sc-for list="{{ pageRank }}" as="r" hint-placeholder-count="7">
+                  <tr style="border-top:1px solid #ECEEF2;">
+                    <td class="cdnum" style="padding:10px;color:#9095A3;font-weight:700;">{{ r.rank }}</td>
+                    <td style="padding:10px;"><span style="display:inline-flex;align-items:center;gap:8px;"><span style="width:9px;height:9px;border-radius:2px;background:{{ r.color }};"></span>{{ r.name }}</span></td>
+                    <td class="cdnum" style="padding:10px;text-align:right;font-weight:700;">{{ r.pv }}</td>
+                    <td class="cdnum" style="padding:10px;text-align:right;color:#6A6F7D;">{{ r.share }}</td>
+                    <td class="cdnum" style="padding:10px;text-align:right;font-weight:700;color:{{ r.deltaColor }};">{{ r.delta }}</td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ isTabelog }}" hint-placeholder-val="{{ true }}">
+            <div style="background:#fff;border:1px solid #D9DCE3;border-radius:12px;padding:22px 24px;box-shadow:0 1px 2px rgba(6,7,10,.05);margin-top:20px;">
+              <h3 style="margin:0 0 4px;font-size:16px;font-weight:700;">食べログ CV 内訳（来店指標レポート）</h3>
+              <div style="font-size:11.5px;color:#9095A3;margin-bottom:16px;">食べログのみ取得可能 — 通話成立・地図印刷の CV チャネル。クチコミは<b>来店月</b>ベースで集計。</div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
+                <sc-for list="{{ tbCV }}" as="b" hint-placeholder-count="3">
+                  <div style="background:#F5F6F9;border-radius:10px;padding:14px 16px;">
+                    <div style="font-size:11.5px;color:#6A6F7D;margin-bottom:6px;">{{ b.label }}</div>
+                    <div class="cdnum" style="font-size:22px;font-weight:800;">{{ b.value }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isHpg }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#fff;border:1px solid #D9DCE3;border-radius:12px;padding:22px 24px;box-shadow:0 1px 2px rgba(6,7,10,.05);margin-top:20px;">
+              <h3 style="margin:0 0 4px;font-size:16px;font-weight:700;">HPG 月別レポート（2026-05）</h3>
+              <div style="font-size:11.5px;color:#9095A3;margin-bottom:16px;">HPG のみ取得可能 — クーポン枚数・集客人数・流入ワード。クチコミは<b>投稿日</b>ベースで集計。</div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">
+                <sc-for list="{{ hpgBox }}" as="b" hint-placeholder-count="4">
+                  <div style="background:#F5F6F9;border-radius:10px;padding:14px 16px;">
+                    <div style="font-size:11.5px;color:#6A6F7D;margin-bottom:6px;">{{ b.label }}</div>
+                    <div class="cdnum" style="font-size:22px;font-weight:800;">{{ b.value }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="background:#fff;border:1px solid #D9DCE3;border-radius:12px;padding:22px 24px;box-shadow:0 1px 2px rgba(6,7,10,.05);margin-top:20px;">
+              <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
+                <h3 style="margin:0;font-size:16px;font-weight:700;">流入ワード TOP10（2026-06）</h3>
+                <span style="font-size:11.5px;color:#9095A3;">HPG のみ取得可能 — フリーワード検索からの流入</span>
+              </div>
+              <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                <thead><tr style="text-align:left;color:#9095A3;font-size:11px;text-transform:uppercase;letter-spacing:.06em;">
+                  <th style="padding:8px 10px;font-weight:700;">順位</th><th style="padding:8px 10px;font-weight:700;">フリーワード</th><th style="padding:8px 10px;font-weight:700;">流入割合</th><th style="padding:8px 10px;font-weight:700;text-align:right;">同エリア競合数</th>
+                </tr></thead>
+                <tbody>
+                  <sc-for list="{{ keywordRows }}" as="r" hint-placeholder-count="10">
+                    <tr style="border-top:1px solid #ECEEF2;">
+                      <td class="cdnum" style="padding:10px;color:#9095A3;font-weight:700;">{{ r.rank }}</td>
+                      <td style="padding:10px;font-weight:600;">{{ r.word }}</td>
+                      <td style="padding:10px;">
+                        <span style="display:flex;align-items:center;gap:8px;"><span style="flex:0 0 90px;height:6px;background:#ECEEF2;border-radius:3px;overflow:hidden;"><span style="display:block;height:100%;width:{{ r.barW }};background:#E60012;"></span></span><span class="cdnum" style="font-weight:700;">{{ r.share }}</span></span>
+                      </td>
+                      <td class="cdnum" style="padding:10px;text-align:right;color:#6A6F7D;">{{ r.area }}</td>
+                    </tr>
+                  </sc-for>
+                </tbody>
+              </table>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <!-- ===================== SCREEN 4: REVIEWS ===================== -->
+      <sc-if value="{{ isReviews }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:560px;">
+            <sc-for list="{{ reviewSummary }}" as="s" hint-placeholder-count="3">
+              <div style="background:#fff;border:1px solid #D9DCE3;border-radius:12px;padding:16px 18px;box-shadow:0 1px 2px rgba(6,7,10,.05);">
+                <div style="font-size:12px;color:#6A6F7D;font-weight:600;margin-bottom:7px;">{{ s.label }}</div>
+                <div class="cdnum" style="font-size:26px;font-weight:800;letter-spacing:-.02em;">{{ s.value }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:20px;">
+            <div style="background:#fff;border:1px solid #D9DCE3;border-radius:12px;padding:20px 22px;box-shadow:0 1px 2px rgba(6,7,10,.05);">
+              <h3 style="margin:0 0 2px;font-size:15px;font-weight:700;">月次クチコミ件数推移</h3>
+              <div style="font-size:11px;color:#9095A3;margin-bottom:8px;">※ 食べログ=来店月／HPG=投稿日（非対称集計）</div>
+              <div>{{ reviewCountChart }}</div>
+            </div>
+            <div style="background:#fff;border:1px solid #D9DCE3;border-radius:12px;padding:20px 22px;box-shadow:0 1px 2px rgba(6,7,10,.05);">
+              <h3 style="margin:0 0 2px;font-size:15px;font-weight:700;">月次平均評価推移</h3>
+              <div style="font-size:11px;color:#9095A3;margin-bottom:8px;">食べログは当月来店分が0件のため非表示</div>
+              <div>{{ reviewRatingChart }}</div>
+            </div>
+          </div>
+
+          <div style="background:#fff;border:1px solid #D9DCE3;border-radius:12px;padding:22px 24px;box-shadow:0 1px 2px rgba(6,7,10,.05);margin-top:20px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:14px;">
+              <h3 style="margin:0;font-size:16px;font-weight:700;">クチコミ一覧</h3>
+              <div style="display:flex;gap:6px;">{{ reviewTabsEl }}</div>
+            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:13px;">
+              <thead><tr style="text-align:left;color:#9095A3;font-size:11px;text-transform:uppercase;letter-spacing:.06em;">
+                <th style="padding:8px 10px;font-weight:700;">媒体</th><th style="padding:8px 10px;font-weight:700;">日付</th><th style="padding:8px 10px;font-weight:700;">評価</th><th style="padding:8px 10px;font-weight:700;">投稿者</th><th style="padding:8px 10px;font-weight:700;">本文</th>
+              </tr></thead>
+              <tbody>
+                <sc-for list="{{ reviewRows }}" as="r" hint-placeholder-count="3">
+                  <tr onClick="{{ r.open }}" style="border-top:1px solid #ECEEF2;cursor:pointer;">
+                    <td style="padding:11px 10px;"><span style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap;"><span style="width:9px;height:9px;border-radius:50%;background:{{ r.color }};"></span>{{ r.media }}</span></td>
+                    <td class="cdnum" style="padding:11px 10px;color:#6A6F7D;white-space:nowrap;">{{ r.date }}</td>
+                    <td style="padding:11px 10px;color:#F5A623;white-space:nowrap;letter-spacing:1px;">{{ r.stars }}</td>
+                    <td style="padding:11px 10px;white-space:nowrap;">{{ r.name }}</td>
+                    <td style="padding:11px 10px;color:#474B57;max-width:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r.snippet }}</td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+            <sc-if value="{{ reviewEmpty }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center;color:#9095A3;font-size:12px;padding:14px 0 2px;">🟠 食べログ: 来店月=2026-05 の投稿は0件です（最新は2026-01）。「過去6ヶ月」タブで確認できます。</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ===================== SCREEN 5: COMPETITION ===================== -->
+      <sc-if value="{{ isComp }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="background:#fff;border:1px solid #D9DCE3;border-radius:12px;padding:22px 24px;box-shadow:0 1px 2px rgba(6,7,10,.05);">
+            <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:6px;">
+              <h3 style="margin:0;font-size:16px;font-weight:700;">食べログ エリア順位 — 12ヶ月推移</h3>
+              <span style="font-size:12px;color:#6A6F7D;">当月 <b class="cdnum" style="color:#0040FB;">237位</b> ← 前月 249位　<span style="color:#0EA371;font-weight:700;">12ヶ月で43ランク改善</span></span>
+              <span style="font-size:11px;color:#9095A3;margin-left:auto;">Y軸反転（上=順位改善）</span>
+            </div>
+            <div>{{ rankChart }}</div>
+          </div>
+
+          <div style="background:#fff;border:1px solid #D9DCE3;border-radius:12px;padding:22px 24px;box-shadow:0 1px 2px rgba(6,7,10,.05);margin-top:20px;">
+            <h3 style="margin:0 0 14px;font-size:16px;font-weight:700;">岡崎エリア内 TOP10 + 自店舗（2026-05）</h3>
+            <table style="width:100%;border-collapse:collapse;font-size:13px;">
+              <thead><tr style="text-align:left;color:#9095A3;font-size:11px;text-transform:uppercase;letter-spacing:.06em;">
+                <th style="padding:8px 10px;font-weight:700;">順位</th><th style="padding:8px 10px;font-weight:700;">店舗名</th><th style="padding:8px 10px;font-weight:700;">ジャンル</th><th style="padding:8px 10px;font-weight:700;">駅</th><th style="padding:8px 10px;font-weight:700;text-align:right;">アクセス数</th><th style="padding:8px 10px;font-weight:700;text-align:right;">前月比</th>
+              </tr></thead>
+              <tbody>
+                <sc-for list="{{ compRows }}" as="r" hint-placeholder-count="11">
+                  <tr style="{{ r.rowStyle }}">
+                    <td class="cdnum" style="padding:11px 10px;font-weight:700;color:{{ r.rankColor }};">{{ r.rank }}</td>
+                    <td style="padding:11px 10px;font-weight:{{ r.nameWeight }};">{{ r.name }}</td>
+                    <td style="padding:11px 10px;color:#6A6F7D;">{{ r.genre }}</td>
+                    <td style="padding:11px 10px;color:#6A6F7D;white-space:nowrap;">{{ r.station }}</td>
+                    <td class="cdnum" style="padding:11px 10px;text-align:right;font-weight:700;">{{ r.access }}</td>
+                    <td class="cdnum" style="padding:11px 10px;text-align:right;font-weight:700;color:{{ r.deltaColor }};">{{ r.delta }}</td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+
+          <div style="background:#fff;border:1px solid #D9DCE3;border-radius:12px;padding:22px 24px;box-shadow:0 1px 2px rgba(6,7,10,.05);margin-top:20px;">
+            <h3 style="margin:0 0 14px;font-size:16px;font-weight:700;">HPG 流入ワード TOP10（2026-06）</h3>
+            <table style="width:100%;border-collapse:collapse;font-size:13px;">
+              <thead><tr style="text-align:left;color:#9095A3;font-size:11px;text-transform:uppercase;letter-spacing:.06em;">
+                <th style="padding:8px 10px;font-weight:700;">順位</th><th style="padding:8px 10px;font-weight:700;">フリーワード</th><th style="padding:8px 10px;font-weight:700;">流入割合</th><th style="padding:8px 10px;font-weight:700;text-align:right;">同エリア競合数</th>
+              </tr></thead>
+              <tbody>
+                <sc-for list="{{ keywordRows }}" as="r" hint-placeholder-count="10">
+                  <tr style="border-top:1px solid #ECEEF2;">
+                    <td class="cdnum" style="padding:10px;color:#9095A3;font-weight:700;">{{ r.rank }}</td>
+                    <td style="padding:10px;font-weight:600;">{{ r.word }}</td>
+                    <td style="padding:10px;">
+                      <span style="display:flex;align-items:center;gap:8px;"><span style="flex:0 0 90px;height:6px;background:#ECEEF2;border-radius:3px;overflow:hidden;"><span style="display:block;height:100%;width:{{ r.barW }};background:#E60012;"></span></span><span class="cdnum" style="font-weight:700;">{{ r.share }}</span></span>
+                    </td>
+                    <td class="cdnum" style="padding:10px;text-align:right;color:#6A6F7D;">{{ r.area }}</td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ===================== SETTINGS ===================== -->
+      <sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#fff;border:1px solid #D9DCE3;border-radius:12px;padding:30px;box-shadow:0 1px 2px rgba(6,7,10,.05);max-width:560px;">
+          <p style="margin:0 0 10px;color:#474B57;line-height:1.8;">このモックは <b>マーケダッシュボード モック仕様書 v1</b> に基づくクリッカブル試作です。数値は実機サンプル（韓国屋台ポックンパ ネネチキン 東岡崎店, 2026-05）の現実値＋一部モック推定です。</p>
+          <p style="margin:0;color:#9095A3;font-size:12px;line-height:1.8;">外注ロールでは店舗の ID/PW は非表示の想定。設定画面の詳細は Phase 1.1 で実装予定。</p>
+        </div>
+      </sc-if>
+
+    </main>
+  </div>
+
+  <!-- ===== REVIEW MODAL ===== -->
+  <sc-if value="{{ review }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeReview }}" style="position:fixed;inset:0;background:rgba(6,7,10,.45);display:flex;align-items:center;justify-content:center;z-index:50;padding:24px;">
+      <div onClick="{{ stop }}" style="background:#fff;border-radius:16px;max-width:520px;width:100%;padding:26px 28px;box-shadow:0 40px 80px -20px rgba(1,24,239,.28);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+          <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;"><span style="width:9px;height:9px;border-radius:50%;background:{{ review.color }};"></span>{{ review.media }}</span>
+          <span class="cdnum" style="font-size:12px;color:#9095A3;">{{ review.date }}</span>
+          <span style="color:#F5A623;letter-spacing:1px;">{{ review.stars }}</span>
+          <span style="margin-left:auto;font-size:13px;font-weight:700;">{{ review.name }}</span>
+        </div>
+        <p style="margin:0 0 18px;line-height:1.9;color:#2A2D36;font-size:14px;">{{ review.body }}</p>
+        <button onClick="{{ closeReview }}" style="font-family:inherit;font-size:13px;font-weight:700;color:#fff;background:#0040FB;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">閉じる</button>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:860}}">
+const el = React.createElement;
+class Component extends DCLogic {
+  state = { screen:'summary', tab:'tabelog', reviewRange:'current', review:null, showError:false, showGap:false };
+
+  C = { tabelog:'#FF7F50', hpg:'#E60012', direct:'#9CA3AF', walkin:'#D1D5DB', blue:'#0040FB', blue6:'#1E88FF', cyan:'#43D6FF', up:'#0EA371', down:'#D7263D', flat:'#6A6F7D' };
+  months = ['25-06','25-07','25-08','25-09','25-10','25-11','25-12','26-01','26-02','26-03','26-04','26-05'];
+  pageColors = { '店舗トップ':'#0040FB','メニュー':'#1E88FF','クチコミ・評価':'#43D6FF','コース':'#0EA371','写真':'#D97A00','地図':'#9095A3','クーポン':'#B9BEC9' };
+
+  D = {
+    total:[253,282,265,274,284,295,315,301,284,295,300,312],
+    guests:[615,685,645,666,690,716,765,731,690,716,729,758],
+    avg:[2.43,2.43,2.44,2.43,2.43,2.43,2.43,2.43,2.43,2.43,2.43,2.43],
+    mediaRatio:[21.7,23.8,22.3,22.6,22.2,21.0,23.8,21.9,19.7,19.3,18.7,18.6],
+    walkin:[198,215,206,212,221,233,240,235,228,238,244,254],
+    tbCvr:[0.30,0.28,0.22,0.31,0.27,0.24,0.33,0.29,0.26,0.28,0.35,0.25],
+    hpgCvr:[2.0,2.2,2.1,2.3,2.0,2.4,2.6,2.3,2.1,2.5,2.1,2.4],
+    rank:[280,275,272,268,265,260,256,252,250,251,249,237],
+    stack:{ tabelog:[5,6,4,7,6,5,9,7,5,6,5,8], hpg:[42,51,48,46,52,49,55,53,47,44,45,50], direct:[8,10,7,9,5,8,11,6,4,7,6,0], walkin:[198,215,206,212,221,233,240,235,228,238,244,254] },
+    tbPV:[2400,2600,2500,2700,2650,2750,2900,2800,2700,2750,2800,3173],
+    hpgPV:[1800,1900,1850,1950,2000,1980,2100,2050,1990,2030,2000,2083],
+    tbBook:[5,6,4,7,6,5,9,7,5,6,5,8],
+    hpgBook:[42,51,48,46,52,49,55,53,47,44,45,50],
+    pagePV:{ '店舗トップ':[2100,2180,2150,2220,2260,2300,2350,2310,2280,2400,2430,2483],'メニュー':[980,1010,990,1030,1050,1080,1100,1070,1040,1110,1130,1150],'クチコミ・評価':[750,790,770,810,840,870,900,880,860,950,1000,1029],'コース':[350,360,355,370,380,390,395,388,382,400,405,411],'写真':[280,285,282,290,295,300,305,300,298,310,315,320],'地図':[90,92,91,95,98,100,102,100,99,105,108,110],'クーポン':[0,0,0,0,0,0,0,0,0,0,0,0] },
+    reviewCount:{ tabelog:[0,0,1,0,1,0,1,2,0,0,0,0], hpg:[2,4,3,3,2,3,4,5,4,2,1,3] },
+    reviewRating:{ hpg:[4.0,4.1,4.2,4.0,4.3,4.1,4.2,4.4,4.2,4.0,4.5,4.3] }
+  };
+
+  reviewsHpg = [
+    {media:'HPG',color:'#E60012',date:'2026-05-22',rating:5,name:'ゆき',body:'美味しかった！また来ます。チキンが本当にジューシーで、家族みんな大満足でした。次は別のメニューも試したいです。'},
+    {media:'HPG',color:'#E60012',date:'2026-05-15',rating:4,name:'たろう',body:'コスパよかったです。ボリュームもあって満足。平日ランチで利用しましたが、提供も早く助かりました。'},
+    {media:'HPG',color:'#E60012',date:'2026-05-08',rating:4,name:'みみ',body:'雰囲気よくて落ち着きました。スタッフの方も親切で、デートにも使えそうなお店だと思います。'}
+  ];
+  reviewsTbPast = [
+    {media:'食べログ',color:'#FF7F50',date:'2026-01',rating:3.5,name:'お嬢chan',body:'チーズタッカルビとてもおいしかったです！欲を言えば、もう少し席の間隔が広いと嬉しいかな。味は文句なしでした。'},
+    {media:'食べログ',color:'#FF7F50',date:'2026-01',rating:3,name:'kenzie',body:'東岡崎駅から徒歩1分‼️ すぐ隣にはコインパーキングもあってアクセス良好。料理は韓国らしい味付けでした。'},
+    {media:'食べログ',color:'#FF7F50',date:'2025-12',rating:3.5,name:'ジーコ5639',body:'チヂミがかなり美味しかったが、若者多く、ソワソワしました。落ち着いて食べたい人は早い時間がおすすめ。'}
+  ];
+
+  compTop = [
+    {rank:1,name:'炭火鰻と特選和牛ふじさん 岡崎店',genre:'うなぎ',station:'男川',access:43278,delta:82},
+    {rank:2,name:'君のハンバーグを食べたい 三井アウトレットパーク岡崎店',genre:'ハンバーグ',station:'名電山中',access:28174,delta:2},
+    {rank:3,name:'焼肉ホルモン ときわ 岡崎本店',genre:'焼肉',station:'岡崎公園前',access:19432,delta:14},
+    {rank:4,name:'鮨処 まる栄',genre:'寿司',station:'東岡崎',access:15210,delta:-3},
+    {rank:5,name:'Trattoria Vento',genre:'イタリアン',station:'中岡崎',access:12880,delta:9},
+    {rank:6,name:'とんかつ かつ庵 岡崎',genre:'とんかつ',station:'北岡崎',access:10540,delta:5},
+    {rank:7,name:'中華そば 一進',genre:'ラーメン',station:'矢作橋',access:8970,delta:21},
+    {rank:8,name:'カフェ＆ダイニング 月見',genre:'カフェ',station:'大門',access:7420,delta:-6},
+    {rank:9,name:'居酒屋 おかざき横丁',genre:'居酒屋',station:'東岡崎',access:6310,delta:3},
+    {rank:10,name:'ダカフェ 本店',genre:'カフェ、スイーツ',station:'西岡崎',access:5567,delta:27}
+  ];
+  keywords = [
+    {rank:1,word:'ネネチキン東岡崎',share:26.9,area:2},{rank:2,word:'東岡崎',share:10.3,area:80},
+    {rank:3,word:'韓国料理',share:6.4,area:15},{rank:3,word:'ポックンパ岡崎',share:6.4,area:1},
+    {rank:5,word:'ネネチキン',share:5.1,area:1},{rank:6,word:'岡崎',share:3.8,area:215},
+    {rank:7,word:'東岡崎駅',share:2.6,area:57},{rank:7,word:'韓国',share:2.6,area:5},
+    {rank:9,word:'チキン',share:2.6,area:35},{rank:10,word:'焼肉',share:1.3,area:110}
+  ];
+
+  fmt(n){ return n.toLocaleString('en-US'); }
+  stars(r){ const f=Math.floor(r); return '★'.repeat(f) + (r-f>=0.5?'☆':'') + '☆'.repeat(Math.max(0,5-f-(r-f>=0.5?1:0))); }
+
+  // ---- chart builders ----
+  spark(values,color,opts){
+    opts=opts||{}; const W=120,H=28,p=3,n=values.length;
+    const lo=Math.min(...values),hi=Math.max(...values),rng=(hi-lo)||1;
+    const x=i=>p+i*(W-2*p)/(n-1);
+    const y=v=>{const t=(v-lo)/rng; return opts.invert?(p+t*(H-2*p)):(H-p-t*(H-2*p));};
+    const line=values.map((v,i)=>`${i?'L':'M'}${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
+    const area=`${line} L${x(n-1).toFixed(1)} ${H-p} L${x(0).toFixed(1)} ${H-p} Z`;
+    return el('svg',{viewBox:`0 0 ${W} ${H}`,width:'100%',height:H,preserveAspectRatio:'none',style:{display:'block',overflow:'visible'}},
+      el('path',{d:area,fill:color,fillOpacity:0.14}),
+      el('path',{d:line,fill:'none',stroke:color,strokeWidth:1.6,strokeLinejoin:'round',strokeLinecap:'round'}),
+      el('circle',{cx:x(n-1),cy:y(values[n-1]),r:2.4,fill:color}));
+  }
+
+  axisMonths(x,H,pB){
+    const t=[]; for(let i=0;i<this.months.length;i+=2){ t.push(el('text',{key:i,x:x(i),y:H-pB+15,fontSize:9,fill:'#9095A3',textAnchor:'middle'},this.months[i].slice(3))); }
+    return t;
+  }
+
+  stackedArea(){
+    const W=760,H=250,pL=42,pR=14,pT=16,pB=28,n=this.months.length,S=this.D.stack;
+    const tot=this.months.map((_,i)=>S.walkin[i]+S.direct[i]+S.hpg[i]+S.tabelog[i]);
+    const niceMax=Math.ceil(Math.max(...tot)/100)*100;
+    const x=i=>pL+i*(W-pL-pR)/(n-1);
+    const y=v=>H-pB-(v/niceMax)*(H-pT-pB);
+    const order=[['walkin',this.C.walkin],['direct',this.C.direct],['hpg',this.C.hpg],['tabelog',this.C.tabelog]];
+    let cum=this.months.map(()=>0); const layers=[];
+    for(const [k,color] of order){
+      const lower=cum.slice(); cum=cum.map((c,i)=>c+S[k][i]);
+      const top=cum.map((v,i)=>`${i?'L':'M'}${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
+      const bot=lower.map((v,i)=>[x(i),y(v)]).reverse().map(p=>`L${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(' ');
+      layers.push(el('path',{key:k,d:`${top} ${bot} Z`,fill:color,fillOpacity:0.95}));
+    }
+    const grid=[0,niceMax/2,niceMax].map((v,i)=>el('g',{key:i},
+      el('line',{x1:pL,y1:y(v),x2:W-pR,y2:y(v),stroke:'#ECEEF2',strokeWidth:1}),
+      el('text',{x:pL-8,y:y(v)+3,fontSize:9,fill:'#9095A3',textAnchor:'end'},this.fmt(v))));
+    return el('svg',{viewBox:`0 0 ${W} ${H}`,width:'100%',height:H,style:{display:'block',fontFamily:'JetBrains Mono,monospace'}},grid,layers,this.axisMonths(x,H,pB));
+  }
+
+  lineChart(values,color,opts){
+    opts=opts||{}; const W=opts.W||440,H=opts.H||200,pL=opts.pL||36,pR=14,pT=16,pB=28,n=values.length;
+    let lo=opts.min!=null?opts.min:Math.min(...values), hi=opts.max!=null?opts.max:Math.max(...values);
+    const pad=(hi-lo)*0.12||1; if(opts.min==null)lo-=pad; if(opts.max==null)hi+=pad; const rng=(hi-lo)||1;
+    const x=i=>pL+i*(W-pL-pR)/(n-1);
+    const y=v=>{const t=(v-lo)/rng; return opts.invert?(pT+t*(H-pT-pB)):(H-pB-t*(H-pT-pB));};
+    const line=values.map((v,i)=>`${i?'L':'M'}${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
+    const fill=opts.fill!==false?el('path',{d:`${line} L${x(n-1).toFixed(1)} ${H-pB} L${x(0).toFixed(1)} ${H-pB} Z`,fill:color,fillOpacity:0.10}):null;
+    const grid=[lo,(lo+hi)/2,hi].map((v,i)=>el('line',{key:i,x1:pL,y1:y(v),x2:W-pR,y2:y(v),stroke:'#F2F3F6',strokeWidth:1}));
+    const last=el('g',{},el('circle',{cx:x(n-1),cy:y(values[n-1]),r:4,fill:color}),el('circle',{cx:x(n-1),cy:y(values[n-1]),r:7,fill:color,fillOpacity:0.18}));
+    const lbl=opts.valFmt?el('text',{x:x(n-1),y:y(values[n-1])-11,fontSize:10,fontWeight:700,fill:color,textAnchor:'middle'},opts.valFmt(values[n-1])):null;
+    return el('svg',{viewBox:`0 0 ${W} ${H}`,width:'100%',height:H,style:{display:'block',fontFamily:'JetBrains Mono,monospace'}},grid,fill,el('path',{d:line,fill:'none',stroke:color,strokeWidth:2,strokeLinejoin:'round',strokeLinecap:'round'}),last,lbl,this.axisMonths(x,H,pB));
+  }
+
+  barChart(values,color,opts){
+    opts=opts||{}; const W=opts.W||300,H=opts.H||160,pL=30,pR=10,pT=14,pB=28,n=values.length;
+    const niceMax=Math.max(...values)*1.15||1; const x=i=>pL+i*(W-pL-pR)/(n-1);
+    const bw=(W-pL-pR)/n*0.6;
+    const y=v=>H-pB-(v/niceMax)*(H-pT-pB);
+    const bars=values.map((v,i)=>el('rect',{key:i,x:x(i)-bw/2,y:y(v),width:bw,height:(H-pB)-y(v),rx:2,fill:i===n-1?color:'#C9CFDA'}));
+    return el('svg',{viewBox:`0 0 ${W} ${H}`,width:'100%',height:H,style:{display:'block',fontFamily:'JetBrains Mono,monospace'}},bars,this.axisMonths(x,H,pB));
+  }
+
+  multiLine(seriesMap,colorMap,opts){
+    opts=opts||{}; const W=opts.W||760,H=opts.H||260,pL=42,pR=14,pT=16,pB=28;
+    const keys=Object.keys(seriesMap); const all=keys.flatMap(k=>seriesMap[k]);
+    const niceMax=Math.ceil(Math.max(...all)/250)*250||1; const n=this.months.length;
+    const x=i=>pL+i*(W-pL-pR)/(n-1); const y=v=>H-pB-(v/niceMax)*(H-pT-pB);
+    const grid=[0,niceMax/2,niceMax].map((v,i)=>el('g',{key:i},el('line',{x1:pL,y1:y(v),x2:W-pR,y2:y(v),stroke:'#ECEEF2',strokeWidth:1}),el('text',{x:pL-8,y:y(v)+3,fontSize:9,fill:'#9095A3',textAnchor:'end'},this.fmt(v))));
+    const lines=keys.map(k=>{const d=seriesMap[k].map((v,i)=>`${i?'L':'M'}${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');return el('path',{key:k,d,fill:'none',stroke:colorMap[k],strokeWidth:2,strokeLinejoin:'round',strokeLinecap:'round'});});
+    return el('svg',{viewBox:`0 0 ${W} ${H}`,width:'100%',height:H,style:{display:'block',fontFamily:'JetBrains Mono,monospace'}},grid,lines,this.axisMonths(x,H,pB));
+  }
+
+  stackedBar(){
+    const W=440,H=210,pL=30,pR=12,pT=16,pB=28,n=this.months.length;
+    const tb=this.D.reviewCount.tabelog, hp=this.D.reviewCount.hpg;
+    const tot=this.months.map((_,i)=>tb[i]+hp[i]); const niceMax=Math.max(...tot)+1;
+    const x=i=>pL+i*(W-pL-pR)/(n-1); const bw=(W-pL-pR)/n*0.58;
+    const y=v=>H-pB-(v/niceMax)*(H-pT-pB);
+    const bars=this.months.map((_,i)=>{const h1=(H-pB)-y(hp[i]); const yT=y(tb[i]+hp[i]);
+      return el('g',{key:i},
+        el('rect',{x:x(i)-bw/2,y:y(hp[i]),width:bw,height:h1,fill:this.C.hpg}),
+        tb[i]>0?el('rect',{x:x(i)-bw/2,y:yT,width:bw,height:y(hp[i])-yT,fill:this.C.tabelog}):null);});
+    return el('svg',{viewBox:`0 0 ${W} ${H}`,width:'100%',height:H,style:{display:'block',fontFamily:'JetBrains Mono,monospace'}},bars,this.axisMonths(x,H,pB));
+  }
+
+  rankChart(){
+    return this.lineChart(this.D.rank,this.C.blue,{invert:true,W:760,H:230,min:230,max:285,fill:false,valFmt:v=>v+'位'});
+  }
+
+  // ---- nav helpers ----
+  navStyle(active){
+    return `display:flex;align-items:center;gap:11px;width:100%;text-align:left;font-family:inherit;font-size:13.5px;font-weight:${active?700:500};color:${active?'#0040FB':'#474B57'};background:${active?'#F4FBFF':'transparent'};border:none;border-left:3px solid ${active?'#0040FB':'transparent'};border-radius:0 8px 8px 0;padding:10px 12px;cursor:pointer;transition:background .15s;`;
+  }
+  tabBtn(id,label,color,active){
+    return el('button',{onClick:()=>this.setState({tab:id}),style:{display:'inline-flex',alignItems:'center',gap:'8px',fontFamily:'inherit',fontSize:'13px',fontWeight:700,color:active?'#fff':'#474B57',background:active?color:'#fff',border:`1px solid ${active?color:'#D9DCE3'}`,borderRadius:'8px',padding:'9px 18px',cursor:'pointer'}},
+      el('span',{style:{width:'9px',height:'9px',borderRadius:'50%',background:active?'#fff':color}}),label);
+  }
+  rTab(id,label,active){
+    return el('button',{key:id,onClick:()=>this.setState({reviewRange:id}),style:{fontFamily:'inherit',fontSize:'12px',fontWeight:700,color:active?'#fff':'#474B57',background:active?'#0040FB':'#fff',border:`1px solid ${active?'#0040FB':'#D9DCE3'}`,borderRadius:'7px',padding:'7px 14px',cursor:'pointer'}},label);
+  }
+
+  renderVals(){
+    const s=this.state, C=this.C, D=this.D, isTb=s.tab==='tabelog';
+    const titles={summary:'2026年5月の月次サマリ',funnel:'集客・予約ファネル',media:'媒体別深掘り',reviews:'クチコミ',competition:'競合・SEO',settings:'設定'};
+    const navItems=[['summary','📊','月次サマリ'],['funnel','🎯','ファネル'],['media','📺','媒体別'],['reviews','💬','クチコミ'],['competition','🏆','競合・SEO']];
+
+    const kpis=[
+      {name:'総組数',value:'312',unit:'組',delta:'↗ +5%',dir:'up',tip:'sum(POS 日別 組数)',spark:this.spark(D.total,C.blue)},
+      {name:'総客数',value:'758',unit:'人',delta:'↗ +3%',dir:'up',tip:'sum(POS 日別 客数)',spark:this.spark(D.guests,C.blue6)},
+      {name:'平均人数',value:'2.43',unit:'人/組',delta:'→ 0%',dir:'flat',tip:'総客数 ÷ 総組数',spark:this.spark(D.avg,'#9095A3')},
+      {name:'媒体予約比率',value:'18.6',unit:'%',delta:'↗ +2pt',dir:'up',tip:'1 − ウォークイン比率',spark:this.spark(D.mediaRatio,C.blue)},
+      {name:'ウォークイン組数',value:'254',unit:'組',delta:'↘ -3%',dir:'down',tip:'POS 総組数 − 全媒体予約合計',spark:this.spark(D.walkin,'#9CA3AF')},
+      {name:'食べログ予約 CVR',value:'0.25',unit:'%',delta:'↘ -0.1pt',dir:'down',tip:'食べログ予約組数 ÷ 食べログ全体PV',spark:this.spark(D.tbCvr,C.tabelog)},
+      {name:'HPG 予約 CVR',value:'2.4',unit:'%',delta:'↗ +0.3pt',dir:'up',tip:'HPG ネット予約組数 ÷ HPG 全体PV',spark:this.spark(D.hpgCvr,C.hpg)},
+      {name:'エリア順位',value:'237',unit:'位',delta:'▲ 12位改善',dir:'up',tip:'食べログ 岡崎エリア内ランキング（Y軸反転）',spark:this.spark(D.rank,C.blue,{invert:true})}
+    ].map(k=>({...k,deltaColor:k.dir==='up'?C.up:k.dir==='down'?C.down:C.flat}));
+
+    // funnel
+    let funnel,funnelCV,funnelAvgPV,funnelCurPV,funnelPVdelta,funnelPVChart;
+    if(isTb){
+      funnel=[
+        {label:'食べログ全体 PV',value:'3,173',note:'2026-05',hasStep:true,stepLabel:'CVR_予約: 0.25%',labelColor:'#06070A',numColor:'#06070A',wrapStyle:'',boxStyle:'background:#fff;border:1px solid #D9DCE3;border-radius:12px;padding:18px 22px;box-shadow:0 1px 2px rgba(6,7,10,.05);'},
+        {label:'ネット予約組数',value:'8',note:'食べログ CV レポート実機値',hasStep:false,stepLabel:'',labelColor:'#06070A',numColor:'#FF7F50',wrapStyle:'',boxStyle:'background:#fff;border:1px solid #FF7F50;border-radius:12px;padding:18px 22px;box-shadow:0 1px 2px rgba(6,7,10,.05);'}
+      ];
+      funnelCV=[{label:'ネット予約',value:'8 組'},{label:'通話成立',value:'3 件'},{label:'地図印刷',value:'0 PV'}];
+      funnelAvgPV='2,800'; funnelCurPV='3,173'; funnelPVdelta='↗ +13%'; funnelPVChart=this.lineChart(D.tbPV,C.tabelog,{W:440,H:190});
+    } else {
+      funnel=[
+        {label:'HPG 全体 PV',value:'2,083',note:'2026-05',hasStep:true,stepLabel:'CVR_予約: 2.4%',labelColor:'#06070A',numColor:'#06070A',wrapStyle:'',boxStyle:'background:#fff;border:1px solid #D9DCE3;border-radius:12px;padding:18px 22px;box-shadow:0 1px 2px rgba(6,7,10,.05);'},
+        {label:'ネット予約組数',value:'50',note:'HPG 月別レポート',hasStep:false,stepLabel:'',labelColor:'#06070A',numColor:'#E60012',wrapStyle:'',boxStyle:'background:#fff;border:1px solid #E60012;border-radius:12px;padding:18px 22px;box-shadow:0 1px 2px rgba(6,7,10,.05);'}
+      ];
+      funnelCV=[{label:'ネット予約',value:'50 組'},{label:'クーポン枚数',value:'4 枚'},{label:'集客人数',value:'32 人'}];
+      funnelAvgPV='1,980'; funnelCurPV='2,083'; funnelPVdelta='↗ +4%'; funnelPVChart=this.lineChart(D.hpgPV,C.hpg,{W:440,H:190});
+    }
+    const funnelBookChart=this.barChart(isTb?D.tbBook:D.hpgBook, isTb?C.tabelog:C.hpg, {W:440,H:190});
+    const tbCV=[{label:'ネット予約',value:'8 組'},{label:'通話成立',value:'3 件'},{label:'地図印刷',value:'0 PV'}];
+
+    // media深掘り
+    let mediaKpis,mediaMini,pageRank,hpgBox;
+    if(isTb){
+      mediaKpis=[{name:'全体PV',value:'3,173',note:'2026-05'},{name:'予約組数',value:'8',note:'CVレポート実機'},{name:'CVR',value:'0.25%',note:'予約÷PV'},{name:'クチコミ件数',value:'0',note:'※過去12ヶ月平均: 3.6'},{name:'平均評価',value:'—',note:'来店月=2026-05 0件'}];
+      mediaMini=[{title:'PV 推移',chart:this.lineChart(D.tbPV,C.tabelog,{W:300,H:150})},{title:'予約組数 推移',chart:this.barChart(D.tbBook,C.tabelog,{W:300,H:150})},{title:'CVR 推移',chart:this.lineChart(D.tbCvr,C.tabelog,{W:300,H:150,valFmt:v=>v.toFixed(2)+'%'})}];
+    } else {
+      mediaKpis=[{name:'全体PV',value:'2,083',note:'2026-05'},{name:'予約組数',value:'50',note:'月別レポート'},{name:'CVR',value:'2.4%',note:'予約÷PV'},{name:'クチコミ件数',value:'3',note:'投稿日=2026-05'},{name:'平均評価',value:'4.3',note:'投稿日=2026-05'}];
+      mediaMini=[{title:'PV 推移',chart:this.lineChart(D.hpgPV,C.hpg,{W:300,H:150})},{title:'予約組数 推移',chart:this.barChart(D.hpgBook,C.hpg,{W:300,H:150})},{title:'CVR 推移',chart:this.lineChart(D.hpgCvr,C.hpg,{W:300,H:150,valFmt:v=>v.toFixed(1)+'%'})}];
+    }
+    const prData=[['店舗トップ',2483,'44.7%',5],['メニュー',1150,'20.7%',-2],['クチコミ・評価',1029,'18.5%',8],['コース',411,'7.4%',1],['写真',320,'5.8%',2],['地図',110,'2.0%',5],['クーポン',0,'0.0%',0]];
+    pageRank=prData.map((r,i)=>({rank:i+1,name:r[0],color:this.pageColors[r[0]],pv:this.fmt(r[1]),share:r[2],delta:(r[3]>0?'↗ +':r[3]<0?'↘ ':'→ ')+(r[3]===0?'0%':Math.abs(r[3])+'%'),deltaColor:r[3]>0?C.up:r[3]<0?C.down:C.flat}));
+    hpgBox=[{label:'クーポン枚数',value:'4'},{label:'集客人数',value:'32 人'},{label:'組人数',value:'14 組'},{label:'クチコミ累計',value:'187 件'}];
+
+    const pageLegend=Object.keys(this.pageColors).map(k=>({label:k,color:this.pageColors[k]}));
+    const pageMultiline=this.multiLine(D.pagePV,this.pageColors,{});
+
+    // reviews
+    const reviewSummary=[{label:'当月件数',value:'3'},{label:'平均評価',value:'4.3'},{label:'累計件数',value:'187'}];
+    const rows=(s.reviewRange==='current'?this.reviewsHpg:[...this.reviewsHpg,...this.reviewsTbPast]).map((r,i)=>({
+      media:r.media,color:r.color,date:r.date,name:r.name,stars:this.stars(r.rating),
+      snippet:r.body.slice(0,28)+'…',open:()=>this.setState({review:{...r,stars:this.stars(r.rating)}})}));
+    const reviewEmpty=s.reviewRange==='current';
+    const reviewTabsEl=[this.rTab('current','当月',s.reviewRange==='current'),this.rTab('past6','過去6ヶ月',s.reviewRange==='past6')];
+
+    // competition
+    const compRows=this.compTop.map(r=>({rank:r.rank,name:r.name,genre:r.genre,station:r.station,access:this.fmt(r.access),delta:(r.delta>=0?'+':'')+r.delta+'%',deltaColor:r.delta>=0?C.up:C.down,rowStyle:'border-top:1px solid #ECEEF2;',rankColor:'#9095A3',nameWeight:500}));
+    compRows.push({rank:237,name:'韓国屋台ポックンパ ネネチキン 東岡崎店（自店舗）',genre:'韓国料理、鳥料理、居酒屋',station:'東岡崎',access:'3,173',delta:'-8%',deltaColor:C.down,rowStyle:'border-top:2px solid #0040FB;background:#F4FBFF;',rankColor:'#0040FB',nameWeight:700});
+    const keywordRows=this.keywords.map(k=>({rank:k.rank,word:k.word,share:k.share+'%',barW:Math.min(100,k.share/26.9*100)+'%',area:k.area}));
+
+    return {
+      stores:['韓国屋台ポックンパ ネネチキン 東岡崎店','BAR FUSION ASOBI（BFA）','麻布しき'],
+      store:'韓国屋台ポックンパ ネネチキン 東岡崎店', onStore:()=>{},
+      periods:['2026-05','2026-04','2026-03','2026-02','2026-01','2025-12'],
+      period:'2026-05', onPeriod:()=>{},
+      nav:navItems.map(([id,icon,label])=>({icon,label,style:this.navStyle(s.screen===id),go:()=>this.setState({screen:id})})),
+      goSettings:()=>this.setState({screen:'settings'}), settingsStyle:this.navStyle(s.screen==='settings'),
+      showError:s.showError, showGap:s.showGap, toggleError:()=>this.setState({showError:!s.showError}), toggleGap:()=>this.setState({showGap:!s.showGap}),
+      title:titles[s.screen], subtitle:s.screen==='summary'?'— 店舗の月次健康診断':'— 2026-05',
+      isSummary:s.screen==='summary', isFunnel:s.screen==='funnel', isMedia:s.screen==='media', isReviews:s.screen==='reviews', isComp:s.screen==='competition', isSettings:s.screen==='settings',
+      isTabelog:isTb, isHpg:!isTb,
+      kpis, summaryArea:this.stackedArea(),
+      stackLegend:[{label:'食べログ',color:C.tabelog},{label:'HPG',color:C.hpg},{label:'自社直',color:C.direct},{label:'ウォークイン',color:C.walkin}],
+      tabsEl:[this.tabBtn('tabelog','食べログ',C.tabelog,isTb),this.tabBtn('hpg','HPG',C.hpg,!isTb)],
+      funnel,funnelAvgPV,funnelCurPV,funnelPVdelta,funnelPVChart,funnelBookChart,
+      mediaKpis,mediaMini,pageRank,hpgBox,tbCV,pageLegend,pageMultiline,
+      reviewSummary,reviewRows:rows,reviewEmpty,reviewTabsEl,reviewCountChart:this.stackedBar(),reviewRatingChart:this.lineChart(D.reviewRating.hpg,C.hpg,{W:440,H:200,min:3.5,max:5,valFmt:v=>v.toFixed(1)}),
+      rankChart:this.rankChart(),compRows,keywordRows,
+      review:s.review, closeReview:()=>this.setState({review:null}), stop:(e)=>e.stopPropagation()
+    };
+  }
+}
+</script>
+</body>
+</html>

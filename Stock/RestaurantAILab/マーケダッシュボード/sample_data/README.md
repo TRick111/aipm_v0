@@ -64,13 +64,19 @@ last_updated: 2026-06-26
 
 実機スクレイプ結果（`scripts/scrapers/tabelog/` で取得 → ここにコピー）:
 
-| ファイル | 行数 | 列 |
+月別スナップショット配置:
+- `tabelog/2026-05/`, `tabelog/2026-06/` — 月別 5 CSVセット
+- `tabelog/*.csv`（直下、初期サンプル・v1.0 仕様） — 旧データ互換用
+
+| ファイル | 行数（v1.1 以降の月別取得） | 列 |
 |---|---|---|
-| `access_report_total.csv` | 31 | 日付/曜日/PC/スマホ/アプリ/総合 |
-| `access_report_page.csv` | 12 | period_start/period_end/page_type/pv/share_percent/note（13ヶ月集計） |
+| `access_report_total.csv` | **13（月別、`?display_type=monthly`）** | **年月**/PC/スマホ/アプリ/総合 |
+| `access_report_page.csv` | 12（1ヶ月分のページ別） | period_start/period_end/page_type/pv/share_percent/note |
 | `access_report_total_conversion.csv` | 13 | 年月/通話成立数/ネット予約組数/地図印刷PV/全体PV |
 | `rstupreview_entry.csv` | 20 | 来店日/総合評価/投稿者/本文先頭 |
 | `access_ranking.csv` | 101 | エリア/順位/店舗名/店舗エリア/ジャンル/アクセス数/前月比/is_own_shop |
+
+> **v1.1（2026-06-28）変更**: `access_report_total` を日次表示（直近1ヶ月）→ **月次表示（13ヶ月分の月別）** に変更。`access_report_page` の月絞り込みは画面右上「表示期間」ドロップダウン操作で `?start_month=YYYYMM&end_month=YYYYMM` 同月指定の URL に自動遷移。詳細は Skill `tabelog-marketing-scrape` 参照。
 
 下記テーブルはスクレイプ対象URL／DOM仕様の取得元台帳。
 

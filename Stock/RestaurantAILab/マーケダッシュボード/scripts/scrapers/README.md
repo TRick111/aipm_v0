@@ -42,8 +42,8 @@ last_updated: 2026-06-26
 
 | URL | パーサ | 出力CSV列 | 行数（実機サンプル） |
 |---|---|---|---|
-| `/owner_rst/access_report_total` | `parse_access_report_total.py` | 日付/曜日/PC/スマホ/アプリ/総合 | 31（直近1ヶ月） |
-| `/owner_rst/access_report_page` | `parse_access_report_page.py` | period_start/period_end/page_type/pv/share_percent/note | 12（**13ヶ月集計のページ別**、月別ではない） |
+| `/owner_rst/access_report_total?display_type=monthly` | `parse_access_report_total.py` | **年月/PC/スマホ/アプリ/総合**（月次表示固定） | 13（13ヶ月分） |
+| `/owner_rst/access_report_page` ※ドロップダウンで月選択 | `parse_access_report_page.py` | period_start/period_end/page_type/pv/share_percent/note | 12（**1ヶ月分のページ別**、ドロップダウン選択で月絞り込み） |
 | `/owner_rst/access_report_total_conversion` | `parse_access_report_total_conversion.py` | 年月/通話成立数/ネット予約組数/地図印刷PV/全体PV | 13（13ヶ月分） |
 | `/owner_rst/rstupreview_entry/?srt=visit&sby=desc&PG=1&smp=2&lc=0` | `parse_rstupreview_entry.py` | 来店日/総合評価/投稿者/本文先頭 | 20（1ページ仕様） |
 | `/owner_rst/access_ranking` | `parse_access_ranking.py` | エリア/順位/店舗名/店舗エリア/ジャンル/アクセス数/前月比/is_own_shop | 101（TOP100＋自店舗1） |
@@ -54,7 +54,8 @@ last_updated: 2026-06-26
 - **access_report_total_conversion**: テーブル内に `tr.device-more` というナビ行が混在するため `th[scope="row"]` の有無でデータ行を判定。
 - **rstupreview_entry**: 「投稿日」は UI 上存在せず、**来店月**（YYYY/MM訪問）のみ。`YYYY-MM-01` に正規化済み。評価は `c-rating-v2--val35` のような class からフォールバック抽出。
 - **access_ranking**: 自店舗が TOP100 圏外の場合、ランキング表末尾に `<tr id="my-ranking" class="outside">` の 1 行が追加される構造。順位ジャンプあり。ダッシュボードでは `is_own_shop=true` 行を別扱い推奨。
-- **access_report_total**: 最終行に「合計」行があり、日付パターン非該当でスキップ。
+- **access_report_total**: 最終行に「合計」行があり、日付パターン非該当でスキップ。**`?display_type=monthly` 必須**（月次表示で 13ヶ月分の月別データを取得）。パーサは日次/月次の両モードを自動判別。
+- **access_report_page の月絞り込み**: ページ右上「表示期間」開始月のドロップダウンを操作（Playwright MCP の `browser_select_option`）すると、自動的に `?start_month=YYYYMM&end_month=YYYYMM`（同月）に遷移する。
 
 ### ホットペッパー（HPG）クチコミ 1 ページ（`hotpepper/`）
 

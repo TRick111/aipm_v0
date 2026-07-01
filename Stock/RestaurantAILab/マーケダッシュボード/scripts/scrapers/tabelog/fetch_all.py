@@ -66,7 +66,8 @@ def main(only: str | None = None, target_month: str | None = None) -> int:
         for name in names:
             url = url_for(name, target_month)
             print(f"[fetch] {name}: {url}")
-            response = page.goto(url, wait_until="networkidle")
+            # networkidle は広告等で idle にならないため、domcontentloaded で確定させる
+            response = page.goto(url, wait_until="domcontentloaded", timeout=60000)
             if response is None or response.status >= 400:
                 status = response.status if response else "no-response"
                 print(f"  [WARN] HTTP {status} returned, skipping", file=sys.stderr)
